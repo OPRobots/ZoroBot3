@@ -42,10 +42,10 @@ static uint8_t mpu_read_register(uint8_t address)
 	uint8_t reading;
 
 	gpio_set(GPIOA, GPIO12);
-	spi_send(SPI2, (MPU_READ | address));
-	spi_read(SPI2);
-	spi_send(SPI2, 0x00);
-	reading = spi_read(SPI2);
+	spi_send(SPI3, (MPU_READ | address));
+	spi_read(SPI3);
+	spi_send(SPI3, 0x00);
+	reading = spi_read(SPI3);
 	gpio_clear(GPIOA, GPIO12);
 
 	return reading;
@@ -60,10 +60,10 @@ static uint8_t mpu_read_register(uint8_t address)
 static void mpu_write_register(uint8_t address, uint8_t value)
 {
 	gpio_set(GPIOA, GPIO12);
-	spi_send(SPI2, address);
-	spi_read(SPI2);
-	spi_send(SPI2, value);
-	spi_read(SPI2);
+	spi_send(SPI3, address);
+	spi_read(SPI3);
+	spi_send(SPI3, value);
+	spi_read(SPI3);
 	gpio_clear(GPIOA, GPIO12);
 }
 
