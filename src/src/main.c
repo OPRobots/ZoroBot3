@@ -8,29 +8,18 @@
 void sys_tick_handler(void) {
   clock_tick();
   update_encoder_readings();
+  update_gyro_readings();
 }
 
 int main(void) {
   setup();
-  gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO1);
-  printf("Todo listo\n");
-  // gpio_clear(GPIOA, GPIO12);
-      gpio_set(GPIOA, GPIO1);
+  gyro_z_calibration();
+  mpu_set_updating(true);
+
   while (1) {
-    // warning_status_led(250);
-
-    // gpio_toggle(GPIOA, GPIO1);	/* LED on/off */
-    // for (int i = 0; i < 1000000; i++) {	/* Wait a bit. */
-    // 	__asm__("nop");
-    // }
-    printf("%d\n", get_gyro_z_raw());
-    if (get_gyro_z_raw() != 0) {
-
-      gpio_clear(GPIOA, GPIO1);
-    } else {
-
-      // gpio_set(GPIOA, GPIO1);
-    }
-    // delay(200);
+    // printf("%d - %d\n", mpu_who_am_i(), mpu_read_gyro_z_raw());
+    printf("%.4f\n", get_gyro_z_degrees());
+    delay_us(50000);
   }
+  return 0;
 }

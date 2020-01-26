@@ -10,6 +10,8 @@
 #include "delay.h"
 #include "setup.h"
 
+void mpu_set_updating(bool updating);
+
 uint8_t mpu_who_am_i(void);
 
 void setup_mpu(void);

@@ -296,6 +296,7 @@ static void setup_spi(uint8_t speed_div) {
  */
 void setup_spi_high_speed() {
   setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_8);
+  delay(100);
 }
 
 /**
@@ -307,6 +308,7 @@ void setup_spi_high_speed() {
  */
 void setup_spi_low_speed() {
   setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_128);
+  delay(100);
 }
 
 /**
