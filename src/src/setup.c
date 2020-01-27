@@ -24,8 +24,6 @@ static void setup_clock() {
 
   rcc_periph_clock_enable(RCC_SPI3);
 
-  rcc_periph_clock_enable(RCC_DMA2);
-
   rcc_periph_clock_enable(RCC_TIM1);
   rcc_periph_clock_enable(RCC_TIM2);
   rcc_periph_clock_enable(RCC_TIM3);
@@ -55,13 +53,10 @@ static void setup_systick() {
  */
 static void setup_timer_priorities() {
   nvic_set_priority(NVIC_SYSTICK_IRQ, 16 * 1);
-  nvic_set_priority(NVIC_DMA2_STREAM0_IRQ, 16 * 2);
-  nvic_set_priority(NVIC_TIM2_IRQ, 16 * 3);
-  nvic_set_priority(NVIC_TIM5_IRQ, 16 * 4);
-  nvic_set_priority(NVIC_USART3_IRQ, 16 * 5);
+  nvic_set_priority(NVIC_TIM2_IRQ, 16 * 2);
+  nvic_set_priority(NVIC_TIM5_IRQ, 16 * 3);
+  nvic_set_priority(NVIC_USART3_IRQ, 16 * 4);
 
-  //   nvic_enable_irq(NVIC_TIM5_IRQ);
-  nvic_enable_irq(NVIC_DMA2_STREAM0_IRQ);
   nvic_enable_irq(NVIC_TIM5_IRQ);
   nvic_enable_irq(NVIC_TIM2_IRQ);
   nvic_enable_irq(NVIC_USART3_IRQ);
@@ -241,6 +236,36 @@ void tim5_isr() {
   }
 }
 
+
+/**
+ * @brief Configura el TIM2 como ISR para ejecutarse 16 veces cada 1ms.
+ * Esta función ISR será la que maneje la lectura de sensores y el encendido/apagado de los emisores
+ * 
+ */
+static void setup_wall_sensor_manager() {
+  rcc_periph_reset_pulse(RST_TIM2);
+  timer_set_mode(TIM2, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+  timer_set_prescaler(TIM2, ((rcc_apb1_frequency * 2) / 16000000 - 1)); // 16kHz
+  timer_disable_preload(TIM2);
+  timer_continuous_mode(TIM2);
+  timer_set_period(TIM2, 1024);
+
+  timer_enable_counter(TIM2);
+  timer_enable_irq(TIM2, TIM_DIER_CC1IE);
+}
+
+
+/**
+ * @brief Función de uso interno que lanza el TIM2
+ * 
+ */
+void tim2_isr() {
+  if (timer_get_flag(TIM2, TIM_SR_CC1IF)) {
+    timer_clear_flag(TIM2, TIM_SR_CC1IF);
+    //TODO: llamar a la función de "máquna de estados"
+  }
+}
+
 /**
  * @brief Configura los TIM3 y TIM4 para lectura en quadratura de encoders.
  * 
@@ -326,6 +351,7 @@ void setup() {
   setup_leds_pwm();
   setup_motors_pwm();
   setup_main_loop_timer();
+  setup_wall_sensor_manager();
   setup_quadrature_encoders();
   setup_mpu();
 }
