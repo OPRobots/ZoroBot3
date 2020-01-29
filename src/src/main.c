@@ -47,6 +47,7 @@ int main(void) {
 
     // printf("V= %.2fv\n", get_battery_voltage());
     // delay(250);
+    set_RGB_color(0,50,0);
   }
   return 0;
 }
