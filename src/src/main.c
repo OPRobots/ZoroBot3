@@ -1,9 +1,11 @@
+#include <battery.h>
 #include <delay.h>
 #include <encoders.h>
 #include <leds.h>
 #include <mpu.h>
 #include <setup.h>
 #include <usart.h>
+
 
 void sys_tick_handler(void) {
   clock_tick();
@@ -15,11 +17,36 @@ int main(void) {
   setup();
   gyro_z_calibration();
   mpu_set_updating(true);
+  show_battery_level();
 
   while (1) {
     // printf("%d - %d\n", mpu_who_am_i(), mpu_read_gyro_z_raw());
-    printf("%.4f\n", get_gyro_z_degrees());
-    delay_us(50000);
+    // printf("%.4f\n", get_gyro_z_degrees());
+    // delay_us(50000);
+    // set_leds_wave(200);
+    // set_RGB_rainbow();
+
+    // gpio_set(GPIOA, GPIO0 | GPIO1 | GPIO2 | GPIO3);
+    // delay(2000);
+
+    // gpio_clear(GPIOA, GPIO0 | GPIO1 | GPIO2 | GPIO3);
+    // delay(2000);
+
+    /* gpio_set(GPIOA, GPIO0);
+    gpio_clear(GPIOA, GPIO1 | GPIO2 | GPIO3);
+    delay(1000);
+    gpio_set(GPIOA, GPIO1);
+    gpio_clear(GPIOA, GPIO0 | GPIO2 | GPIO3);
+    delay(1000);
+    gpio_set(GPIOA, GPIO2);
+    gpio_clear(GPIOA, GPIO0 | GPIO1 | GPIO3);
+    delay(1000);
+    gpio_set(GPIOA, GPIO3);
+    gpio_clear(GPIOA, GPIO0 | GPIO1 | GPIO2);
+    delay(1000); */
+
+    // printf("V= %.2fv\n", get_battery_voltage());
+    // delay(250);
   }
   return 0;
 }
