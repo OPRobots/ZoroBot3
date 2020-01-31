@@ -5,6 +5,7 @@
 #include <mpu.h>
 #include <setup.h>
 #include <usart.h>
+#include <sensors.h>
 
 
 void sys_tick_handler(void) {
@@ -18,7 +19,8 @@ int main(void) {
   gyro_z_calibration();
   mpu_set_updating(true);
   show_battery_level();
-
+gpio_set(GPIOA, GPIO1);
+    gpio_clear(GPIOA, GPIO0 | GPIO2 | GPIO3);
   while (1) {
     // printf("%d - %d\n", mpu_who_am_i(), mpu_read_gyro_z_raw());
     // printf("%.4f\n", get_gyro_z_degrees());
@@ -47,7 +49,10 @@ int main(void) {
 
     // printf("V= %.2fv\n", get_battery_voltage());
     // delay(250);
-    set_RGB_color(0,50,0);
+
+    printf("%d\n", get_sensor_raw(1)/* ,  get_sensor_raw(1),  get_sensor_raw(2),  get_sensor_raw(3) */);
+    delay(50);
+    // set_RGB_rainbow();
   }
   return 0;
 }

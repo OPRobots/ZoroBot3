@@ -14,6 +14,7 @@
 
 #include <config.h>
 #include <mpu.h>
+#include <sensors.h>
 
 void setup();
 void setup_spi_high_speed();

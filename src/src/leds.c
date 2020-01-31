@@ -91,7 +91,6 @@ void set_leds_wave(int ms) {
 
 void set_leds_battery_level(float battery_level) {
   float percent_battery_level = map(battery_level, BATTERY_LOW_LIMIT_VOLTAGE, BATTERY_HIGH_LIMIT_VOLTAGE, 0.0f, 100.0f);
-  printf("%.2f\n", percent_battery_level);
   if (percent_battery_level <= 10) {
 
     gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
