@@ -122,6 +122,10 @@ static void setup_gpio() {
   gpio_mode_setup(GPIOC, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO7 | GPIO8 | GPIO9);
   gpio_set_af(GPIOC, GPIO_AF3, GPIO7 | GPIO8 | GPIO9);
 
+  // Salidas Digitales Motores
+  gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12 | GPIO13 | GPIO14 | GPIO15);
+  gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
+
   // USART3
   gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO10 | GPIO11);
   gpio_set_af(GPIOB, GPIO_AF7, GPIO10 | GPIO11);

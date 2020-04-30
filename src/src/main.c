@@ -1,5 +1,6 @@
 #include <battery.h>
 #include <delay.h>
+#include <motors.h>
 #include <encoders.h>
 #include <leds.h>
 #include <mpu.h>
