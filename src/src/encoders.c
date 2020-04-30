@@ -51,14 +51,14 @@ void set_wheels_separation(float value) {
  * @brief Read left motor encoder counter.
  */
 static uint16_t read_encoder_left(void) {
-  return (uint16_t)timer_get_counter(TIM3);
+  return (uint16_t)timer_get_counter(TIM4);
 }
 
 /**
  * @brief Read right motor encoder counter.
  */
 static uint16_t read_encoder_right(void) {
-  return (uint16_t)timer_get_counter(TIM4);
+  return (uint16_t)timer_get_counter(TIM3);
 }
 
 /**
