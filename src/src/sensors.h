@@ -10,8 +10,16 @@
 #include <libopencm3/stm32/rcc.h>
 #include <stdint.h>
 
+
+#define SENSOR_SIDE_LEFT_ID 0
+#define SENSOR_SIDE_RIGHT_ID 1
+#define SENSOR_FRONT_LEFT_ID 2
+#define SENSOR_FRONT_RIGHT_ID 3
+
 uint8_t *get_sensors();
 uint8_t get_sensors_num();
 volatile uint16_t *get_sensors_raw();
-uint16_t get_sensor_raw(uint8_t pos);
+uint16_t get_sensor_raw(uint8_t pos, bool on);
+
+void sm_emitter_adc(void);
 #endif

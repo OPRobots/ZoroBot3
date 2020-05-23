@@ -4,6 +4,7 @@
 #include <encoders.h>
 #include <leds.h>
 #include <mpu.h>
+#include <sensors.h>
 #include <setup.h>
 #include <usart.h>
 #include <sensors.h>
@@ -20,8 +21,6 @@ int main(void) {
   gyro_z_calibration();
   mpu_set_updating(true);
   show_battery_level();
-gpio_set(GPIOA, GPIO1);
-    gpio_clear(GPIOA, GPIO0 | GPIO2 | GPIO3);
   while (1) {
     // printf("%d - %d\n", mpu_who_am_i(), mpu_read_gyro_z_raw());
     // printf("%.4f\n", get_gyro_z_degrees());
