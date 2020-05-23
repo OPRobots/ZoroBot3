@@ -222,6 +222,12 @@ static void setup_motors_pwm() {
   timer_set_oc_mode(TIM8, TIM_OC2, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM8, TIM_OC3, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM8, TIM_OC4, TIM_OCM_PWM1);
+  timer_set_oc_value(TIM8, TIM_OC2, 0);
+  timer_set_oc_value(TIM8, TIM_OC3, 0);
+  timer_set_oc_value(TIM8, TIM_OC4, 0);
+  timer_enable_oc_output(TIM8, TIM_OC2);
+  timer_enable_oc_output(TIM8, TIM_OC3);
+  timer_enable_oc_output(TIM8, TIM_OC4);
 
   timer_enable_break_main_output(TIM8);
 

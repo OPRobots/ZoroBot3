@@ -7,8 +7,6 @@
 #include <sensors.h>
 #include <setup.h>
 #include <usart.h>
-#include <sensors.h>
-
 
 void sys_tick_handler(void) {
   clock_tick();
@@ -22,6 +20,11 @@ int main(void) {
   mpu_set_updating(true);
   show_battery_level();
   while (1) {
+    
+
+    set_motors_speed(25, 25);
+    
+    delay(120);
     // printf("%d - %d\n", mpu_who_am_i(), mpu_read_gyro_z_raw());
     // printf("%.4f\n", get_gyro_z_degrees());
     // delay_us(50000);
