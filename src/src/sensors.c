@@ -3,10 +3,10 @@
 #define NUM_SENSORES 4
 
 static uint8_t sensores[NUM_SENSORES] = {
-    ADC_CHANNEL10,
-    ADC_CHANNEL13,
-    ADC_CHANNEL11,
-    ADC_CHANNEL12,
+    ADC_CHANNEL10, // Frontal Izquierdo
+    ADC_CHANNEL13, // Frontal Derecho
+    ADC_CHANNEL11, // Pared Derecha
+    ADC_CHANNEL12, // Pared Izquierda
 };
 
 static volatile uint16_t sensores_raw[NUM_SENSORES];
