@@ -372,7 +372,7 @@ void setup() {
   setup_timer_priorities();
   setup_usart();
   setup_gpio();
-  setup_dma_adc1();
+  // setup_dma_adc1();
   setup_adc1();
   setup_adc2();
   setup_leds_pwm();
