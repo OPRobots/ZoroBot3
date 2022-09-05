@@ -2,6 +2,7 @@
 #define __CONFIG_H
 
 #include <stdio.h>
+#include <buttons.h>
 
 #define SYSCLK_FREQUENCY_HZ 168000000
 #define SYSTICK_FREQUENCY_HZ 1000
@@ -24,5 +25,12 @@
 #define VOLT_DIV_FACTOR 2.74
 #define BATTERY_HIGH_LIMIT_VOLTAGE 8.4
 #define BATTERY_LOW_LIMIT_VOLTAGE 7.4
+
+
+#define CONFIG_RUN_RACE 1
+#define CONFIG_RUN_DEBUG 0
+
+void set_all_configs(void);
+uint16_t get_config_run(void);
 
 #endif
