@@ -7,6 +7,9 @@
 #include <sensors.h>
 #include <setup.h>
 #include <usart.h>
+#include <control.h>
+#include <buttons.h>
+#include <menu.h>
 
 void sys_tick_handler(void) {
   clock_tick();
@@ -20,42 +23,17 @@ int main(void) {
   mpu_set_updating(true);
   show_battery_level();
   while (1) {
-    
 
-    set_motors_speed(25, 25);
-    
-    delay(120);
-    // printf("%d - %d\n", mpu_who_am_i(), mpu_read_gyro_z_raw());
-    // printf("%.4f\n", get_gyro_z_degrees());
-    // delay_us(50000);
-    // set_leds_wave(200);
-    // set_RGB_rainbow();
+    if(!is_competicion_iniciada()){
+      check_menu_button();
 
-    // gpio_set(GPIOA, GPIO0 | GPIO1 | GPIO2 | GPIO3);
-    // delay(2000);
 
-    // gpio_clear(GPIOA, GPIO0 | GPIO1 | GPIO2 | GPIO3);
-    // delay(2000);
-
-    /* gpio_set(GPIOA, GPIO0);
-    gpio_clear(GPIOA, GPIO1 | GPIO2 | GPIO3);
-    delay(1000);
-    gpio_set(GPIOA, GPIO1);
-    gpio_clear(GPIOA, GPIO0 | GPIO2 | GPIO3);
-    delay(1000);
-    gpio_set(GPIOA, GPIO2);
-    gpio_clear(GPIOA, GPIO0 | GPIO1 | GPIO3);
-    delay(1000);
-    gpio_set(GPIOA, GPIO3);
-    gpio_clear(GPIOA, GPIO0 | GPIO1 | GPIO2);
-    delay(1000); */
-
-    // printf("V= %.2fv\n", get_battery_voltage());
-    // delay(250);
-
-    printf("%d\n", get_sensor_raw(1)/* ,  get_sensor_raw(1),  get_sensor_raw(2),  get_sensor_raw(3) */);
+    }else{
+      // TODO: cosas de competi iniciada
+    }
+ 
+    // printf("%d\t%d\t%d\t%d\t\n", get_sensor_raw(0, 1),  get_sensor_raw(1, 1),  get_sensor_raw(2, 1),  get_sensor_raw(3, 1));
     delay(50);
-    // set_RGB_rainbow();
   }
   return 0;
 }
