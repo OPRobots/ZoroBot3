@@ -20,6 +20,8 @@ uint8_t *get_sensors();
 uint8_t get_sensors_num();
 volatile uint16_t *get_sensors_raw();
 uint16_t get_sensor_raw(uint8_t pos, bool on);
+float get_sensor_log(uint8_t pos);
+float sensors_raw_log(uint16_t on, uint16_t off);
 
 void sm_emitter_adc(void);
 #endif

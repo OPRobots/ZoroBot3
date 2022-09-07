@@ -32,7 +32,7 @@ int main(void) {
       // TODO: cosas de competi iniciada
     }
  
-    // printf("%d\t%d\t%d\t%d\t\n", get_sensor_raw(0, 1),  get_sensor_raw(1, 1),  get_sensor_raw(2, 1),  get_sensor_raw(3, 1));
+    // printf("%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t\n", get_sensor_log(0), get_sensor_raw(0, 1),  get_sensor_log(1), get_sensor_raw(1, 1),  get_sensor_log(2), get_sensor_raw(2, 1),  get_sensor_log(3), get_sensor_raw(3, 1));
     delay(50);
   }
   return 0;
