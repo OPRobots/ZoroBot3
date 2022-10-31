@@ -1,6 +1,5 @@
 #include <sensors.h>
 
-#define NUM_SENSORES 4
 
 #define LOG_CONVERSION_TABLE_STEP 4
 #define LOG_CONVERSION_TABLE_SIZE (ADC_RESOLUTION / LOG_CONVERSION_TABLE_STEP)
@@ -187,8 +186,11 @@ static void set_emitter_off(uint8_t emitter) {
   }
 }
 
-volatile uint16_t *get_sensors_raw() {
-  return sensores_raw;
+void get_sensors_raw(uint16_t *on, uint16_t *off) {
+  for (uint8_t i = 0; i < NUM_SENSORES; i++) {
+    on[i] = sensors_on[i];
+    off[i] = sensors_off[i];
+  }
 }
 
 uint8_t *get_sensors() {
@@ -243,7 +245,15 @@ uint16_t get_sensor_raw(uint8_t pos, bool on) {
   }
 }
 
-float get_sensor_log(uint8_t pos){
+uint16_t get_sensor_raw_filter(uint8_t pos) {
+  if (pos < NUM_SENSORES) {
+    return sensors_on[pos] - sensors_off[pos];
+  } else {
+    return 0;
+  }
+}
+
+float get_sensor_log(uint8_t pos) {
   return sensors_raw_log(sensors_on[pos], sensors_off[pos]);
 }
 
