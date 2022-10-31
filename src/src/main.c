@@ -24,14 +24,18 @@ int main(void) {
   gyro_z_calibration();
   mpu_set_updating(true);
   show_battery_level();
+
+  basic_algorithm_init();
   while (1) {
 
     check_start_stop_module();
 
     if (!is_competicion_iniciada()) {
       check_menu_button();
+      set_motors_speed(0,0);
+      // set_fan_speed(0);
     } else {
-      // TODO: cosas de competi iniciada
+      basic_algorithm_loop();
     }
 
     // ZONA DEBUG TEMPORAL
