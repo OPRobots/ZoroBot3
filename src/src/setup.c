@@ -165,7 +165,7 @@ static void setup_adc1() {
 static void setup_adc2() {
   uint8_t lista_canales[16];
 
-  lista_canales[0] = ADC_CHANNEL10;
+  lista_canales[0] = ADC_CHANNEL4;
   adc_off(ADC2);
   adc_disable_scan_mode(ADC2);
   adc_set_single_conversion_mode(ADC2);
