@@ -90,7 +90,7 @@ uint8_t get_switch_decimal() {
  * 
  */
 void check_start_stop_module() {
-  if ((bool)gpio_get(GPIOB, GPIO9)) {
+  if ((bool)gpio_get(GPIOB, GPIO8)) {
     set_competicion_iniciada(true);
   } else {
     set_competicion_iniciada(false);
