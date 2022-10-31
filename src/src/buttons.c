@@ -1,7 +1,6 @@
 #include <buttons.h>
 #include <delay.h>
 
-
 /**
  * @brief Obtiene el estado del botón de Menú Arriba
  * 
@@ -39,6 +38,7 @@ bool get_menu_mode_btn() {
 }
 
 /**
+ * @deprecated
  * @brief Obtiene el estado del switch 1
  * 
  * @return bool
@@ -48,6 +48,7 @@ bool get_swtich_1() {
 }
 
 /**
+ * @deprecated
  * @brief Obtiene el estado del switch 2
  * 
  * @return bool
@@ -56,9 +57,8 @@ bool get_swtich_2() {
   return (bool)gpio_get(GPIOB, GPIO8);
 }
 
-
-
 /**
+ * @deprecated
  * @brief Obtiene el número decimal a partir del binario de los Switches
  * 
  * @return uint8_t decimal
@@ -83,4 +83,16 @@ uint8_t get_switch_decimal() {
     ++i;
   }
   return decimal;
+}
+
+/**
+ * @brief Comprueba el estado del modulo de inicio-parada
+ * 
+ */
+void check_start_stop_module() {
+  if (get_switch_1()) {
+    set_competicion_iniciada(true);
+  } else {
+    set_competicion_iniciada(false);
+  }
 }

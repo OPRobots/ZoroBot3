@@ -16,11 +16,11 @@ static void set_config_run(uint16_t run_mode) {
  * 
  */
 void set_all_configs(void) {
-  if (get_swtich_1()) {
-    set_config_run(CONFIG_RUN_RACE);
-  } else {
+
+    // set_config_run(CONFIG_RUN_RACE);
     set_config_run(CONFIG_RUN_DEBUG);
-  }
+
+    
 }
 
 /**
