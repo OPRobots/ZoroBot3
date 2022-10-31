@@ -35,7 +35,7 @@
 #define MOTORES_MAX_PWM 1024
 
 /** Constantes del Robot */
-#define MICROMETERS_PER_TICK 78.3699
+#define MICROMETERS_PER_TICK 9.09
 #define WHEELS_SEPARATION 0.1169
 
 /** Constantes ADC */
