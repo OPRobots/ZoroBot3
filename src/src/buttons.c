@@ -38,23 +38,23 @@ bool get_menu_mode_btn() {
 }
 
 /**
- * @deprecated
+ * 
  * @brief Obtiene el estado del switch 1
  * 
  * @return bool
  */
 bool get_swtich_1() {
-  return (bool)gpio_get(GPIOB, GPIO9);
+  return (bool)gpio_get(GPIOB, GPIO8);
 }
 
 /**
- * @deprecated
+ * 
  * @brief Obtiene el estado del switch 2
  * 
  * @return bool
  */
 bool get_swtich_2() {
-  return (bool)gpio_get(GPIOB, GPIO8);
+  return (bool)gpio_get(GPIOB, GPIO9);
 }
 
 /**
