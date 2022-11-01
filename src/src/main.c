@@ -33,6 +33,8 @@ int main(void) {
 
     check_start_stop_module();
 
+    // printf("%d\n", get_sensor_raw_filter(SENSOR_FRONT_RIGHT_ID));
+
     if (!is_competicion_iniciada()) {
       check_menu_button();
       set_motors_speed(0, 0);
@@ -40,7 +42,7 @@ int main(void) {
     } else {
       // printf("pato\n");
       basic_algorithm_loop();
-      // delay(1000);
+      delay(1);
     }
 
     // ZONA DEBUG TEMPORAL
