@@ -1,3 +1,4 @@
+#include <basic_algorithm.h>
 #include <battery.h>
 #include <buttons.h>
 #include <control.h>
@@ -12,6 +13,7 @@
 #include <usart.h>
 #include <walls.h>
 
+
 void sys_tick_handler(void) {
   clock_tick();
   update_distance_readings();
@@ -25,17 +27,19 @@ int main(void) {
   mpu_set_updating(true);
   show_battery_level();
 
-  basic_algorithm_init();
+  // basic_algorithm_init();
   while (1) {
 
     check_start_stop_module();
 
     if (!is_competicion_iniciada()) {
       check_menu_button();
-      set_motors_speed(0,0);
+      set_motors_speed(0, 0);
       // set_fan_speed(0);
     } else {
+      // printf("pato\n");
       basic_algorithm_loop();
+      // delay(150);
     }
 
     // ZONA DEBUG TEMPORAL
@@ -52,7 +56,7 @@ int main(void) {
 
     // get_sensors_raw(on, off);
     //   printf("%.3f - %.3f - %.3f - %.3f\n",sensors_raw_log(on[0], off[0]),sensors_raw_log(on[1], off[1]),sensors_raw_log(on[2], off[2]),sensors_raw_log(on[3], off[3]));
-    delay(50);
+    // delay(50);
   }
   return 0;
 }

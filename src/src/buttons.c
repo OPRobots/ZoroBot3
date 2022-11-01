@@ -91,8 +91,10 @@ uint8_t get_switch_decimal() {
  */
 void check_start_stop_module() {
   if ((bool)gpio_get(GPIOB, GPIO8)) {
+    set_status_led(true);
     set_competicion_iniciada(true);
   } else {
+    set_status_led(false);
     set_competicion_iniciada(false);
   }
 }

@@ -37,6 +37,7 @@
 /** Constantes del Robot */
 #define MICROMETERS_PER_TICK 9.09
 #define WHEELS_SEPARATION 0.1169
+#define MIN_SPEED_PERCENT 5
 
 /** Constantes ADC */
 #define ADC_RESOLUTION 4096
