@@ -9,6 +9,9 @@
 
 #include "delay.h"
 #include "setup.h"
+#include "math.h"
+#include "motors.h"
+#include "buttons.h"
 
 void mpu_set_updating(bool updating);
 
@@ -21,5 +24,6 @@ float get_gyro_z_degrees(void);
 int16_t get_gyro_z_raw(void);
 float get_gyro_z_radps(void);
 float get_gyro_z_dps(void);
+void set_z_angle(float angle);
 
 #endif /* __MPU_H */

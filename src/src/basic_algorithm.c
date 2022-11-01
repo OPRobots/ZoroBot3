@@ -5,6 +5,7 @@ bool started = false;
 
 bool mano_izquierda = true;
 uint8_t SIDE_SENSOR_ID = 0;
+uint8_t OPOSITE_SENSOR_ID = 0;
 uint8_t FRONT_SENSOR_ID = 0;
 uint16_t SENSOR_TARGET = 0;
 
@@ -17,14 +18,23 @@ static void start_basic_algorithm() {
   if (!started) {
     if (mano_izquierda) {
       SIDE_SENSOR_ID = SENSOR_FRONT_RIGHT_ID;
+      OPOSITE_SENSOR_ID = SENSOR_FRONT_LEFT_ID;
       FRONT_SENSOR_ID = SENSOR_SIDE_LEFT_ID;
     } else {
       SIDE_SENSOR_ID = SENSOR_FRONT_LEFT_ID;
+      OPOSITE_SENSOR_ID = SENSOR_FRONT_RIGHT_ID;
       FRONT_SENSOR_ID = SENSOR_SIDE_RIGHT_ID;
     }
 
     SENSOR_TARGET = get_sensor_raw_filter(SIDE_SENSOR_ID);
     started = true;
+  }
+}
+
+static void check_u_turn() {
+  if (get_sensor_raw_filter(FRONT_SENSOR_ID) >= FRONT_SENSOR_THRESHOLD && get_sensor_raw_filter(OPOSITE_SENSOR_ID) >= SENSOR_TARGET) {
+      set_z_angle(get_gyro_z_degrees() + 88);
+      delay(100);
   }
 }
 
@@ -77,6 +87,8 @@ void basic_algorithm_init() {
 
 void basic_algorithm_loop() {
   start_basic_algorithm();
+
+  check_u_turn();
 
   correccion_velocidad = calc_pid_correction(get_sensor_raw_filter(SIDE_SENSOR_ID), get_sensor_raw_filter(FRONT_SENSOR_ID));
 

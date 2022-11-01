@@ -12,6 +12,7 @@
 #include <setup.h>
 #include <usart.h>
 #include <walls.h>
+#include <mpu.h>
 
 
 void sys_tick_handler(void) {
@@ -39,7 +40,7 @@ int main(void) {
     } else {
       // printf("pato\n");
       basic_algorithm_loop();
-      // delay(150);
+      // delay(1000);
     }
 
     // ZONA DEBUG TEMPORAL
