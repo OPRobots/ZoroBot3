@@ -28,7 +28,7 @@ int main(void) {
   mpu_set_updating(true);
   show_battery_level();
 
-  // basic_algorithm_init();
+  basic_algorithm_init();
   while (1) {
 
     check_start_stop_module();
@@ -42,7 +42,7 @@ int main(void) {
     } else {
       // printf("pato\n");
       basic_algorithm_loop();
-      delay(1);
+      delay_us(500);
     }
 
     // ZONA DEBUG TEMPORAL

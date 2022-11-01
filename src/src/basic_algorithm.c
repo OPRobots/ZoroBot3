@@ -8,6 +8,7 @@ uint8_t SIDE_SENSOR_ID = 0;
 uint8_t OPOSITE_SENSOR_ID = 0;
 uint8_t FRONT_SENSOR_ID = 0;
 uint16_t SENSOR_TARGET = 0;
+uint16_t OPOSITE_SENSOR_TARGET = 0;
 
 float velBase = 15;
 
@@ -28,13 +29,18 @@ static void start_basic_algorithm() {
     }
 
     SENSOR_TARGET = get_sensor_raw_filter(SIDE_SENSOR_ID);
+    OPOSITE_SENSOR_TARGET = get_sensor_raw_filter(OPOSITE_SENSOR_ID);
     started = true;
   }
 }
 
 static void check_u_turn() {
-  if (get_sensor_raw_filter(FRONT_SENSOR_ID) >= FRONT_SENSOR_THRESHOLD && get_sensor_raw_filter(OPOSITE_SENSOR_ID) >= SENSOR_TARGET) {
-    set_z_angle(get_gyro_z_degrees() + 88);
+  if (get_sensor_raw_filter(FRONT_SENSOR_ID) >= FRONT_SENSOR_THRESHOLD && get_sensor_raw_filter(OPOSITE_SENSOR_ID) >= OPOSITE_SENSOR_TARGET) {
+    if(mano_izquierda){
+      set_z_angle(get_gyro_z_degrees() + 87);
+    }else{
+      set_z_angle(get_gyro_z_degrees() - 87);
+    }
     delay(100);
   }
 }
@@ -45,7 +51,7 @@ static float calc_pid_correction(uint16_t side_sensor_value, uint16_t front_sens
   float d = 0;
   int32_t error = SENSOR_TARGET - side_sensor_value;
   if (front_sensor_value >= FRONT_SENSOR_THRESHOLD) {
-    error += (FRONT_SENSOR_THRESHOLD - front_sensor_value) / 2.0f;
+      error += (FRONT_SENSOR_THRESHOLD - front_sensor_value) /* / 1.5f */;
   }
 
   p = BASIC_ALGORITHM_KP * error;
@@ -76,8 +82,11 @@ void basic_algorithm_init() {
       gpio_set(GPIOB, GPIO0 | GPIO1 | GPIO2);
     }
 
-    if (get_menu_mode_btn() == 1) {
+    if (get_menu_mode_btn()) {
       init = true;
+      while(get_menu_mode_btn()){
+        delay(100);
+      }
     }
   }
 
@@ -93,15 +102,19 @@ void basic_algorithm_loop() {
 
   uint16_t side_sensor_value = get_sensor_raw_filter(SIDE_SENSOR_ID);
 
-  if (side_sensor_value < (SENSOR_TARGET / 2.0f) && get_encoder_average_micrometers() < (micrometers_without_wall + (0.05 * MICROMETERS_PER_METER))) {
-    if (micrometers_without_wall == 0) {
-      micrometers_without_wall = get_encoder_average_micrometers();
-    }
-    set_RGB_color(255,0,0);
-  } else {
-    micrometers_without_wall = 0;
+  // TODO: Eliminar esta comprobación porque no se llega a ejecutar
+  // if (side_sensor_value < (SENSOR_TARGET / 2.0f) && get_encoder_average_micrometers() < (micrometers_without_wall + (0.05 * MICROMETERS_PER_METER))) {
+  //   if (micrometers_without_wall == 0) {
+  //     micrometers_without_wall = get_encoder_average_micrometers();
+  //   }
+  //   // set_RGB_color(255,0,0);
+  // } else {
+    // micrometers_without_wall = 0;
     correccion_velocidad = calc_pid_correction(side_sensor_value, get_sensor_raw_filter(FRONT_SENSOR_ID));
-    set_RGB_color(0,0,0);
+    // set_RGB_color(0,0,0);
+  // }
+  if (!mano_izquierda) {
+    correccion_velocidad = -correccion_velocidad;
   }
 
   float velI = velBase + correccion_velocidad;
