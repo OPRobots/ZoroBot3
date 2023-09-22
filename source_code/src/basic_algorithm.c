@@ -14,7 +14,7 @@ uint8_t FRONT_SENSOR_ID = 0;
 uint16_t SENSOR_TARGET = 0;
 uint16_t OPOSITE_SENSOR_TARGET = 0;
 
-float velBase = 10;
+float velBase = 6;
 
 float correccion_velocidad = 0;
 float error_anterior = 0;
@@ -182,7 +182,7 @@ void basic_algorithm_loop() {
   check_reference_wall_change();
   // start_basic_algorithm(); // Se llama desde la función de init, después de confirmar la mano dominante
 
-  //check_u_turn();
+  // check_u_turn();
 
   uint16_t side_sensor_value = get_sensor_raw_filter(SIDE_SENSOR_ID);
 
@@ -200,6 +200,13 @@ void basic_algorithm_loop() {
   }
 
   correccion_velocidad = calc_pid_correction(side_sensor_value, get_sensor_raw_filter(FRONT_SENSOR_ID));
+  // Limita la corrección de velocidad para evitar spin&reinicio&lanzamientoderueda
+  if (correccion_velocidad > 10) {
+    correccion_velocidad = 10;
+  } else if (correccion_velocidad < -10) {
+    correccion_velocidad = -10;
+  }
+
   if (mano_izquierda) {
     correccion_velocidad = -correccion_velocidad;
   }
