@@ -31,7 +31,8 @@ int main(void) {
   basic_algorithm_init();
   while (1) {
 
-    check_start_stop_module();
+    // check_start_stop_module();
+    check_start_front_sensor();
 
     // printf("%d\n", get_sensor_raw_filter(SENSOR_FRONT_RIGHT_ID));
 
@@ -52,6 +53,12 @@ int main(void) {
 
     // printf("%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t\n", get_sensor_log(0), get_sensor_raw_filter(0),  get_sensor_log(1), get_sensor_raw_filter(1),  get_sensor_log(2), get_sensor_raw_filter(2),  get_sensor_log(3), get_sensor_raw_filter(3));
 
+    //printf("%d \t", get_sensor_raw_filter(SENSOR_SIDE_LEFT_ID)); //1
+    //printf("%d \t", get_sensor_raw_filter(SENSOR_SIDE_RIGHT_ID)); //4
+    //printf("%d \t", get_sensor_raw_filter(SENSOR_FRONT_LEFT_ID)); //2
+    //printf("%d \t", get_sensor_raw_filter(SENSOR_FRONT_RIGHT_ID)); //3
+    //printf("\n");
+
     // printf("%d \t%d \t\n", get_sensor_raw_filter(0), get_sensor_raw_filter(1)/* , get_sensor_raw_filter(2), get_sensor_raw_filter(3) */);
     // printf("%.2f\n", get_battery_voltage());
 
@@ -59,7 +66,7 @@ int main(void) {
 
     // get_sensors_raw(on, off);
     //   printf("%.3f - %.3f - %.3f - %.3f\n",sensors_raw_log(on[0], off[0]),sensors_raw_log(on[1], off[1]),sensors_raw_log(on[2], off[2]),sensors_raw_log(on[3], off[3]));
-    // delay(50);
+    //delay(50);
   }
   return 0;
 }

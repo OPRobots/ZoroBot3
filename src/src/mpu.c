@@ -163,6 +163,12 @@ void update_gyro_readings(void) {
 float get_gyro_z_degrees(void) {
   return deg_integ;
 }
+/**
+ * @brief Set gyroscope's Z-axis degrees.
+ */
+void set_gyro_z_degrees(float deg) {
+  deg_integ = deg;
+}
 
 /**
  * @brief Get gyroscope's Z-axis angular speed in bits per second.
@@ -186,32 +192,32 @@ float get_gyro_z_dps(void) {
   return ((float)gyro_z_raw / MPU_GYRO_SENSITIVITY_2000_DPS);
 }
 
-#define KP_GYRO 1.0
+#define KP_GYRO 0.01
 void set_z_angle(float angle) {
   float error = angle - deg_integ;
   float p = 0;
   float i = 0;
   uint32_t millisErrorIdeal = 0;
-  while (abs(error) > 1 && (millisErrorIdeal == 0 || (get_clock_ticks() - millisErrorIdeal) < 200)) {
+  while (abs(error) > 3 /* && (millisErrorIdeal == 0 || (get_clock_ticks() - millisErrorIdeal) < 200) */) {
     p = KP_GYRO * error;
-    if (abs(i) < 25) {
-      i += error * 0.5f;
+    if (abs(i) < 10) {
+      i += error * 0.1f;
     }
     set_motors_speed(p + i, -(p + i));
 
     error = angle - deg_integ;
-    if (abs(error) <= 1) {
+    if (abs(error) <= 3) {
       if (millisErrorIdeal == 0) {
         millisErrorIdeal = get_clock_ticks();
       }
     } else {
       millisErrorIdeal = 0;
     }
-    set_motors_speed(0, 0);
-
-    check_start_stop_module();
-    if(!is_competicion_iniciada()) {
-      return;
-    }
   }
+  set_motors_speed(0, 0);
+
+  // check_start_stop_module();
+  // if(!is_competicion_iniciada()) {
+  //   return;
+  // }
 }

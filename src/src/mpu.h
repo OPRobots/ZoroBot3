@@ -25,5 +25,6 @@ int16_t get_gyro_z_raw(void);
 float get_gyro_z_radps(void);
 float get_gyro_z_dps(void);
 void set_z_angle(float angle);
+void set_gyro_z_degrees(float deg);
 
 #endif /* __MPU_H */

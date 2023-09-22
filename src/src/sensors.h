@@ -12,10 +12,10 @@
 
 #define NUM_SENSORES 4
 
-#define SENSOR_SIDE_LEFT_ID 0
-#define SENSOR_SIDE_RIGHT_ID 1
-#define SENSOR_FRONT_LEFT_ID 2
-#define SENSOR_FRONT_RIGHT_ID 3
+#define SENSOR_SIDE_LEFT_ID 0 //1
+#define SENSOR_SIDE_RIGHT_ID 1 //4
+#define SENSOR_FRONT_LEFT_ID 2 //2
+#define SENSOR_FRONT_RIGHT_ID 3 //3
 
 uint8_t *get_sensors();
 uint8_t get_sensors_num();
