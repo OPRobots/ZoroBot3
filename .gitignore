@@ -1,1 +1,8 @@
 ZoroBot3Haki.code-workspace
+.pio
+.pioenvs
+.piolibdeps
+.vscode
+.vscode/*
+desktop.ini
+*.skb
