@@ -1,138 +1,214 @@
 #include <basic_algorithm.h>
 
-bool init = false;
+// Indica los millis a partir de los cuales realiza un cambio de pared de referencia (0 -> sin cambio)
+#define REFERENCE_WALL_CHANGE_LENGTH 0
+#define MILLIS_REFERENCE_WALL_CHANGE_1 5000
+#define MILLIS_REFERENCE_WALL_CHANGE_2 MILLIS_REFERENCE_WALL_CHANGE_1 + 5000
+#define MILLIS_REFERENCE_WALL_CHANGE_3 MILLIS_REFERENCE_WALL_CHANGE_2 + 5000
+#define MILLIS_REFERENCE_WALL_CHANGE_4 MILLIS_REFERENCE_WALL_CHANGE_3 + 5000
+#define MILLIS_REFERENCE_WALL_CHANGE_5 MILLIS_REFERENCE_WALL_CHANGE_4 + 5000
+
+static uint32_t REFERENCE_WALL_CHANGE_MILLIS[] = {MILLIS_REFERENCE_WALL_CHANGE_1, MILLIS_REFERENCE_WALL_CHANGE_2, MILLIS_REFERENCE_WALL_CHANGE_3, MILLIS_REFERENCE_WALL_CHANGE_4, MILLIS_REFERENCE_WALL_CHANGE_5};
+static bool REFERENCE_WALL_CHANGE_DONE[] = {false, false, false, false, false};
+
+#define DERECHA 0
+#define IZQUIERDA 1
+
+#define DETECCION_FRONTAL 800
+#define TIEMPO_FILTRO 20
+#define DINAMICO true
+#define MAX_ERROR_PID 150 // 0 anula la limitacion de error
+
+int16_t objetivo_D = 0;
+int16_t objetivo_I = 0;
+int16_t error = 0;
+int velBase = 50;
+
+bool mano = false;
+
+float p = 0;
+float d = 0;
+float kp = 0.5;
+float ki = 0;
+float kd = 0;
+float kf = 1; // constante que determina cuanto afecta el sensor frontal para los giros dinamicos
+int16_t sumError = 0;
+int16_t ultError = 0;
+int16_t correccion = 0;
+bool frontal = false;
+float millis_PID = 0;
+float micros_filtro = 0;
+
 bool started = false;
-static uint32_t startedMillis = 0;
+bool init = false;
 
-static uint32_t REFERENCE_WALL_CHANGE_MILLIS[] = {MILLIS_REFERENCE_WALL_CHANGE_1, MILLIS_REFERENCE_WALL_CHANGE_2, MILLIS_REFERENCE_WALL_CHANGE_3};
-static bool REFERENCE_WALL_CHANGE_DONE[] = {false, false, false};
+uint32_t startedMillis = 0;
 
-bool mano_izquierda = true;
-uint8_t SIDE_SENSOR_ID = 0;
-uint8_t OPOSITE_SENSOR_ID = 0;
-uint8_t FRONT_SENSOR_ID = 0;
-uint16_t SENSOR_TARGET = 0;
-uint16_t OPOSITE_SENSOR_TARGET = 0;
-
-float velBase = 6;
-
-float correccion_velocidad = 0;
-float error_anterior = 0;
-int32_t micrometers_without_wall = 0;
-
-uint8_t uTurnChecks = 0;
-
-static void start_basic_algorithm() {
-  if (!started) {
-    if (mano_izquierda) {
-      SIDE_SENSOR_ID = SENSOR_FRONT_RIGHT_ID;
-      OPOSITE_SENSOR_ID = SENSOR_FRONT_LEFT_ID;
-      FRONT_SENSOR_ID = SENSOR_SIDE_RIGHT_ID;
-    } else {
-      SIDE_SENSOR_ID = SENSOR_FRONT_LEFT_ID;
-      OPOSITE_SENSOR_ID = SENSOR_FRONT_RIGHT_ID;
-      FRONT_SENSOR_ID = SENSOR_SIDE_LEFT_ID;
-    }
-
-    SENSOR_TARGET = get_sensor_raw_filter(SIDE_SENSOR_ID);
-    OPOSITE_SENSOR_TARGET = get_sensor_raw_filter(OPOSITE_SENSOR_ID);
-    started = true;
-  }
-}
-
-static void check_reference_wall_change() {
+/**
+ * @brief Comprueba cambio de mano por tiempo
+ *
+ */
+static void check_reference_wall_change(uint32_t startedMillis, bool mano) {
   for (int i = 0; i < REFERENCE_WALL_CHANGE_LENGTH; i++) {
     if (!REFERENCE_WALL_CHANGE_DONE[i] && REFERENCE_WALL_CHANGE_MILLIS[i] != 0 && get_clock_ticks() > startedMillis + REFERENCE_WALL_CHANGE_MILLIS[i]) {
-      mano_izquierda = !mano_izquierda;
-      uint8_t old_side = SIDE_SENSOR_ID;
-      SIDE_SENSOR_ID = OPOSITE_SENSOR_ID;
-      OPOSITE_SENSOR_ID = old_side;
+      mano = !mano;
       REFERENCE_WALL_CHANGE_DONE[i] = true;
+
+      // TODO revisar esta parte, quizá no sea necesaria
+      //  uint8_t old_side = SIDE_SENSOR_ID;
+      //  SIDE_SENSOR_ID = OPOSITE_SENSOR_ID;
+      //  OPOSITE_SENSOR_ID = old_side;
     }
   }
-  if (mano_izquierda) {
+  if (mano == IZQUIERDA) {
     set_RGB_color(0, 0, 75);
   } else {
     set_RGB_color(0, 75, 0);
   }
 }
 
-static void check_u_turn() {
-  if (get_sensor_raw_filter(FRONT_SENSOR_ID) >= FRONT_SENSOR_THRESHOLD && get_sensor_raw_filter(OPOSITE_SENSOR_ID) >= OPOSITE_SENSOR_TARGET) {
-    // if (mano_izquierda) {
-    //   set_z_angle(get_gyro_z_degrees() + 87);
-    // } else {
-    //   set_z_angle(get_gyro_z_degrees() - 87);
-    // }
-    // delay(100);
-    set_motors_speed(0, 0);
-    delay(250);
-
-    if (mano_izquierda) {
-      set_gyro_z_degrees(0);
-      set_z_angle(get_gyro_z_degrees() + 85);
-      // self_rotate(180);
+/**
+ * @brief Obtención de valores iniciales a partir de la mano seleccionada
+ *
+ */
+static void basic_algorithm_start() {
+  if (!started) {
+    if (mano == IZQUIERDA) {
+      // TODO: mostrar led de mano?
     } else {
-      set_gyro_z_degrees(0);
-      set_z_angle(get_gyro_z_degrees() - 85);
-      // self_rotate(-180);
+      // TODO: mostrar led de mano?
     }
-    // delay(100);
-    // set_motors_speed(-velBase, -velBase);
-    // delay(125);
-    set_motors_speed(0, 0);
-    delay(100);
+
+    for (uint8_t i = 0; i < TIEMPO_FILTRO; i++) {
+      filtro_sensores();
+      warning_status_led(50);
+      delay(3000 / TIEMPO_FILTRO);
+    }
+
+    objetivo_I = sensor2_analog();
+    objetivo_D = sensor1_analog();
+
+    printf("%4d %4d\n",objetivo_I,objetivo_D);
+
+    started = true;
+    startedMillis = get_clock_ticks();
   }
 }
 
-static void check_u_turn_multiple() {
-  if (get_sensor_raw_filter(FRONT_SENSOR_ID) >= FRONT_SENSOR_THRESHOLD && get_sensor_raw_filter(OPOSITE_SENSOR_ID) >= OPOSITE_SENSOR_TARGET) {
-    uTurnChecks++;
-    if (uTurnChecks >= MIN_U_TURN_CECKES) {
-      if (mano_izquierda) {
-        set_z_angle(get_gyro_z_degrees() + 87);
+
+/**
+ * @brief Bucle principal de código una vez iniciada la competición
+ *
+ */
+void basic_algorithm_loop() {
+  if (!started) {
+    basic_algorithm_start(); //Obtencion de valores al inicio
+  }
+
+  if (started) {
+    filtro_sensores();
+
+    if (get_clock_ticks() - millis_PID >= 1) {
+
+      check_reference_wall_change(startedMillis, mano);
+
+      // TODO: comprobar sensor frontal en función de la mano elegida?
+      if (sensor0_analog() > DETECCION_FRONTAL && sensor3_analog() > DETECCION_FRONTAL) {
+        frontal = true;
       } else {
-        set_z_angle(get_gyro_z_degrees() - 87);
+        frontal = false;
       }
-      delay(100);
+
+      if (mano == IZQUIERDA) {
+        if (sensor2_analog() > 0) {
+          error = objetivo_I - sensor2_analog();
+        } else {
+          error = MAX_ERROR_PID;
+        }
+
+        if (frontal && !DINAMICO) {
+
+          set_motors_speed(300, -300);
+          delay(150);
+          set_motors_speed(0, 0);
+          delay(50);
+          return;
+        }
+      }
+      if (mano == DERECHA) {
+        if (sensor1_analog() > 0) {
+          error = objetivo_D - sensor1_analog();
+        } else {
+          error = MAX_ERROR_PID;
+        }
+
+        if (frontal && !DINAMICO) {
+          
+          set_motors_speed(-300, 300);
+          delay(150);
+          set_motors_speed(0, 0);
+          delay(50);
+          return;
+        }
+      }
+
+      // Serial.println(error);
+      // if (MAX_ERROR_PID != 0) {
+      //   error = constrain(error, -MAX_ERROR_PID, MAX_ERROR_PID);
+      // }
+
+      if (DINAMICO && frontal) { // Añadir lectura delantera al error para tener giros dinamicos
+        error -= ((sensor0_analog() + sensor3_analog())/2 - DETECCION_FRONTAL) * kf;
+      }
+
+      p = kp * error;
+      d = kd * (error - ultError);
+      ultError = error;
+      correccion = p + d;
+      if (mano == DERECHA) {
+        correccion = -correccion;
+      }
+      set_motors_speed(velBase - correccion, velBase + correccion);
+
+      millis_PID = get_clock_ticks();
     }
-  } else {
-    uTurnChecks = 0;
   }
 }
 
-static float calc_pid_correction(uint16_t side_sensor_value, uint16_t front_sensor_value) {
-  float p = 0;
-  float i = 0;
-  float d = 0;
-  int32_t error = SENSOR_TARGET - side_sensor_value;
-  if (front_sensor_value >= FRONT_SENSOR_THRESHOLD) {
-    error += (FRONT_SENSOR_THRESHOLD - front_sensor_value) * 1.33f;
-  }
-
-  p = BASIC_ALGORITHM_KP * error;
-  d = BASIC_ALGORITHM_KD * (error - error_anterior);
-  error_anterior = error;
-
-  return p + i + d;
-}
-
-void check_start_front_sensor() {
-  if (!is_competicion_iniciada() && get_sensor_raw_filter(FRONT_SENSOR_ID) >= FRONT_SENSOR_THRESHOLD) {
-    while (get_sensor_raw_filter(FRONT_SENSOR_ID) >= FRONT_SENSOR_THRESHOLD) {
+void start_from_front_sensor() {
+  if (!is_competicion_iniciada() && get_sensor_raw_filter(SENSOR_SIDE_LEFT_ID) >= DETECCION_FRONTAL) {
+    while (get_sensor_raw_filter(SENSOR_SIDE_LEFT_ID) >= DETECCION_FRONTAL) {
       warning_status_led(125);
     }
-    delay(1000);
+
     set_competicion_iniciada(true);
   }
 }
 
-void basic_algorithm_init() {
+void start_from_ms() {
+  if (!is_competicion_iniciada()) {
+    uint32_t millis_target = get_clock_ticks();
+    while (get_clock_ticks() < millis_target + 4000) {
+      if (mano == IZQUIERDA) {
+        gpio_toggle(GPIOC, GPIO4);
+        gpio_toggle(GPIOA, GPIO5 | GPIO6 | GPIO7);
+      } else {
+        gpio_toggle(GPIOC, GPIO5);
+        gpio_toggle(GPIOB, GPIO0 | GPIO1 | GPIO2);
+      }
+      delay(250);
+    }
+
+    set_competicion_iniciada(true);
+  }
+}
+
+void basic_algorithm_config() {
   while (!init) {
     if (get_menu_up_btn()) {
-      mano_izquierda = false;
+      mano = DERECHA;
     } else if (get_menu_down_btn()) {
-      mano_izquierda = true;
+      mano = IZQUIERDA;
     }
 
     // PA5, PA6, PA7, PC4, PC5, PB0, PB1, PB2
@@ -140,7 +216,7 @@ void basic_algorithm_init() {
     gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
     gpio_clear(GPIOC, GPIO4 | GPIO5);
 
-    if (mano_izquierda) {
+    if (mano == IZQUIERDA) {
       gpio_set(GPIOC, GPIO4);
       gpio_set(GPIOA, GPIO5 | GPIO6 | GPIO7);
     } else {
@@ -153,77 +229,10 @@ void basic_algorithm_init() {
       while (get_menu_mode_btn()) {
         delay(100);
       }
-      uint32_t millis_target = get_clock_ticks();
-      while (get_clock_ticks() < millis_target + 4000) {
-        if (mano_izquierda) {
-          gpio_toggle(GPIOC, GPIO4);
-          gpio_toggle(GPIOA, GPIO5 | GPIO6 | GPIO7);
-        } else {
-          gpio_toggle(GPIOC, GPIO5);
-          gpio_toggle(GPIOB, GPIO0 | GPIO1 | GPIO2);
-        }
-        delay(250);
-      }
-      start_basic_algorithm();
     }
   }
 
   gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
   gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
   gpio_clear(GPIOC, GPIO4 | GPIO5);
-}
-
-uint8_t lostWallChecks = 0;
-void basic_algorithm_loop() {
-  if (startedMillis == 0) {
-    startedMillis = get_clock_ticks();
-    set_status_led(false);
-  }
-  check_reference_wall_change();
-  // start_basic_algorithm(); // Se llama desde la función de init, después de confirmar la mano dominante
-
-  // check_u_turn();
-
-  uint16_t side_sensor_value = get_sensor_raw_filter(SIDE_SENSOR_ID);
-
-  if (side_sensor_value < (SENSOR_TARGET / 2)) {
-    lostWallChecks++;
-  } else {
-    lostWallChecks = 0;
-  }
-
-  if (lostWallChecks > 5) {
-    set_status_led(true);
-    delay(100);
-  } else {
-    set_status_led(false);
-  }
-
-  correccion_velocidad = calc_pid_correction(side_sensor_value, get_sensor_raw_filter(FRONT_SENSOR_ID));
-  // Limita la corrección de velocidad para evitar spin&reinicio&lanzamientoderueda
-  if (correccion_velocidad > 10) {
-    correccion_velocidad = 10;
-  } else if (correccion_velocidad < -10) {
-    correccion_velocidad = -10;
-  }
-
-  if (mano_izquierda) {
-    correccion_velocidad = -correccion_velocidad;
-  }
-
-  float velI = velBase + correccion_velocidad;
-  float velD = velBase - correccion_velocidad;
-
-  if (velD < -100) {
-    velD = -100;
-  } else if (velD > 100) {
-    velD = 100;
-  }
-  if (velI < -100) {
-    velI = -100;
-  } else if (velI > 100) {
-    velI = 100;
-  }
-  // printf("%.2f - %.2f | %.2f - %d\n", velI, velD, correccion_velocidad, get_sensor_raw_filter(SIDE_SENSOR_ID));
-  set_motors_speed(velI, velD);
 }

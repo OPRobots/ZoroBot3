@@ -1,4 +1,5 @@
 #include <basic_algorithm.h>
+#include <basic_debug.h>
 #include <battery.h>
 #include <buttons.h>
 #include <control.h>
@@ -12,38 +13,53 @@
 #include <setup.h>
 #include <usart.h>
 #include <walls.h>
-#include <mpu.h>
 
+bool debug = false;
+uint16_t debug_objetivo_I = 0;
+uint16_t debug_objetivo_D = 0;
 
 void sys_tick_handler(void) {
   clock_tick();
-  update_distance_readings();
-  update_encoder_readings();
-  update_gyro_readings();
+  // update_distance_readings();
+  // update_encoder_readings();
+  // update_gyro_readings();
 }
 
 int main(void) {
   setup();
-  gyro_z_calibration();
-  mpu_set_updating(true);
+  // gyro_z_calibration();
+  // mpu_set_updating(true);
+  if (get_menu_mode_btn()) {
+    while (get_menu_mode_btn()) {
+    }
+    debug = true;
+    set_status_led(true);
+  }
+  
   show_battery_level();
 
-  basic_algorithm_init();
+
+  if (!debug) {
+    basic_algorithm_config();
+  }
   while (1) {
-
-    // check_start_stop_module();
-    check_start_front_sensor();
-
-    // printf("%d\n", get_sensor_raw_filter(SENSOR_FRONT_RIGHT_ID));
+    if (debug) {
+      debug_inicio();
+      if (debug_objetivo_D == 0 || debug_objetivo_I == 0) {
+        debug_objetivo_I = sensor3_analog();
+        debug_objetivo_D = sensor1_analog();
+      }
+      printf("\t\t\t\t%4d\t%4d\n", debug_objetivo_I - sensor3_analog(), debug_objetivo_D - sensor1_analog());
+      delay(10);
+      continue;
+    }
 
     if (!is_competicion_iniciada()) {
-      check_menu_button();
+      start_from_front_sensor();
+      // start_from_ms();
       set_motors_speed(0, 0);
-      // set_fan_speed(0);
     } else {
-      // printf("pato\n");
       basic_algorithm_loop();
-      delay_us(500);
     }
 
     // ZONA DEBUG TEMPORAL
@@ -53,11 +69,11 @@ int main(void) {
 
     // printf("%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t\n", get_sensor_log(0), get_sensor_raw_filter(0),  get_sensor_log(1), get_sensor_raw_filter(1),  get_sensor_log(2), get_sensor_raw_filter(2),  get_sensor_log(3), get_sensor_raw_filter(3));
 
-    //printf("%d \t", get_sensor_raw_filter(SENSOR_SIDE_LEFT_ID)); //1
-    //printf("%d \t", get_sensor_raw_filter(SENSOR_SIDE_RIGHT_ID)); //4
-    //printf("%d \t", get_sensor_raw_filter(SENSOR_FRONT_LEFT_ID)); //2
-    //printf("%d \t", get_sensor_raw_filter(SENSOR_FRONT_RIGHT_ID)); //3
-    //printf("\n");
+    // printf("%d \t", get_sensor_raw_filter(SENSOR_SIDE_LEFT_ID)); //1
+    // printf("%d \t", get_sensor_raw_filter(SENSOR_SIDE_RIGHT_ID)); //4
+    // printf("%d \t", get_sensor_raw_filter(SENSOR_FRONT_LEFT_ID)); //2
+    // printf("%d \t", get_sensor_raw_filter(SENSOR_FRONT_RIGHT_ID)); //3
+    // printf("\n");
 
     // printf("%d \t%d \t\n", get_sensor_raw_filter(0), get_sensor_raw_filter(1)/* , get_sensor_raw_filter(2), get_sensor_raw_filter(3) */);
     // printf("%.2f\n", get_battery_voltage());
@@ -66,7 +82,7 @@ int main(void) {
 
     // get_sensors_raw(on, off);
     //   printf("%.3f - %.3f - %.3f - %.3f\n",sensors_raw_log(on[0], off[0]),sensors_raw_log(on[1], off[1]),sensors_raw_log(on[2], off[2]),sensors_raw_log(on[3], off[3]));
-    //delay(50);
+    // delay(50);
   }
   return 0;
 }

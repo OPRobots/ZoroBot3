@@ -18,5 +18,7 @@ void set_RGB_rainbow();
 void set_leds_wave(int ms);
 void set_leds_battery_level(float battery_level);
 void all_leds_clear();
+void set_info_led(uint8_t index, bool state);
+void clear_info_leds();
 
 #endif
