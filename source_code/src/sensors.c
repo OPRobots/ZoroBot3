@@ -66,8 +66,12 @@ static void set_emitter_off(uint8_t emitter) {
 
 #define MAGNITUD_FILTRO 20
 #define UMBRAL_FILTRO 500
-#define UMBRAL 2000
+#define UMBRAL_LATERAL 650
+#define UMBRAL_FRONTAL 2000
 #define CONTADOR 3
+
+static uint16_t contador_lateral_s1 = 0;
+static uint16_t contador_lateral_s2 = 0;
 
 static bool s0_bool = false;
 static bool s1_bool = false;
@@ -140,16 +144,18 @@ void filtro_sensores() {
   s2 = s2 / MAGNITUD_FILTRO;
   s3 = s3 / MAGNITUD_FILTRO;
 
-  s0_bool = s0 > UMBRAL;
-  s1_bool = s1 > UMBRAL;
-  s2_bool = s2 > UMBRAL;
-  s3_bool = s3 > UMBRAL;
+  s0_bool = s0 > UMBRAL_FRONTAL;
+  s1_bool = s1 > UMBRAL_LATERAL;
+  s2_bool = s2 > UMBRAL_LATERAL;
+  s3_bool = s3 > UMBRAL_FRONTAL;
 
   s0 = map(s0, UMBRAL_FILTRO, 4000, 0, 1000);
   s1 = map(s1, UMBRAL_FILTRO, 4000, 0, 1000);
   s2 = map(s2, UMBRAL_FILTRO, 4000, 0, 1000);
   s3 = map(s3, UMBRAL_FILTRO, 4000, 0, 1000);
 }
+
+
 
 int sensor0_analog() {
   return s0;
@@ -168,10 +174,28 @@ bool sensor0() {
   return s0_bool;
 }
 bool sensor1() {
-  return s1_bool;
+  if (!s1_bool) {
+    contador_lateral_s1++;
+  } else {
+    contador_lateral_s1 = 0;
+  }
+  if (contador_lateral_s1 >= CONTADOR) {
+    return false;
+  } else {
+    return true;
+  }
 }
 bool sensor2() {
-  return s2_bool;
+  if (!s2_bool) {
+    contador_lateral_s2++;
+  } else {
+    contador_lateral_s2 = 0;
+  }
+  if (contador_lateral_s2 >= CONTADOR) {
+    return false;
+  } else {
+    return true;
+  }
 }
 bool sensor3() {
   return s3_bool;

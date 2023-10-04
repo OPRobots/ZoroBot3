@@ -12,7 +12,7 @@ float get_battery_voltage(void) {
 
 void show_battery_level() {
   uint16_t ticksInicio = get_clock_ticks();
-  while(get_clock_ticks() < ticksInicio + 1000){
+  while(get_clock_ticks() < ticksInicio + 750){
 	  set_leds_battery_level(get_battery_voltage());
   }
   all_leds_clear();

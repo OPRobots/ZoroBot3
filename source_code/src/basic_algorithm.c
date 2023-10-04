@@ -1,37 +1,30 @@
 #include <basic_algorithm.h>
+#include <basic_wall_change.h>
 
-// Indica los millis a partir de los cuales realiza un cambio de pared de referencia (0 -> sin cambio)
-#define REFERENCE_WALL_CHANGE_LENGTH 0
-#define MILLIS_REFERENCE_WALL_CHANGE_1 5000
-#define MILLIS_REFERENCE_WALL_CHANGE_2 MILLIS_REFERENCE_WALL_CHANGE_1 + 5000
-#define MILLIS_REFERENCE_WALL_CHANGE_3 MILLIS_REFERENCE_WALL_CHANGE_2 + 5000
-#define MILLIS_REFERENCE_WALL_CHANGE_4 MILLIS_REFERENCE_WALL_CHANGE_3 + 5000
-#define MILLIS_REFERENCE_WALL_CHANGE_5 MILLIS_REFERENCE_WALL_CHANGE_4 + 5000
-
-static uint32_t REFERENCE_WALL_CHANGE_MILLIS[] = {MILLIS_REFERENCE_WALL_CHANGE_1, MILLIS_REFERENCE_WALL_CHANGE_2, MILLIS_REFERENCE_WALL_CHANGE_3, MILLIS_REFERENCE_WALL_CHANGE_4, MILLIS_REFERENCE_WALL_CHANGE_5};
-static bool REFERENCE_WALL_CHANGE_DONE[] = {false, false, false, false, false};
 
 #define DERECHA 0
 #define IZQUIERDA 1
 
-#define DETECCION_FRONTAL 800
+#define DETECCION_FRONTAL 500
 #define TIEMPO_FILTRO 20
 #define DINAMICO true
-#define MAX_ERROR_PID 150 // 0 anula la limitacion de error
+#define MAX_ERROR_PID 70
 
 int16_t objetivo_D = 0;
 int16_t objetivo_I = 0;
 int16_t error = 0;
-int velBase = 50;
+int velBase = 70;
 
 bool mano = false;
 
+float aux_max_error_PID = 0; // 0 ira recto, infinito anulara la utilidad de la variable
 float p = 0;
 float d = 0;
-float kp = 0.5;
-float ki = 0;
-float kd = 0;
-float kf = 1; // constante que determina cuanto afecta el sensor frontal para los giros dinamicos
+float kp = 0.3;
+float ki = 1; // Ajusta el aumento de error mientras no se detecte pared (No estoy seguro de que esto funcione)
+float kd = 10;
+float kf = 1.3; // Kfrontal constante que determina cuanto afecta el sensor frontal para los giros dinamicos
+float kw = 0.33; // Kwall constante que determina cuando se considera que se perdio la pared de 0 a 1 siendo 1 pegado al robot, 0 lejos del roboot
 int16_t sumError = 0;
 int16_t ultError = 0;
 int16_t correccion = 0;
@@ -44,28 +37,7 @@ bool init = false;
 
 uint32_t startedMillis = 0;
 
-/**
- * @brief Comprueba cambio de mano por tiempo
- *
- */
-static void check_reference_wall_change(uint32_t startedMillis, bool mano) {
-  for (int i = 0; i < REFERENCE_WALL_CHANGE_LENGTH; i++) {
-    if (!REFERENCE_WALL_CHANGE_DONE[i] && REFERENCE_WALL_CHANGE_MILLIS[i] != 0 && get_clock_ticks() > startedMillis + REFERENCE_WALL_CHANGE_MILLIS[i]) {
-      mano = !mano;
-      REFERENCE_WALL_CHANGE_DONE[i] = true;
 
-      // TODO revisar esta parte, quizá no sea necesaria
-      //  uint8_t old_side = SIDE_SENSOR_ID;
-      //  SIDE_SENSOR_ID = OPOSITE_SENSOR_ID;
-      //  OPOSITE_SENSOR_ID = old_side;
-    }
-  }
-  if (mano == IZQUIERDA) {
-    set_RGB_color(0, 0, 75);
-  } else {
-    set_RGB_color(0, 75, 0);
-  }
-}
 
 /**
  * @brief Obtención de valores iniciales a partir de la mano seleccionada
@@ -88,12 +60,13 @@ static void basic_algorithm_start() {
     objetivo_I = sensor2_analog();
     objetivo_D = sensor1_analog();
 
-    printf("%4d %4d\n",objetivo_I,objetivo_D);
+    printf("%4d %4d\n", objetivo_I, objetivo_D);
 
     started = true;
     startedMillis = get_clock_ticks();
   }
 }
+
 
 
 /**
@@ -102,7 +75,7 @@ static void basic_algorithm_start() {
  */
 void basic_algorithm_loop() {
   if (!started) {
-    basic_algorithm_start(); //Obtencion de valores al inicio
+    basic_algorithm_start(); // Obtencion de valores al inicio
   }
 
   if (started) {
@@ -120,15 +93,17 @@ void basic_algorithm_loop() {
       }
 
       if (mano == IZQUIERDA) {
-        if (sensor2_analog() > 0) {
+        if (sensor2_analog() > objetivo_D*kw) {
           error = objetivo_I - sensor2_analog();
-        } else {
-          error = MAX_ERROR_PID;
+          aux_max_error_PID = MAX_ERROR_PID;
+        }  else {
+          error = aux_max_error_PID;
+          aux_max_error_PID = aux_max_error_PID + ki;
         }
 
         if (frontal && !DINAMICO) {
 
-          set_motors_speed(300, -300);
+          set_motors_speed(60, -60);
           delay(150);
           set_motors_speed(0, 0);
           delay(50);
@@ -136,15 +111,17 @@ void basic_algorithm_loop() {
         }
       }
       if (mano == DERECHA) {
-        if (sensor1_analog() > 0) {
+        if (sensor1_analog() > objetivo_D*kw) {
           error = objetivo_D - sensor1_analog();
+          aux_max_error_PID = MAX_ERROR_PID;
         } else {
-          error = MAX_ERROR_PID;
+          error = aux_max_error_PID;
+          aux_max_error_PID = aux_max_error_PID + ki;
         }
 
         if (frontal && !DINAMICO) {
-          
-          set_motors_speed(-300, 300);
+
+          set_motors_speed(-60, 60);
           delay(150);
           set_motors_speed(0, 0);
           delay(50);
@@ -153,12 +130,12 @@ void basic_algorithm_loop() {
       }
 
       // Serial.println(error);
-      // if (MAX_ERROR_PID != 0) {
-      //   error = constrain(error, -MAX_ERROR_PID, MAX_ERROR_PID);
+      // if (max_error_PID != 0) {
+      //   error = constrain(error, -max_error_PID, max_error_PID);
       // }
 
       if (DINAMICO && frontal) { // Añadir lectura delantera al error para tener giros dinamicos
-        error -= ((sensor0_analog() + sensor3_analog())/2 - DETECCION_FRONTAL) * kf;
+        error -= ((sensor0_analog() + sensor3_analog()) / 2 - DETECCION_FRONTAL) * kf;
       }
 
       p = kp * error;
@@ -175,6 +152,11 @@ void basic_algorithm_loop() {
   }
 }
 
+
+/**
+ * @brief Usar el sensor 0 para inicio sin tocar el robot
+ */
+
 void start_from_front_sensor() {
   if (!is_competicion_iniciada() && get_sensor_raw_filter(SENSOR_SIDE_LEFT_ID) >= DETECCION_FRONTAL) {
     while (get_sensor_raw_filter(SENSOR_SIDE_LEFT_ID) >= DETECCION_FRONTAL) {
@@ -185,23 +167,6 @@ void start_from_front_sensor() {
   }
 }
 
-void start_from_ms() {
-  if (!is_competicion_iniciada()) {
-    uint32_t millis_target = get_clock_ticks();
-    while (get_clock_ticks() < millis_target + 4000) {
-      if (mano == IZQUIERDA) {
-        gpio_toggle(GPIOC, GPIO4);
-        gpio_toggle(GPIOA, GPIO5 | GPIO6 | GPIO7);
-      } else {
-        gpio_toggle(GPIOC, GPIO5);
-        gpio_toggle(GPIOB, GPIO0 | GPIO1 | GPIO2);
-      }
-      delay(250);
-    }
-
-    set_competicion_iniciada(true);
-  }
-}
 
 void basic_algorithm_config() {
   while (!init) {
