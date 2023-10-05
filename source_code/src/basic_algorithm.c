@@ -5,7 +5,7 @@
 #define DERECHA 0
 #define IZQUIERDA 1
 
-#define DETECCION_FRONTAL 500
+#define DETECCION_FRONTAL 600
 #define TIEMPO_FILTRO 20
 #define DINAMICO false
 #define MAX_ERROR_PID 70
@@ -83,7 +83,7 @@ void basic_algorithm_loop() {
 
     if (get_clock_ticks() - millis_PID >= 1) {
 
-      //check_reference_wall_change(startedMillis, mano);
+      mano = check_reference_wall_change(startedMillis, mano);
 
       // TODO: comprobar sensor frontal en función de la mano elegida?
       if (sensor0_analog() > DETECCION_FRONTAL && sensor3_analog() > DETECCION_FRONTAL) {

@@ -219,3 +219,122 @@ void clear_info_leds() {
   gpio_clear(GPIOC, GPIO4 | GPIO5);
   gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
 }
+
+
+void leds_configuracion(uint8_t patron_led) {
+  switch (patron_led) {
+    case 0:
+      set_info_led(0, false);
+      set_info_led(1, false);
+      set_info_led(2, false);
+      set_info_led(3, false);
+      set_info_led(4, false);
+      set_info_led(5, false);
+      set_info_led(6, false);
+      set_info_led(7, false);
+      set_RGB_color(0, 0, 0);
+      break;
+    case 1:
+      set_info_led(0, true);
+      set_info_led(1, false);
+      set_info_led(2, false);
+      set_info_led(3, false);
+      set_info_led(4, false);
+      set_info_led(5, false);
+      set_info_led(6, false);
+      set_info_led(7, true);
+      set_RGB_color(0, 0, 0);
+      break;
+    case 2:
+      set_info_led(0, true);
+      set_info_led(1, true);
+      set_info_led(2, false);
+      set_info_led(3, false);
+      set_info_led(4, false);
+      set_info_led(5, false);
+      set_info_led(6, true);
+      set_info_led(7, true);
+      set_RGB_color(0, 0, 0);
+      break;
+    case 3:
+      set_info_led(0, true);
+      set_info_led(1, true);
+      set_info_led(2, true);
+      set_info_led(3, false);
+      set_info_led(4, false);
+      set_info_led(5, true);
+      set_info_led(6, true);
+      set_info_led(7, true);
+      set_RGB_color(0, 0, 0);
+      break;
+    case 4:
+      set_info_led(0, true);
+      set_info_led(1, true);
+      set_info_led(2, true);
+      set_info_led(3, true);
+      set_info_led(4, true);
+      set_info_led(5, true);
+      set_info_led(6, true);
+      set_info_led(7, true);
+      set_RGB_color(0, 0, 0);
+      break;
+    case 5:
+      set_info_led(0, false);
+      set_info_led(1, false);
+      set_info_led(2, false);
+      set_info_led(3, false);
+      set_info_led(4, false);
+      set_info_led(5, false);
+      set_info_led(6, false);
+      set_info_led(7, false);
+      set_RGB_color(0, 75, 0);
+      break;
+    case 6:
+      set_info_led(0, true);
+      set_info_led(1, false);
+      set_info_led(2, false);
+      set_info_led(3, false);
+      set_info_led(4, false);
+      set_info_led(5, false);
+      set_info_led(6, false);
+      set_info_led(7, true);
+      set_RGB_color(0, 75, 0);
+      break;
+    case 7:
+      set_info_led(0, true);
+      set_info_led(1, true);
+      set_info_led(2, false);
+      set_info_led(3, false);
+      set_info_led(4, false);
+      set_info_led(5, false);
+      set_info_led(6, true);
+      set_info_led(7, true);
+      set_RGB_color(0, 75, 0);
+      break;
+    case 8:
+      set_info_led(0, true);
+      set_info_led(1, true);
+      set_info_led(2, true);
+      set_info_led(3, false);
+      set_info_led(4, false);
+      set_info_led(5, true);
+      set_info_led(6, true);
+      set_info_led(7, true);
+      set_RGB_color(0, 75, 0);
+      break;
+    case 9:
+      set_info_led(0, true);
+      set_info_led(1, true);
+      set_info_led(2, true);
+      set_info_led(3, true);
+      set_info_led(4, true);
+      set_info_led(5, true);
+      set_info_led(6, true);
+      set_info_led(7, true);
+      set_RGB_color(0, 75, 0);
+      break;
+
+    default:
+      break;
+  }
+}

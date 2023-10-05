@@ -20,5 +20,6 @@ void set_leds_battery_level(float battery_level);
 void all_leds_clear();
 void set_info_led(uint8_t index, bool state);
 void clear_info_leds();
+void leds_configuracion(uint8_t patron_led);
 
 #endif

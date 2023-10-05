@@ -1,5 +1,6 @@
 #include <basic_algorithm.h>
 #include <basic_debug.h>
+#include <basic_wall_change.h>
 #include <battery.h>
 #include <buttons.h>
 #include <control.h>
@@ -37,6 +38,8 @@ int main(void) {
   }
   
   show_battery_level();
+  while(!configuracion()){
+  }
 
 
   if (!debug) {
