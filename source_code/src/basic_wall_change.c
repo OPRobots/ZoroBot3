@@ -34,12 +34,12 @@ bool check_reference_wall_change(uint32_t startedMillis, bool mano) {
 
   if (mano) {
     // set_RGB_color(75, 0, 0);
-    set_info_led(0, false);
-    set_info_led(7, true);
+    //set_info_led(0, false);
+    //set_info_led(7, true);
   } else {
     // set_RGB_color(0, 75, 0);
-    set_info_led(0, true);
-    set_info_led(7, false);
+    //set_info_led(0, true);
+    //set_info_led(7, false);
   }
   return mano;
 }

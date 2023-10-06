@@ -1,34 +1,34 @@
 #include <basic_algorithm.h>
 #include <basic_wall_change.h>
 
-
 #define DERECHA 0
 #define IZQUIERDA 1
 
 #define DETECCION_FRONTAL 600
 #define TIEMPO_FILTRO 20
 #define DINAMICO false
-#define MAX_ERROR_PID 70
+#define MAX_ERROR_PID 80 // cuanto mas bajo mas grande el arco de los giros sin pared
 
 int16_t objetivo_D = 0;
 int16_t objetivo_I = 0;
 int16_t error = 0;
-int velBase = 65;
+int velBase = 135;
 
 bool mano = false;
 
 float aux_max_error_PID = 0; // 0 ira recto, infinito anulara la utilidad de la variable
 float p = 0;
 float d = 0;
-float kp = 0.25;
-float ki = 0.04; // Ajusta el aumento de error mientras no se detecte pared (No estoy seguro de que esto funcione)
-float kd = 10;
+float kp = 0.2;
+float ki = 1; // Ajusta el aumento de error mientras no se detecte pared (No estoy seguro de que esto funcione)
+float kd = 8;
 float kf = 1.3; // Kfrontal constante que determina cuanto afecta el sensor frontal para los giros dinamicos
-float kw = 0.33; // Kwall constante que determina cuando se considera que se perdio la pared de 0 a 1 siendo 1 pegado al robot, 0 lejos del roboot
+float kw = 0.5; // Kwall constante que determina cuando se considera que se perdio la pared de 0 a 1 siendo 1 pegado al robot, 0 lejos del roboot
 int16_t sumError = 0;
 int16_t ultError = 0;
 int16_t correccion = 0;
 bool frontal = false;
+bool freno = false;
 float millis_PID = 0;
 float micros_filtro = 0;
 
@@ -36,8 +36,6 @@ bool started = false;
 bool init = false;
 
 uint32_t startedMillis = 0;
-
-
 
 /**
  * @brief Obtención de valores iniciales a partir de la mano seleccionada
@@ -67,8 +65,6 @@ static void basic_algorithm_start() {
   }
 }
 
-
-
 /**
  * @brief Bucle principal de código una vez iniciada la competición
  *
@@ -90,28 +86,36 @@ void basic_algorithm_loop() {
         frontal = true;
       } else {
         frontal = false;
+        freno = true;
       }
 
       if (mano == IZQUIERDA) {
-        if (sensor2_analog() > objetivo_I*kw) {
+        if (sensor2_analog() > objetivo_I * kw) {
           error = objetivo_I - sensor2_analog();
           aux_max_error_PID = MAX_ERROR_PID;
-        }  else {
+        } else {
           error = aux_max_error_PID;
           aux_max_error_PID = aux_max_error_PID + ki;
         }
 
         if (frontal && !DINAMICO) {
-
+          if (freno) {
+            set_motors_speed(-100, -100);
+            delay(100);
+            freno = false;
+          }
           set_motors_speed(60, -60);
           delay(150);
           set_motors_speed(0, 0);
-          delay(50);
-          return;
+          for (size_t i = 0; i < TIEMPO_FILTRO; i++) {
+            filtro_sensores();
+            delay(50 / TIEMPO_FILTRO);
+            return;
+          }
         }
       }
       if (mano == DERECHA) {
-        if (sensor1_analog() > objetivo_D*kw) {
+        if (sensor1_analog() > objetivo_D * (kw - 0.25)) {
           error = objetivo_D - sensor1_analog();
           aux_max_error_PID = MAX_ERROR_PID;
         } else {
@@ -120,15 +124,21 @@ void basic_algorithm_loop() {
         }
 
         if (frontal && !DINAMICO) {
-
+          if (freno) {
+            set_motors_speed(-100, -100);
+            delay(100);
+            freno = false;
+          }
           set_motors_speed(-60, 60);
           delay(150);
           set_motors_speed(0, 0);
-          delay(50);
-          return;
+          for (size_t i = 0; i < TIEMPO_FILTRO; i++) {
+            filtro_sensores();
+            delay(50 / TIEMPO_FILTRO);
+            return;
+          }
         }
       }
-
       // Serial.println(error);
       // if (max_error_PID != 0) {
       //   error = constrain(error, -max_error_PID, max_error_PID);
@@ -152,7 +162,6 @@ void basic_algorithm_loop() {
   }
 }
 
-
 /**
  * @brief Usar el sensor 0 para inicio sin tocar el robot
  */
@@ -166,7 +175,6 @@ void start_from_front_sensor() {
     set_competicion_iniciada(true);
   }
 }
-
 
 void basic_algorithm_config() {
   while (!init) {
