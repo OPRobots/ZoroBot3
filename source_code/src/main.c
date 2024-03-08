@@ -23,12 +23,23 @@ void sys_tick_handler(void) {
   clock_tick();
   // update_distance_readings();
   // update_encoder_readings();
-  // update_gyro_readings();
+  update_gyro_readings();
+  set_z_angle(0);
 }
 
 int main(void) {
   setup();
-  // gyro_z_calibration();
+  delay(1500);
+  gyro_z_calibration();
+  mpu_set_updating(true);
+
+  while (1) {
+    // printf("%0x\n", mpu_who_am_i());
+    // printf("%d | ", (int)get_gyro_z_degrees());
+    // set_z_angle(0);
+    // delay(100);
+  }
+
   // mpu_set_updating(true);
   if (get_menu_mode_btn()) {
     while (get_menu_mode_btn()) {
@@ -36,11 +47,10 @@ int main(void) {
     debug = true;
     set_status_led(true);
   }
-  
-  show_battery_level();
-  while(!configuracion()){
-  }
 
+  show_battery_level();
+  while (!configuracion()) {
+  }
 
   if (!debug) {
     basic_algorithm_config();

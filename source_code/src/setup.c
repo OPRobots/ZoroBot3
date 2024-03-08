@@ -14,11 +14,14 @@
  *
  */
 static void setup_clock() {
-  rcc_clock_setup_hse_3v3(&hse_8mhz_3v3[CLOCK_3V3_168MHZ]);
+  
+  rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);
 
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_GPIOB);
   rcc_periph_clock_enable(RCC_GPIOC);
+
+  rcc_periph_clock_enable(RCC_SYSCFG);
 
   rcc_periph_clock_enable(RCC_USART3);
 
@@ -146,7 +149,7 @@ static void setup_gpio() {
  */
 static void setup_adc1() {
 
-  adc_off(ADC1);
+  adc_power_off(ADC1);
   adc_enable_scan_mode(ADC1);
   adc_set_single_conversion_mode(ADC1);
   adc_enable_external_trigger_injected(ADC1, ADC_CR2_JSWSTART, ADC_CR2_JEXTEN_RISING_EDGE);
@@ -166,7 +169,7 @@ static void setup_adc2() {
   uint8_t lista_canales[16];
 
   lista_canales[0] = ADC_CHANNEL4;
-  adc_off(ADC2);
+  adc_power_off(ADC2);
   adc_disable_scan_mode(ADC2);
   adc_set_single_conversion_mode(ADC2);
   adc_set_right_aligned(ADC2);

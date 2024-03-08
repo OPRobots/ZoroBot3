@@ -5,7 +5,7 @@
 #include "mpu.h"
 
 #define BYTE 8
-#define MPU_CAL_SAMPLE_NUM 100
+#define MPU_CAL_SAMPLE_NUM 300
 #define MPU_AVERAGE_FACTOR 2
 #define MPU_COMPLEMENT_2_FACTOR 2
 #define MPU_CAL_SAMPLE_US 1000
@@ -56,6 +56,8 @@ static uint8_t mpu_read_register(uint8_t address) {
   spi_send(SPI3, 0x00);
   reading = spi_read(SPI3);
   gpio_set(GPIOA, GPIO15);
+  //! Este delay_us(0) ralentiza lo suficiente la lectura de registros del MPU para que no se prenda fuego
+  delay_us(0);
 
   return reading;
 }
@@ -132,14 +134,16 @@ static int16_t mpu_read_gyro_z_raw(void) {
 void gyro_z_calibration(void) {
   int16_t zout_c2;
   float zout_av = 0;
-  int8_t i;
+  int16_t i;
 
   deg_integ = 0;
   for (i = 0; i < MPU_CAL_SAMPLE_NUM; i++) {
+    set_leds_wave(75);
     zout_av = ((float)mpu_read_gyro_z_raw() + zout_av) /
               MPU_AVERAGE_FACTOR;
     delay_us(MPU_CAL_SAMPLE_US);
   }
+  clear_info_leds();
   zout_c2 = -(int16_t)(zout_av * MPU_COMPLEMENT_2_FACTOR);
   setup_spi_low_speed();
   mpu_write_register(MPU_Z_OFFS_USR_H, ((uint8_t)((zout_c2 & MPU_MASK_H) >> BYTE)));
@@ -192,32 +196,32 @@ float get_gyro_z_dps(void) {
   return ((float)gyro_z_raw / MPU_GYRO_SENSITIVITY_2000_DPS);
 }
 
-#define KP_GYRO 0.01
+#define KP_GYRO 15
+#define KI_GYRO 5
+static float sumError = 0;
 void set_z_angle(float angle) {
+  if (!mpu_updating) {
+    return;
+  }
   float error = angle - deg_integ;
   float p = 0;
   float i = 0;
-  uint32_t millisErrorIdeal = 0;
-  while (abs(error) > 3 /* && (millisErrorIdeal == 0 || (get_clock_ticks() - millisErrorIdeal) < 200) */) {
+  float correccion =0 ;
+  if (abs(error) >= 1) {
     p = KP_GYRO * error;
-    if (abs(i) < 10) {
-      i += error * 0.1f;
+    if (abs(sumError) < 10) {
+      sumError += error;
+      i = sumError * KI_GYRO;
     }
-    set_motors_speed(p + i, -(p + i));
-
-    error = angle - deg_integ;
-    if (abs(error) <= 3) {
-      if (millisErrorIdeal == 0) {
-        millisErrorIdeal = get_clock_ticks();
-      }
-    } else {
-      millisErrorIdeal = 0;
+    correccion = p+i;
+    if(correccion > 200){
+      correccion = 200;
+    }else if(correccion < -200){
+      correccion = -200;
     }
+    set_motors_speed(correccion, -(correccion));
+  } else {
+    sumError = 0;
+    set_motors_speed(0, 0);
   }
-  set_motors_speed(0, 0);
-
-  // check_start_stop_module();
-  // if(!is_competicion_iniciada()) {
-  //   return;
-  // }
 }
