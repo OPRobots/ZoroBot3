@@ -2,11 +2,11 @@
 
 static volatile uint32_t clock_ticks;
 
-void clock_tick() {
+void clock_tick(void) {
   clock_ticks++;
 }
 
-uint32_t read_cycle_counter() {
+uint32_t read_cycle_counter(void) {
   return dwt_read_cycle_counter();
 }
 

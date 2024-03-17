@@ -44,7 +44,7 @@ bool check_reference_wall_change(uint32_t startedMillis, bool mano) {
   return mano;
 }
 
-bool configuracion() {
+bool configuracion(void) {
 
   if (get_menu_up_btn()) {
     if (tiempo_seg) {

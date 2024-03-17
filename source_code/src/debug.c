@@ -7,7 +7,7 @@ uint32_t last_print_debug = 0;
  * @brief Imprime los valores de los sensores sin aplicar ninguna corrección
  * 
  */
-static void debug_sensors_raw() {
+static void debug_sensors_raw(void) {
   if (get_clock_ticks() > last_print_debug + 50) {
     for (int8_t sensor = 0; sensor < get_sensors_num(); sensor++) {
       printf("%d\t", get_sensor_raw(sensor, 1));

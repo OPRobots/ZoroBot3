@@ -6,7 +6,7 @@
 #include <libopencm3/stm32/timer.h>
 #include <math.h>
 
-bool is_competicion_iniciada();
+bool is_competicion_iniciada(void);
 void set_competicion_iniciada(bool state);
 
 #endif

@@ -41,7 +41,7 @@ uint32_t startedMillis = 0;
  * @brief Obtención de valores iniciales a partir de la mano seleccionada
  *
  */
-static void basic_algorithm_start() {
+static void basic_algorithm_start(void) {
   if (!started) {
     if (mano == IZQUIERDA) {
       // TODO: mostrar led de mano?
@@ -69,7 +69,7 @@ static void basic_algorithm_start() {
  * @brief Bucle principal de código una vez iniciada la competición
  *
  */
-void basic_algorithm_loop() {
+void basic_algorithm_loop(void) {
   if (!started) {
     basic_algorithm_start(); // Obtencion de valores al inicio
   }
@@ -166,7 +166,7 @@ void basic_algorithm_loop() {
  * @brief Usar el sensor 0 para inicio sin tocar el robot
  */
 
-void start_from_front_sensor() {
+void start_from_front_sensor(void) {
   if (!is_competicion_iniciada() && get_sensor_raw_filter(SENSOR_SIDE_LEFT_ID) >= DETECCION_FRONTAL) {
     while (get_sensor_raw_filter(SENSOR_SIDE_LEFT_ID) >= DETECCION_FRONTAL) {
       warning_status_led(125);
@@ -176,7 +176,7 @@ void start_from_front_sensor() {
   }
 }
 
-void basic_algorithm_config() {
+void basic_algorithm_config(void) {
   while (!init) {
     if (get_menu_up_btn()) {
       mano = DERECHA;

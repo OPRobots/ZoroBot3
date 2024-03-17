@@ -9,7 +9,7 @@ static bool competicionIniciada = false;
  * @return bool 
  */
 
-bool is_competicion_iniciada() {
+bool is_competicion_iniciada(void) {
   return competicionIniciada;
 }
 

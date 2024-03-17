@@ -6,7 +6,7 @@
  * 
  * @return bool
  */
-bool get_menu_up_btn() {
+bool get_menu_up_btn(void) {
   bool state1 = (bool)gpio_get(GPIOC, GPIO14);
   delay(50);
   bool state2 = (bool)gpio_get(GPIOC, GPIO14);
@@ -18,7 +18,7 @@ bool get_menu_up_btn() {
  * 
  * @return bool
  */
-bool get_menu_down_btn() {
+bool get_menu_down_btn(void) {
   bool state1 = (bool)gpio_get(GPIOC, GPIO15);
   delay(50);
   bool state2 = (bool)gpio_get(GPIOC, GPIO15);
@@ -30,7 +30,7 @@ bool get_menu_down_btn() {
  * 
  * @return bool
  */
-bool get_menu_mode_btn() {
+bool get_menu_mode_btn(void) {
   bool state1 = (bool)gpio_get(GPIOC, GPIO13);
   delay(50);
   bool state2 = (bool)gpio_get(GPIOC, GPIO13);
@@ -43,7 +43,7 @@ bool get_menu_mode_btn() {
  * 
  * @return bool
  */
-bool get_swtich_1() {
+bool get_swtich_1(void) {
   return (bool)gpio_get(GPIOB, GPIO8);
 }
 
@@ -53,7 +53,7 @@ bool get_swtich_1() {
  * 
  * @return bool
  */
-bool get_swtich_2() {
+bool get_swtich_2(void) {
   return (bool)gpio_get(GPIOB, GPIO9);
 }
 
@@ -63,7 +63,7 @@ bool get_swtich_2() {
  * 
  * @return uint8_t decimal
  */
-uint8_t get_switch_decimal() {
+uint8_t get_switch_decimal(void) {
   uint8_t binario = 0;
   uint8_t decimal = 0;
 
@@ -89,7 +89,7 @@ uint8_t get_switch_decimal() {
  * @brief Comprueba el estado del modulo de inicio-parada
  * 
  */
-void check_start_stop_module() {
+void check_start_stop_module(void) {
   if ((bool)gpio_get(GPIOB, GPIO8)) {
     set_status_led(true);
     set_competicion_iniciada(true);

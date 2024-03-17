@@ -20,7 +20,7 @@ struct walls_around {
   bool right : 1;
 };
 
-void update_distance_readings() {
+void update_distance_readings(void) {
   uint16_t on[NUM_SENSORES], off[NUM_SENSORES];
 
   get_sensors_raw(on, off);

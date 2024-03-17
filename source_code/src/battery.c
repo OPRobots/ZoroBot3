@@ -10,8 +10,8 @@ float get_battery_voltage(void) {
   return battery_bits * ADC_LSB * VOLT_DIV_FACTOR;
 }
 
-void show_battery_level() {
-  uint16_t ticksInicio = get_clock_ticks();
+void show_battery_level(void) {
+  uint32_t ticksInicio = get_clock_ticks();
   while(get_clock_ticks() < ticksInicio + 750){
 	  set_leds_battery_level(get_battery_voltage());
   }

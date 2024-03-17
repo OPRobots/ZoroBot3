@@ -7,7 +7,7 @@
 #include "buttons.h"
 
 bool check_reference_wall_change(uint32_t startedMillis, bool mano);
-bool configuracion();
+bool configuracion(void);
 
 
 #endif

@@ -8,9 +8,9 @@
 #include <libopencm3/stm32/gpio.h>
 
 
-void basic_algorithm_config();
-void start_from_front_sensor();
-void start_from_ms();
-void basic_algorithm_loop();
+void basic_algorithm_config(void);
+void start_from_front_sensor(void);
+void start_from_ms(void);
+void basic_algorithm_loop(void);
 
 #endif

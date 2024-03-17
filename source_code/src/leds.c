@@ -20,7 +20,7 @@ void set_status_led(bool state) {
   }
 }
 
-void toggle_status_led() {
+void toggle_status_led(void) {
   gpio_toggle(GPIOA, GPIO12);
 }
 
@@ -37,7 +37,7 @@ void set_RGB_color(uint32_t r, uint32_t g, uint32_t b) {
   timer_set_oc_value(TIM1, TIM_OC4, b);
 }
 
-void set_RGB_rainbow() {
+void set_RGB_rainbow(void) {
   if (get_clock_ticks() > lastTicksRainbow + 10) {
     lastTicksRainbow = get_clock_ticks();
     rainbowRGB[rainbowColorDesc] -= 20;
@@ -143,7 +143,7 @@ void set_leds_battery_level(float battery_level) {
   }
 }
 
-void all_leds_clear() {
+void all_leds_clear(void) {
   set_RGB_color(0, 0, 0);
   set_status_led(false);
 
@@ -213,7 +213,7 @@ void set_info_led(uint8_t index, bool state) {
   }
 }
 
-void clear_info_leds() {
+void clear_info_leds(void) {
 
   gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
   gpio_clear(GPIOC, GPIO4 | GPIO5);

@@ -6,9 +6,9 @@
 #include "usart.h"
 #include "buttons.h"
 
-void debug_inicio();
-void imprimir_sensores_raw();
-void imprimir_sensores_filtrados();
-void imprimir_sensores_filtrados_analog();
+void debug_inicio(void);
+void imprimir_sensores_raw(void);
+void imprimir_sensores_filtrados(void);
+void imprimir_sensores_filtrados_analog(void);
 
 #endif

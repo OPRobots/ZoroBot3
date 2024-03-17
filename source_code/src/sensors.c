@@ -95,7 +95,7 @@ static uint32_t Filtro_s3[MAGNITUD_FILTRO];
 
 int i_s = 0;
 
-void filtro_sensores() {
+void filtro_sensores(void) {
 
   // Los indices se ponen directamente para ordenar segun la preferencia de Manuel En este caso S0 -> s3 Corresponden a:
   // los sensores de pared en orden de posicion en el robot de izquierda a derecha viendo el robot desde arriba con los sensores hacia adelante
@@ -157,23 +157,23 @@ void filtro_sensores() {
 
 
 
-int sensor0_analog() {
+int sensor0_analog(void) {
   return s0;
 }
-int sensor1_analog() {
+int sensor1_analog(void) {
   return s1;
 }
-int sensor2_analog() {
+int sensor2_analog(void) {
   return s2;
 }
-int sensor3_analog() {
+int sensor3_analog(void) {
   return s3;
 }
 
-bool sensor0() {
+bool sensor0(void) {
   return s0_bool;
 }
-bool sensor1() {
+bool sensor1(void) {
   if (!s1_bool) {
     contador_lateral_s1++;
   } else {
@@ -185,7 +185,7 @@ bool sensor1() {
     return true;
   }
 }
-bool sensor2() {
+bool sensor2(void) {
   if (!s2_bool) {
     contador_lateral_s2++;
   } else {
@@ -197,7 +197,7 @@ bool sensor2() {
     return true;
   }
 }
-bool sensor3() {
+bool sensor3(void) {
   return s3_bool;
 }
 
@@ -212,11 +212,11 @@ void get_sensors_raw(uint16_t *on, uint16_t *off) {
   }
 }
 
-uint8_t *get_sensors() {
+uint8_t *get_sensors(void) {
   return sensores;
 }
 
-uint8_t get_sensors_num() {
+uint8_t get_sensors_num(void) {
   return NUM_SENSORES;
 }
 

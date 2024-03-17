@@ -10,6 +10,6 @@
 #include "leds.h"
 
 float get_battery_voltage(void);
-void show_battery_level();
+void show_battery_level(void);
 
 #endif /* __BATTERY_H */
