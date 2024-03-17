@@ -24,7 +24,8 @@ void sys_tick_handler(void) {
   // update_distance_readings();
   // update_encoder_readings();
   update_gyro_readings();
-  set_z_angle(0);
+  // set_z_angle(0);
+  keep_z_angle();
 }
 
 int main(void) {
@@ -35,9 +36,9 @@ int main(void) {
 
   while (1) {
     // printf("%0x\n", mpu_who_am_i());
-    // printf("%d | ", (int)get_gyro_z_degrees());
+    // printf("%d \n", (int)get_gyro_z_degrees());
     // set_z_angle(0);
-    // delay(100);
+    delay(100);
   }
 
   // mpu_set_updating(true);

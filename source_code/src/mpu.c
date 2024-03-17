@@ -57,7 +57,7 @@ static uint8_t mpu_read_register(uint8_t address) {
   reading = spi_read(SPI3);
   gpio_set(GPIOA, GPIO15);
   //! Este delay_us(0) ralentiza lo suficiente la lectura de registros del MPU para que no se prenda fuego
-  delay_us(0);
+  delay_us(5);
 
   return reading;
 }
@@ -196,9 +196,12 @@ float get_gyro_z_dps(void) {
   return ((float)gyro_z_raw / MPU_GYRO_SENSITIVITY_2000_DPS);
 }
 
-#define KP_GYRO 15
+#define KP_GYRO 10
+#define KD_GYRO 30
 #define KI_GYRO 5
 static float sumError = 0;
+static float errorAnterior = 0;
+
 void set_z_angle(float angle) {
   if (!mpu_updating) {
     return;
@@ -206,22 +209,50 @@ void set_z_angle(float angle) {
   float error = angle - deg_integ;
   float p = 0;
   float i = 0;
-  float correccion =0 ;
+  float correccion = 0;
   if (abs(error) >= 1) {
     p = KP_GYRO * error;
     if (abs(sumError) < 10) {
       sumError += error;
       i = sumError * KI_GYRO;
     }
-    correccion = p+i;
-    if(correccion > 200){
+    correccion = p + i;
+    if (correccion > 200) {
       correccion = 200;
-    }else if(correccion < -200){
+    } else if (correccion < -200) {
       correccion = -200;
     }
     set_motors_speed(correccion, -(correccion));
   } else {
     sumError = 0;
     set_motors_speed(0, 0);
+  }
+}
+void keep_z_angle(void) {
+  if (!mpu_updating) {
+    return;
+  }
+  float error = -deg_integ; //((int16_t)(deg_integ * -100)) / 100;
+  float p = 0;
+  float i = 0;
+  float d = 0;
+  float correccion = 0;
+
+  if (abs(error) > 0.5) {
+    p = KP_GYRO * error;
+    d = KD_GYRO * (error - errorAnterior);
+    errorAnterior = error;
+    if (abs(sumError) < 10) {
+      sumError += error;
+      i = sumError * KI_GYRO;
+    }
+    // printf("%d \n", (int16_t)(sumError * 100));
+    correccion = p + i + d;
+    correccion = constrain(correccion, -200, 200);
+    set_motors_speed(/* 60+ */ correccion, /* 80 */ -correccion);
+  } else {
+    sumError = 0;
+    errorAnterior = error;
+    set_motors_speed(/* 6 */ 0, /* 8 */ 0);
   }
 }
