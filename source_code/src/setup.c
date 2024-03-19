@@ -15,7 +15,7 @@
  */
 static void setup_clock() {
   
-  rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);
+  rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
 
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_GPIOB);
@@ -49,7 +49,7 @@ static void setup_clock() {
  *
  */
 static void setup_systick() {
-  systick_set_frequency(SYSTICK_FREQUENCY_HZ, 168000000);
+  systick_set_frequency(SYSTICK_FREQUENCY_HZ, 84000000);
   systick_counter_enable();
   systick_interrupt_enable();
 }

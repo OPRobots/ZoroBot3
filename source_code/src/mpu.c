@@ -57,7 +57,9 @@ static uint8_t mpu_read_register(uint8_t address) {
   reading = spi_read(SPI3);
   gpio_set(GPIOA, GPIO15);
   //! Este delay_us(0) ralentiza lo suficiente la lectura de registros del MPU para que no se prenda fuego
-  delay_us(5);
+  // if(address == MPU_GYRO_ZOUT_H){
+    // delay_us(0);
+  // }
 
   return reading;
 }
@@ -197,7 +199,7 @@ float get_gyro_z_dps(void) {
 }
 
 #define KP_GYRO 10
-#define KD_GYRO 30
+#define KD_GYRO 50
 #define KI_GYRO 5
 static float sumError = 0;
 static float errorAnterior = 0;

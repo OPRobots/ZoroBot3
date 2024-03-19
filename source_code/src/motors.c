@@ -26,8 +26,10 @@ void set_motors_speed(float velI, float velD) {
     }
   }
   // printf("%ld - %ld\n", (uint32_t)ocI, (uint32_t)ocD);
-  timer_set_oc_value(TIM8, TIM_OC4, (uint32_t)ocI);
-  timer_set_oc_value(TIM8, TIM_OC3, (uint32_t)ocD);
+  if (!isnan(ocI) && !isnan(ocD)) {
+    timer_set_oc_value(TIM8, TIM_OC4, (uint32_t)ocI);
+    timer_set_oc_value(TIM8, TIM_OC3, (uint32_t)ocD);
+  }
 }
 
 void set_fan_speed(uint8_t vel) {
