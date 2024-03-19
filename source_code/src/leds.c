@@ -5,7 +5,7 @@ static uint32_t rainbowRGB[3] = {LEDS_MAX_PWM, 0, 0};
 static int rainbowColorDesc = 0;
 static int rainbowColorAsc = 1;
 
-static int lastTicksWarning = 0;
+static uint32_t lastTicksWarning = 0;
 
 static int lastTicksWave = 0;
 static int currentIndexWave = 0;
@@ -24,7 +24,7 @@ void toggle_status_led(void) {
   gpio_toggle(GPIOA, GPIO12);
 }
 
-void warning_status_led(uint16_t ms) {
+void warning_status_led(uint32_t ms) {
   if (get_clock_ticks() > lastTicksWarning + ms) {
     toggle_status_led();
     lastTicksWarning = get_clock_ticks();

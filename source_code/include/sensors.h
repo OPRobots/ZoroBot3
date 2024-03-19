@@ -27,17 +27,5 @@ float get_sensor_log(uint8_t pos);
 float sensors_raw_log(uint16_t on, uint16_t off);
 uint16_t get_sensor_raw_filter(uint8_t pos);
 
-void filtro_sensores(void);
-
-int sensor0_analog(void);
-int sensor1_analog(void);
-int sensor2_analog(void);
-int sensor3_analog(void);
-
-bool sensor0(void);
-bool sensor1(void);
-bool sensor2(void);
-bool sensor3(void);
-
 void sm_emitter_adc(void);
 #endif
