@@ -19,6 +19,7 @@ void set_leds_wave(int ms);
 void set_leds_battery_level(float battery_level);
 void all_leds_clear(void);
 void set_info_led(uint8_t index, bool state);
+void set_info_leds(void);
 void clear_info_leds(void);
 void leds_configuracion(uint8_t patron_led);
 

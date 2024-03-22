@@ -213,6 +213,13 @@ void set_info_led(uint8_t index, bool state) {
   }
 }
 
+void set_info_leds(void) {
+
+  gpio_set(GPIOA, GPIO5 | GPIO6 | GPIO7);
+  gpio_set(GPIOC, GPIO4 | GPIO5);
+  gpio_set(GPIOB, GPIO0 | GPIO1 | GPIO2);
+}
+
 void clear_info_leds(void) {
 
   gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);

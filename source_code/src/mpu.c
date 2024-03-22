@@ -138,19 +138,21 @@ void gyro_z_calibration(void) {
 
   deg_integ = 0;
   for (i = 0; i < MPU_CAL_SAMPLE_NUM; i++) {
-    set_leds_wave(75);
+    set_leds_wave(35);
     zout_av = ((float)mpu_read_gyro_z_raw() + zout_av) /
               MPU_AVERAGE_FACTOR;
     delay_us(MPU_CAL_SAMPLE_US);
   }
-  clear_info_leds();
+  set_info_leds();
   zout_c2 = -(int16_t)(zout_av * MPU_COMPLEMENT_2_FACTOR);
   setup_spi_low_speed();
   mpu_write_register(MPU_Z_OFFS_USR_H, ((uint8_t)((zout_c2 & MPU_MASK_H) >> BYTE)));
   mpu_write_register(MPU_Z_OFFS_USR_L, (uint8_t)(zout_c2 & MPU_MASK_L));
   setup_spi_high_speed();
-  
+
   mpu_set_updating(true);
+  delay(100);
+  clear_info_leds();
 }
 
 /**
