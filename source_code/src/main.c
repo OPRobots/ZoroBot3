@@ -14,6 +14,7 @@
 void sys_tick_handler(void) {
   clock_tick();
   update_encoder_readings();
+  update_sensors_low_pass_filter();
   update_gyro_readings();
 }
 
@@ -22,7 +23,7 @@ int main(void) {
   show_battery_level();
   delay(1500);
   gyro_z_calibration();
-
+  
   while (1) {
     // printf("%0x\n", mpu_who_am_i());
     // printf("%d \n", (int)get_gyro_z_degrees());
@@ -32,16 +33,31 @@ int main(void) {
     // ZONA DEBUG TEMPORAL
 
     // Lectura de encoders
-    // printf("%ld (%ld)\t%ld (%ld)\n", get_encoder_left_total_ticks(), get_encoder_left_micrometers(), get_encoder_right_total_ticks(), get_encoder_right_micrometers());
+    // printf("%ld (%ld)\t%ld (%ld)\n", get_encoder_left_total_ticks(), get_encoder_left_micrometers()/10000, get_encoder_right_total_ticks(), get_encoder_right_micrometers()/10000);
+
+    // SENSORES FRONTALES MOVIENDO EL ROBOT MANUALMENTE
+    static uint8_t count = 0;
+    // if (get_encoder_average_micrometers()/10000 >= count || count == 0) {
+    //   printf("%d\t", get_sensor_filtered(SENSOR_FRONT_LEFT_WALL_ID));
+    //   printf("%d\t", get_sensor_filtered(SENSOR_FRONT_RIGHT_WALL_ID));
+    //   // printf("%4d ", get_sensor_filtered(SENSOR_SIDE_RIGHT_WALL_ID));
+    //   // printf("%4d ", get_sensor_filtered(SENSOR_SIDE_LEFT_WALL_ID));
+    //   printf("\n");
+    //   count++;
+    // }
+
+    if (get_menu_mode_btn()) {
+      while (get_menu_mode_btn())
+        ;
+      printf("%4d\t", get_sensor_filtered(SENSOR_SIDE_LEFT_WALL_ID));
+      printf("%4d\t", get_sensor_filtered(SENSOR_SIDE_RIGHT_WALL_ID));
+      printf("\n");
+      delay(1000);
+    }
 
     // printf("%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t\n", get_sensor_log(0), get_sensor_raw_filter(0),  get_sensor_log(1), get_sensor_raw_filter(1),  get_sensor_log(2), get_sensor_raw_filter(2),  get_sensor_log(3), get_sensor_raw_filter(3));
 
-    printf("%4d \t", get_sensor_raw_filter(SENSOR_SIDE_LEFT_ID));   // 1
-    printf("%4d \t", get_sensor_raw_filter(SENSOR_SIDE_RIGHT_ID));  // 4
-    printf("%4d \t", get_sensor_raw_filter(SENSOR_FRONT_LEFT_ID));  // 2
-    printf("%4d \t", get_sensor_raw_filter(SENSOR_FRONT_RIGHT_ID)); // 3
-    printf("\n");
-    delay(100);
+    // delay(100);
 
     // printf("%d \t%d \t\n", get_sensor_raw_filter(0), get_sensor_raw_filter(1)/* , get_sensor_raw_filter(2), get_sensor_raw_filter(3) */);
     // printf("%.2f\n", get_battery_voltage());
