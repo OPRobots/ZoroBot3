@@ -19,6 +19,19 @@
 
 #define SENSOR_LOW_PASS_FILTER_ALPHA 0.1
 
+#define SENSOR_FRONT_LEFT_WALL_OFFSET 0
+#define SENSOR_FRONT_RIGHT_WALL_OFFSET 0
+#define SENSOR_SIDE_LEFT_WALL_OFFSET -250
+#define SENSOR_SIDE_RIGHT_WALL_OFFSET 0
+
+#define SENSOR_FRONT_LEFT_WALL_SLOPE -0.104
+#define SENSOR_FRONT_LEFT_WALL_INTERCEPT 847
+#define SENSOR_FRONT_RIGHT_WALL_SLOPE -0.103
+#define SENSOR_FRONT_RIGHT_WALL_INTERCEPT 856 
+#define SENSOR_SIDE_LEFT_WALL_SLOPE 103
+#define SENSOR_SIDE_LEFT_WALL_INTERCEPT 4541
+#define SENSOR_SIDE_RIGHT_WALL_SLOPE 97.4
+#define SENSOR_SIDE_RIGHT_WALL_INTERCEPT 4641
 
 uint8_t *get_sensors(void);
 uint8_t get_sensors_num(void);
@@ -28,7 +41,9 @@ void sm_emitter_adc(void);
 uint16_t get_sensor_raw(uint8_t pos, bool on);
 uint16_t get_sensor_raw_filter(uint8_t pos);
 
-void update_sensors_low_pass_filter(void);
+void update_sensors_magics(void);
 uint16_t get_sensor_filtered(uint8_t pos);
+uint16_t get_sensor_linearized(uint8_t pos);
+uint16_t get_sensor_distance(uint8_t pos);
 
 #endif
