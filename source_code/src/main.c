@@ -23,7 +23,7 @@ int main(void) {
   show_battery_level();
   delay(1500);
   gyro_z_calibration();
-  
+
   while (1) {
     // printf("%0x\n", mpu_who_am_i());
     // printf("%d \n", (int)get_gyro_z_degrees());
@@ -38,26 +38,28 @@ int main(void) {
     // SENSORES FRONTALES MOVIENDO EL ROBOT MANUALMENTE
     // static uint8_t count = 0;
     // if (get_encoder_average_micrometers()/10000 >= count || count == 0) {
-      printf("%d (%d)\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID), get_sensor_linearized(SENSOR_FRONT_LEFT_WALL_ID));
-      printf("%d (%d)\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID), get_sensor_linearized(SENSOR_FRONT_RIGHT_WALL_ID));
-      // printf("%4d ", get_sensor_filtered(SENSOR_SIDE_RIGHT_WALL_ID));
-      // printf("%4d ", get_sensor_filtered(SENSOR_SIDE_LEFT_WALL_ID));
-      printf("\n");
-      // count++;
+    // printf("%4d\t", get_sensor_filtered(SENSOR_FRONT_LEFT_WALL_ID));
+    // printf("%4d", get_sensor_filtered(SENSOR_FRONT_RIGHT_WALL_ID));
+    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
+    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
+    // printf("\n");
+    // count++;
     // }
 
     // if (get_menu_mode_btn()) {
     //   while (get_menu_mode_btn())
     //     ;
-    //   // printf("%4d\t", get_sensor_linearized(SENSOR_SIDE_LEFT_WALL_ID));
-    //   printf("%4d\t", get_sensor_linearized(SENSOR_SIDE_RIGHT_WALL_ID));
-    //   printf("\n");
-      // delay(1000);
+    printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
+    printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
+    printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
+    printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
+    printf("\n");
+    delay(1000);
     // }
 
     // printf("%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t\n", get_sensor_log(0), get_sensor_raw_filter(0),  get_sensor_log(1), get_sensor_raw_filter(1),  get_sensor_log(2), get_sensor_raw_filter(2),  get_sensor_log(3), get_sensor_raw_filter(3));
 
-    delay(100);
+    // delay(100);
 
     // printf("%d \t%d \t\n", get_sensor_raw_filter(0), get_sensor_raw_filter(1)/* , get_sensor_raw_filter(2), get_sensor_raw_filter(3) */);
     // printf("%.2f\n", get_battery_voltage());

@@ -164,9 +164,10 @@ uint16_t get_sensor_raw_filter(uint8_t pos) {
 
 /**
  * @brief Aplica las magias necesarias para obtener valores correctos de los sensores.
- * · Resta el valor de offset a los valores en caso necesario.
+ * · Resta el valor de offset a las lecturas en caso necesario.
  * · Aplica un filtro pasa bajo a los valores de los sensores.
  * · Calcula el valor linealizado de los sensores.
+ * · Obtiene la distancia de las paredes en mm
  *
  */
 void update_sensors_magics(void) {
@@ -182,9 +183,7 @@ void update_sensors_magics(void) {
         ln_index = 1;
       }
       sensors_linearized[sensor] = (uint16_t)(ln_linearization[ln_index] * 1000);
-      // sensors_distance[sensor] = (uint16_t)((sensors_linearized[sensor] - sensors_distance_intercept[sensor]) / sensors_distance_slope[sensor]);
-      sensors_distance[sensor] = (uint16_t)(sensors_distance_slope[sensor] * (sensors_linearized[sensor]) + sensors_distance_intercept[sensor]);
-      // distance[i] = (sensors_calibration_a[i] / sensors_raw_log(on[i], off[i]) - sensors_calibration_b[i]);
+      sensors_distance[sensor] = (uint16_t)((sensors_distance_slope[sensor]*sensors_linearized[sensor])+sensors_distance_intercept[sensor]);
     }
   }
 }
