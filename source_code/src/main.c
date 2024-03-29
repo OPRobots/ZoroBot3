@@ -33,9 +33,9 @@ int main(void) {
     // ZONA DEBUG TEMPORAL
 
     // Lectura de encoders
-    // printf("%ld (%ld)\t%ld (%ld)\n", get_encoder_left_total_ticks(), get_encoder_left_micrometers()/10000, get_encoder_right_total_ticks(), get_encoder_right_micrometers()/10000);
+    printf("%ld (%ld)\t%ld (%ld) | %.4f %.4f %.4f \n", get_encoder_total_left_micrometers(), get_encoder_total_left_millimeters(), get_encoder_total_right_micrometers(), get_encoder_total_right_millimeters(), get_encoder_avg_speed(), get_encoder_angular_speed(), get_encoder_curernt_angle());
 
-    // SENSORES FRONTALES MOVIENDO EL ROBOT MANUALMENTE
+    // SENSORES MOVIENDO EL ROBOT MANUALMENTE
     // static uint8_t count = 0;
     // if (get_encoder_average_micrometers()/10000 >= count || count == 0) {
     // printf("%4d\t", get_sensor_filtered(SENSOR_FRONT_LEFT_WALL_ID));
@@ -46,15 +46,16 @@ int main(void) {
     // count++;
     // }
 
+    // SENSORES PULSADO EL BOTÓN DE MENÚ
     // if (get_menu_mode_btn()) {
     //   while (get_menu_mode_btn())
     //     ;
-    printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
-    printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
-    printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
-    printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
-    printf("\n");
-    delay(1000);
+    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
+    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
+    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
+    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
+    // printf("\n");
+    // delay(1000);
     // }
 
     // printf("%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t\n", get_sensor_log(0), get_sensor_raw_filter(0),  get_sensor_log(1), get_sensor_raw_filter(1),  get_sensor_log(2), get_sensor_raw_filter(2),  get_sensor_log(3), get_sensor_raw_filter(3));

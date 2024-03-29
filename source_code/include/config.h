@@ -6,9 +6,9 @@
 
 
 /** Maze dimensions */
-#define CELL_DIMENSION 0.18
-#define CELL_DIAGONAL 0.1273
-#define WALL_WIDTH 0.012
+#define CELL_DIMENSION 180
+#define CELL_DIAGONAL 127.3
+#define WALL_WIDTH 12
 #define MIDDLE_MAZE_DISTANCE ((CELL_DIMENSION - WALL_WIDTH) / 2.)
 
 /** Constantes matemáticas */
@@ -17,7 +17,7 @@
 /** Constantes del STM32F4 */
 #define SYSCLK_FREQUENCY_HZ 168000000
 #define SYSTICK_FREQUENCY_HZ 1000
-#define MICROMETERS_PER_METER 1000000
+#define MICROMETERS_PER_MILLIMETER 1000
 #define MICROSECONDS_PER_SECOND 1000000
 
 /** Constantes de PWM */
@@ -26,7 +26,7 @@
 
 /** Constantes del Robot */
 #define MICROMETERS_PER_TICK 9.4967
-#define WHEELS_SEPARATION 0.1169
+#define WHEELS_SEPARATION 60
 #define MIN_SPEED_PERCENT 5
 
 /** Constantes ADC */

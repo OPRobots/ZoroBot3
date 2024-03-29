@@ -13,22 +13,21 @@ float get_micrometers_per_tick(void);
 void set_micrometers_per_tick(float value);
 float get_wheels_separation(void);
 void set_wheels_separation(float value);
-int32_t get_encoder_left_diff_ticks(void);
-int32_t get_encoder_right_diff_ticks(void);
-int32_t get_encoder_left_total_ticks(void);
-int32_t get_encoder_right_total_ticks(void);
-int32_t get_encoder_left_micrometers(void);
-int32_t get_encoder_right_micrometers(void);
-int32_t get_encoder_average_micrometers(void);
+int32_t get_encoder_total_left_micrometers(void);
+int32_t get_encoder_total_right_micrometers(void);
+int32_t get_encoder_total_average_micrometers(void);
+int32_t get_encoder_total_left_millimeters(void);
+int32_t get_encoder_total_right_millimeters(void);
+int32_t get_encoder_total_average_millimeters(void);
+
 float get_encoder_left_speed(void);
 float get_encoder_right_speed(void);
 float get_encoder_avg_speed(void);
 float get_encoder_angular_speed(void);
 
 float get_encoder_avg_micrometers(void);
+float get_encoder_avg_millimeters(void);
 float get_encoder_curernt_angle(void);
-int32_t get_encoder_x_position(void);
-int32_t get_encoder_y_position(void);
 
 int32_t max_likelihood_counter_diff(uint16_t now, uint16_t before);
 void update_encoder_readings(void);

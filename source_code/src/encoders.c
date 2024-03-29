@@ -17,6 +17,10 @@ static volatile int32_t left_micrometers;
 static volatile int32_t right_micrometers;
 static volatile float avg_micrometers;
 
+static volatile int32_t left_millimeters;
+static volatile int32_t right_millimeters;
+static volatile float avg_millimeters;
+
 /* Speed, in meters per second */
 static volatile float left_speed;
 static volatile float right_speed;
@@ -26,10 +30,6 @@ static volatile float angular_speed;
 
 /* Current angle, in rad*/
 static volatile float current_angle = 0;
-
-/* Cartesian position, in micrometers*/
-static volatile float position_x = 0;
-static volatile float position_y = 0;
 
 float get_micrometers_per_tick(void) {
   return micrometers_per_tick;
@@ -62,106 +62,88 @@ static uint16_t read_encoder_right(void) {
 }
 
 /**
- * @brief Read left motor encoder counter difference.
- *
- * The difference is with respect to the last motor encoder count read.
- */
-int32_t get_encoder_left_diff_ticks(void) {
-  return left_diff_ticks;
-}
-
-/**
- * @brief Read right motor encoder counter difference.
- *
- * The difference is with respect to the last motor encoder count read.
- */
-int32_t get_encoder_right_diff_ticks(void) {
-  return right_diff_ticks;
-}
-
-/**
- * @brief Read left motor encoder total count.
- *
- * The total count is simply the sum of all encoder counter differences.
- */
-int32_t get_encoder_left_total_ticks(void) {
-  return left_total_ticks;
-}
-
-/**
- * @brief Read right motor encoder total count.
- *
- * The total count is simply the sum of all encoder counter differences.
- */
-int32_t get_encoder_right_total_ticks(void) {
-  return right_total_ticks;
-}
-
-/**
  * @brief Read left motor encoder travelled distance in micrometers.
  */
-int32_t get_encoder_left_micrometers(void) {
+int32_t get_encoder_total_left_micrometers(void) {
   return left_micrometers;
 }
 
 /**
  * @brief Read right motor encoder travelled distance in micrometers.
  */
-int32_t get_encoder_right_micrometers(void) {
+int32_t get_encoder_total_right_micrometers(void) {
   return right_micrometers;
 }
 
 /**
  * @brief Read the average travelled distance in micrometers.
  */
-int32_t get_encoder_average_micrometers(void) {
+int32_t get_encoder_total_average_micrometers(void) {
   return (left_micrometers + right_micrometers) / 2;
 }
 
 /**
- * @brief Read left motor speed in meters per second.
+ * @brief Read left motor encoder travelled distance in millimeters.
+ */
+int32_t get_encoder_total_left_millimeters(void) {
+  return left_millimeters;
+}
+
+/**
+ * @brief Read right motor encoder travelled distance in millimeters.
+ */
+int32_t get_encoder_total_right_millimeters(void) {
+  return right_millimeters;
+}
+
+/**
+ * @brief Read the average travelled distance in millimeters.
+ */
+int32_t get_encoder_total_average_millimeters(void) {
+  return (left_millimeters + right_millimeters) / 2;
+}
+
+/**
+ * @brief Read left motor speed in millimeters per second.
  */
 float get_encoder_left_speed(void) {
   return left_speed;
 }
 
 /**
- * @brief Read right motor speed in meters per second.
+ * @brief Read right motor speed in millimeters per second.
  */
 float get_encoder_right_speed(void) {
   return right_speed;
 }
 
+/**
+ * @brief Read the average motor speed in millimeters per second.
+ */
 float get_encoder_avg_speed(void) {
   return (left_speed + right_speed) / 2.0f;
 }
 
+
 /**
- * @brief Read left motor speed in meters per second.
+ * @brief Read the average distance in micrometers.
  */
 float get_encoder_avg_micrometers(void) {
   return avg_micrometers;
 }
 
 /**
- * @brief Read left motor speed in meters per second.
+ * @brief Read the average distance in millimeters.
+ */
+float get_encoder_avg_millimeters(void) {
+  return avg_millimeters;
+}
+
+/**
+ * @brief Read the current angle in rad.
  */
 float get_encoder_curernt_angle(void) {
   return current_angle;
-}
-
-/**
- * @brief Read left motor speed in meters per second.
- */
-int32_t get_encoder_x_position(void) {
-  return (int32_t)(position_x * 1000);
-}
-
-/**
- * @brief Read right motor speed in meters per second.
- */
-int32_t get_encoder_y_position(void) {
-  return (int32_t)(position_y * 1000);
 }
 
 /**
@@ -222,9 +204,11 @@ void update_encoder_readings(void) {
 
   left_micrometers = (int32_t)(left_total_ticks * micrometers_per_tick);
   right_micrometers = (int32_t)(right_total_ticks * micrometers_per_tick);
+  left_millimeters = left_micrometers / MICROMETERS_PER_MILLIMETER;
+  right_millimeters = right_micrometers / MICROMETERS_PER_MILLIMETER;
 
-  left_speed = left_diff_ticks * (micrometers_per_tick / MICROMETERS_PER_METER) * SYSTICK_FREQUENCY_HZ;
-  right_speed = right_diff_ticks * (micrometers_per_tick / MICROMETERS_PER_METER) * SYSTICK_FREQUENCY_HZ;
+  left_speed = left_diff_ticks * (micrometers_per_tick / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
+  right_speed = right_diff_ticks * (micrometers_per_tick / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
 
   angular_speed = (left_speed - right_speed) / wheels_separation;
 
@@ -232,8 +216,7 @@ void update_encoder_readings(void) {
 
   avg_micrometers = (left_speed / SYSTICK_FREQUENCY_HZ + right_speed / SYSTICK_FREQUENCY_HZ) / 2.0f;
 
-  position_x += avg_micrometers * cos(current_angle);
-  position_y += avg_micrometers * sin(current_angle);
+  avg_millimeters = avg_micrometers / MICROMETERS_PER_MILLIMETER;
 
   last_left_ticks = left_ticks;
   last_right_ticks = right_ticks;
