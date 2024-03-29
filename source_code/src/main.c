@@ -25,6 +25,9 @@ int main(void) {
   delay(1500);
   gyro_z_calibration();
 
+  uint32_t ticks = get_clock_ticks();
+  set_motors_speed(80,80);
+  // set_competicion_iniciada(true);
   while (1) {
     // printf("%0x\n", mpu_who_am_i());
     // printf("%d \n", (int)get_gyro_z_degrees());
@@ -33,7 +36,30 @@ int main(void) {
 
     // ZONA DEBUG TEMPORAL
 
-    // Lectura de encoders
+    // VELOCIDAD LINEAL
+
+    // if (get_clock_ticks() - ticks <= 1000) {
+    //   set_target_linear_speed(100);
+    //   // printf("%d\n", 100);
+    // } else if (get_clock_ticks() - ticks <= 2000) {
+    //   set_target_linear_speed(200);
+    //   // printf("%d\n", 200);
+    // } else if (get_clock_ticks() - ticks <= 3000) {
+    //   set_target_linear_speed(0);
+    //   // printf("%d\n", 0);
+    // } else {
+    //   set_competicion_iniciada(false);
+    // }
+    // if (is_competicion_iniciada()) {
+    //   control_debug();
+    // }
+    // // set_motors_speed(80,80);
+    // delay(1);
+
+    // BATERÍA
+     printf("%.2f\n", get_battery_voltage());
+
+    // ENCODERS
     // printf("%ld (%ld)\t%ld (%ld) | %.4f %.4f %.4f \n", get_encoder_total_left_micrometers(), get_encoder_total_left_millimeters(), get_encoder_total_right_micrometers(), get_encoder_total_right_millimeters(), get_encoder_avg_speed(), get_encoder_angular_speed(), get_encoder_curernt_angle());
 
     // SENSORES MOVIENDO EL ROBOT MANUALMENTE

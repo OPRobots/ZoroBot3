@@ -240,7 +240,7 @@ static void setup_motors_pwm(void) {
 
 /**
  * @brief Configura el TIM5 como ISR para ejecutrase cada 1ms.
- * Esta función ISR será la que contenga el comportamiento principal del robot, tal como PID, Control de Velocidad, ...
+ * Esta función ISR será la que contenga la gestión del control del robot
  * 
  */
 static void setup_main_loop_timer(void) {
@@ -263,7 +263,8 @@ static void setup_main_loop_timer(void) {
 void tim5_isr(void) {
   if (timer_get_flag(TIM5, TIM_SR_CC1IF)) {
     timer_clear_flag(TIM5, TIM_SR_CC1IF);
-    //TODO: llamar a la función de control general
+    
+    control_loop();
   }
 }
 
