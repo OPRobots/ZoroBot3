@@ -1,16 +1,16 @@
 #include <leds.h>
 
-static int lastTicksRainbow = 0;
+static uint32_t lastTicksRainbow = 0;
 static uint32_t rainbowRGB[3] = {LEDS_MAX_PWM, 0, 0};
-static int rainbowColorDesc = 0;
-static int rainbowColorAsc = 1;
+static int16_t rainbowColorDesc = 0;
+static int16_t rainbowColorAsc = 1;
 
 static uint32_t lastTicksWarning = 0;
 
-static int lastTicksWave = 0;
-static int currentIndexWave = 0;
+static uint32_t lastTicksWave = 0;
+static uint8_t currentIndexWave = 0;
 
-static int lastTicksWarningBateria = 0;
+static uint32_t lastTicksWarningBateria = 0;
 
 void set_status_led(bool state) {
   if (state) {

@@ -17,7 +17,7 @@ static void debug_sensors_raw(void) {
   }
 }
 
-static void check_debug_active() {
+static void check_debug_active(void) {
   debug_enabled = true;
 }
 
