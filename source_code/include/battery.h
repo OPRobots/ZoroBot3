@@ -5,10 +5,13 @@
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
 
-#include "setup.h"
 #include "delay.h"
 #include "leds.h"
+#include "setup.h"
 
+#define BATTERY_VOLTAGE_LOW_PASS_FILTER_ALPHA 0.1
+
+void update_battery_voltage(void);
 float get_battery_voltage(void);
 void show_battery_level(void);
 

@@ -34,7 +34,7 @@
 #define ADC_LSB (3.3 / ADC_RESOLUTION)
 
 /** Constantes del Divisor de Voltage */
-#define VOLT_DIV_FACTOR 2.781 // 2.74
+#define VOLT_DIV_FACTOR 2.654
 #define BATTERY_HIGH_LIMIT_VOLTAGE 8.4
 #define BATTERY_LOW_LIMIT_VOLTAGE 7.4
 

@@ -16,6 +16,7 @@ void sys_tick_handler(void) {
   update_encoder_readings();
   update_sensors_magics();
   update_gyro_readings();
+  update_battery_voltage();
 }
 
 int main(void) {
@@ -33,7 +34,7 @@ int main(void) {
     // ZONA DEBUG TEMPORAL
 
     // Lectura de encoders
-    printf("%ld (%ld)\t%ld (%ld) | %.4f %.4f %.4f \n", get_encoder_total_left_micrometers(), get_encoder_total_left_millimeters(), get_encoder_total_right_micrometers(), get_encoder_total_right_millimeters(), get_encoder_avg_speed(), get_encoder_angular_speed(), get_encoder_curernt_angle());
+    // printf("%ld (%ld)\t%ld (%ld) | %.4f %.4f %.4f \n", get_encoder_total_left_micrometers(), get_encoder_total_left_millimeters(), get_encoder_total_right_micrometers(), get_encoder_total_right_millimeters(), get_encoder_avg_speed(), get_encoder_angular_speed(), get_encoder_curernt_angle());
 
     // SENSORES MOVIENDO EL ROBOT MANUALMENTE
     // static uint8_t count = 0;
