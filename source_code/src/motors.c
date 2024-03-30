@@ -38,7 +38,6 @@ void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
     gpio_set(GPIOB, GPIO14);
     gpio_clear(GPIOB, GPIO15);
   } else {
-    pwm_left = -pwm_left;
     gpio_set(GPIOB, GPIO15);
     gpio_clear(GPIOB, GPIO14);
   }
@@ -49,12 +48,11 @@ void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
     gpio_set(GPIOB, GPIO13);
     gpio_clear(GPIOB, GPIO12);
   } else {
-    pwm_right = -pwm_right;
     gpio_set(GPIOB, GPIO12);
     gpio_clear(GPIOB, GPIO13);
   }
-  timer_set_oc_value(TIM8, TIM_OC4, pwm_left);
-  timer_set_oc_value(TIM8, TIM_OC3, pwm_right);
+  timer_set_oc_value(TIM8, TIM_OC4, abs(pwm_left));
+  timer_set_oc_value(TIM8, TIM_OC3, abs(pwm_right));
 }
 
 void set_fan_speed(uint8_t vel) {

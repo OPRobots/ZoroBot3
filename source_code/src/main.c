@@ -26,8 +26,8 @@ int main(void) {
   gyro_z_calibration();
 
   uint32_t ticks = get_clock_ticks();
-  set_motors_speed(80,80);
-  // set_competicion_iniciada(true);
+  set_competicion_iniciada(true);
+  set_status_led(true);
   while (1) {
     // printf("%0x\n", mpu_who_am_i());
     // printf("%d \n", (int)get_gyro_z_degrees());
@@ -38,29 +38,46 @@ int main(void) {
 
     // VELOCIDAD LINEAL
 
-    // if (get_clock_ticks() - ticks <= 1000) {
+    // if (get_clock_ticks() - ticks <= 100) {
     //   set_target_linear_speed(100);
     //   // printf("%d\n", 100);
-    // } else if (get_clock_ticks() - ticks <= 2000) {
+    // } else if (get_clock_ticks() - ticks <= 400) {
     //   set_target_linear_speed(200);
     //   // printf("%d\n", 200);
-    // } else if (get_clock_ticks() - ticks <= 3000) {
+    // } else if (get_clock_ticks() - ticks <= 700) {
     //   set_target_linear_speed(0);
     //   // printf("%d\n", 0);
     // } else {
     //   set_competicion_iniciada(false);
+    //   set_status_led(false);
     // }
+
+    if (get_clock_ticks() - ticks <= 500) {
+      set_target_linear_speed(500);
+      set_ideal_angular_speed(0);
+      // printf("%d\n", 200);
+    } else {
+      set_competicion_iniciada(false);
+      set_status_led(false);
+    }
     // if (is_competicion_iniciada()) {
     //   control_debug();
     // }
     // // set_motors_speed(80,80);
     // delay(1);
+    if (get_menu_mode_btn()) {
+      while (get_menu_mode_btn())
+        ;
+      control_debug();
+    }
 
     // BATERÍA
-     printf("%.2f\n", get_battery_voltage());
+    //  printf("%.2f\n", get_battery_voltage());
 
     // ENCODERS
     // printf("%ld (%ld)\t%ld (%ld) | %.4f %.4f %.4f \n", get_encoder_total_left_micrometers(), get_encoder_total_left_millimeters(), get_encoder_total_right_micrometers(), get_encoder_total_right_millimeters(), get_encoder_avg_speed(), get_encoder_angular_speed(), get_encoder_curernt_angle());
+    // printf("%.2f\n", get_encoder_avg_speed());
+    // delay(150)
 
     // SENSORES MOVIENDO EL ROBOT MANUALMENTE
     // static uint8_t count = 0;

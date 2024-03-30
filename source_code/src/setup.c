@@ -253,7 +253,7 @@ static void setup_main_loop_timer(void) {
 
   timer_enable_counter(TIM5);
   // El timer se iniciará en el arranque
-  // timer_enable_irq(TIM5, TIM_DIER_CC1IE);
+  timer_enable_irq(TIM5, TIM_DIER_CC1IE);
 }
 
 /**

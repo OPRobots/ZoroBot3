@@ -8,12 +8,18 @@
 #include <libopencm3/stm32/timer.h>
 #include <math.h>
 
-#define BASE_LINEAR_ACCEL 1000
+#define BASE_LINEAR_ACCEL 3000
 
-#define KP_LINEAR 0.2
-#define KD_LINEAR 2
-#define KP_ANGULAR 0
-#define KD_ANGULAR 0
+// #define KP_LINEAR 0.0000
+// #define KI_LINEAR 0.0009
+// #define KD_LINEAR 0.0050
+#define KP_LINEAR 0.0002
+#define KI_LINEAR 0.0007
+#define KD_LINEAR 0
+
+#define KP_ANGULAR 0.2
+#define KI_ANGULAR 0.007
+#define KD_ANGULAR 0.00
 
 
 bool is_competicion_iniciada(void);
