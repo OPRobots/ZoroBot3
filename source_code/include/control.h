@@ -1,26 +1,27 @@
 #ifndef __CONTROL_H
 #define __CONTROL_H
 
-#include <config.h>
 #include <battery.h>
+#include <config.h>
+#include <constants.h>
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
 #include <math.h>
 
-#define BASE_LINEAR_ACCEL 3000
 
-// #define KP_LINEAR 0.0000
-// #define KI_LINEAR 0.0009
-// #define KD_LINEAR 0.0050
-#define KP_LINEAR 0.0002
-#define KI_LINEAR 0.0007
-#define KD_LINEAR 0
-
-#define KP_ANGULAR 0.2
-#define KI_ANGULAR 0.007
-#define KD_ANGULAR 0.00
-
+#define CONTROL_DEBUG_LENGTH 1000
+#define CONTROL_DEBUG_SIZE 8
+enum CONTROL_DEBUG {
+  TARGET_LINEAR_SPEED = 0,
+  IDEAL_LINEAR_SPEED = 1,
+  MEASURED_LINEAR_SPEED = 2,
+  IDEAL_ANGULAR_SPEED = 3,
+  MEASURED_ANGULAR_SPEED = 4,
+  PWM_LEFT = 5,
+  PWM_RIGHT = 6,
+  BATTERY_LEVEL = 7
+};
 
 bool is_competicion_iniciada(void);
 void set_competicion_iniciada(bool state);

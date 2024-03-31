@@ -8,6 +8,7 @@
 #include "delay.h"
 #include "leds.h"
 #include "setup.h"
+#include "constants.h"
 
 #define BATTERY_VOLTAGE_LOW_PASS_FILTER_ALPHA 0.1
 

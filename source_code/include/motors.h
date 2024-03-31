@@ -6,10 +6,12 @@
 #include <stdlib.h>
 
 #include <config.h>
+#include <constants.h>
 #include <delay.h>
+#include <utils.h>
+
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
-#include <utils.h>
 
 void set_motors_speed(float velI, float velD);
 void set_motors_pwm(int32_t pwm_left, int32_t pwm_right);

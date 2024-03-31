@@ -7,11 +7,12 @@
 
 #include <stdint.h>
 
+#include "buttons.h"
+#include "constants.h"
 #include "delay.h"
-#include "setup.h"
 #include "math.h"
 #include "motors.h"
-#include "buttons.h"
+#include "setup.h"
 
 void mpu_set_updating(bool updating);
 

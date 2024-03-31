@@ -19,18 +19,6 @@ static volatile float voltage_right;
 static volatile int32_t pwm_left;
 static volatile int32_t pwm_right;
 
-#define CONTROL_DEBUG_LENGTH 1000
-#define CONTROL_DEBUG_SIZE 8
-static enum CONTROL_DEBUG {
-  TARGET_LINEAR_SPEED = 0,
-  IDEAL_LINEAR_SPEED = 1,
-  MEASURED_LINEAR_SPEED = 2,
-  IDEAL_ANGULAR_SPEED = 3,
-  MEASURED_ANGULAR_SPEED = 4,
-  PWM_LEFT = 5,
-  PWM_RIGHT = 6,
-  BATTERY_LEVEL = 7
-};
 static volatile uint16_t arr_debug_start = 0;
 static volatile uint16_t arr_debug_end = 0;
 static volatile int32_t arr_debug[CONTROL_DEBUG_LENGTH][CONTROL_DEBUG_SIZE];
@@ -71,12 +59,12 @@ static int32_t voltage_to_motor_pwm(float voltage) {
  */
 static void update_ideal_linear_speed(void) {
   if (ideal_linear_speed < target_linear_speed) {
-    ideal_linear_speed += BASE_LINEAR_ACCEL / 1000;
+    ideal_linear_speed += BASE_LINEAR_ACCEL / CONTROL_FREQUENCY_HZ;
     if (ideal_linear_speed > target_linear_speed) {
       ideal_linear_speed = target_linear_speed;
     }
   } else if (ideal_linear_speed > target_linear_speed) {
-    ideal_linear_speed -= BASE_LINEAR_ACCEL / 1000;
+    ideal_linear_speed -= BASE_LINEAR_ACCEL / CONTROL_FREQUENCY_HZ;
     if (ideal_linear_speed < target_linear_speed) {
       ideal_linear_speed = target_linear_speed;
     }

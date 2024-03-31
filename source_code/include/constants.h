@@ -1,0 +1,18 @@
+#ifndef __CONSTANTS_H
+#define __CONSTANTS_H
+
+/** Constantes matemáticas */
+#define PI 3.1415
+#define MICROMETERS_PER_MILLIMETER 1000
+#define MICROSECONDS_PER_SECOND 1000000
+
+/** Constantes del STM32F4 */
+#define SYSCLK_FREQUENCY_HZ 168000000
+#define SYSTICK_FREQUENCY_HZ 1000
+#define CONTROL_FREQUENCY_HZ 1000
+#define LEDS_MAX_PWM 1024
+#define MOTORES_MAX_PWM 1024
+#define ADC_RESOLUTION 4096
+#define ADC_LSB (3.3 / ADC_RESOLUTION)
+
+#endif

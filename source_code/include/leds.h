@@ -2,13 +2,14 @@
 #define __LEDS_H
 
 #include <config.h>
+#include <constants.h>
 #include <delay.h>
-#include <utils.h>
 #include <usart.h>
+#include <utils.h>
+
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
-
 
 void set_status_led(bool state);
 void toggle_status_led(void);

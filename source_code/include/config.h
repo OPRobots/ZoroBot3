@@ -4,41 +4,53 @@
 #include <buttons.h>
 #include <stdio.h>
 
-
-/** Maze dimensions */
+/** Laberinto */
 #define CELL_DIMENSION 180
 #define CELL_DIAGONAL 127.3
 #define WALL_WIDTH 12
 #define MIDDLE_MAZE_DISTANCE ((CELL_DIMENSION - WALL_WIDTH) / 2.)
 
-/** Constantes matemáticas */
-#define PI 3.1415
-
-/** Constantes del STM32F4 */
-#define SYSCLK_FREQUENCY_HZ 168000000
-#define SYSTICK_FREQUENCY_HZ 1000
-#define MICROMETERS_PER_MILLIMETER 1000
-#define MICROSECONDS_PER_SECOND 1000000
-
-/** Constantes de PWM */
-#define LEDS_MAX_PWM 1024
-#define MOTORES_MAX_PWM 1024
-
-/** Constantes del Robot */
+/** Características Físicas */
 #define MICROMETERS_PER_TICK 9.4967
 #define WHEELS_SEPARATION 60
 #define MIN_SPEED_PERCENT 5
 
-/** Constantes ADC */
-#define ADC_RESOLUTION 4096
-#define ADC_LSB (3.3 / ADC_RESOLUTION)
+/** Movimiento */
+#define BASE_LINEAR_ACCEL 3000
+// #define KP_LINEAR 0.0000
+// #define KI_LINEAR 0.0009
+// #define KD_LINEAR 0.0050
+#define KP_LINEAR 0.0002
+#define KI_LINEAR 0.0007
+#define KD_LINEAR 0
 
-/** Constantes del Divisor de Voltage */
+#define KP_ANGULAR 0.2
+#define KI_ANGULAR 0.007
+#define KD_ANGULAR 0.00
+
+/** Sensores */
+#define SENSOR_LOW_PASS_FILTER_ALPHA 0.1
+
+#define SENSOR_FRONT_LEFT_WALL_OFFSET 0
+#define SENSOR_FRONT_RIGHT_WALL_OFFSET 0
+#define SENSOR_SIDE_LEFT_WALL_OFFSET -250
+#define SENSOR_SIDE_RIGHT_WALL_OFFSET 0
+
+#define SENSOR_FRONT_LEFT_WALL_SLOPE -0.0477
+#define SENSOR_FRONT_LEFT_WALL_INTERCEPT 410
+#define SENSOR_FRONT_RIGHT_WALL_SLOPE -0.0522
+#define SENSOR_FRONT_RIGHT_WALL_INTERCEPT 450 
+#define SENSOR_SIDE_LEFT_WALL_SLOPE -0.0565
+#define SENSOR_SIDE_LEFT_WALL_INTERCEPT 463
+#define SENSOR_SIDE_RIGHT_WALL_SLOPE -0.0606
+#define SENSOR_SIDE_RIGHT_WALL_INTERCEPT 482
+
+/** Divisor de Voltage */
 #define VOLT_DIV_FACTOR 2.654
 #define BATTERY_HIGH_LIMIT_VOLTAGE 8.4
 #define BATTERY_LOW_LIMIT_VOLTAGE 7.4
 
-/** Constantes de Modo RUN */
+/** Modo RUN */
 #define CONFIG_RUN_RACE 1
 #define CONFIG_RUN_DEBUG 0
 

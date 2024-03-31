@@ -5,6 +5,7 @@
 
 #include <libopencm3/cm3/dwt.h>
 
+#include "constants.h"
 #include "setup.h"
 
 void delay(uint32_t ms);
