@@ -6,6 +6,7 @@
 #include <leds.h>
 #include <menu.h>
 #include <motors.h>
+#include <move.h>
 #include <mpu.h>
 #include <sensors.h>
 #include <setup.h>
@@ -28,6 +29,20 @@ int main(void) {
   uint32_t ticks = get_clock_ticks();
   set_competicion_iniciada(true);
   set_status_led(true);
+
+  // move_straight(100, 100, false);
+  move_straight(45, 200, false);
+  move_straight(90, 200, false);
+  move_straight(95, 200, false);
+  // move_straight(100, 200, true);
+  move_inplace_turn(90.0, 10);
+  move_straight(180, 200, true);
+  // delay(250);
+  // move_inplace_turn(-90.0, 10);
+  // delay(250);
+  // move_inplace_turn(-90.0, 10);
+  // delay(250);
+  // move_inplace_turn(90.0, 10);
   while (1) {
     // printf("%0x\n", mpu_who_am_i());
     // printf("%d \n", (int)get_gyro_z_degrees());
@@ -36,8 +51,9 @@ int main(void) {
 
     // ZONA DEBUG TEMPORAL
 
-    // VELOCIDAD LINEAL
+    // MOVIMIENTO RECTO
 
+    // VELOCIDAD LINEAL
     // if (get_clock_ticks() - ticks <= 100) {
     //   set_target_linear_speed(100);
     //   // printf("%d\n", 100);
@@ -48,28 +64,30 @@ int main(void) {
     //   set_target_linear_speed(0);
     //   // printf("%d\n", 0);
     // } else {
+      // set_competicion_iniciada(false);
+      // set_status_led(false);
+      warning_status_led(125);
+    // }
+
+    // VELOCIDAD LINEAL Y ANGULAR
+    // if (get_clock_ticks() - ticks <= 500) {
+    //   set_target_linear_speed(500);
+    //   set_ideal_angular_speed(0);
+    //   // printf("%d\n", 200);
+    // } else {
     //   set_competicion_iniciada(false);
     //   set_status_led(false);
     // }
-
-    if (get_clock_ticks() - ticks <= 500) {
-      set_target_linear_speed(500);
-      set_ideal_angular_speed(0);
-      // printf("%d\n", 200);
-    } else {
-      set_competicion_iniciada(false);
-      set_status_led(false);
-    }
-    // if (is_competicion_iniciada()) {
+    // // if (is_competicion_iniciada()) {
+    // //   control_debug();
+    // // }
+    // // // set_motors_speed(80,80);
+    // // delay(1);
+    // if (get_menu_mode_btn()) {
+    //   while (get_menu_mode_btn())
+    //     ;
     //   control_debug();
     // }
-    // // set_motors_speed(80,80);
-    // delay(1);
-    if (get_menu_mode_btn()) {
-      while (get_menu_mode_btn())
-        ;
-      control_debug();
-    }
 
     // BATERÍA
     //  printf("%.2f\n", get_battery_voltage());

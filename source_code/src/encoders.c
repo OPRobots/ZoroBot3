@@ -216,7 +216,7 @@ void update_encoder_readings(void) {
 
   avg_micrometers = (left_speed / SYSTICK_FREQUENCY_HZ + right_speed / SYSTICK_FREQUENCY_HZ) / 2.0f;
 
-  avg_millimeters = avg_micrometers / MICROMETERS_PER_MILLIMETER;
+  avg_millimeters = avg_micrometers / MICROMETERS_PER_MILLIMETER*1.0;
 
   last_left_ticks = left_ticks;
   last_right_ticks = right_ticks;
