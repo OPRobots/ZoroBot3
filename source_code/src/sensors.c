@@ -17,9 +17,9 @@ uint16_t sensors_offsets[NUM_SENSORES] = {SENSOR_FRONT_LEFT_WALL_OFFSET,
                                           SENSOR_SIDE_RIGHT_WALL_OFFSET};
 
 float sensors_distance_slope[NUM_SENSORES] = {SENSOR_FRONT_LEFT_WALL_SLOPE,
-                                                 SENSOR_FRONT_RIGHT_WALL_SLOPE,
-                                                 SENSOR_SIDE_LEFT_WALL_SLOPE,
-                                                 SENSOR_SIDE_RIGHT_WALL_SLOPE};
+                                              SENSOR_FRONT_RIGHT_WALL_SLOPE,
+                                              SENSOR_SIDE_LEFT_WALL_SLOPE,
+                                              SENSOR_SIDE_RIGHT_WALL_SLOPE};
 uint16_t sensors_distance_intercept[NUM_SENSORES] = {SENSOR_FRONT_LEFT_WALL_INTERCEPT,
                                                      SENSOR_FRONT_RIGHT_WALL_INTERCEPT,
                                                      SENSOR_SIDE_LEFT_WALL_INTERCEPT,
@@ -183,7 +183,18 @@ void update_sensors_magics(void) {
         ln_index = 1;
       }
       sensors_linearized[sensor] = (uint16_t)(ln_linearization[ln_index] * 1000);
-      sensors_distance[sensor] = (uint16_t)((sensors_distance_slope[sensor]*sensors_linearized[sensor])+sensors_distance_intercept[sensor]);
+      uint16_t robot_offset = 0;
+      switch (sensor) {
+        case SENSOR_FRONT_LEFT_WALL_ID:
+        case SENSOR_FRONT_RIGHT_WALL_ID:
+          robot_offset = MIDDLE_ROBOT_LENGTH;
+          break;
+        case SENSOR_SIDE_LEFT_WALL_ID:
+        case SENSOR_SIDE_RIGHT_WALL_ID:
+          robot_offset = MIDDLE_ROBOT_WIDTH;
+          break;
+      }
+      sensors_distance[sensor] = ((uint16_t)((sensors_distance_slope[sensor] * sensors_linearized[sensor]) + sensors_distance_intercept[sensor])) + robot_offset;
     }
   }
 }
