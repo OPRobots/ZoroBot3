@@ -19,10 +19,6 @@ static volatile float voltage_right;
 static volatile int32_t pwm_left;
 static volatile int32_t pwm_right;
 
-static volatile uint16_t arr_debug_start = 0;
-static volatile uint16_t arr_debug_end = 0;
-static volatile int32_t arr_debug[CONTROL_DEBUG_LENGTH][CONTROL_DEBUG_SIZE];
-
 /**
  * @brief Comprueba si el robot está en funcionamiento
  *
@@ -79,31 +75,6 @@ static float get_measured_angular_speed(void) {
   return -get_gyro_z_radps();
 }
 
-static void store_debug(void) {
-  arr_debug[arr_debug_end][TARGET_LINEAR_SPEED] = target_linear_speed;
-  arr_debug[arr_debug_end][IDEAL_LINEAR_SPEED] = ideal_linear_speed;
-  arr_debug[arr_debug_end][MEASURED_LINEAR_SPEED] = get_measured_linear_speed() * 100.0;
-  arr_debug[arr_debug_end][IDEAL_ANGULAR_SPEED] = ideal_angular_speed * 100;
-  arr_debug[arr_debug_end][MEASURED_ANGULAR_SPEED] = get_measured_angular_speed() * 100.0;
-  arr_debug[arr_debug_end][PWM_LEFT] = pwm_left;
-  arr_debug[arr_debug_end][PWM_RIGHT] = pwm_right;
-  arr_debug[arr_debug_end][BATTERY_LEVEL] = get_battery_voltage() * 100.0;
-
-  if (arr_debug_end < arr_debug_start) {
-    arr_debug_end++;
-    arr_debug_start++;
-  } else {
-    arr_debug_end++;
-  }
-  if (arr_debug_start >= CONTROL_DEBUG_LENGTH) {
-    arr_debug_start = 0;
-  }
-  if (arr_debug_end >= CONTROL_DEBUG_LENGTH) {
-    arr_debug_end = 0;
-    arr_debug_start = arr_debug_end + 1;
-  }
-}
-
 void set_target_linear_speed(int32_t linear_speed) {
   target_linear_speed = linear_speed;
 }
@@ -154,27 +125,17 @@ void control_loop(void) {
   pwm_left = voltage_to_motor_pwm(voltage_left);
   pwm_right = voltage_to_motor_pwm(voltage_right);
   set_motors_pwm(pwm_left, pwm_right);
-  store_debug();
-}
-
-void control_debug(void) {
-  if (arr_debug_start == arr_debug_end) {
-    return;
-  }
-  uint16_t i = arr_debug_start;
-  do {
-    printf("%ld\t%ld\t%.2f\t%.2f\t%.2f\t%ld\t%ld\t%.2f\n",
-           arr_debug[i][TARGET_LINEAR_SPEED],
-           arr_debug[i][IDEAL_LINEAR_SPEED],
-           arr_debug[i][MEASURED_LINEAR_SPEED] / 100.0,
-           arr_debug[i][IDEAL_ANGULAR_SPEED] / 100.0,
-           arr_debug[i][MEASURED_ANGULAR_SPEED] / 100.0,
-           arr_debug[i][PWM_LEFT],
-           arr_debug[i][PWM_RIGHT],
-           arr_debug[i][BATTERY_LEVEL] / 100.0);
-    i++;
-    if (i >= CONTROL_DEBUG_LENGTH) {
-      i = 0;
-    }
-  } while (i != arr_debug_end);
+  // store_debug();
+  macroarray_store(
+      0,
+      0b00011001,
+      8,
+      target_linear_speed,
+      ideal_linear_speed,
+      (int16_t)(get_measured_linear_speed()),
+      (int16_t)(ideal_angular_speed * 100.0),
+      (int16_t)(get_measured_angular_speed() * 100.0),
+      pwm_left,
+      pwm_right,
+      (int16_t)(get_battery_voltage() * 100.0));
 }

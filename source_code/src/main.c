@@ -4,6 +4,7 @@
 #include <delay.h>
 #include <encoders.h>
 #include <leds.h>
+#include <macroarray.h>
 #include <menu.h>
 #include <motors.h>
 #include <move.h>
@@ -26,10 +27,21 @@ int main(void) {
   delay(1500);
   gyro_z_calibration();
 
-  uint32_t ticks = get_clock_ticks();
-  set_competicion_iniciada(true);
+  // uint32_t ticks = get_clock_ticks();
   set_status_led(true);
 
+  bool start_sensor = false;
+  while (!start_sensor) {
+    set_RGB_rainbow();
+    if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= 60.0) {
+      set_RGB_color(0, 50, 0);
+      delay(2000);
+      start_sensor = true;
+      set_RGB_color(0, 0, 0);
+    }
+  }
+
+  set_competicion_iniciada(true);
   // move_straight(100, 100, false);
   move_straight(45, 200, false);
   move_straight(90, 200, false);
@@ -37,6 +49,8 @@ int main(void) {
   // move_straight(100, 200, true);
   move_inplace_turn(90.0, 10);
   move_straight(180, 200, true);
+
+  set_competicion_iniciada(false);
   // delay(250);
   // move_inplace_turn(-90.0, 10);
   // delay(250);
@@ -64,9 +78,9 @@ int main(void) {
     //   set_target_linear_speed(0);
     //   // printf("%d\n", 0);
     // } else {
-      // set_competicion_iniciada(false);
-      // set_status_led(false);
-      warning_status_led(125);
+    // set_competicion_iniciada(false);
+    // set_status_led(false);
+    warning_status_led(125);
     // }
 
     // VELOCIDAD LINEAL Y ANGULAR
@@ -83,11 +97,11 @@ int main(void) {
     // // }
     // // // set_motors_speed(80,80);
     // // delay(1);
-    // if (get_menu_mode_btn()) {
-    //   while (get_menu_mode_btn())
-    //     ;
-    //   control_debug();
-    // }
+    if (get_menu_mode_btn()) {
+      while (get_menu_mode_btn())
+        ;
+      macroarray_print();
+    }
 
     // BATERÍA
     //  printf("%.2f\n", get_battery_voltage());
