@@ -42,6 +42,7 @@ const float ln_linearization[LOG_LINEARIZATION_TABLE_SIZE] = {
 uint16_t sensors_filtered[NUM_SENSORES];
 uint16_t sensors_linearized[NUM_SENSORES];
 uint16_t sensors_distance[NUM_SENSORES];
+int16_t sensors_distance_offset[NUM_SENSORES] = {0, 0, 0, 0};
 
 /**
  * @brief Set an specific emitter ON.
@@ -162,6 +163,26 @@ uint16_t get_sensor_raw_filter(uint8_t pos) {
   }
 }
 
+void sensors_calibration(void) {
+  uint32_t right_temp = 0;
+  uint32_t left_temp = 0;
+  int i;
+
+  for (i = 0; i < SENSOR_SIDE_CALIBRATION_READINGS; i++) {
+    left_temp += sensors_distance[SENSOR_SIDE_LEFT_WALL_ID];
+    right_temp += sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID];
+    set_leds_wave(35);
+    delay(5);
+  }
+  set_info_leds();
+  sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] =
+      (left_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
+  sensors_distance_offset[SENSOR_SIDE_RIGHT_WALL_ID] =
+      (right_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
+  delay(100);
+  clear_info_leds();
+}
+
 /**
  * @brief Aplica las magias necesarias para obtener valores correctos de los sensores.
  * · Resta el valor de offset a las lecturas en caso necesario.
@@ -194,7 +215,7 @@ void update_sensors_magics(void) {
           robot_offset = MIDDLE_ROBOT_WIDTH;
           break;
       }
-      sensors_distance[sensor] = ((uint16_t)((sensors_distance_slope[sensor] * sensors_linearized[sensor]) + sensors_distance_intercept[sensor])) + robot_offset;
+      sensors_distance[sensor] = ((uint16_t)((sensors_distance_slope[sensor] * sensors_linearized[sensor]) + sensors_distance_intercept[sensor])) + robot_offset - sensors_distance_offset[sensor];
     }
   }
 }

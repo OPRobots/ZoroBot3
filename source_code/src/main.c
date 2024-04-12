@@ -26,6 +26,7 @@ int main(void) {
   show_battery_level();
   delay(1500);
   gyro_z_calibration();
+  sensors_calibration();
 
   // uint32_t ticks = get_clock_ticks();
   set_status_led(true);

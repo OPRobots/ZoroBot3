@@ -22,6 +22,8 @@ uint8_t get_sensors_num(void);
 void get_sensors_raw(uint16_t *on, uint16_t *off);
 void sm_emitter_adc(void);
 
+void sensors_calibration(void);
+
 uint16_t get_sensor_raw(uint8_t pos, bool on);
 uint16_t get_sensor_raw_filter(uint8_t pos);
 
