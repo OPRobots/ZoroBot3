@@ -14,6 +14,12 @@ static volatile float angular_error;
 static volatile float last_angular_error;
 static volatile float sum_angular_error;
 
+static volatile bool side_sensors_close_correction_enabled = true;
+static volatile bool side_sensors_far_correction_enabled = true;
+static volatile float side_sensors_error;
+static volatile float last_side_sensors_error;
+static volatile float sum_side_sensors_error;
+
 static volatile float voltage_left;
 static volatile float voltage_right;
 static volatile int32_t pwm_left;
@@ -105,9 +111,6 @@ void control_loop(void) {
   // TODO: corrección de gyro
 
   linear_error = ideal_linear_speed - get_measured_linear_speed();
-  angular_error = ideal_angular_speed - get_measured_angular_speed();
-
-  linear_voltage = KP_LINEAR * linear_error + KI_LINEAR * sum_linear_error + KD_LINEAR * (linear_error - last_linear_error);
   sum_linear_error += linear_error;
   last_linear_error = linear_error;
   // if (sum_linear_error > 1000) {
@@ -116,9 +119,31 @@ void control_loop(void) {
   //   sum_linear_error = -1000;
   // }
 
-  angular_voltage = KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error);
+  angular_error = ideal_angular_speed - get_measured_angular_speed();
   sum_angular_error += angular_error;
   last_angular_error = angular_error;
+
+  side_sensors_error = 0;
+  if (side_sensors_close_correction_enabled) {
+    side_sensors_error += get_side_sensors_close_error();
+  }
+  if (side_sensors_far_correction_enabled) {
+    side_sensors_error += get_side_sensors_far_error();
+  }
+  if (side_sensors_close_correction_enabled || side_sensors_far_correction_enabled) {
+    sum_side_sensors_error += side_sensors_error;
+    last_side_sensors_error = side_sensors_error;
+  } else {
+    side_sensors_error = 0;
+    sum_side_sensors_error = 0;
+    last_side_sensors_error = 0;
+  }
+
+  linear_voltage =
+      KP_LINEAR * linear_error + KI_LINEAR * sum_linear_error + KD_LINEAR * (linear_error - last_linear_error);
+  angular_voltage =
+      KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
+      KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error);
 
   voltage_left = linear_voltage + angular_voltage;
   voltage_right = linear_voltage - angular_voltage;

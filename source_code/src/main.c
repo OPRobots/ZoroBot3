@@ -34,7 +34,7 @@ int main(void) {
   bool start_sensor = false;
   while (!start_sensor) {
     set_RGB_rainbow();
-    if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= 60.0) {
+    if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= 70.0) {
       set_RGB_color(0, 50, 0);
       delay(2000);
       start_sensor = true;
@@ -43,21 +43,20 @@ int main(void) {
   }
 
   set_competicion_iniciada(true);
+  move_straight(250, 200, false);
+  move_straight(250, 500, false);
+  // move_straight(250, 500, false);
+  move_straight(250, 200, true);
   // move_straight(100, 100, false);
-  move_straight(45, 200, false);
-  move_straight(90, 200, false);
-  move_straight(95, 200, false);
-  // move_straight(100, 200, true);
-  move_inplace_turn(90.0, 10);
-  move_straight(180, 200, true);
+  // move_straight(45, 200, false);
+  // move_straight(90, 200, false);
+  // move_straight(95, 200, false);
+  // // move_straight(100, 200, true);
+  // move_inplace_turn(90.0, 10);
+  // move_straight(180, 200, true);
 
   set_competicion_iniciada(false);
-  // delay(250);
-  // move_inplace_turn(-90.0, 10);
-  // delay(250);
-  // move_inplace_turn(-90.0, 10);
-  // delay(250);
-  // move_inplace_turn(90.0, 10);
+
   while (1) {
     // printf("%0x\n", mpu_who_am_i());
     // printf("%d \n", (int)get_gyro_z_degrees());
@@ -65,6 +64,11 @@ int main(void) {
     // delay(100);
 
     // ZONA DEBUG TEMPORAL
+
+    // LOG ERROR LATERAL
+    // get_side_sensors_close_error();
+    printf("%4d - %4d\n", get_side_sensors_close_error(), get_side_sensors_far_error());
+    delay(100);
 
     // MOVIMIENTO RECTO
 
@@ -98,11 +102,11 @@ int main(void) {
     // // }
     // // // set_motors_speed(80,80);
     // // delay(1);
-    if (get_menu_mode_btn()) {
-      while (get_menu_mode_btn())
-        ;
-      macroarray_print();
-    }
+    // if (get_menu_mode_btn()) {
+    //   while (get_menu_mode_btn())
+    //     ;
+    //   macroarray_print();
+    // }
 
     // BATERÍA
     //  printf("%.2f\n", get_battery_voltage());
@@ -110,7 +114,7 @@ int main(void) {
     // ENCODERS
     // printf("%ld (%ld)\t%ld (%ld) | %.4f %.4f %.4f \n", get_encoder_total_left_micrometers(), get_encoder_total_left_millimeters(), get_encoder_total_right_micrometers(), get_encoder_total_right_millimeters(), get_encoder_avg_speed(), get_encoder_angular_speed(), get_encoder_curernt_angle());
     // printf("%.2f\n", get_encoder_avg_speed());
-    // delay(150)
+    // delay(150);
 
     // SENSORES MOVIENDO EL ROBOT MANUALMENTE
     // static uint8_t count = 0;
@@ -132,7 +136,7 @@ int main(void) {
     // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
     // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
     // printf("\n");
-    // delay(1000);
+    // delay(100);
     // }
 
     // printf("%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t\n", get_sensor_log(0), get_sensor_raw_filter(0),  get_sensor_log(1), get_sensor_raw_filter(1),  get_sensor_log(2), get_sensor_raw_filter(2),  get_sensor_log(3), get_sensor_raw_filter(3));
