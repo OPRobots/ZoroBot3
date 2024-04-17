@@ -34,7 +34,12 @@ int main(void) {
   bool start_sensor = false;
   while (!start_sensor) {
     set_RGB_rainbow();
-    if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= 70.0) {
+    
+    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
+    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
+    // printf("\n");
+    // delay(100);
+    if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= 130) {
       set_RGB_color(0, 50, 0);
       delay(2000);
       start_sensor = true;
@@ -43,10 +48,10 @@ int main(void) {
   }
 
   set_competicion_iniciada(true);
-  move_straight(250, 200, false);
-  move_straight(250, 500, false);
+  // move_straight(250, 200, false);
   // move_straight(250, 500, false);
-  move_straight(250, 200, true);
+  // // move_straight(250, 500, false);
+  // move_straight(250, 200, true);
   // move_straight(100, 100, false);
   // move_straight(45, 200, false);
   // move_straight(90, 200, false);
@@ -67,8 +72,8 @@ int main(void) {
 
     // LOG ERROR LATERAL
     // get_side_sensors_close_error();
-    printf("%4d - %4d\n", get_side_sensors_close_error(), get_side_sensors_far_error());
-    delay(100);
+    // printf("%4d - %4d\n", get_side_sensors_close_error(), get_side_sensors_far_error());
+    // delay(100);
 
     // MOVIMIENTO RECTO
 
