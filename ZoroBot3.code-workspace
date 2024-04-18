@@ -7,5 +7,10 @@
 			"path": "source_code"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"*.tpl": "html",
+			"move.h": "c"
+		}
+	}
 }

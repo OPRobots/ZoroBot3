@@ -14,8 +14,8 @@ static volatile float angular_error;
 static volatile float last_angular_error;
 static volatile float sum_angular_error;
 
-static volatile bool side_sensors_close_correction_enabled = true;
-static volatile bool side_sensors_far_correction_enabled = true;
+static volatile bool side_sensors_close_correction_enabled = false;
+static volatile bool side_sensors_far_correction_enabled = false;
 static volatile float side_sensors_error;
 static volatile float last_side_sensors_error;
 static volatile float sum_side_sensors_error;

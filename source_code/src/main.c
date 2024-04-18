@@ -34,7 +34,7 @@ int main(void) {
   bool start_sensor = false;
   while (!start_sensor) {
     set_RGB_rainbow();
-    
+
     // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
     // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
     // printf("\n");
@@ -48,8 +48,10 @@ int main(void) {
   }
 
   set_competicion_iniciada(true);
-  // move_straight(250, 200, false);
-  // move_straight(250, 500, false);
+  move_arc_turn(MOVE_RIGHT);
+  move_straight(100, 500, true);
+  // move_straight(850, 1500, false);
+  // move_straight(250, 500, true);
   // // move_straight(250, 500, false);
   // move_straight(250, 200, true);
   // move_straight(100, 100, false);
