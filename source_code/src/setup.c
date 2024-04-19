@@ -15,7 +15,7 @@
  */
 static void setup_clock(void) {
   
-  rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);
+  rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
 
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_GPIOB);
@@ -49,7 +49,7 @@ static void setup_clock(void) {
  *
  */
 static void setup_systick(void) {
-  systick_set_frequency(SYSTICK_FREQUENCY_HZ, 168000000);
+  systick_set_frequency(SYSTICK_FREQUENCY_HZ, SYSCLK_FREQUENCY_HZ);
   systick_counter_enable();
   systick_interrupt_enable();
 }
@@ -215,8 +215,8 @@ static void setup_motors_pwm(void) {
   timer_set_mode(TIM8, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
 
   //84000000
-  timer_set_prescaler(TIM8, rcc_apb2_frequency * 2 / 10000000 - 2);
-  // 4000000 es la frecuencia a la que irá el PWM 4 kHz, los dos últimos ceros no se porqué,
+  timer_set_prescaler(TIM8, rcc_apb2_frequency * 2 / 40000000 - 2);
+  // 4000000 es la frecuencia a la que irá el PWM 25 kHz, los dos últimos ceros no se porqué,
   // pero son necesarios ya que rcc_apb2_frequency también añade dos ceros a mayores
   timer_set_repetition_counter(TIM8, 0);
   timer_enable_preload(TIM8);
