@@ -31,26 +31,31 @@ void set_motors_speed(float velI, float velD) {
 }
 
 void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
+  if (pwm_left > MOTORES_MAX_PWM) {
+    pwm_left = MOTORES_MAX_PWM;
+  } else if (pwm_left < -MOTORES_MAX_PWM) {
+    pwm_left = -MOTORES_MAX_PWM;
+  }
   if (pwm_left >= 0) {
-    if (pwm_left > MOTORES_MAX_PWM) {
-      pwm_left = MOTORES_MAX_PWM;
-    }
     gpio_set(GPIOB, GPIO14);
     gpio_clear(GPIOB, GPIO15);
   } else {
     gpio_set(GPIOB, GPIO15);
     gpio_clear(GPIOB, GPIO14);
   }
+  if (pwm_right > MOTORES_MAX_PWM) {
+    pwm_right = MOTORES_MAX_PWM;
+  } else if (pwm_right < -MOTORES_MAX_PWM) {
+    pwm_right = -MOTORES_MAX_PWM;
+  }
   if (pwm_right >= 0) {
-    if (pwm_right > MOTORES_MAX_PWM) {
-      pwm_right = MOTORES_MAX_PWM;
-    }
     gpio_set(GPIOB, GPIO13);
     gpio_clear(GPIOB, GPIO12);
   } else {
     gpio_set(GPIOB, GPIO12);
     gpio_clear(GPIOB, GPIO13);
   }
+  // printf("%d - %d\n", abs(pwm_left), abs(pwm_right));
   timer_set_oc_value(TIM8, TIM_OC4, abs(pwm_left));
   timer_set_oc_value(TIM8, TIM_OC3, abs(pwm_right));
 }
