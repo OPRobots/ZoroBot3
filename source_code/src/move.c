@@ -1,8 +1,8 @@
 #include "move.h"
 
 struct turn_params turns[] = {
-    [MOVE_LEFT] = {70, 30, 500, 612.5, 14.44, 24, 85, -1},
-    [MOVE_RIGHT] = {70, 30, 500, 612.5, 14.44, 24, 85, 1},
+    [MOVE_LEFT] = {55, 15, 500, 612.5, 9.625, 16, 148, -1},
+    [MOVE_RIGHT] = {55, 15, 500, 612.5, 9.625, 16, 148, 1},
 };
 
 void move_straight(int32_t distance, int32_t speed, bool stop) {
