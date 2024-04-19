@@ -13,6 +13,10 @@
 bool is_competicion_iniciada(void);
 void set_competicion_iniciada(bool state);
 
+void set_side_sensors_close_correction(bool enabled);
+void set_side_sensors_far_correction(bool enabled);
+void set_front_sensors_correction(bool enabled);
+
 void set_target_linear_speed(int32_t linear_speed);
 void set_ideal_angular_speed(float angular_speed);
 

@@ -29,7 +29,8 @@ int main(void) {
   sensors_calibration();
 
   // uint32_t ticks = get_clock_ticks();
-  set_status_led(true);
+  // set_status_led(true);
+
 
   bool start_sensor = false;
   while (!start_sensor) {
@@ -48,7 +49,12 @@ int main(void) {
   }
 
   set_competicion_iniciada(true);
-  move_arc_turn(MOVE_RIGHT);
+  // set_target_linear_speed(0);
+  // set_ideal_angular_speed(0);
+  set_front_sensors_correction(false);
+  set_side_sensors_close_correction(false);
+  set_side_sensors_far_correction(false);
+  move_arc_turn(MOVE_LEFT);
   move_straight(100, 500, true);
   // move_straight(850, 1500, false);
   // move_straight(250, 500, true);
@@ -65,6 +71,7 @@ int main(void) {
   set_competicion_iniciada(false);
 
   while (1) {
+    // set_motors_pwm(512,512);
     // printf("%0x\n", mpu_who_am_i());
     // printf("%d \n", (int)get_gyro_z_degrees());
     // set_z_angle(0);
@@ -126,8 +133,8 @@ int main(void) {
     // SENSORES MOVIENDO EL ROBOT MANUALMENTE
     // static uint8_t count = 0;
     // if (get_encoder_average_micrometers()/10000 >= count || count == 0) {
-    // printf("%4d\t", get_sensor_filtered(SENSOR_FRONT_LEFT_WALL_ID));
-    // printf("%4d", get_sensor_filtered(SENSOR_FRONT_RIGHT_WALL_ID));
+    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
+    // printf("%4d", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
     // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
     // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
     // printf("\n");
@@ -138,6 +145,7 @@ int main(void) {
     // if (get_menu_mode_btn()) {
     //   while (get_menu_mode_btn())
     //     ;
+    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)-get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
     // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
     // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
     // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));

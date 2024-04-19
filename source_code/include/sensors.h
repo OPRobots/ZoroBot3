@@ -27,6 +27,10 @@ void sensors_calibration(void);
 uint16_t get_sensor_raw(uint8_t pos, bool on);
 uint16_t get_sensor_raw_filter(uint8_t pos);
 
+bool left_wall_detection(void);
+bool right_wall_detection(void);
+bool front_wall_detection(void);
+
 void update_sensors_magics(void);
 uint16_t get_sensor_filtered(uint8_t pos);
 uint16_t get_sensor_linearized(uint8_t pos);
@@ -34,5 +38,6 @@ uint16_t get_sensor_distance(uint8_t pos);
 
 int16_t get_side_sensors_close_error(void);
 int16_t get_side_sensors_far_error(void);
+int16_t get_front_sensors_error(void);
 
 #endif

@@ -16,9 +16,15 @@ static volatile float sum_angular_error;
 
 static volatile bool side_sensors_close_correction_enabled = false;
 static volatile bool side_sensors_far_correction_enabled = false;
+static volatile bool front_sensors_correction_enabled = true;
+
 static volatile float side_sensors_error;
 static volatile float last_side_sensors_error;
 static volatile float sum_side_sensors_error;
+
+static volatile float front_sensors_error;
+static volatile float sum_front_sensors_error;
+static volatile float last_front_sensors_error;
 
 static volatile float voltage_left;
 static volatile float voltage_right;
@@ -52,7 +58,7 @@ void set_competicion_iniciada(bool state) {
  * @return int32_t PWM a aplicar al motor
  */
 static int32_t voltage_to_motor_pwm(float voltage) {
-  return voltage / /* 8.0 */ get_battery_voltage() * MOTORES_MAX_PWM;
+  return voltage / 8.0  /* get_battery_voltage() */ * MOTORES_MAX_PWM;
 }
 
 /**
@@ -81,6 +87,18 @@ static float get_measured_angular_speed(void) {
   return -get_gyro_z_radps();
 }
 
+void set_side_sensors_close_correction(bool enabled) {
+  side_sensors_close_correction_enabled = enabled;
+}
+
+void set_side_sensors_far_correction(bool enabled) {
+  side_sensors_far_correction_enabled = enabled;
+}
+
+void set_front_sensors_correction(bool enabled) {
+  front_sensors_correction_enabled = enabled;
+}
+
 void set_target_linear_speed(int32_t linear_speed) {
   target_linear_speed = linear_speed;
 }
@@ -95,6 +113,7 @@ void set_ideal_angular_speed(float angular_speed) {
  *
  */
 void control_loop(void) {
+  uint32_t ticks = read_cycle_counter();
   if (!competicionIniciada) {
     set_motors_speed(0, 0);
     set_fan_speed(0);
@@ -138,12 +157,22 @@ void control_loop(void) {
     sum_side_sensors_error = 0;
     last_side_sensors_error = 0;
   }
+  if (front_sensors_correction_enabled) {
+    front_sensors_error = get_front_sensors_error();
+    sum_front_sensors_error += front_sensors_error;
+    last_front_sensors_error = front_sensors_error;
+  } else {
+    front_sensors_error = 0;
+    sum_front_sensors_error = 0;
+    last_front_sensors_error = 0;
+  }
 
   linear_voltage =
       KP_LINEAR * linear_error + KI_LINEAR * sum_linear_error + KD_LINEAR * (linear_error - last_linear_error);
   angular_voltage =
       KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
-      KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error);
+      // KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
+      KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error + KD_FRONT_SENSORS * (front_sensors_error - last_front_sensors_error);
 
   voltage_left = linear_voltage + angular_voltage;
   voltage_right = linear_voltage - angular_voltage;
@@ -163,4 +192,5 @@ void control_loop(void) {
       pwm_left,
       pwm_right,
       (int16_t)(get_battery_voltage() * 100.0));
+      printf("%ld\n", read_cycle_counter() - ticks);
 }
