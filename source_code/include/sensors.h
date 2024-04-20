@@ -17,6 +17,12 @@
 #define SENSOR_SIDE_LEFT_WALL_ID 2
 #define SENSOR_SIDE_RIGHT_WALL_ID 3
 
+struct walls {
+  bool front;
+  bool left;
+  bool right;
+};
+
 uint8_t *get_sensors(void);
 uint8_t get_sensors_num(void);
 void get_sensors_raw(uint16_t *on, uint16_t *off);
@@ -30,6 +36,7 @@ uint16_t get_sensor_raw_filter(uint8_t pos);
 bool left_wall_detection(void);
 bool right_wall_detection(void);
 bool front_wall_detection(void);
+struct walls get_walls(void);
 
 void update_sensors_magics(void);
 uint16_t get_sensor_filtered(uint8_t pos);

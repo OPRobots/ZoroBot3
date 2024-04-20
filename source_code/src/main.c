@@ -31,31 +31,13 @@ int main(void) {
   // uint32_t ticks = get_clock_ticks();
   // set_status_led(true);
 
-
-  bool start_sensor = false;
-  while (!start_sensor) {
-    set_RGB_rainbow();
-
-    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
-    // printf("\n");
-    // delay(100);
-    if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= 130) {
-      set_RGB_color(0, 50, 0);
-      delay(2000);
-      start_sensor = true;
-      set_RGB_color(0, 0, 0);
-    }
-  }
-
-  set_competicion_iniciada(true);
   // set_target_linear_speed(0);
   // set_ideal_angular_speed(0);
-  set_front_sensors_correction(false);
-  set_side_sensors_close_correction(false);
-  set_side_sensors_far_correction(false);
-  move_arc_turn(MOVE_LEFT);
-  move_straight(100, 500, true);
+  // set_front_sensors_correction(false);
+  // set_side_sensors_close_correction(false);
+  // set_side_sensors_far_correction(false);
+  // move_arc_turn(MOVE_LEFT);
+  // move_straight(100, 500, true);
   // move_straight(850, 1500, false);
   // move_straight(250, 500, true);
   // // move_straight(250, 500, false);
@@ -68,9 +50,53 @@ int main(void) {
   // move_inplace_turn(90.0, 10);
   // move_straight(180, 200, true);
 
-  set_competicion_iniciada(false);
+  // set_competicion_iniciada(false);
 
   while (1) {
+
+    if (!is_competicion_iniciada()) {
+      bool start_sensor = false;
+      while (!start_sensor) {
+        set_RGB_rainbow();
+        if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= 130) {
+          set_RGB_color(0, 50, 0);
+          delay(2000);
+          start_sensor = true;
+          set_RGB_color(0, 0, 0);
+        }
+      }
+      set_competicion_iniciada(true);
+      set_front_sensors_correction(false);
+      set_side_sensors_close_correction(true);
+      set_side_sensors_far_correction(true);
+      move_straight(70 + 46.36, 500, false);
+    } else {
+      // Loop de competición
+      struct walls walls = get_walls();
+      if (walls.front && walls.left && walls.right) {
+        move_straight(100, 500, true);
+        set_competicion_iniciada(false);
+      } else if (!walls.right) {
+        set_side_sensors_close_correction(false);
+        set_side_sensors_far_correction(false);
+        move_arc_turn(MOVE_RIGHT);
+        set_side_sensors_close_correction(true);
+        set_side_sensors_far_correction(true);
+      } else if (!walls.left) {
+        set_side_sensors_close_correction(false);
+        set_side_sensors_far_correction(false);
+        move_arc_turn(MOVE_LEFT);
+        set_side_sensors_close_correction(true);
+        set_side_sensors_far_correction(true);
+      } else if (!walls.front) {
+        set_side_sensors_close_correction(true);
+        set_side_sensors_far_correction(true);
+        move_straight(180, 500, false);
+      } else {
+        set_competicion_iniciada(false);
+      }
+    }
+
     // set_motors_pwm(512,512);
     // printf("%0x\n", mpu_who_am_i());
     // printf("%d \n", (int)get_gyro_z_degrees());

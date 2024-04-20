@@ -58,7 +58,7 @@ void set_competicion_iniciada(bool state) {
  * @return int32_t PWM a aplicar al motor
  */
 static int32_t voltage_to_motor_pwm(float voltage) {
-  return voltage / 8.0  /* get_battery_voltage() */ * MOTORES_MAX_PWM;
+  return voltage / /* 8.0  */ get_battery_voltage() * MOTORES_MAX_PWM;
 }
 
 /**
@@ -171,7 +171,7 @@ void control_loop(void) {
       KP_LINEAR * linear_error + KI_LINEAR * sum_linear_error + KD_LINEAR * (linear_error - last_linear_error);
   angular_voltage =
       KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
-      // KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
+      KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
       KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error + KD_FRONT_SENSORS * (front_sensors_error - last_front_sensors_error);
 
   voltage_left = linear_voltage + angular_voltage;

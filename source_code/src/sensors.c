@@ -245,6 +245,14 @@ uint16_t get_sensor_distance(uint8_t pos) {
   return sensors_distance[pos];
 }
 
+struct walls get_walls(void) {
+  struct walls walls;
+  walls.front = front_wall_detection();
+  walls.left = left_wall_detection();
+  walls.right = right_wall_detection();
+  return walls;
+}
+
 int16_t get_side_sensors_close_error(void) {
   int16_t left_error = sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
   int16_t right_error = sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
