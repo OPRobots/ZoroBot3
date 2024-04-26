@@ -113,7 +113,6 @@ void set_ideal_angular_speed(float angular_speed) {
  *
  */
 void control_loop(void) {
-  uint32_t ticks = read_cycle_counter();
   if (!competicionIniciada) {
     set_motors_speed(0, 0);
     set_fan_speed(0);
@@ -192,5 +191,4 @@ void control_loop(void) {
       pwm_left,
       pwm_right,
       (int16_t)(get_battery_voltage() * 100.0));
-      printf("%ld\n", read_cycle_counter() - ticks);
 }

@@ -221,11 +221,11 @@ void update_sensors_magics(void) {
       switch (sensor) {
         case SENSOR_FRONT_LEFT_WALL_ID:
         case SENSOR_FRONT_RIGHT_WALL_ID:
-          robot_offset = FRONT_ROBOT_LENGTH;
+          robot_offset = ROBOT_FRONT_LENGTH;
           break;
         case SENSOR_SIDE_LEFT_WALL_ID:
         case SENSOR_SIDE_RIGHT_WALL_ID:
-          robot_offset = MIDDLE_ROBOT_WIDTH;
+          robot_offset = ROBOT_MIDDLE_WIDTH;
           break;
       }
       sensors_distance[sensor] = ((uint16_t)((sensors_distance_slope[sensor] * sensors_linearized[sensor]) + sensors_distance_intercept[sensor])) + robot_offset - sensors_distance_offset[sensor];

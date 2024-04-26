@@ -10,7 +10,9 @@ enum movement {
   MOVE_LEFT,
   MOVE_RIGHT,
   MOVE_LEFT_90,
-  MOVE_RIGHT_90
+  MOVE_RIGHT_90,
+  MOVE_180,
+  MOVE_180W,
 };
 
 struct turn_params {
