@@ -42,7 +42,7 @@ const float ln_linearization[LOG_LINEARIZATION_TABLE_SIZE] = {
 volatile uint16_t sensors_filtered[NUM_SENSORES];
 volatile uint16_t sensors_linearized[NUM_SENSORES];
 volatile uint16_t sensors_distance[NUM_SENSORES];
-volatile int16_t sensors_distance_offset[NUM_SENSORES] = {0, -4, 0, 0};
+volatile int16_t sensors_distance_offset[NUM_SENSORES] = {9, 3, 0, 0};
 
 /**
  * @brief Set an specific emitter ON.

@@ -6,7 +6,6 @@ struct turn_params turns[] = {
 };
 
 void move_straight(int32_t distance, int32_t speed, bool stop) {
-
   int32_t current_distance = get_encoder_total_average_micrometers();
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
@@ -25,6 +24,18 @@ void move_straight(int32_t distance, int32_t speed, bool stop) {
     set_ideal_angular_speed(0.0);
     while (get_encoder_avg_speed() != 0) {
       // printf("stop\n");
+    }
+  }
+}
+
+void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool stop) {
+  set_ideal_angular_speed(0.0);
+  set_target_linear_speed(speed);
+  while ((get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > distance) {
+  }
+  if (stop) {
+    set_target_linear_speed(0);
+    while (get_encoder_avg_speed() != 0) {
     }
   }
 }
@@ -54,6 +65,7 @@ void move_arc_turn(enum movement turn_type) {
 }
 
 void move_inplace_turn(float angle, float rads) {
+  set_gyro_z_degrees(0);
   float current_angle = get_gyro_z_degrees();
   float target_angle = current_angle + angle;
   if (target_angle > 360.0) {
