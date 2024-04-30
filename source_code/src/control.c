@@ -88,19 +88,38 @@ static float get_measured_angular_speed(void) {
 }
 
 void set_side_sensors_close_correction(bool enabled) {
+  if (!side_sensors_close_correction_enabled && enabled) {
+    side_sensors_error = 0;
+    last_side_sensors_error = 0;
+    sum_side_sensors_error = 0;
+  }
   side_sensors_close_correction_enabled = enabled;
 }
 
 void set_side_sensors_far_correction(bool enabled) {
+  if (!side_sensors_far_correction_enabled && enabled) {
+    side_sensors_error = 0;
+    last_side_sensors_error = 0;
+    sum_side_sensors_error = 0;
+  }
   side_sensors_far_correction_enabled = enabled;
 }
 
 void set_front_sensors_correction(bool enabled) {
+  if (!front_sensors_correction_enabled && enabled) {
+    front_sensors_error = 0;
+    last_front_sensors_error = 0;
+    sum_front_sensors_error = 0;
+  }
   front_sensors_correction_enabled = enabled;
 }
 
 void set_target_linear_speed(int32_t linear_speed) {
   target_linear_speed = linear_speed;
+}
+
+int32_t get_ideal_linear_speed(void) {
+  return ideal_linear_speed;
 }
 
 void set_ideal_angular_speed(float angular_speed) {
