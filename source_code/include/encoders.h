@@ -14,6 +14,8 @@ float get_micrometers_per_tick(void);
 void set_micrometers_per_tick(float value);
 float get_wheels_separation(void);
 void set_wheels_separation(float value);
+int32_t get_encoder_total_left_ticks(void);
+int32_t get_encoder_total_right_ticks(void);
 int32_t get_encoder_total_left_micrometers(void);
 int32_t get_encoder_total_right_micrometers(void);
 int32_t get_encoder_total_average_micrometers(void);

@@ -61,6 +61,14 @@ static uint16_t read_encoder_right(void) {
   return (uint16_t)timer_get_counter(TIM3);
 }
 
+int32_t get_encoder_total_left_ticks(void) {
+  return left_total_ticks;
+}
+
+int32_t get_encoder_total_right_ticks(void) {
+  return right_total_ticks;
+}
+
 /**
  * @brief Read left motor encoder travelled distance in micrometers.
  */
