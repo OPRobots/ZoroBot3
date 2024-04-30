@@ -5,25 +5,33 @@ struct turn_params turns[] = {
     [MOVE_RIGHT] = {55, 15, 500, 612.5, 9.625, 16, 148, 1},
 };
 
+static int32_t calc_straight_stop_distance(int32_t speed) {
+  return (speed * speed) / (2 * BASE_LINEAR_ACCEL);
+}
+
 void move_straight(int32_t distance, int32_t speed, bool stop) {
   int32_t current_distance = get_encoder_total_average_micrometers();
+  int32_t stop_distance = 0;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   if (speed >= 0) {
-    while (get_encoder_total_average_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
-      //   printf("%4ld %4ld %4ld\n", current_distance, get_encoder_total_average_millimeters(), current_distance + distance* MICROMETERS_PER_MILLIMETER);
+    while (get_encoder_total_average_micrometers() <= current_distance + (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
+      if (stop) {
+        stop_distance = calc_straight_stop_distance(get_ideal_linear_speed());
+      }
     }
   } else {
-    while (get_encoder_total_average_micrometers() >= current_distance - distance * MICROMETERS_PER_MILLIMETER) {
-      //   printf("%4ld %4ld %4ld\n", current_distance, get_encoder_total_average_millimeters(), current_distance - distance* MICROMETERS_PER_MILLIMETER);
+    while (get_encoder_total_average_micrometers() >= current_distance - (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
+      if (stop) {
+        stop_distance = calc_straight_stop_distance(get_ideal_linear_speed());
+      }
     }
   }
 
   if (stop) {
     set_target_linear_speed(0);
     set_ideal_angular_speed(0.0);
-    while (get_encoder_avg_speed() != 0) {
-      // printf("stop\n");
+    while (get_ideal_linear_speed() != 0) {
     }
   }
 }
