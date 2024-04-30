@@ -84,6 +84,11 @@
 #define SENSOR_FRONT_DETECTION ((CELL_DIMENSION * 1.5))
 #define SENSOR_SIDE_DETECTION ((CELL_DIMENSION * 0.9))
 
+/** Control de inicio de competición */
+#define SENSOR_FRONT_DETECTION_START 130
+#define SENSOR_START_MIN_MS 150
+#define SENSOR_START_MAX_MS 500
+
 /** Divisor de Voltage */
 #define VOLT_DIV_FACTOR 2.654
 #define BATTERY_HIGH_LIMIT_VOLTAGE 8.4

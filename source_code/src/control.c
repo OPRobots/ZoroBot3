@@ -1,6 +1,8 @@
 #include <control.h>
 
 static volatile bool competicionIniciada = false;
+static volatile uint32_t sensor_front_left_start_ms = 0;
+static volatile uint32_t sensor_front_right_start_ms = 0;
 
 static volatile int32_t target_linear_speed = 0;
 static volatile int32_t ideal_linear_speed = 0;
@@ -30,26 +32,6 @@ static volatile float voltage_left;
 static volatile float voltage_right;
 static volatile int32_t pwm_left;
 static volatile int32_t pwm_right;
-
-/**
- * @brief Comprueba si el robot está en funcionamiento
- *
- * @return bool
- */
-
-bool is_competicion_iniciada(void) {
-  return competicionIniciada;
-}
-
-/**
- * @brief Establece el estado actual del robot
- *
- * @param state Estado actual del robot
- */
-
-void set_competicion_iniciada(bool state) {
-  competicionIniciada = state;
-}
 
 /**
  * @brief Convierte un valor de voltaje dado a su correspondiente PWM
@@ -85,6 +67,57 @@ static float get_measured_linear_speed(void) {
 
 static float get_measured_angular_speed(void) {
   return -get_gyro_z_radps();
+}
+
+/**
+ * @brief Comprueba si el robot está en funcionamiento
+ *
+ * @return bool
+ */
+
+bool is_competicion_iniciada(void) {
+  return competicionIniciada;
+}
+
+/**
+ * @brief Establece el estado actual del robot
+ *
+ * @param state Estado actual del robot
+ */
+
+void set_competicion_iniciada(bool state) {
+  competicionIniciada = state;
+}
+
+int8_t check_iniciar_competicion(void) {
+  if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= SENSOR_FRONT_DETECTION_START) {
+    if (sensor_front_left_start_ms == 0) {
+      sensor_front_left_start_ms = get_clock_ticks();
+    }
+  } else {
+    uint32_t elapsed_ms = get_clock_ticks() - sensor_front_left_start_ms;
+    if (elapsed_ms >= SENSOR_START_MIN_MS && elapsed_ms <= SENSOR_START_MAX_MS) {
+      set_competicion_iniciada(true);
+      return SENSOR_FRONT_LEFT_WALL_ID;
+    } else {
+      sensor_front_left_start_ms = 0;
+    }
+  }
+
+  if (get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID) <= SENSOR_FRONT_DETECTION_START) {
+    if (sensor_front_right_start_ms == 0) {
+      sensor_front_right_start_ms = get_clock_ticks();
+    }
+  } else {
+    uint32_t elapsed_ms = get_clock_ticks() - sensor_front_right_start_ms;
+    if (elapsed_ms >= SENSOR_START_MIN_MS && elapsed_ms <= SENSOR_START_MAX_MS) {
+      set_competicion_iniciada(true);
+      return SENSOR_FRONT_RIGHT_WALL_ID;
+    } else {
+      sensor_front_right_start_ms = 0;
+    }
+  }
+  return -1;
 }
 
 void set_side_sensors_close_correction(bool enabled) {
@@ -132,7 +165,7 @@ void set_ideal_angular_speed(float angular_speed) {
  *
  */
 void control_loop(void) {
-  if (!competicionIniciada) {
+  if (!competicionIniciada || true) {
     set_motors_speed(0, 0);
     set_fan_speed(0);
     return;

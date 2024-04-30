@@ -12,6 +12,7 @@
 
 bool is_competicion_iniciada(void);
 void set_competicion_iniciada(bool state);
+int8_t check_iniciar_competicion(void);
 
 void set_side_sensors_close_correction(bool enabled);
 void set_side_sensors_far_correction(bool enabled);

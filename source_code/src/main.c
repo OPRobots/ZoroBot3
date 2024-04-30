@@ -14,8 +14,6 @@
 #include <setup.h>
 #include <usart.h>
 
-uint32_t ms_started = 0;
-
 void sys_tick_handler(void) {
   clock_tick();
   update_encoder_readings();
@@ -29,94 +27,35 @@ int main(void) {
   setup();
   show_battery_level();
   delay(1500);
-  gyro_z_calibration();
-  sensors_calibration();
+  // gyro_z_calibration();
+  // sensors_calibration();
 
-  // uint32_t ticks = get_clock_ticks();
-  // set_status_led(true);
-
-  // set_target_linear_speed(0);
-  // set_ideal_angular_speed(0);
-  // set_front_sensors_correction(false);
-  // set_side_sensors_close_correction(false);
-  // set_side_sensors_far_correction(false);
-  // move_arc_turn(MOVE_LEFT);
-  // move_straight(100, 500, true);
-  // move_straight(850, 1500, false);
-  // move_straight(250, 500, true);
-  // // move_straight(250, 500, false);
-  // move_straight(250, 200, true);
-  // move_straight(100, 100, false);
-  // move_straight(45, 200, false);
-  // move_straight(90, 200, false);
-  // move_straight(95, 200, false);
-  // // move_straight(100, 200, true);
-  // move_inplace_turn(90.0, 10);
-  // move_straight(180, 200, true);
-
-  // set_competicion_iniciada(false);
-
-  bool start_btn = false;
   while (1) {
     if (!is_competicion_iniciada()) {
-      bool start_sensor = false;
-      while (!start_sensor) {
-        set_RGB_rainbow();
-        if (get_menu_mode_btn()) {
-          while (get_menu_mode_btn()) {
-          }
-          start_btn = !start_btn;
-        }
-        if (start_btn) {
-          set_status_led(true);
-        } else {
-          set_status_led(false);
-        }
-        if (start_btn) {
-          if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= 130 && !(get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID) <= 130)) {
-            handwall_use_left_hand();
-            handwall_set_priorize_front(false);
-            set_RGB_color(0, 50, 0);
-            delay(1000);
-            if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= 130) {
-              handwall_set_priorize_front(true);
-              set_RGB_color(0, 200, 0);
-            }
-            delay(1000);
-            start_sensor = true;
-            set_RGB_color(0, 0, 0);
-          } else if (get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID) <= 130 && !(get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= 130)) {
-            handwall_use_right_hand();
-            handwall_set_priorize_front(false);
-            set_RGB_color(0, 50, 0);
-            delay(1000);
-            if (get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID) <= 130) {
-              handwall_set_priorize_front(true);
-              set_RGB_color(0, 200, 0);
-            }
-            delay(1000);
-            start_sensor = true;
-            set_RGB_color(0, 0, 0);
-          }
-        }
+      set_RGB_rainbow();
+
+      // TODO: check menu
+
+      switch (check_iniciar_competicion()) {
+        case SENSOR_FRONT_LEFT_WALL_ID:
+          handwall_use_left_hand();
+          break;
+        case SENSOR_FRONT_RIGHT_WALL_ID:
+          handwall_use_right_hand();
+          break;
       }
-      set_competicion_iniciada(true);
-      ms_started = get_clock_ticks();
-      start_btn = false;
-      handwall_start();
+
+      if (is_competicion_iniciada()) {
+        set_RGB_color(0, 50, 0);
+        delay(2000);
+        set_RGB_color(0, 0, 0);
+        handwall_set_time_limit(20000);
+        // handwall_start();
+      }
     } else {
       // Loop de competición
-      handwall_loop();
-      if (get_clock_ticks() - ms_started >= 20000) {
-        set_competicion_iniciada(false);
-      }
+      // handwall_loop();
     }
-
-    // set_motors_pwm(512,512);
-    // printf("%0x\n", mpu_who_am_i());
-    // printf("%d \n", (int)get_gyro_z_degrees());
-    // set_z_angle(0);
-    // delay(100);
 
     // ZONA DEBUG TEMPORAL
 
