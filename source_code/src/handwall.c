@@ -19,11 +19,12 @@ void handwall_start(void) {
   set_front_sensors_correction(false);
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
-  move_straight(CELL_DIMENSION / 2 + ROBOT_BACK_LENGTH - SENSING_POINT_DISTANCE, 500, false);
+  move_straight(CELL_DIMENSION - ROBOT_BACK_LENGTH - SENSING_POINT_DISTANCE - (WALL_WIDTH / 2), 500, false);
 }
 
 void handwall_loop(void) {
   struct walls walls = get_walls();
+  set_RGB_color_while(0, 0, 255, 100);
   if (!walls.front && priorize_front) {
     set_side_sensors_close_correction(true);
     set_side_sensors_far_correction(true);
@@ -60,7 +61,7 @@ void handwall_loop(void) {
 
     set_side_sensors_close_correction(true);
     set_side_sensors_far_correction(true);
-    move_straight(CELL_DIMENSION / 2 - SENSING_POINT_DISTANCE + ROBOT_BACK_LENGTH, 500, false);
+    move_straight(CELL_DIMENSION - ROBOT_BACK_LENGTH - SENSING_POINT_DISTANCE - (WALL_WIDTH / 2), 500, false);
   } else {
     set_target_linear_speed(0);
     set_ideal_angular_speed(0);
