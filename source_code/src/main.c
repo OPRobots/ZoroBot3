@@ -22,6 +22,7 @@ void sys_tick_handler(void) {
   update_sensors_magics();
   update_gyro_readings();
   update_battery_voltage();
+  check_leds_while();
 }
 
 int main(void) {

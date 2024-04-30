@@ -5,6 +5,8 @@ static uint32_t rainbowRGB[3] = {LEDS_MAX_PWM, 0, 0};
 static int16_t rainbowColorDesc = 0;
 static int16_t rainbowColorAsc = 1;
 
+static uint32_t rgbWhileMs = 0;
+
 static uint32_t lastTicksWarning = 0;
 
 static uint32_t lastTicksWave = 0;
@@ -35,6 +37,18 @@ void set_RGB_color(uint32_t r, uint32_t g, uint32_t b) {
   timer_set_oc_value(TIM1, TIM_OC2, r);
   timer_set_oc_value(TIM1, TIM_OC3, g);
   timer_set_oc_value(TIM1, TIM_OC4, b);
+}
+
+void set_RGB_color_while(uint32_t r, uint32_t g, uint32_t b, uint32_t ms) {
+  set_RGB_color(r, g, b);
+  rgbWhileMs = get_clock_ticks() + ms;
+}
+
+void check_leds_while(void) {
+  if (rgbWhileMs > 0 && get_clock_ticks() > rgbWhileMs) {
+    set_RGB_color(0, 0, 0);
+    rgbWhileMs = 0;
+  }
 }
 
 void set_RGB_rainbow(void) {
@@ -226,7 +240,6 @@ void clear_info_leds(void) {
   gpio_clear(GPIOC, GPIO4 | GPIO5);
   gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
 }
-
 
 void leds_configuracion(uint8_t patron_led) {
   switch (patron_led) {
