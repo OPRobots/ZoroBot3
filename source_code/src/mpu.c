@@ -124,6 +124,17 @@ static int16_t mpu_read_gyro_z_raw(void) {
           mpu_read_register(MPU_GYRO_ZOUT_L));
 }
 
+static void set_gyro_z_calibration(int16_t zout_c2) {
+  set_info_leds();
+  setup_spi_low_speed();
+  mpu_write_register(MPU_Z_OFFS_USR_H, ((uint8_t)((zout_c2 & MPU_MASK_H) >> BYTE)));
+  mpu_write_register(MPU_Z_OFFS_USR_L, (uint8_t)(zout_c2 & MPU_MASK_L));
+  setup_spi_high_speed();
+
+  mpu_set_updating(true);
+  clear_info_leds();
+}
+
 /**
  * @brief Calibrate the gyroscope's Z axis.
  *
@@ -143,15 +154,31 @@ void gyro_z_calibration(void) {
               MPU_AVERAGE_FACTOR;
     delay_us(MPU_CAL_SAMPLE_US);
   }
-  set_info_leds();
   zout_c2 = -(int16_t)(zout_av * MPU_COMPLEMENT_2_FACTOR);
-  setup_spi_low_speed();
-  mpu_write_register(MPU_Z_OFFS_USR_H, ((uint8_t)((zout_c2 & MPU_MASK_H) >> BYTE)));
-  mpu_write_register(MPU_Z_OFFS_USR_L, (uint8_t)(zout_c2 & MPU_MASK_L));
-  setup_spi_high_speed();
 
+  int16_t eeprom_zout_c2;
+  uint16_t *eeprom_stored_data = eeprom_get_data();
+  eeprom_zout_c2 = eeprom_stored_data[1];
+  if (eeprom_stored_data[0] == 0) {
+    eeprom_zout_c2 = -eeprom_zout_c2;
+  }
+  zout_c2 += eeprom_zout_c2;
+
+  set_gyro_z_calibration(zout_c2);
+
+  uint16_t eeprom_data[2] = {zout_c2 >= 0 ? 1 : 0, abs(zout_c2)};
+  eeprom_set_data(DATA_INDEX_GYRO_Z, eeprom_data, 2);
+}
+
+void mpu_load_eeprom(void) {
+  int16_t zout_c2;
+  uint16_t *eeprom_data = eeprom_get_data();
+  zout_c2 = eeprom_data[1];
+  if (eeprom_data[0] == 0) {
+    zout_c2 = -zout_c2;
+  }
+  set_gyro_z_calibration(zout_c2);
   mpu_set_updating(true);
-  clear_info_leds();
 }
 
 /**

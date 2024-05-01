@@ -8,7 +8,7 @@ uint8_t modoConfig = 0;
 #define NUM_MODOS_DEBUG 2
 
 int8_t valorConfig[NUM_MODOS_DEBUG] = {0, 0};
-#define NUM_VALORES_CALIBRATION 4
+#define NUM_VALORES_CALIBRATION 5
 #define NUM_VALORES 10
 
 /**
@@ -42,6 +42,9 @@ static void handle_menu_value(void) {
           break;
         case CALIBRATE_FRONT_SENSORS:
           set_leds_front_sensors(120);
+          break;
+        case CALIBRATE_STORE_EEPROM:
+          set_leds_blink(250);
           break;
       }
       calibrate_from_config(valorConfig[modoConfig]);
@@ -93,7 +96,7 @@ static uint8_t get_num_modos(void) {
   }
 }
 
-void check_menu_button(void) {
+bool check_menu_button(void) {
   handle_menu_mode();
   handle_menu_value();
 
@@ -112,13 +115,6 @@ void check_menu_button(void) {
     }
   }
 
-  // if (modoConfig == 0) {
-  //   set_RGB_color(0, 0, 0);
-  //   delay(50);
-  //   handle_menu_value();
-  //   return;
-  // }
-
   // Comprueba aumento de valor de configuración
   if (get_menu_up_btn()) {
     valorConfig[modoConfig]++;
@@ -134,6 +130,7 @@ void check_menu_button(void) {
         }
         break;
     }
+    clear_info_leds();
     while (get_menu_up_btn()) {
       handle_menu_value();
       handle_menu_mode();
@@ -146,12 +143,16 @@ void check_menu_button(void) {
     if (valorConfig[modoConfig] > 0) {
       valorConfig[modoConfig]--;
     }
+
+    clear_info_leds();
     while (get_menu_down_btn()) {
       handle_menu_value();
       handle_menu_mode();
     };
     delay(50);
   }
+
+  return valorConfig[modoConfig] != 0;
 }
 
 bool in_debug_mode(void) {

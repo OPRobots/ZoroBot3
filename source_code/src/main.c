@@ -27,29 +27,28 @@ void sys_tick_handler(void) {
 int main(void) {
   setup();
   show_battery_level();
+  eeprom_load();
   delay(1500);
-  // gyro_z_calibration();
-  // sensors_calibration();
 
   while (1) {
     if (!is_competicion_iniciada()) {
-      check_menu_button();
+      if (!check_menu_button()) {
+        switch (check_iniciar_competicion()) {
+          case SENSOR_FRONT_LEFT_WALL_ID:
+            handwall_use_left_hand();
+            break;
+          case SENSOR_FRONT_RIGHT_WALL_ID:
+            handwall_use_right_hand();
+            break;
+        }
 
-      switch (check_iniciar_competicion()) {
-        case SENSOR_FRONT_LEFT_WALL_ID:
-          handwall_use_left_hand();
-          break;
-        case SENSOR_FRONT_RIGHT_WALL_ID:
-          handwall_use_right_hand();
-          break;
-      }
-
-      if (is_competicion_iniciada()) {
-        set_RGB_color(0, 50, 0);
-        delay(2000);
-        set_RGB_color(0, 0, 0);
-        handwall_set_time_limit(20000);
-        // handwall_start();
+        if (is_competicion_iniciada()) {
+          set_RGB_color(0, 50, 0);
+          delay(2000);
+          set_RGB_color(0, 0, 0);
+          handwall_set_time_limit(20000);
+          // handwall_start();
+        }
       }
     } else {
       // Loop de competición

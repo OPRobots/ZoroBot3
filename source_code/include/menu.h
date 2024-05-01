@@ -7,7 +7,7 @@
 #include <buttons.h>
 #include <leds.h>
 
-void check_menu_button(void);
+bool check_menu_button(void);
 
 bool in_debug_mode(void);
 void reset_menu_mode(void);

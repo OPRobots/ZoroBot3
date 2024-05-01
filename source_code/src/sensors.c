@@ -42,7 +42,7 @@ const float ln_linearization[LOG_LINEARIZATION_TABLE_SIZE] = {
 volatile uint16_t sensors_filtered[NUM_SENSORES];
 volatile uint16_t sensors_linearized[NUM_SENSORES];
 volatile uint16_t sensors_distance[NUM_SENSORES];
-volatile int16_t sensors_distance_offset[NUM_SENSORES] = {9, 3, 0, 0};
+uint16_t sensors_distance_offset[NUM_SENSORES] = {9, 3, 0, 0};
 
 /**
  * @brief Set an specific emitter ON.
@@ -163,6 +163,9 @@ uint16_t get_sensor_raw_filter(uint8_t pos) {
   }
 }
 
+void front_sensors_calibration(void) {
+}
+
 void side_sensors_calibration(void) {
   uint32_t right_temp = 0;
   uint32_t left_temp = 0;
@@ -175,12 +178,20 @@ void side_sensors_calibration(void) {
     delay(5);
   }
   set_info_leds();
-  sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] =
-      (left_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
-  sensors_distance_offset[SENSOR_SIDE_RIGHT_WALL_ID] =
-      (right_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
+  sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] = (left_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
+  sensors_distance_offset[SENSOR_SIDE_RIGHT_WALL_ID] = (right_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
   delay(500);
   clear_info_leds();
+  eeprom_set_data(DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset, NUM_SENSORES);
+}
+
+void sensors_load_eeprom(void) {
+  uint16_t *data = eeprom_get_data();
+  if (data != NULL) {
+    for (uint8_t i = DATA_INDEX_SENSORS_OFFSETS; i < (DATA_INDEX_SENSORS_OFFSETS + NUM_SENSORES); i++) {
+      sensors_distance_offset[i-DATA_INDEX_SENSORS_OFFSETS] = data[i];
+    }
+  }
 }
 
 bool left_wall_detection(void) {

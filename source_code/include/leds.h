@@ -21,6 +21,7 @@ void check_leds_while(void);
 void set_leds_wave(int ms);
 void set_leds_side_sensors(int ms);
 void set_leds_front_sensors(int ms);
+void set_leds_blink(int ms);
 void set_leds_battery_level(float battery_level);
 void all_leds_clear(void);
 void set_info_led(uint8_t index, bool state);

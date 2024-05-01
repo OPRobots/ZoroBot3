@@ -3,6 +3,7 @@
 
 #include <config.h>
 #include <delay.h>
+#include <eeprom.h>
 #include <encoders.h>
 #include <leds.h>
 #include <libopencm3/stm32/adc.h>
@@ -28,7 +29,9 @@ uint8_t get_sensors_num(void);
 void get_sensors_raw(uint16_t *on, uint16_t *off);
 void sm_emitter_adc(void);
 
+void front_sensors_calibration(void);
 void side_sensors_calibration(void);
+void sensors_load_eeprom(void);
 
 uint16_t get_sensor_raw(uint8_t pos, bool on);
 uint16_t get_sensor_raw_filter(uint8_t pos);

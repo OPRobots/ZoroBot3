@@ -30,6 +30,10 @@ void calibrate_from_config(uint8_t type) {
       case CALIBRATE_FRONT_SENSORS:
         // front_sensors_calibration();
         break;
+      case CALIBRATE_STORE_EEPROM:
+        // front_sensors_calibration();
+        eeprom_save();
+        break;
     }
     set_RGB_color(0, 0, 0);
     calibration_enabled = false;

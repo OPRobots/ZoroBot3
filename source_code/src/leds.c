@@ -21,6 +21,8 @@ static uint32_t lastTickFrontSensors = 0;
 static uint32_t currentStepFrontSensors = 1;
 static uint8_t currentIndexFrontSensors = 0;
 
+static uint32_t lastTicksLedsBlink = 0;
+
 static uint32_t lastTicksWarningBateria = 0;
 
 void set_status_led(bool state) {
@@ -168,6 +170,15 @@ void set_leds_front_sensors(int ms) {
 
     currentIndexFrontSensors += currentStepFrontSensors;
     lastTickFrontSensors = get_clock_ticks();
+  }
+}
+
+void set_leds_blink(int ms) {
+  if (get_clock_ticks() > lastTicksLedsBlink + ms) {
+    gpio_toggle(GPIOA, GPIO5 | GPIO6 | GPIO7);
+    gpio_toggle(GPIOC, GPIO4 | GPIO5);
+    gpio_toggle(GPIOB, GPIO0 | GPIO1 | GPIO2);
+    lastTicksLedsBlink = get_clock_ticks();
   }
 }
 

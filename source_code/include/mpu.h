@@ -10,9 +10,11 @@
 #include "buttons.h"
 #include "constants.h"
 #include "delay.h"
+#include "eeprom.h"
 #include "math.h"
 #include "motors.h"
 #include "setup.h"
+
 
 void mpu_set_updating(bool updating);
 
@@ -28,5 +30,7 @@ float get_gyro_z_dps(void);
 void set_z_angle(float angle);
 void keep_z_angle(void);
 void set_gyro_z_degrees(float deg);
+
+void mpu_load_eeprom(void);
 
 #endif /* __MPU_H */
