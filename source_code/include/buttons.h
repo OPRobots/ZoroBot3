@@ -8,7 +8,7 @@
 #include <math.h>
 #include <stdio.h>
 
-
+void check_buttons(void);
 bool get_start_btn(void);
 bool get_menu_up_btn(void);
 bool get_menu_down_btn(void);
