@@ -19,11 +19,12 @@ void set_RGB_rainbow(void);
 void set_RGB_color_while(uint32_t r, uint32_t g, uint32_t b, uint32_t ms);
 void check_leds_while(void);
 void set_leds_wave(int ms);
+void set_leds_side_sensors(int ms);
+void set_leds_front_sensors(int ms);
 void set_leds_battery_level(float battery_level);
 void all_leds_clear(void);
 void set_info_led(uint8_t index, bool state);
 void set_info_leds(void);
 void clear_info_leds(void);
-void leds_configuracion(uint8_t patron_led);
 
 #endif

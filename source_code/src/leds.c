@@ -10,7 +10,16 @@ static uint32_t rgbWhileMs = 0;
 static uint32_t lastTicksWarning = 0;
 
 static uint32_t lastTicksWave = 0;
+static int8_t currentStepWave = 1;
 static uint8_t currentIndexWave = 0;
+
+static uint32_t lastTickSideSensors = 0;
+static uint32_t currentStepSideSensors = 1;
+static uint8_t currentIndexSideSensors = 0;
+
+static uint32_t lastTickFrontSensors = 0;
+static uint32_t currentStepFrontSensors = 1;
+static uint8_t currentIndexFrontSensors = 0;
 
 static uint32_t lastTicksWarningBateria = 0;
 
@@ -94,12 +103,71 @@ void set_leds_wave(int ms) {
         gpio_set(GPIOB, GPIO2);
         break;
     }
-
-    currentIndexWave++;
-    if (currentIndexWave >= 4) {
-      currentIndexWave = 0;
+    
+    if (currentIndexWave >= 3) {
+      currentStepWave = -1;
+    } else if (currentIndexWave <= 0) {
+      currentStepWave = 1;
     }
+
+    currentIndexWave += currentStepWave;
     lastTicksWave = get_clock_ticks();
+  }
+}
+
+void set_leds_side_sensors(int ms) {
+  if (get_clock_ticks() > lastTickSideSensors + ms) {
+    gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
+    gpio_clear(GPIOC, GPIO4 | GPIO5);
+    gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
+
+    switch (currentIndexSideSensors) {
+      case 0:
+        gpio_set(GPIOC, GPIO4);
+        gpio_set(GPIOC, GPIO5);
+        break;
+      case 1:
+        gpio_set(GPIOA, GPIO7);
+        gpio_set(GPIOB, GPIO0);
+        break;
+    }
+
+    if (currentIndexSideSensors >= 1) {
+      currentStepSideSensors = -1;
+    } else if (currentIndexSideSensors <= 0) {
+      currentStepSideSensors = 1;
+    }
+
+    currentIndexSideSensors += currentStepSideSensors;
+    lastTickSideSensors = get_clock_ticks();
+  }
+}
+
+void set_leds_front_sensors(int ms) {
+  if (get_clock_ticks() > lastTickFrontSensors + ms) {
+    gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
+    gpio_clear(GPIOC, GPIO4 | GPIO5);
+    gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
+
+    switch (currentIndexFrontSensors) {
+      case 0:
+        gpio_set(GPIOB, GPIO1);
+        gpio_set(GPIOA, GPIO6);
+        break;
+      case 1:
+        gpio_set(GPIOA, GPIO5);
+        gpio_set(GPIOB, GPIO2);
+        break;
+    }
+
+    if (currentIndexFrontSensors >= 1) {
+      currentStepFrontSensors = -1;
+    } else if (currentIndexFrontSensors <= 0) {
+      currentStepFrontSensors = 1;
+    }
+
+    currentIndexFrontSensors += currentStepFrontSensors;
+    lastTickFrontSensors = get_clock_ticks();
   }
 }
 
@@ -239,122 +307,4 @@ void clear_info_leds(void) {
   gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
   gpio_clear(GPIOC, GPIO4 | GPIO5);
   gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
-}
-
-void leds_configuracion(uint8_t patron_led) {
-  switch (patron_led) {
-    case 0:
-      set_info_led(0, false);
-      set_info_led(1, false);
-      set_info_led(2, false);
-      set_info_led(3, false);
-      set_info_led(4, false);
-      set_info_led(5, false);
-      set_info_led(6, false);
-      set_info_led(7, false);
-      set_RGB_color(0, 0, 0);
-      break;
-    case 1:
-      set_info_led(0, true);
-      set_info_led(1, false);
-      set_info_led(2, false);
-      set_info_led(3, false);
-      set_info_led(4, false);
-      set_info_led(5, false);
-      set_info_led(6, false);
-      set_info_led(7, true);
-      set_RGB_color(0, 0, 0);
-      break;
-    case 2:
-      set_info_led(0, true);
-      set_info_led(1, true);
-      set_info_led(2, false);
-      set_info_led(3, false);
-      set_info_led(4, false);
-      set_info_led(5, false);
-      set_info_led(6, true);
-      set_info_led(7, true);
-      set_RGB_color(0, 0, 0);
-      break;
-    case 3:
-      set_info_led(0, true);
-      set_info_led(1, true);
-      set_info_led(2, true);
-      set_info_led(3, false);
-      set_info_led(4, false);
-      set_info_led(5, true);
-      set_info_led(6, true);
-      set_info_led(7, true);
-      set_RGB_color(0, 0, 0);
-      break;
-    case 4:
-      set_info_led(0, true);
-      set_info_led(1, true);
-      set_info_led(2, true);
-      set_info_led(3, true);
-      set_info_led(4, true);
-      set_info_led(5, true);
-      set_info_led(6, true);
-      set_info_led(7, true);
-      set_RGB_color(0, 0, 0);
-      break;
-    case 5:
-      set_info_led(0, false);
-      set_info_led(1, false);
-      set_info_led(2, false);
-      set_info_led(3, false);
-      set_info_led(4, false);
-      set_info_led(5, false);
-      set_info_led(6, false);
-      set_info_led(7, false);
-      set_RGB_color(0, 75, 0);
-      break;
-    case 6:
-      set_info_led(0, true);
-      set_info_led(1, false);
-      set_info_led(2, false);
-      set_info_led(3, false);
-      set_info_led(4, false);
-      set_info_led(5, false);
-      set_info_led(6, false);
-      set_info_led(7, true);
-      set_RGB_color(0, 75, 0);
-      break;
-    case 7:
-      set_info_led(0, true);
-      set_info_led(1, true);
-      set_info_led(2, false);
-      set_info_led(3, false);
-      set_info_led(4, false);
-      set_info_led(5, false);
-      set_info_led(6, true);
-      set_info_led(7, true);
-      set_RGB_color(0, 75, 0);
-      break;
-    case 8:
-      set_info_led(0, true);
-      set_info_led(1, true);
-      set_info_led(2, true);
-      set_info_led(3, false);
-      set_info_led(4, false);
-      set_info_led(5, true);
-      set_info_led(6, true);
-      set_info_led(7, true);
-      set_RGB_color(0, 75, 0);
-      break;
-    case 9:
-      set_info_led(0, true);
-      set_info_led(1, true);
-      set_info_led(2, true);
-      set_info_led(3, true);
-      set_info_led(4, true);
-      set_info_led(5, true);
-      set_info_led(6, true);
-      set_info_led(7, true);
-      set_RGB_color(0, 75, 0);
-      break;
-
-    default:
-      break;
-  }
 }

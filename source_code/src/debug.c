@@ -26,7 +26,7 @@ static void check_debug_active(void) {
 }
 
 void debug_from_config(uint8_t type) {
-  if (type > 0) {
+  if (type != DEBUG_NONE) {
     check_debug_active();
   } else {
     debug_enabled = false;

@@ -8,7 +8,7 @@ uint8_t modoConfig = 0;
 #define NUM_MODOS_DEBUG 2
 
 int8_t valorConfig[NUM_MODOS_DEBUG] = {0, 0};
-#define NUM_VALORES_CALIBRATION 3
+#define NUM_VALORES_CALIBRATION 4
 #define NUM_VALORES 10
 
 /**
@@ -30,11 +30,27 @@ static void handle_menu_value(void) {
   switch (modoConfig) {
     case MODE_CALIBRATION:
       set_RGB_color(0, 0, 0);
+      switch (valorConfig[modoConfig]) {
+        case CALIBRATE_NONE:
+          clear_info_leds();
+          break;
+        case CALIBRATE_GYRO_Z:
+          set_leds_wave(120);
+          break;
+        case CALIBRATE_SIDE_SENSORS_OFFSET:
+          set_leds_side_sensors(120);
+          break;
+        case CALIBRATE_FRONT_SENSORS:
+          set_leds_front_sensors(120);
+          break;
+      }
+      calibrate_from_config(valorConfig[modoConfig]);
       break;
     case MODE_DEBUG:
+      clear_info_leds();
       switch (valorConfig[modoConfig]) {
         case DEBUG_NONE:
-          set_RGB_color(0, 10, 10);
+          set_RGB_color(0, 0, 0);
           break;
         case DEBUG_TYPE_SENSORS_RAW:
           set_RGB_color(0, 10, 0);

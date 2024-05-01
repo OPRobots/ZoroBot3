@@ -151,7 +151,6 @@ void gyro_z_calibration(void) {
   setup_spi_high_speed();
 
   mpu_set_updating(true);
-  delay(100);
   clear_info_leds();
 }
 

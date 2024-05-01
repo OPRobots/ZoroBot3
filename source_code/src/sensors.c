@@ -163,7 +163,7 @@ uint16_t get_sensor_raw_filter(uint8_t pos) {
   }
 }
 
-void sensors_calibration(void) {
+void side_sensors_calibration(void) {
   uint32_t right_temp = 0;
   uint32_t left_temp = 0;
   int i;
@@ -179,7 +179,7 @@ void sensors_calibration(void) {
       (left_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
   sensors_distance_offset[SENSOR_SIDE_RIGHT_WALL_ID] =
       (right_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
-  delay(100);
+  delay(500);
   clear_info_leds();
 }
 
