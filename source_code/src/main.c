@@ -32,9 +32,7 @@ int main(void) {
 
   while (1) {
     if (!is_competicion_iniciada()) {
-      set_RGB_rainbow();
-
-      // TODO: check menu
+      check_menu_button();
 
       switch (check_iniciar_competicion()) {
         case SENSOR_FRONT_LEFT_WALL_ID:

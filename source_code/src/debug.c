@@ -18,11 +18,19 @@ static void debug_sensors_raw(void) {
 }
 
 static void check_debug_active(void) {
-  debug_enabled = true;
+  if (get_menu_mode_btn()) {
+    while (get_menu_mode_btn()) {
+    }
+    debug_enabled = !debug_enabled;
+  }
 }
 
 void debug_from_config(uint8_t type) {
-  check_debug_active();
+  if (type > 0) {
+    check_debug_active();
+  } else {
+    debug_enabled = false;
+  }
   if (debug_enabled) {
     switch (type) {
       case DEBUG_TYPE_SENSORS_RAW:

@@ -12,7 +12,8 @@
 #include <encoders.h>
 #include <usart.h>
 
-#define DEBUG_TYPE_SENSORS_RAW 0
+#define DEBUG_NONE 0
+#define DEBUG_TYPE_SENSORS_RAW 1
 
 void debug_from_config(uint8_t type);
 
