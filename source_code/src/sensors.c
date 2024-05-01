@@ -41,7 +41,7 @@ const float ln_linearization[LOG_LINEARIZATION_TABLE_SIZE] = {
 
 volatile uint16_t sensors_filtered[NUM_SENSORES];
 volatile uint16_t sensors_linearized[NUM_SENSORES];
-uint16_t sensors_frontal_linearized_calibrated[2][SENSOR_FRONT_CALIBRATION_READINGS];
+uint16_t front_sensors_linearized_calibrated[2][SENSOR_FRONT_CALIBRATION_READINGS];
 volatile uint16_t sensors_distance[NUM_SENSORES];
 uint16_t sensors_distance_offset[NUM_SENSORES] = {9, 3, 0, 0};
 
@@ -170,18 +170,18 @@ void front_sensors_calibration(void) {
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
   set_competicion_iniciada(true);
-  sensors_frontal_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_LEFT_WALL_ID];
-  sensors_frontal_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_RIGHT_WALL_ID];
+  front_sensors_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_LEFT_WALL_ID];
+  front_sensors_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_RIGHT_WALL_ID];
   reading_index++;
   while (reading_index < SENSOR_FRONT_CALIBRATION_READINGS) {
     move_straight(5, -300, !(reading_index < SENSOR_FRONT_CALIBRATION_READINGS));
-    sensors_frontal_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_LEFT_WALL_ID];
-    sensors_frontal_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_RIGHT_WALL_ID];
+    front_sensors_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_LEFT_WALL_ID];
+    front_sensors_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_RIGHT_WALL_ID];
     reading_index++;
   }
   set_competicion_iniciada(false);
-  eeprom_set_data(DATA_INDEX_FRONT_SENSORS_CALIBRATION, sensors_frontal_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID], SENSOR_FRONT_CALIBRATION_READINGS);
-  eeprom_set_data(DATA_INDEX_FRONT_SENSORS_CALIBRATION + SENSOR_FRONT_CALIBRATION_READINGS, sensors_frontal_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID], SENSOR_FRONT_CALIBRATION_READINGS);
+  eeprom_set_data(DATA_INDEX_FRONT_SENSORS_CALIBRATION, front_sensors_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID], SENSOR_FRONT_CALIBRATION_READINGS);
+  eeprom_set_data(DATA_INDEX_FRONT_SENSORS_CALIBRATION + SENSOR_FRONT_CALIBRATION_READINGS, front_sensors_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID], SENSOR_FRONT_CALIBRATION_READINGS);
 }
 
 void side_sensors_calibration(void) {
@@ -212,12 +212,12 @@ void sensors_load_eeprom(void) {
     for (uint8_t i = DATA_INDEX_FRONT_SENSORS_CALIBRATION;
          i < (DATA_INDEX_FRONT_SENSORS_CALIBRATION + SENSOR_FRONT_CALIBRATION_READINGS);
          i++) {
-      sensors_frontal_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID][i - DATA_INDEX_FRONT_SENSORS_CALIBRATION] = data[i];
+      front_sensors_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID][i - DATA_INDEX_FRONT_SENSORS_CALIBRATION] = data[i];
     }
     for (uint8_t i = (DATA_INDEX_FRONT_SENSORS_CALIBRATION + SENSOR_FRONT_CALIBRATION_READINGS);
          i < (DATA_INDEX_FRONT_SENSORS_CALIBRATION + (2 * SENSOR_FRONT_CALIBRATION_READINGS));
          i++) {
-      sensors_frontal_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID][i - (DATA_INDEX_FRONT_SENSORS_CALIBRATION + SENSOR_FRONT_CALIBRATION_READINGS)] = data[i];
+      front_sensors_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID][i - (DATA_INDEX_FRONT_SENSORS_CALIBRATION + SENSOR_FRONT_CALIBRATION_READINGS)] = data[i];
     }
   }
 }
@@ -266,6 +266,14 @@ void update_sensors_magics(void) {
         case SENSOR_SIDE_RIGHT_WALL_ID:
           robot_offset = ROBOT_MIDDLE_WIDTH;
           break;
+      }
+      if ((sensor == SENSOR_FRONT_LEFT_WALL_ID || sensor == SENSOR_FRONT_RIGHT_WALL_ID) && sensors_linearized[sensor] >= front_sensors_linearized_calibrated[sensor][SENSOR_FRONT_CALIBRATION_READINGS - 1]) {
+        for (int8_t distance_index = SENSOR_FRONT_CALIBRATION_READINGS - 1; distance_index >= 0; distance_index--) {
+          if (sensors_linearized[sensor] >= front_sensors_linearized_calibrated[sensor][distance_index] && (distance_index == 0 || sensors_linearized[sensor] <= front_sensors_linearized_calibrated[sensor][distance_index - 1])) {
+            sensors_distance[sensor] = (uint16_t)map(sensors_linearized[sensor], front_sensors_linearized_calibrated[sensor][distance_index], front_sensors_linearized_calibrated[sensor][distance_index + 1], distance_index * SENSOR_FRONT_CALIBRATION_STEP, (distance_index - 1) * SENSOR_FRONT_CALIBRATION_STEP) + robot_offset;
+            break;
+          }
+        }
       }
       sensors_distance[sensor] = ((uint16_t)((sensors_distance_slope[sensor] * sensors_linearized[sensor]) + sensors_distance_intercept[sensor])) + robot_offset - sensors_distance_offset[sensor];
     }
