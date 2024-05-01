@@ -84,17 +84,3 @@ uint8_t get_switch_decimal(void) {
   }
   return decimal;
 }
-
-/**
- * @brief Comprueba el estado del modulo de inicio-parada
- * 
- */
-void check_start_stop_module(void) {
-  if ((bool)gpio_get(GPIOB, GPIO8)) {
-    set_status_led(true);
-    set_competicion_iniciada(true);
-  } else {
-    set_status_led(false);
-    set_competicion_iniciada(false);
-  }
-}
