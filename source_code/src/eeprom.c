@@ -24,7 +24,7 @@ void eeprom_load(void) {
   uint32_t addr = EEPROM_BASE_ADDRESS;
   for (uint16_t i = 0; i < DATA_LENGTH; i++) {
     eeprom_data[i] = MMIO32(addr);
-    printf("eeprom_data[%d] = %d\n", i, eeprom_data[i]);
+    // printf("eeprom_data[%d] = %d\n", i, eeprom_data[i]);
     addr += 4;
   }
 

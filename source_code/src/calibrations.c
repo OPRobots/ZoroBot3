@@ -28,10 +28,9 @@ void calibrate_from_config(uint8_t type) {
         side_sensors_calibration();
         break;
       case CALIBRATE_FRONT_SENSORS:
-        // front_sensors_calibration();
+        front_sensors_calibration();
         break;
       case CALIBRATE_STORE_EEPROM:
-        // front_sensors_calibration();
         eeprom_save();
         break;
     }

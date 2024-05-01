@@ -165,7 +165,7 @@ void set_ideal_angular_speed(float angular_speed) {
  *
  */
 void control_loop(void) {
-  if (!competicionIniciada || true) {
+  if (!competicionIniciada) {
     set_motors_speed(0, 0);
     set_fan_speed(0);
     return;

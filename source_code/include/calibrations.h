@@ -6,6 +6,7 @@
 #include <delay.h>
 #include <eeprom.h>
 #include <mpu.h>
+#include <move.h>
 #include <sensors.h>
 
 #define CALIBRATE_NONE 0
