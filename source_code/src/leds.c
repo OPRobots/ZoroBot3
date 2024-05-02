@@ -256,9 +256,9 @@ void set_info_led(uint8_t index, bool state) {
       break;
     case 1:
       if (state) {
-        gpio_set(GPIOB, GPIO1);
+        gpio_set(GPIOA, GPIO6);
       } else {
-        gpio_clear(GPIOB, GPIO1);
+        gpio_clear(GPIOA, GPIO6);
       }
       break;
     case 2:
@@ -291,9 +291,9 @@ void set_info_led(uint8_t index, bool state) {
       break;
     case 6:
       if (state) {
-        gpio_set(GPIOA, GPIO6);
+        gpio_set(GPIOB, GPIO1);
       } else {
-        gpio_clear(GPIOA, GPIO6);
+        gpio_clear(GPIOB, GPIO1);
       }
       break;
     case 7:

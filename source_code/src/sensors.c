@@ -280,6 +280,85 @@ void update_sensors_magics(void) {
   }
 }
 
+void update_side_sensors_leds(void) {
+  int16_t side_error_leds = get_side_sensors_close_error();
+  if (abs(side_error_leds) < 2) {
+    clear_info_leds();
+  } else if (side_error_leds >= 20) {
+    set_info_led(0, true);
+    set_info_led(1, false);
+    set_info_led(2, false);
+    set_info_led(3, false);
+    set_info_led(4, false);
+    set_info_led(5, false);
+    set_info_led(6, false);
+    set_info_led(7, false);
+  } else if (side_error_leds >= 10) {
+    set_info_led(0, false);
+    set_info_led(1, true);
+    set_info_led(2, false);
+    set_info_led(3, false);
+    set_info_led(4, false);
+    set_info_led(5, false);
+    set_info_led(6, false);
+    set_info_led(7, false);
+  } else if (side_error_leds >= 5) {
+    set_info_led(0, false);
+    set_info_led(1, false);
+    set_info_led(2, true);
+    set_info_led(3, false);
+    set_info_led(4, false);
+    set_info_led(5, false);
+    set_info_led(6, false);
+    set_info_led(7, false);
+  } else if (side_error_leds >= 0) {
+    set_info_led(0, false);
+    set_info_led(1, false);
+    set_info_led(2, false);
+    set_info_led(3, true);
+    set_info_led(4, false);
+    set_info_led(5, false);
+    set_info_led(6, false);
+    set_info_led(7, false);
+  } else if (side_error_leds <= -20) {
+    set_info_led(0, false);
+    set_info_led(1, false);
+    set_info_led(2, false);
+    set_info_led(3, false);
+    set_info_led(4, false);
+    set_info_led(5, false);
+    set_info_led(6, false);
+    set_info_led(7, true);
+  } else if (side_error_leds <= -10) {
+    set_info_led(0, false);
+    set_info_led(1, false);
+    set_info_led(2, false);
+    set_info_led(3, false);
+    set_info_led(4, false);
+    set_info_led(5, false);
+    set_info_led(6, true);
+    set_info_led(7, false);
+  } else if (side_error_leds <= -5) {
+    set_info_led(0, false);
+    set_info_led(1, false);
+    set_info_led(2, false);
+    set_info_led(3, false);
+    set_info_led(4, false);
+    set_info_led(5, true);
+    set_info_led(6, false);
+    set_info_led(7, false);
+  } else if (side_error_leds <= 0) {
+    set_info_led(0, false);
+    set_info_led(1, false);
+    set_info_led(2, false);
+    set_info_led(3, false);
+    set_info_led(4, true);
+    set_info_led(5, false);
+    set_info_led(6, false);
+    set_info_led(7, false);
+  }
+}
+
 uint16_t get_sensor_filtered(uint8_t pos) {
   return sensors_filtered[pos];
 }

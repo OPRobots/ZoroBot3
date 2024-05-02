@@ -42,6 +42,7 @@ bool front_wall_detection(void);
 struct walls get_walls(void);
 
 void update_sensors_magics(void);
+void update_side_sensors_leds(void);
 uint16_t get_sensor_filtered(uint8_t pos);
 uint16_t get_sensor_linearized(uint8_t pos);
 uint16_t get_sensor_distance(uint8_t pos);
