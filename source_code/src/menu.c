@@ -7,7 +7,7 @@ uint8_t modoConfig = 0;
 #define NUM_MODOS_RACE 1
 #define NUM_MODOS_DEBUG 2
 
-int8_t valorConfig[NUM_MODOS_DEBUG] = {0, 0};
+int8_t valorConfig[NUM_MODOS_DEBUG] = {1, 0};
 #define NUM_VALORES_CALIBRATION 5
 #define NUM_VALORES 10
 

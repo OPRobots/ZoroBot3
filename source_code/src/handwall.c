@@ -18,10 +18,7 @@ void handwall_set_time_limit(uint32_t ms) {
 
 void handwall_start(void) {
   start_ms = get_clock_ticks();
-  set_front_sensors_correction(false);
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(true);
-  move_straight(CELL_DIMENSION - ROBOT_BACK_LENGTH - SENSING_POINT_DISTANCE - (WALL_WIDTH / 2), 500, false);
+  move(MOVE_START);
 }
 
 void handwall_loop(void) {
@@ -30,40 +27,15 @@ void handwall_loop(void) {
     return;
   }
   struct walls walls = get_walls();
-  set_RGB_color_while(0, 0, 255, 100);
+  set_RGB_color_while(0, 0, 255, 20);
   if ((use_left_hand && !walls.left) || (!use_left_hand && walls.right && !walls.left)) {
-    set_side_sensors_close_correction(false);
-    set_side_sensors_far_correction(false);
-    move_arc_turn(MOVE_LEFT);
-    set_side_sensors_close_correction(true);
-    set_side_sensors_far_correction(true);
+    move(MOVE_LEFT);
   } else if ((!use_left_hand && !walls.right) || (use_left_hand && walls.left && !walls.right)) {
-    set_side_sensors_close_correction(false);
-    set_side_sensors_far_correction(false);
-    move_arc_turn(MOVE_RIGHT);
-    set_side_sensors_close_correction(true);
-    set_side_sensors_far_correction(true);
+    move(MOVE_RIGHT);
   } else if (!walls.front) {
-    set_side_sensors_close_correction(true);
-    set_side_sensors_far_correction(true);
-    move_straight(CELL_DIMENSION, 500, false);
+    move(MOVE_FRONT);
   } else if (walls.front && walls.left && walls.right) {
-    set_side_sensors_close_correction(true);
-    set_side_sensors_far_correction(false);
-    move_straight(MIDDLE_MAZE_DISTANCE + SENSING_POINT_DISTANCE, 350, false);
-    // set_front_sensors_correction(true);
-    move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 250, true);
-
-    // set_front_sensors_correction(false);
-    set_side_sensors_close_correction(false);
-    // TODO: cambiar a giro con aceleracion angular y comprobación mediante encoders
-    move_inplace_turn(180, 10);
-
-    move_straight(ROBOT_BACK_LENGTH, -100, true);
-
-    set_side_sensors_close_correction(true);
-    set_side_sensors_far_correction(true);
-    move_straight(CELL_DIMENSION - ROBOT_BACK_LENGTH - SENSING_POINT_DISTANCE - (WALL_WIDTH / 2), 500, false);
+    move(MOVE_180W);
   } else {
     set_target_linear_speed(0);
     set_ideal_angular_speed(0);

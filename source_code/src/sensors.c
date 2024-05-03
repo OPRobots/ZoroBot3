@@ -166,20 +166,32 @@ uint16_t get_sensor_raw_filter(uint8_t pos) {
 
 void front_sensors_calibration(void) {
   uint16_t reading_index = 0;
+  front_sensors_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_LEFT_WALL_ID];
+  front_sensors_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_RIGHT_WALL_ID];
+
   set_front_sensors_correction(false);
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
   set_competicion_iniciada(true);
-  front_sensors_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_LEFT_WALL_ID];
-  front_sensors_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_RIGHT_WALL_ID];
+
+  int16_t speed = -300;
+  int32_t initial_distance = get_encoder_avg_millimeters();
+  int32_t reading_distance = -SENSOR_FRONT_CALIBRATION_STEP;
+  set_ideal_angular_speed(0.0);
+  set_target_linear_speed(speed);
+  while (reading_index < SENSOR_FRONT_CALIBRATION_READINGS - 1) {
+    if (get_encoder_avg_millimeters() - initial_distance <= reading_distance) {
+      reading_distance -= SENSOR_FRONT_CALIBRATION_STEP;
   reading_index++;
-  while (reading_index < SENSOR_FRONT_CALIBRATION_READINGS) {
-    move_straight(5, -300, !(reading_index < SENSOR_FRONT_CALIBRATION_READINGS));
     front_sensors_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_LEFT_WALL_ID];
     front_sensors_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID][reading_index] = sensors_linearized[SENSOR_FRONT_RIGHT_WALL_ID];
-    reading_index++;
+    }
+  }
+  set_target_linear_speed(0);
+  while (get_ideal_linear_speed() != 0) {
   }
   set_competicion_iniciada(false);
+
   eeprom_set_data(DATA_INDEX_FRONT_SENSORS_CALIBRATION, front_sensors_linearized_calibrated[SENSOR_FRONT_LEFT_WALL_ID], SENSOR_FRONT_CALIBRATION_READINGS);
   eeprom_set_data(DATA_INDEX_FRONT_SENSORS_CALIBRATION + SENSOR_FRONT_CALIBRATION_READINGS, front_sensors_linearized_calibrated[SENSOR_FRONT_RIGHT_WALL_ID], SENSOR_FRONT_CALIBRATION_READINGS);
 }
@@ -369,6 +381,10 @@ uint16_t get_sensor_linearized(uint8_t pos) {
 
 uint16_t get_sensor_distance(uint8_t pos) {
   return sensors_distance[pos];
+}
+
+uint16_t get_front_wall_distance(void) {
+  return (sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] + sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID]) / 2;
 }
 
 struct walls get_walls(void) {

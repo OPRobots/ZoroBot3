@@ -30,6 +30,15 @@ void set_motors_speed(float velI, float velD) {
   timer_set_oc_value(TIM8, TIM_OC3, (uint32_t)ocD);
 }
 
+void set_motors_brake(void) {
+  gpio_clear(GPIOB, GPIO12);
+  gpio_clear(GPIOB, GPIO13);
+  gpio_clear(GPIOB, GPIO14);
+  gpio_clear(GPIOB, GPIO15);
+  timer_set_oc_value(TIM8, TIM_OC4, 0);
+  timer_set_oc_value(TIM8, TIM_OC3, 0);
+}
+
 void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
   if (pwm_left > MOTORES_MAX_PWM) {
     pwm_left = MOTORES_MAX_PWM;

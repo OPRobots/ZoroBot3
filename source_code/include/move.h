@@ -4,8 +4,8 @@
 #include "control.h"
 
 enum movement {
-  MOVE_END,
   MOVE_START,
+  MOVE_END,
   MOVE_FRONT,
   MOVE_LEFT,
   MOVE_RIGHT,
@@ -26,9 +26,14 @@ struct turn_params {
   int8_t sign;
 };
 
+void set_starting_position(void);
+
 void move_straight(int32_t distance, int32_t speed, bool stop);
 void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool stop);
 void move_arc_turn(enum movement move);
-void move_inplace_turn(float angle, float rads);
+void move_inplace_turn(enum movement movement);
+void move_inplace_angle(float angle, float rads);
+
+void move(enum movement movement);
 
 #endif

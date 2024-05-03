@@ -1,6 +1,7 @@
 #include <control.h>
 
 static volatile bool competicionIniciada = false;
+static volatile uint32_t competicion_finish_ms = 0;
 static volatile uint32_t sensor_front_left_start_ms = 0;
 static volatile uint32_t sensor_front_right_start_ms = 0;
 
@@ -18,7 +19,7 @@ static volatile float sum_angular_error;
 
 static volatile bool side_sensors_close_correction_enabled = false;
 static volatile bool side_sensors_far_correction_enabled = false;
-static volatile bool front_sensors_correction_enabled = true;
+static volatile bool front_sensors_correction_enabled = false;
 
 static volatile float side_sensors_error;
 static volatile float last_side_sensors_error;
@@ -87,6 +88,11 @@ bool is_competicion_iniciada(void) {
 
 void set_competicion_iniciada(bool state) {
   competicionIniciada = state;
+  if (state) {
+    reset_control();
+  } else {
+    competicion_finish_ms = get_clock_ticks();
+  }
 }
 
 int8_t check_iniciar_competicion(void) {
@@ -147,6 +153,34 @@ void set_front_sensors_correction(bool enabled) {
   front_sensors_correction_enabled = enabled;
 }
 
+void disable_sensors_correction(void) {
+  set_side_sensors_close_correction(false);
+  set_side_sensors_far_correction(false);
+  set_front_sensors_correction(false);
+}
+
+void reset_control(void) {
+  target_linear_speed = 0;
+  ideal_linear_speed = 0;
+  ideal_angular_speed = 0.0;
+  linear_error = 0;
+  last_linear_error = 0;
+  sum_linear_error = 0;
+  angular_error = 0;
+  last_angular_error = 0;
+  sum_angular_error = 0;
+  side_sensors_error = 0;
+  last_side_sensors_error = 0;
+  sum_side_sensors_error = 0;
+  front_sensors_error = 0;
+  last_front_sensors_error = 0;
+  sum_front_sensors_error = 0;
+  voltage_left = 0;
+  voltage_right = 0;
+  pwm_left = 0;
+  pwm_right = 0;
+}
+
 void set_target_linear_speed(int32_t linear_speed) {
   target_linear_speed = linear_speed;
 }
@@ -166,7 +200,11 @@ void set_ideal_angular_speed(float angular_speed) {
  */
 void control_loop(void) {
   if (!competicionIniciada) {
-    set_motors_speed(0, 0);
+    if (competicion_finish_ms > 0 && get_clock_ticks() - competicion_finish_ms <= 3000) {
+      set_motors_brake();
+    } else {
+      set_motors_speed(0, 0);
+    }
     set_fan_speed(0);
     return;
   }
