@@ -24,6 +24,32 @@ struct walls {
   bool right;
 };
 
+struct front_sensors_distance_calibration {
+  int16_t close_offset;
+  float close_slope;
+  int16_t close_intercept;
+  int16_t close_low_linearized;
+  int16_t close_high_linearized;
+  int16_t far_offset;
+  float far_slope;
+  int16_t far_intercept;
+  int16_t far_low_linearized;
+  int16_t far_high_linearized;
+  int16_t offset;
+  float slope;
+  int16_t intercept;
+  int16_t low_linearized;
+  int16_t high_linearized;
+};
+
+struct side_sensors_distance_calibration {
+  int16_t offset;
+  float slope;
+  int16_t intercept;
+  int16_t low_linearized;
+  int16_t high_linearized;
+};
+
 uint8_t *get_sensors(void);
 uint8_t get_sensors_num(void);
 void get_sensors_raw(uint16_t *on, uint16_t *off);
