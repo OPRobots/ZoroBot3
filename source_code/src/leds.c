@@ -45,9 +45,9 @@ void warning_status_led(uint32_t ms) {
 }
 
 void set_RGB_color(uint32_t r, uint32_t g, uint32_t b) {
-  timer_set_oc_value(TIM1, TIM_OC2, r);
+  timer_set_oc_value(TIM1, TIM_OC4, r);
+  timer_set_oc_value(TIM1, TIM_OC2, b);
   timer_set_oc_value(TIM1, TIM_OC3, g);
-  timer_set_oc_value(TIM1, TIM_OC4, b);
 }
 
 void set_RGB_color_while(uint32_t r, uint32_t g, uint32_t b, uint32_t ms) {

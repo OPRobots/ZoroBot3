@@ -1,10 +1,10 @@
 #include "move.h"
 
 struct turn_params turns[] = {
-    [MOVE_LEFT] = {35, 35, 500, 612.5, 9.625, 16, 148, -1},
-    [MOVE_RIGHT] = {35, 35, 500, 612.5, 9.625, 16, 148, 1},
-    [MOVE_180] = {0, 0, 0, 612.5, 9.625, 16, 305, 1},
-    [MOVE_180W] = {0, 0, 0, 612.5, 9.625, 16, 305, -1},
+    [MOVE_LEFT] = {29, 35, 500, 612.5, 9.625, 16, 148, -1},
+    [MOVE_RIGHT] = {32, 35, 500, 612.5, 9.625, 16, 148, 1},
+    [MOVE_180] = {0, 0, 0, 612.5, 9.625, 16, 309, 1},
+    [MOVE_180W] = {0, 0, 0, 612.5, 9.625, 16, 310, -1},
 };
 
 static int32_t current_cell_start_mm = 0;
@@ -16,7 +16,10 @@ static int32_t calc_straight_stop_distance(int32_t speed) {
 static void enter_next_cell(void) {
   current_cell_start_mm = -SENSING_POINT_DISTANCE;
   // if (front_wall_detection()) {
-  //   current_cell_start_mm -= get_front_wall_distance() - ((CELL_DIMENSION - WALL_WIDTH / 2) + SENSING_POINT_DISTANCE);
+  //   int16_t distance = get_front_wall_distance() - ((CELL_DIMENSION - WALL_WIDTH / 2) + SENSING_POINT_DISTANCE);
+  //   if(abs(distance)>5){
+  //     current_cell_start_mm -= distance;
+  //   }
   // }
 }
 
@@ -52,20 +55,19 @@ static void move_back(enum movement movement) {
   set_front_sensors_correction(false);
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
-  move_straight((CELL_DIMENSION / 2) - current_cell_start_mm, 300, true);
 
+  move_straight((CELL_DIMENSION / 2) - calc_straight_stop_distance(300) - current_cell_start_mm, 300, false);
+  move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
+
+  // delay(1500);
 
   disable_sensors_correction();
   // int8_t sign = (int8_t)(rand() % 2) * 2 - 1;
   // move_inplace_angle(180 * sign, 10);
   move_inplace_turn(movement);
 
-  
   set_side_sensors_close_correction(true);
 
-  delay(1500);
-  set_competicion_iniciada(false);
-  return;
 
   if (movement == MOVE_180W) {
     move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, true);
@@ -74,6 +76,11 @@ static void move_back(enum movement movement) {
     move_straight(((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2, -100, true);
     current_cell_start_mm = ((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2;
   }
+
+  
+  // delay(1500);
+  // set_competicion_iniciada(false);
+  // return;
 
   set_front_sensors_correction(false);
   set_side_sensors_close_correction(true);
@@ -128,10 +135,16 @@ void move_straight(int32_t distance, int32_t speed, bool stop) {
  * @param stop
  */
 void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool stop) {
+  int32_t stop_distance = 0;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
-  while ((get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > distance) {
+  while ((get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
+    if (stop) {
+      stop_distance = calc_straight_stop_distance(get_ideal_linear_speed());
+    }
+    set_RGB_color(255, 0, 0);
   }
+  set_RGB_color(0, 0, 0);
   if (stop) {
     set_target_linear_speed(0);
     while (get_encoder_avg_speed() != 0) {

@@ -27,17 +27,17 @@ uint16_t sensors_distance_intercept[NUM_SENSORES] = {SENSOR_FRONT_LEFT_WALL_INTE
 
 struct front_sensors_distance_calibration front_sensors_distance_calibrations[] = {
     [SENSOR_FRONT_LEFT_WALL_ID] = {
-        .close_offset = 0,
-        .close_slope = -0.0571,
-        .close_intercept = 477,
-        .close_low_linearized = 6281,
-        .close_high_linearized = 7160,
+        .close_offset = -150,
+        .close_slope = -0.0515,
+        .close_intercept = 441,
+        .close_low_linearized = 7397,
+        .close_high_linearized = 7975,
 
-        .far_offset = 50,
-        .far_slope = -0.0889,
-        .far_intercept = 674,
-        .far_low_linearized = 6253,
-        .far_high_linearized = 7109,
+        .far_offset = 75,
+        .far_slope = -0.0828,
+        .far_intercept = 639,
+        .far_low_linearized = 5560,
+        .far_high_linearized = 6281,
 
         .offset = 0,
         .slope = -0.0537,
@@ -46,17 +46,17 @@ struct front_sensors_distance_calibration front_sensors_distance_calibrations[] 
         .high_linearized = -1,
     },
     [SENSOR_FRONT_RIGHT_WALL_ID] = {
-        .close_offset = 0,
-        .close_slope = -0.0583,
-        .close_intercept = 483,
-        .close_low_linearized = 6253,
-        .close_high_linearized = 7109,
+        .close_offset = -150,
+        .close_slope = -0.0484,
+        .close_intercept = 415,
+        .close_low_linearized = 7336,
+        .close_high_linearized = 7951,
 
-        .far_offset = 50,
-        .far_slope = -0.0950,
-        .far_intercept = 707,
-        .far_low_linearized = 5023,
-        .far_high_linearized = 5755,
+        .far_offset = 75,
+        .far_slope = -0.0845,
+        .far_intercept = 647,
+        .far_low_linearized = 5545,
+        .far_high_linearized = 6253,
 
         .offset = 0,
         .slope = -0.0532,
@@ -259,6 +259,10 @@ void side_sensors_calibration(void) {
   uint32_t left_temp = 0;
   int i;
 
+  sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] = 0;
+  sensors_distance_offset[SENSOR_SIDE_RIGHT_WALL_ID] = 0;
+  delay(5);
+
   for (i = 0; i < SENSOR_SIDE_CALIBRATION_READINGS; i++) {
     left_temp += sensors_distance[SENSOR_SIDE_LEFT_WALL_ID];
     right_temp += sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID];
@@ -316,94 +320,81 @@ bool front_wall_detection(void) {
 void update_sensors_magics(void) {
   for (uint8_t sensor = 0; sensor < NUM_SENSORES; sensor++) {
     if (sensors_on[sensor] > sensors_off[sensor]) {
-      switch (sensor) {
-        case SENSOR_FRONT_LEFT_WALL_ID:
-        case SENSOR_FRONT_RIGHT_WALL_ID: {
-          struct front_sensors_distance_calibration front_sensor_distance_calibration = front_sensors_distance_calibrations[sensor];
+      if (sensor == SENSOR_FRONT_LEFT_WALL_ID || sensor == SENSOR_FRONT_RIGHT_WALL_ID) {
 
-          uint16_t front_ln_index = 0;
-          uint16_t front_linearized_value = 0;
+        struct front_sensors_distance_calibration front_sensor_distance_calibration = front_sensors_distance_calibrations[sensor];
 
-          int16_t close_front_sensor_value = (sensors_on[sensor] - sensors_off[sensor]) -900;
-          if (close_front_sensor_value < 0) {
-            close_front_sensor_value = 0;
-          }
-          close_front_sensor_value = SENSOR_LOW_PASS_FILTER_ALPHA * close_front_sensor_value + (1 - SENSOR_LOW_PASS_FILTER_ALPHA) * sensors_filtered[sensor];
-          front_ln_index = close_front_sensor_value / LOG_LINEARIZATION_TABLE_STEP;
-          if (front_ln_index == 0) {
-            front_ln_index = 1;
-          }
-          front_linearized_value = (uint16_t)(ln_linearization[front_ln_index] * 1000);
-          if (front_linearized_value >= front_sensor_distance_calibration.close_low_linearized && front_linearized_value <= front_sensor_distance_calibration.close_high_linearized) {
-            sensors_filtered[sensor] = close_front_sensor_value;
-            sensors_linearized[sensor] = front_linearized_value;
-            sensors_distance[sensor] = ((uint16_t)((front_sensor_distance_calibration.close_slope * front_linearized_value) + front_sensor_distance_calibration.close_intercept)) + ROBOT_FRONT_LENGTH - sensors_distance_offset[sensor];
-            set_RGB_color(50, 0, 0);
-            break;
-          }
+        uint16_t sensor_before = sensors_filtered[sensor];
+        uint16_t front_ln_index = 0;
+        uint16_t front_linearized_value = 0;
 
-          int16_t far_front_sensor_value = (sensors_on[sensor] - sensors_off[sensor]) + front_sensor_distance_calibration.far_offset;
-          if (far_front_sensor_value < 0) {
-            far_front_sensor_value = 0;
-          }
-          far_front_sensor_value = SENSOR_LOW_PASS_FILTER_ALPHA * far_front_sensor_value + (1 - SENSOR_LOW_PASS_FILTER_ALPHA) * sensors_filtered[sensor];
-          front_ln_index = far_front_sensor_value / LOG_LINEARIZATION_TABLE_STEP;
-          if (front_ln_index == 0) {
-            front_ln_index = 1;
-          }
-          front_linearized_value = (uint16_t)(ln_linearization[front_ln_index] * 1000);
-          if (front_linearized_value >= front_sensor_distance_calibration.far_low_linearized && front_linearized_value <= front_sensor_distance_calibration.far_high_linearized) {
-            sensors_filtered[sensor] = far_front_sensor_value;
-            sensors_linearized[sensor] = front_linearized_value;
-            sensors_distance[sensor] = ((uint16_t)((front_sensor_distance_calibration.far_slope * front_linearized_value) + front_sensor_distance_calibration.far_intercept)) + ROBOT_FRONT_LENGTH - sensors_distance_offset[sensor];
-            set_RGB_color(0, 50, 0);
-            break;
-          }
-
-          int16_t front_sensor_value = (sensors_on[sensor] - sensors_off[sensor]) + front_sensor_distance_calibration.offset;
-          if (front_sensor_value < 0) {
-            front_sensor_value = 0;
-          }
-          front_sensor_value = SENSOR_LOW_PASS_FILTER_ALPHA * front_sensor_value + (1 - SENSOR_LOW_PASS_FILTER_ALPHA) * sensors_filtered[sensor];
-          front_ln_index = front_sensor_value / LOG_LINEARIZATION_TABLE_STEP;
-          if (front_ln_index == 0) {
-            front_ln_index = 1;
-          }
-          front_linearized_value = (uint16_t)(ln_linearization[front_ln_index] * 1000);
-          sensors_filtered[sensor] = front_sensor_value;
+        int16_t close_front_sensor_value = (sensors_on[sensor] - sensors_off[sensor]) + front_sensor_distance_calibration.close_offset;
+        if (close_front_sensor_value < 0) {
+          close_front_sensor_value = 0;
+        }
+        sensors_filtered[sensor] = SENSOR_LOW_PASS_FILTER_ALPHA * close_front_sensor_value + (1 - SENSOR_LOW_PASS_FILTER_ALPHA) * sensor_before;
+        front_ln_index = sensors_filtered[sensor] / LOG_LINEARIZATION_TABLE_STEP;
+        if (front_ln_index == 0) {
+          front_ln_index = 1;
+        }
+        front_linearized_value = (uint16_t)(ln_linearization[front_ln_index] * 1000);
+        if (front_linearized_value >= front_sensor_distance_calibration.close_low_linearized && front_linearized_value <= front_sensor_distance_calibration.close_high_linearized) {
           sensors_linearized[sensor] = front_linearized_value;
-          sensors_distance[sensor] = ((uint16_t)((front_sensor_distance_calibration.slope * front_linearized_value) + front_sensor_distance_calibration.intercept)) + ROBOT_FRONT_LENGTH - sensors_distance_offset[sensor];
-          set_RGB_color(0, 0, 50);
-          break;
+          sensors_distance[sensor] = ((uint16_t)((front_sensor_distance_calibration.close_slope * front_linearized_value) + front_sensor_distance_calibration.close_intercept)) + ROBOT_FRONT_LENGTH - sensors_distance_offset[sensor];
+          continue;
         }
-        case SENSOR_SIDE_LEFT_WALL_ID:
-        case SENSOR_SIDE_RIGHT_WALL_ID: {
-          struct side_sensors_distance_calibration side_sensor_distance_calibration = side_sensors_distance_calibrations[sensor];
 
-          int16_t side_sensor_value = (sensors_on[sensor] - sensors_off[sensor]) + side_sensor_distance_calibration.offset;
-          if (side_sensor_value < 0) {
-            side_sensor_value = 0;
-          }
-          sensors_filtered[sensor] = SENSOR_LOW_PASS_FILTER_ALPHA * side_sensor_value + (1 - SENSOR_LOW_PASS_FILTER_ALPHA) * sensors_filtered[sensor];
-          uint16_t side_ln_index = sensors_filtered[sensor] / LOG_LINEARIZATION_TABLE_STEP;
-          if (side_ln_index == 0) {
-            side_ln_index = 1;
-          }
-          sensors_linearized[sensor] = (uint16_t)(ln_linearization[side_ln_index] * 1000);
-          sensors_distance[sensor] = ((uint16_t)((side_sensor_distance_calibration.slope * sensors_linearized[sensor]) + side_sensor_distance_calibration.intercept)) + ROBOT_MIDDLE_WIDTH - sensors_distance_offset[sensor];
-          break;
+        int16_t far_front_sensor_value = (sensors_on[sensor] - sensors_off[sensor]) + front_sensor_distance_calibration.far_offset;
+        if (far_front_sensor_value < 0) {
+          far_front_sensor_value = 0;
         }
+        sensors_filtered[sensor] = SENSOR_LOW_PASS_FILTER_ALPHA * far_front_sensor_value + (1 - SENSOR_LOW_PASS_FILTER_ALPHA) * sensor_before;
+        front_ln_index = sensors_filtered[sensor] / LOG_LINEARIZATION_TABLE_STEP;
+        if (front_ln_index == 0) {
+          front_ln_index = 1;
+        }
+        front_linearized_value = (uint16_t)(ln_linearization[front_ln_index] * 1000);
+        if (front_linearized_value >= front_sensor_distance_calibration.far_low_linearized && front_linearized_value <= front_sensor_distance_calibration.far_high_linearized) {
+          sensors_linearized[sensor] = front_linearized_value;
+          sensors_distance[sensor] = ((uint16_t)((front_sensor_distance_calibration.far_slope * front_linearized_value) + front_sensor_distance_calibration.far_intercept)) + ROBOT_FRONT_LENGTH - sensors_distance_offset[sensor];
+          continue;
+        }
+
+        int16_t front_sensor_value = (sensors_on[sensor] - sensors_off[sensor]) + front_sensor_distance_calibration.offset;
+        if (front_sensor_value < 0) {
+          front_sensor_value = 0;
+        }
+        sensors_filtered[sensor] = SENSOR_LOW_PASS_FILTER_ALPHA * front_sensor_value + (1 - SENSOR_LOW_PASS_FILTER_ALPHA) * sensor_before;
+        front_ln_index = sensors_filtered[sensor] / LOG_LINEARIZATION_TABLE_STEP;
+        if (front_ln_index == 0) {
+          front_ln_index = 1;
+        }
+        front_linearized_value = (uint16_t)(ln_linearization[front_ln_index] * 1000);
+        sensors_linearized[sensor] = front_linearized_value;
+        sensors_distance[sensor] = ((uint16_t)((front_sensor_distance_calibration.slope * front_linearized_value) + front_sensor_distance_calibration.intercept)) + ROBOT_FRONT_LENGTH - sensors_distance_offset[sensor];
+
+      } else if (sensor == SENSOR_SIDE_LEFT_WALL_ID || sensor == SENSOR_SIDE_RIGHT_WALL_ID) {
+
+        struct side_sensors_distance_calibration side_sensor_distance_calibration = side_sensors_distance_calibrations[sensor];
+
+        uint16_t side_sensor_before = sensors_filtered[sensor];
+        uint16_t side_ln_index = 0;
+        uint16_t side_linearized_value = 0;
+
+        int16_t side_sensor_value = (sensors_on[sensor] - sensors_off[sensor]) + side_sensor_distance_calibration.offset;
+        if (side_sensor_value < 0) {
+          side_sensor_value = 0;
+        }
+        sensors_filtered[sensor] = SENSOR_LOW_PASS_FILTER_ALPHA * side_sensor_value + (1 - SENSOR_LOW_PASS_FILTER_ALPHA) * side_sensor_before;
+        side_ln_index = sensors_filtered[sensor] / LOG_LINEARIZATION_TABLE_STEP;
+        if (side_ln_index == 0) {
+          side_ln_index = 1;
+        }
+        side_linearized_value = (uint16_t)(ln_linearization[side_ln_index] * 1000);
+        sensors_filtered[sensor] = side_sensor_value;
+        sensors_linearized[sensor] = side_linearized_value;
+        sensors_distance[sensor] = ((uint16_t)((side_sensor_distance_calibration.slope * side_linearized_value) + side_sensor_distance_calibration.intercept)) + ROBOT_MIDDLE_WIDTH - sensors_distance_offset[sensor];
       }
-
-      // if ((sensor == SENSOR_FRONT_LEFT_WALL_ID || sensor == SENSOR_FRONT_RIGHT_WALL_ID) && sensors_linearized[sensor] >= front_sensors_linearized_calibrated[sensor][SENSOR_FRONT_CALIBRATION_READINGS - 1]) {
-      //   for (int8_t distance_index = SENSOR_FRONT_CALIBRATION_READINGS - 1; distance_index >= 0; distance_index--) {
-      //     if (sensors_linearized[sensor] >= front_sensors_linearized_calibrated[sensor][distance_index] && (distance_index == 0 || sensors_linearized[sensor] <= front_sensors_linearized_calibrated[sensor][distance_index - 1])) {
-      //       sensors_distance[sensor] = (uint16_t)map(sensors_linearized[sensor], front_sensors_linearized_calibrated[sensor][distance_index], front_sensors_linearized_calibrated[sensor][distance_index + 1], distance_index * SENSOR_FRONT_CALIBRATION_STEP, (distance_index - 1) * SENSOR_FRONT_CALIBRATION_STEP) + robot_offset;
-      //       break;
-      //     }
-      //   }
-      // }
-      // sensors_distance[sensor] = ((uint16_t)((sensors_distance_slope[sensor] * sensors_linearized[sensor]) + sensors_distance_intercept[sensor])) + robot_offset - sensors_distance_offset[sensor];
     }
   }
 }

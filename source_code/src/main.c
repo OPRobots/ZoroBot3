@@ -32,25 +32,26 @@ int main(void) {
 
   while (1) {
     if (!is_competicion_iniciada()) {
-          // set_motors_pwm(45, 45);
       if (!check_menu_button()) {
-        // switch (check_iniciar_competicion()) {
-        //   case SENSOR_FRONT_LEFT_WALL_ID:
-        //     handwall_use_left_hand();
-        //     break;
-        //   case SENSOR_FRONT_RIGHT_WALL_ID:
-        //     handwall_use_right_hand();
-        //     break;
-        // }
+        switch (check_iniciar_competicion()) {
+          case SENSOR_FRONT_LEFT_WALL_ID:
+            handwall_use_left_hand();
+            break;
+          case SENSOR_FRONT_RIGHT_WALL_ID:
+            handwall_use_right_hand();
+            break;
+        }
 
         if (is_competicion_iniciada()) {
           set_RGB_color(0, 50, 0);
           delay(2000);
           set_RGB_color(0, 0, 0);
-          handwall_set_time_limit(5000);
+          handwall_set_time_limit(20000);
           // handwall_start();
           // move_straight(250, -300, true);
-          // set_competicion_iniciada(false);
+          // move_straight(CELL_DIMENSION, 500, true);
+          move(MOVE_RIGHT);
+          set_competicion_iniciada(false);
         } else {
           // update_side_sensors_leds();
           // set_motors_brake();
@@ -63,6 +64,9 @@ int main(void) {
     }
 
     // ZONA DEBUG TEMPORAL
+          // int16_t distance = get_front_wall_distance() - ((CELL_DIMENSION - WALL_WIDTH / 2) + SENSING_POINT_DISTANCE);
+          // printf("%d\n", abs(distance)<=5?0:distance);
+          // delay(100);
 
     // LOG ERROR LATERAL
     // get_side_sensors_close_error();
@@ -121,12 +125,12 @@ int main(void) {
     // SENSORES MOVIENDO EL ROBOT MANUALMENTE
     // static uint8_t count = 0;
     // if (get_encoder_average_micrometers()/10000 >= count || count == 0) {
-    printf("%4d\t", get_sensor_linearized(SENSOR_FRONT_LEFT_WALL_ID));
-    printf("%4d\t", get_sensor_linearized(SENSOR_FRONT_RIGHT_WALL_ID));
-    printf("%4d\t", (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)+get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))/2);
+    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
+    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
+    // // printf("%4d\t", (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)+get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))/2);
     // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
     // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
-    printf("\n");
+    // printf("\n");
     // delay(100);
     // count++;
     // }
