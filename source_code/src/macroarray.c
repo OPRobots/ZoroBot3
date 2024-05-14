@@ -51,15 +51,15 @@ void macroarray_print(void) {
   uint8_t col = 1;
   do {
     if (macroarray_float_bits & (1 << (macroarray_size - col))) {
-      printf("%.2f", macroarray[i] / 100.0);
+      printf(">log%d:%.2f",col, macroarray[i] / 100.0);
     } else {
-      printf("%d", macroarray[i]);
+      printf(">log%d:%d",col, macroarray[i]);
     }
     if (col == macroarray_size) {
       printf("\n");
       col = 1;
     } else {
-      printf(MACROARRAY_SEPARATOR);
+      printf("\n"/* MACROARRAY_SEPARATOR */);
       col++;
     }
 

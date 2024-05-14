@@ -1,9 +1,9 @@
 #include "move.h"
 
 struct turn_params turns[] = {
-    [MOVE_LEFT] = {29, 35, 500, 612.5, 9.625, 16, 148, -1},
+    [MOVE_LEFT] = {32, 35, 500, 612.5, 9.625, 16, 148, -1},
     [MOVE_RIGHT] = {32, 35, 500, 612.5, 9.625, 16, 148, 1},
-    [MOVE_180] = {0, 0, 0, 612.5, 9.625, 16, 309, 1},
+    [MOVE_180] = {0, 0, 0, 262.5, 9.625, 37, 291, 1},
     [MOVE_180W] = {0, 0, 0, 612.5, 9.625, 16, 310, -1},
 };
 
@@ -57,7 +57,7 @@ static void move_back(enum movement movement) {
   set_side_sensors_far_correction(false);
 
   move_straight((CELL_DIMENSION / 2) - calc_straight_stop_distance(300) - current_cell_start_mm, 300, false);
-  move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
+  // move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
 
   // delay(1500);
 

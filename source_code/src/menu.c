@@ -1,13 +1,13 @@
 #include <menu.h>
 
-uint8_t modoConfig = 0;
 #define MODE_CALIBRATION 0
 #define MODE_DEBUG 1
+uint8_t modoConfig = MODE_DEBUG;
 
 #define NUM_MODOS_RACE 1
 #define NUM_MODOS_DEBUG 2
 
-int8_t valorConfig[NUM_MODOS_DEBUG] = {1, 0};
+int8_t valorConfig[NUM_MODOS_DEBUG] = {0, 1};
 #define NUM_VALORES_CALIBRATION 5
 #define NUM_VALORES 10
 
@@ -55,10 +55,10 @@ static void handle_menu_value(void) {
         case DEBUG_NONE:
           set_RGB_color(0, 0, 0);
           break;
-        case DEBUG_TYPE_SENSORS_RAW:
+        case DEBUG_MACROARRAY:
           set_RGB_color(0, 10, 0);
           break;
-        case 2:
+        case DEBUG_TYPE_SENSORS_RAW:
           set_RGB_color(0, 255, 0);
           break;
         case 3:
@@ -157,4 +157,10 @@ bool check_menu_button(void) {
 
 bool in_debug_mode(void) {
   return modoConfig == MODE_DEBUG;
+}
+
+void menu_reset(void){
+  modoConfig = MODE_DEBUG;
+  valorConfig[MODE_CALIBRATION] = 0;
+  valorConfig[MODE_DEBUG] = 1;
 }

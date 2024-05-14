@@ -43,15 +43,20 @@ int main(void) {
         }
 
         if (is_competicion_iniciada()) {
-          set_RGB_color(0, 50, 0);
-          delay(2000);
-          set_RGB_color(0, 0, 0);
           handwall_set_time_limit(20000);
-          // handwall_start();
+          handwall_start();
           // move_straight(250, -300, true);
-          // move_straight(CELL_DIMENSION, 500, true);
-          move(MOVE_RIGHT);
-          set_competicion_iniciada(false);
+          // delay(50);
+          // move_straight(20, 500, false);
+          // move(MOVE_LEFT);
+          // move_inplace_turn(MOVE_180W);
+          // delay(100);
+          // move_inplace_turn(MOVE_180);
+          // set_side_sensors_close_correction(true);
+          // set_side_sensors_far_correction(true);
+          // move_straight(4*CELL_DIMENSION - ROBOT_FRONT_LENGTH - ROBOT_BACK_LENGTH, 500, true);
+          // delay(100);
+          // set_competicion_iniciada(false);
         } else {
           // update_side_sensors_leds();
           // set_motors_brake();
@@ -64,9 +69,9 @@ int main(void) {
     }
 
     // ZONA DEBUG TEMPORAL
-          // int16_t distance = get_front_wall_distance() - ((CELL_DIMENSION - WALL_WIDTH / 2) + SENSING_POINT_DISTANCE);
-          // printf("%d\n", abs(distance)<=5?0:distance);
-          // delay(100);
+    // int16_t distance = get_front_wall_distance() - ((CELL_DIMENSION - WALL_WIDTH / 2) + SENSING_POINT_DISTANCE);
+    // printf("%d\n", abs(distance)<=5?0:distance);
+    // delay(100);
 
     // LOG ERROR LATERAL
     // get_side_sensors_close_error();

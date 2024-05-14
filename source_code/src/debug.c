@@ -3,6 +3,11 @@
 bool debug_enabled = false;
 uint32_t last_print_debug = 0;
 
+static void debug_macroarray(void) {
+  macroarray_print();
+  debug_enabled = false;
+}
+
 /**
  * @brief Imprime los valores de los sensores sin aplicar ninguna corrección
  *
@@ -33,6 +38,9 @@ void debug_from_config(uint8_t type) {
   }
   if (debug_enabled) {
     switch (type) {
+      case DEBUG_MACROARRAY:
+        debug_macroarray();
+        break;
       case DEBUG_TYPE_SENSORS_RAW:
         debug_sensors_raw();
         break;

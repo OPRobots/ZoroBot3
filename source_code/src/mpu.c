@@ -186,7 +186,9 @@ void mpu_load_eeprom(void) {
  */
 void update_gyro_readings(void) {
   if (mpu_updating) {
-    gyro_z_raw = mpu_read_gyro_z_raw();
+    // gyro_z_raw = mpu_read_gyro_z_raw();
+    int16_t new_gyro_z_raw = mpu_read_gyro_z_raw();
+    gyro_z_raw = 0.5 * new_gyro_z_raw + (1 - 0.5) * gyro_z_raw;
     deg_integ = deg_integ - get_gyro_z_dps() / SYSTICK_FREQUENCY_HZ;
   }
 }

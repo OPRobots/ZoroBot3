@@ -91,6 +91,7 @@ void set_competicion_iniciada(bool state) {
   if (state) {
     reset_control();
   } else {
+    menu_reset();
     competicion_finish_ms = get_clock_ticks();
   }
 }
@@ -103,6 +104,9 @@ int8_t check_iniciar_competicion(void) {
   } else {
     uint32_t elapsed_ms = get_clock_ticks() - sensor_front_left_start_ms;
     if (elapsed_ms >= SENSOR_START_MIN_MS && elapsed_ms <= SENSOR_START_MAX_MS) {
+      set_RGB_color(0, 50, 0);
+      delay(2000);
+      set_RGB_color(0, 0, 0);
       set_competicion_iniciada(true);
       return SENSOR_FRONT_LEFT_WALL_ID;
     } else {
@@ -117,6 +121,9 @@ int8_t check_iniciar_competicion(void) {
   } else {
     uint32_t elapsed_ms = get_clock_ticks() - sensor_front_right_start_ms;
     if (elapsed_ms >= SENSOR_START_MIN_MS && elapsed_ms <= SENSOR_START_MAX_MS) {
+      set_RGB_color(0, 50, 0);
+      delay(2000);
+      set_RGB_color(0, 0, 0);
       set_competicion_iniciada(true);
       return SENSOR_FRONT_RIGHT_WALL_ID;
     } else {
@@ -227,25 +234,32 @@ void control_loop(void) {
   //   sum_linear_error = -1000;
   // }
 
-  angular_error = ideal_angular_speed - get_measured_angular_speed();
-  sum_angular_error += angular_error;
-  last_angular_error = angular_error;
+  // OPR
+  // angular_error = ideal_angular_speed - get_measured_angular_speed();
+  // sum_angular_error += angular_error;
+  // last_angular_error = angular_error;
 
-  side_sensors_error = 0;
-  if (side_sensors_close_correction_enabled) {
-    side_sensors_error += get_side_sensors_close_error();
-  }
-  if (side_sensors_far_correction_enabled) {
-    side_sensors_error += get_side_sensors_far_error();
-  }
+  // BuleBule
+  last_angular_error = angular_error;
+  angular_error += ideal_angular_speed - get_measured_angular_speed();
+  // sum_angular_error += angular_error;
+
   if (side_sensors_close_correction_enabled || side_sensors_far_correction_enabled) {
-    sum_side_sensors_error += side_sensors_error;
     last_side_sensors_error = side_sensors_error;
+    side_sensors_error = 0;
+    if (side_sensors_close_correction_enabled) {
+      side_sensors_error += get_side_sensors_close_error();
+    }
+    if (side_sensors_far_correction_enabled) {
+      side_sensors_error += get_side_sensors_far_error();
+    }
+    sum_side_sensors_error += side_sensors_error;
   } else {
     side_sensors_error = 0;
     sum_side_sensors_error = 0;
     last_side_sensors_error = 0;
   }
+
   if (front_sensors_correction_enabled) {
     front_sensors_error = get_front_sensors_error();
     sum_front_sensors_error += front_sensors_error;
@@ -259,7 +273,7 @@ void control_loop(void) {
   linear_voltage =
       KP_LINEAR * linear_error + KI_LINEAR * sum_linear_error + KD_LINEAR * (linear_error - last_linear_error);
   angular_voltage =
-      KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
+      KP_ANGULAR * angular_error /* + KI_ANGULAR * sum_angular_error */ + KD_ANGULAR * (angular_error - last_angular_error) +
       KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
       KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error + KD_FRONT_SENSORS * (front_sensors_error - last_front_sensors_error);
 
@@ -269,16 +283,18 @@ void control_loop(void) {
   pwm_right = voltage_to_motor_pwm(voltage_right);
   set_motors_pwm(pwm_left, pwm_right);
   // store_debug();
-  macroarray_store(
-      0,
-      0b00011001,
-      8,
-      target_linear_speed,
-      ideal_linear_speed,
-      (int16_t)(get_measured_linear_speed()),
-      (int16_t)(ideal_angular_speed * 100.0),
-      (int16_t)(get_measured_angular_speed() * 100.0),
-      pwm_left,
-      pwm_right,
-      (int16_t)(get_battery_voltage() * 100.0));
+  // macroarray_store(
+  //     0,
+  //     0b0001101001,
+  //     10,
+  //     target_linear_speed,
+  //     ideal_linear_speed,
+  //     (int16_t)(get_measured_linear_speed()),
+  //     (int16_t)(ideal_angular_speed * 100.0),
+  //     (int16_t)(get_measured_angular_speed() * 100.0),
+  //     0,
+  //     (int16_t)(side_sensors_error * 100.0),
+  //     pwm_left,
+  //     pwm_right,
+  //     (int16_t)(get_battery_voltage() * 100.0));
 }

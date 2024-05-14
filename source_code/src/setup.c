@@ -185,7 +185,8 @@ static void setup_adc2(void) {
 static void setup_leds_pwm(void) {
   timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
 
-  timer_set_prescaler(TIM1, rcc_apb2_frequency * 2 / 400000);
+  // timer_set_prescaler(TIM1, rcc_apb2_frequency * 2 / 400000);
+  timer_set_prescaler(TIM1, ((rcc_apb1_frequency * 2) / 1000000 - 2));
   // 400000 es la frecuencia a la que irá el PWM 4 kHz, los dos últimos ceros no se porqué, pero son necesarios ya que rcc_apb2_frequency también añade dos ceros a mayores
   timer_set_repetition_counter(TIM1, 0);
   timer_enable_preload(TIM1);

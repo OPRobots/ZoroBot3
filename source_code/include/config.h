@@ -30,16 +30,20 @@
 /** Movimiento */
 #define BASE_LINEAR_ACCEL 3000
 #define KP_LINEAR 0.0002
-#define KI_LINEAR 0.0007
+#define KI_LINEAR 0.0009
 #define KD_LINEAR 0.00
 
-#define KP_ANGULAR 0.2
-#define KI_ANGULAR 0.007
-#define KD_ANGULAR 0.00
+// #define KP_ANGULAR 0.2
+// #define KI_ANGULAR 0.007
+// #define KD_ANGULAR 0.00
 
-#define KP_SIDE_SENSORS 0.05
-#define KI_SIDE_SENSORS 0.002
-#define KD_SIDE_SENSORS 0.10
+#define KP_ANGULAR 0.003
+#define KI_ANGULAR 0.0
+#define KD_ANGULAR 0.2
+
+#define KP_SIDE_SENSORS 0.02
+#define KI_SIDE_SENSORS 0.00025
+#define KD_SIDE_SENSORS 0.00
 
 #define KP_FRONT_SENSORS 0.0125
 #define KI_FRONT_SENSORS 0.001

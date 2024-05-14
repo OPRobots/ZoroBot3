@@ -10,7 +10,8 @@
 	"settings": {
 		"files.associations": {
 			"*.tpl": "html",
-			"move.h": "c"
+			"*.h": "c",
+			"*.c": "c",
 		}
 	}
 }
