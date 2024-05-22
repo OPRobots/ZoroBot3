@@ -28,6 +28,7 @@
 #define ROBOT_MIDDLE_WIDTH ((ROBOT_WIDTH / 2.0))
 
 /** Movimiento */
+#define MAX_MOTOR_SATURATION_COUNT 20
 #define BASE_LINEAR_ACCEL 3000
 #define KP_LINEAR 0.0002
 #define KI_LINEAR 0.0009

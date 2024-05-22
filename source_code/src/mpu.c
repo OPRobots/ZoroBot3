@@ -254,6 +254,7 @@ void set_z_angle(float angle) {
     } else if (correccion < -200) {
       correccion = -200;
     }
+    //TODO: pasar a set_motors_pwm
     set_motors_speed(correccion, -(correccion));
   } else {
     sumError = 0;

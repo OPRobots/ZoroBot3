@@ -106,23 +106,22 @@ void move_straight(int32_t distance, int32_t speed, bool stop) {
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   if (speed >= 0) {
-    while (get_encoder_avg_micrometers() <= current_distance + (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
+    while (is_competicion_iniciada() && get_encoder_avg_micrometers() <= current_distance + (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
       if (stop) {
         stop_distance = calc_straight_stop_distance(get_ideal_linear_speed());
       }
     }
   } else {
-    while (get_encoder_avg_micrometers() >= current_distance - (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
+    while (is_competicion_iniciada() && get_encoder_avg_micrometers() >= current_distance - (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
       if (stop) {
         stop_distance = calc_straight_stop_distance(get_ideal_linear_speed());
       }
     }
   }
-
   if (stop) {
     set_target_linear_speed(0);
     set_ideal_angular_speed(0.0);
-    while (get_ideal_linear_speed() != 0) {
+    while (is_competicion_iniciada() &&  get_ideal_linear_speed() != 0) {
     }
   }
 }
@@ -138,7 +137,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   int32_t stop_distance = 0;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
-  while ((get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
+  while (is_competicion_iniciada() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
     if (stop) {
       stop_distance = calc_straight_stop_distance(get_ideal_linear_speed());
     }
@@ -147,7 +146,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   set_RGB_color(0, 0, 0);
   if (stop) {
     set_target_linear_speed(0);
-    while (get_encoder_avg_speed() != 0) {
+    while (is_competicion_iniciada() && get_encoder_avg_speed() != 0) {
     }
   }
 }
@@ -222,11 +221,11 @@ void move_inplace_angle(float angle, float rads) {
   set_target_linear_speed(0.0);
   if (angle >= 0) {
     set_ideal_angular_speed(rads);
-    while (get_gyro_z_degrees() <= target_angle) {
+    while (is_competicion_iniciada() && get_gyro_z_degrees() <= target_angle) {
     }
   } else {
     set_ideal_angular_speed(-rads);
-    while (get_gyro_z_degrees() >= target_angle) {
+    while (is_competicion_iniciada() && get_gyro_z_degrees() >= target_angle) {
     }
   }
   set_ideal_angular_speed(0.0);

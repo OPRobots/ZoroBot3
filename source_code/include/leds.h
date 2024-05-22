@@ -17,6 +17,7 @@ void warning_status_led(uint32_t ms);
 void set_RGB_color(uint32_t r, uint32_t g, uint32_t b);
 void set_RGB_rainbow(void);
 void set_RGB_color_while(uint32_t r, uint32_t g, uint32_t b, uint32_t ms);
+void blink_RGB_color(uint32_t r, uint32_t g, uint32_t b, uint32_t ms);
 void check_leds_while(void);
 void set_leds_wave(int ms);
 void set_leds_side_sensors(int ms);

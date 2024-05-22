@@ -186,6 +186,7 @@ void reset_control(void) {
   voltage_right = 0;
   pwm_left = 0;
   pwm_right = 0;
+  clear_motors_saturated();
 }
 
 void set_target_linear_speed(int32_t linear_speed) {
@@ -206,6 +207,17 @@ void set_ideal_angular_speed(float angular_speed) {
  *
  */
 void control_loop(void) {
+  if (is_motor_saturated() && is_competicion_iniciada()) {
+    set_motors_speed(0, 0);
+    set_fan_speed(0);
+    if (get_clock_ticks() - get_motors_saturated_ms() < 1000) {
+      blink_RGB_color(512, 0, 0, 50);
+    } else {
+      set_RGB_color(0, 0, 0);
+      set_competicion_iniciada(false);
+    }
+    return;
+  }
   if (!competicionIniciada) {
     if (competicion_finish_ms > 0 && get_clock_ticks() - competicion_finish_ms <= 3000) {
       set_motors_brake();

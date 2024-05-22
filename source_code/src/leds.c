@@ -9,6 +9,9 @@ static uint32_t rgbWhileMs = 0;
 
 static uint32_t lastTicksWarning = 0;
 
+static uint32_t lastBlinkRGB = 0;
+static bool blinkRGBState = false;
+
 static uint32_t lastTicksWave = 0;
 static int8_t currentStepWave = 1;
 static uint8_t currentIndexWave = 0;
@@ -53,6 +56,18 @@ void set_RGB_color(uint32_t r, uint32_t g, uint32_t b) {
 void set_RGB_color_while(uint32_t r, uint32_t g, uint32_t b, uint32_t ms) {
   set_RGB_color(r, g, b);
   rgbWhileMs = get_clock_ticks() + ms;
+}
+
+void blink_RGB_color(uint32_t r, uint32_t g, uint32_t b, uint32_t ms) {
+  if (get_clock_ticks() > lastBlinkRGB + ms) {
+    blinkRGBState = !blinkRGBState;
+    if (blinkRGBState) {
+      set_RGB_color(0, 0, 0);
+    } else {
+      set_RGB_color(r, g, b);
+    }
+    lastBlinkRGB = get_clock_ticks();
+  }
 }
 
 void check_leds_while(void) {
@@ -105,7 +120,7 @@ void set_leds_wave(int ms) {
         gpio_set(GPIOB, GPIO2);
         break;
     }
-    
+
     if (currentIndexWave >= 3) {
       currentStepWave = -1;
     } else if (currentIndexWave <= 0) {
