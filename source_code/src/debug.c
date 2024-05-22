@@ -3,6 +3,8 @@
 bool debug_enabled = false;
 uint32_t last_print_debug = 0;
 
+uint32_t last_keep_z_angle = 0;
+
 static void debug_macroarray(void) {
   macroarray_print();
   debug_enabled = false;
@@ -30,6 +32,16 @@ static void check_debug_active(void) {
   }
 }
 
+static void debug_gyro_demo(void) {
+  // if (get_clock_ticks() >= last_keep_z_angle + 1) {
+    do{
+    keep_z_angle();
+    check_debug_active();
+    }while(debug_enabled);
+    // last_keep_z_angle = get_clock_ticks();
+  // }
+}
+
 void debug_from_config(uint8_t type) {
   if (type != DEBUG_NONE) {
     check_debug_active();
@@ -43,6 +55,9 @@ void debug_from_config(uint8_t type) {
         break;
       case DEBUG_TYPE_SENSORS_RAW:
         debug_sensors_raw();
+        break;
+      case DEBUG_GYRO_DEMO:
+        debug_gyro_demo();
         break;
     }
   }

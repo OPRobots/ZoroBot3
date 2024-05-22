@@ -270,7 +270,7 @@ void keep_z_angle(void) {
   float d = 0;
   float correccion = 0;
 
-  if (abs(error) > 0.5) {
+  if (abs(error) > 0.1) {
     p = KP_GYRO * error;
     d = KD_GYRO * (error - errorAnterior);
     errorAnterior = error;
@@ -280,7 +280,7 @@ void keep_z_angle(void) {
     }
     // printf("%d \n", (int16_t)(sumError * 100));
     correccion = p + i + d;
-    correccion = constrain(correccion, -200, 200);
+    // correccion = constrain(correccion, -200, 200);
     set_motors_speed(/* 60+ */ correccion, /* 80 */ -correccion);
   } else {
     sumError = 0;
