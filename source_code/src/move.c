@@ -8,6 +8,7 @@ struct turn_params turns[] = {
 };
 
 static int32_t current_cell_start_mm = 0;
+static int32_t current_cell_absolute_start_mm = 0;
 
 static int32_t calc_straight_stop_distance(int32_t speed) {
   return (speed * speed) / (2 * BASE_LINEAR_ACCEL);
@@ -15,6 +16,7 @@ static int32_t calc_straight_stop_distance(int32_t speed) {
 
 static void enter_next_cell(void) {
   current_cell_start_mm = -SENSING_POINT_DISTANCE;
+  current_cell_absolute_start_mm = get_encoder_avg_millimeters();
   // if (front_wall_detection()) {
   //   int16_t distance = get_front_wall_distance() - ((CELL_DIMENSION - WALL_WIDTH / 2) + SENSING_POINT_DISTANCE);
   //   if(abs(distance)>5){
@@ -91,6 +93,10 @@ static void move_back(enum movement movement) {
 
 void set_starting_position(void) {
   current_cell_start_mm = ROBOT_BACK_LENGTH + WALL_WIDTH / 2;
+}
+
+int32_t get_current_cell_travelled_distance(void){
+  return get_encoder_avg_millimeters() - current_cell_absolute_start_mm;
 }
 
 /**
