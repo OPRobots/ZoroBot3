@@ -12,7 +12,7 @@
 #define CELL_DIAGONAL 127.3
 #define WALL_WIDTH 12
 #define MIDDLE_MAZE_DISTANCE ((CELL_DIMENSION - WALL_WIDTH) / 2.)
-#define SENSING_POINT_DISTANCE 20
+#define SENSING_POINT_DISTANCE 0
 
 /** Características Físicas */
 #ifdef ZOROBOT3_A
