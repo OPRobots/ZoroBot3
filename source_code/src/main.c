@@ -45,9 +45,17 @@ int main(void) {
         if (is_competicion_iniciada()) {
           handwall_set_time_limit(20000);
           handwall_start();
-          // move_straight(250, -300, true);
+          // move(MOVE_START);
+          // move(MOVE_FRONT);
+          // move(MOVE_FRONT);
+          // move(MOVE_FRONT);
+          // move(MOVE_LEFT);
+          // move(MOVE_180W);
+          // move_straight(3*CELL_DIMENSION, 300, true);
           // delay(50);
-          // move_straight(20, 500, false);
+          // set_side_sensors_close_correction(true);
+          // set_side_sensors_far_correction(true);
+          // move_straight(60, 500, false, true);
           // move(MOVE_LEFT);
           // move_inplace_turn(MOVE_180W);
           // delay(100);
@@ -76,6 +84,10 @@ int main(void) {
     // LOG ERROR LATERAL
     // get_side_sensors_close_error();
     // printf("%4d - %4d\n", get_side_sensors_close_error(), get_side_sensors_far_error());
+    // delay(100);
+
+    // LOG MPU DEG
+    // printf("%.4f\n", get_gyro_z_degrees());
     // delay(100);
 
     // MOVIMIENTO RECTO

@@ -294,7 +294,17 @@ void control_loop(void) {
   pwm_left = voltage_to_motor_pwm(voltage_left);
   pwm_right = voltage_to_motor_pwm(voltage_right);
   set_motors_pwm(pwm_left, pwm_right);
-  // store_debug();
+
+  macroarray_store(
+      0,
+      0b0,
+      5,
+      get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID),
+      ((int32_t)((get_current_cell_travelled_distance() + ROBOT_BACK_LENGTH) / CELL_DIMENSION)) % 2 == 0 ? 1 : 0,
+      get_current_cell_travelled_distance(),
+      ideal_linear_speed,
+      (int16_t)(get_measured_linear_speed()));
+
   // macroarray_store(
   //     0,
   //     0b0001101001,

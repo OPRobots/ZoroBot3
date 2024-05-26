@@ -29,7 +29,7 @@ struct turn_params {
 void set_starting_position(void);
 int32_t get_current_cell_travelled_distance(void);
 
-void move_straight(int32_t distance, int32_t speed, bool stop);
+void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool stop);
 void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool stop);
 void move_arc_turn(enum movement move);
 void move_inplace_turn(enum movement movement);
