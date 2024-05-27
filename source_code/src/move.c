@@ -76,7 +76,7 @@ static bool check_wall_loss_correction(struct walls initial_walls) {
 static void move_front(void) {
   set_front_sensors_correction(false);
   set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(false);
+  set_side_sensors_far_correction(true);
   move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, 500, true, false);
   enter_next_cell();
 }
@@ -85,6 +85,7 @@ static void move_side(enum movement movement) {
   set_front_sensors_correction(false);
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
+
   move_straight(turns[movement].start - current_cell_start_mm, 500, false, false);
 
   disable_sensors_correction();
@@ -305,7 +306,9 @@ void move(enum movement movement) {
       break;
     case MOVE_LEFT:
     case MOVE_RIGHT:
+      set_control_debug(true);
       move_side(movement);
+      set_control_debug(false);
       break;
     case MOVE_180:
     case MOVE_180W:

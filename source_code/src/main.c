@@ -43,7 +43,7 @@ int main(void) {
         }
 
         if (is_competicion_iniciada()) {
-          handwall_set_time_limit(20000);
+          // handwall_set_time_limit(100000);
           handwall_start();
           // move(MOVE_START);
           // move(MOVE_FRONT);
@@ -57,16 +57,18 @@ int main(void) {
           // set_side_sensors_far_correction(true);
           // move_straight(60, 500, false, true);
           // move(MOVE_LEFT);
-          // move_inplace_turn(MOVE_180W);
+
           // delay(100);
           // move_inplace_turn(MOVE_180);
           // set_side_sensors_close_correction(true);
           // set_side_sensors_far_correction(true);
           // move_straight(4*CELL_DIMENSION - ROBOT_FRONT_LENGTH - ROBOT_BACK_LENGTH, 500, true);
           // delay(100);
-          // set_competicion_iniciada(false);
+          // move_inplace_turn(MOVE_180);
+          // delay(500);
+          //     set_competicion_iniciada(false);
         } else {
-          // update_side_sensors_leds();
+          update_side_sensors_leds();
           // set_motors_brake();
           // printf("%.4f\n", get_gyro_z_radps());
         }

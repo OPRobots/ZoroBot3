@@ -22,7 +22,7 @@ void handwall_start(void) {
 }
 
 void handwall_loop(void) {
-  if (get_clock_ticks() - start_ms >= time_limit) {
+  if (time_limit > 0 && get_clock_ticks() - start_ms >= time_limit) {
     set_competicion_iniciada(false);
     return;
   }
