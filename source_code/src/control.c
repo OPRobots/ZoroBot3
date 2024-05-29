@@ -146,9 +146,6 @@ void set_side_sensors_close_correction(bool enabled) {
     sum_side_sensors_error = 0;
   }
   side_sensors_close_correction_enabled = enabled;
-  if (!side_sensors_close_correction_enabled && !side_sensors_far_correction_enabled) {
-    angular_error = 0;
-  }
 }
 
 void set_side_sensors_far_correction(bool enabled) {
@@ -158,9 +155,6 @@ void set_side_sensors_far_correction(bool enabled) {
     sum_side_sensors_error = 0;
   }
   side_sensors_far_correction_enabled = enabled;
-  if (!side_sensors_close_correction_enabled && !side_sensors_far_correction_enabled) {
-    angular_error = 0;
-  }
 }
 
 void set_front_sensors_correction(bool enabled) {
@@ -176,6 +170,12 @@ void disable_sensors_correction(void) {
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
   set_front_sensors_correction(false);
+}
+
+void reset_angular_control(void) {
+  angular_error = 0;
+  last_angular_error = 0;
+  sum_angular_error = 0;
 }
 
 void reset_control(void) {

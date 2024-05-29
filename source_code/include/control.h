@@ -19,6 +19,7 @@ void set_side_sensors_close_correction(bool enabled);
 void set_side_sensors_far_correction(bool enabled);
 void set_front_sensors_correction(bool enabled);
 void disable_sensors_correction(void);
+void reset_angular_control(void);
 void reset_control(void);
 
 void set_target_linear_speed(int32_t linear_speed);

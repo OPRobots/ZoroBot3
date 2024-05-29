@@ -89,6 +89,7 @@ static void move_side(enum movement movement) {
   move_straight(turns[movement].start - current_cell_start_mm, 500, false, false);
 
   disable_sensors_correction();
+  reset_angular_control();
   move_arc_turn(movement);
 
   set_front_sensors_correction(false);
@@ -109,6 +110,7 @@ static void move_back(enum movement movement) {
   // delay(1500);
 
   disable_sensors_correction();
+  reset_angular_control();
   // int8_t sign = (int8_t)(rand() % 2) * 2 - 1;
   // move_inplace_angle(180 * sign, 10);
   move_inplace_turn(movement);
