@@ -28,18 +28,18 @@ struct front_sensors_distance_calibration {
   int16_t close_offset;
   float close_slope;
   int16_t close_intercept;
-  int16_t close_low_linearized;
-  int16_t close_high_linearized;
+  int16_t close_low_raw;
+  int16_t close_high_raw;
   int16_t far_offset;
   float far_slope;
   int16_t far_intercept;
-  int16_t far_low_linearized;
-  int16_t far_high_linearized;
+  int16_t far_low_raw;
+  int16_t far_high_raw;
   int16_t offset;
   float slope;
   int16_t intercept;
-  int16_t low_linearized;
-  int16_t high_linearized;
+  int16_t low_raw;
+  int16_t high_raw;
 };
 
 struct side_sensors_distance_calibration {

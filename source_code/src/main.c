@@ -44,6 +44,7 @@ int main(void) {
 
         if (is_competicion_iniciada()) {
           // handwall_set_time_limit(100000);
+          handwall_set_time_limit(30000);
           handwall_start();
           // move(MOVE_START);
           // move(MOVE_FRONT);
@@ -66,7 +67,7 @@ int main(void) {
           // delay(100);
           // move_inplace_turn(MOVE_180);
           // delay(500);
-          //     set_competicion_iniciada(false);
+          // set_competicion_iniciada(false);
         } else {
           update_side_sensors_leds();
           // set_motors_brake();
@@ -85,7 +86,7 @@ int main(void) {
 
     // LOG ERROR LATERAL
     // get_side_sensors_close_error();
-    // printf("%4d - %4d\n", get_side_sensors_close_error(), get_side_sensors_far_error());
+    // printf("%4d - %4d\n", get_side_sensors_close_error(true), get_side_sensors_far_error(true));
     // delay(100);
 
     // LOG MPU DEG
@@ -145,10 +146,12 @@ int main(void) {
     // static uint8_t count = 0;
     // if (get_encoder_average_micrometers()/10000 >= count || count == 0) {
     // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
+    // // printf("(%4d)\t", get_sensor_linearized(SENSOR_FRONT_LEFT_WALL_ID));
     // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
-    // // printf("%4d\t", (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)+get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))/2);
-    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
+    // // printf("(%4d)\t", get_sensor_linearized(SENSOR_FRONT_RIGHT_WALL_ID));
+    // // // printf("%4d\t", (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)+get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))/2);
+    // // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
+    // // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
     // printf("\n");
     // delay(100);
     // count++;

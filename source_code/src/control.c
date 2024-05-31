@@ -90,9 +90,8 @@ bool is_competicion_iniciada(void) {
 
 void set_competicion_iniciada(bool state) {
   competicionIniciada = state;
-  if (state) {
-    reset_control();
-  } else {
+  reset_control();
+  if (!state) {
     menu_reset();
     competicion_finish_ms = get_clock_ticks();
   }
@@ -318,21 +317,21 @@ void control_loop(void) {
   //     ideal_linear_speed,
   //     (int16_t)(get_measured_linear_speed()));
 
-  if (control_debug) {
-    macroarray_store(
-        2,
-        0b1101, // 0b0001101001,
-        4,
-        // target_linear_speed,
-        // ideal_linear_speed,
-        // (int16_t)(get_measured_linear_speed()),
-        (int16_t)(ideal_angular_speed * 100.0),
-        (int16_t)(get_measured_angular_speed() * 100.0),
-        0,
-        (int16_t)(side_sensors_error * 100.0)
-        // pwm_left,
-        // pwm_right,
-        // (int16_t)(get_battery_voltage() * 100.0)
-    );
-  }
+  // if (control_debug) {
+  macroarray_store(
+      2,
+      0b1101, // 0b0001101001,
+      4,
+      // target_linear_speed,
+      // ideal_linear_speed,
+      // (int16_t)(get_measured_linear_speed()),
+      (int16_t)(ideal_angular_speed * 100.0),
+      (int16_t)(get_measured_angular_speed() * 100.0),
+      0,
+      (int16_t)(side_sensors_error * 100.0)
+      // pwm_left,
+      // pwm_right,
+      // (int16_t)(get_battery_voltage() * 100.0)
+  );
+  // }
 }
