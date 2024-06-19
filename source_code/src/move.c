@@ -176,7 +176,7 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
       }
     }
   } else {
-    while (is_competicion_iniciada() && get_encoder_avg_micrometers() >= current_distance - (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
+    while (is_competicion_iniciada() && get_encoder_avg_micrometers() >= current_distance - (distance + stop_distance) * MICROMETERS_PER_MILLIMETER) {
       if (stop) {
         stop_distance = calc_straight_stop_distance(get_ideal_linear_speed());
       }

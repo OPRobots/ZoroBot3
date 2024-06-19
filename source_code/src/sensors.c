@@ -102,6 +102,8 @@ volatile uint16_t sensors_linearized[NUM_SENSORES];
 volatile uint16_t sensors_distance[NUM_SENSORES];
 uint16_t sensors_distance_offset[NUM_SENSORES] = {0, 0, 0, 0};
 
+static volatile int16_t last_front_sensors_angle_error = 0;
+
 /**
  * @brief Set an specific emitter ON.
  *
@@ -331,10 +333,6 @@ void front_sensors_calibration(void) {
   set_info_led(0, !done_left);
   set_info_led(7, !done_right);
   set_RGB_color(0, 0, 0);
-  // while (true) {
-  //   printf("%d %d | %d %d - %d %d\n", sensors_distance[SENSOR_FRONT_LEFT_WALL_ID], sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID], front_sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].close_offset, front_sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].close_offset, front_sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].far_offset, front_sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].far_offset);
-  //   delay(100);
-  // }
 
   uint16_t eeprom_data[4] = {
       front_sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].close_offset,
@@ -597,9 +595,13 @@ int16_t get_side_sensors_far_error(void) {
   return 0;
 }
 
-int16_t get_front_sensors_error(void) {
+int16_t get_front_sensors_angle_error(void) {
   if (!front_wall_detection()) {
+    last_front_sensors_angle_error = 0;
     return 0;
   }
-  return sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID];
+  int16_t error = sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID];
+  // error = 0.1 * error + (1 - 0.1) * last_front_sensors_angle_error;
+  // last_front_sensors_angle_error = error;
+  return abs(error) < 2 ? 0 : error;
 }

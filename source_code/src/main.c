@@ -43,8 +43,9 @@ int main(void) {
         }
 
         if (is_competicion_iniciada()) {
-          // handwall_set_time_limit(100000);
-          handwall_set_time_limit(30000);
+          set_front_sensors_correction(true);
+          handwall_set_time_limit(100000);
+          // handwall_set_time_limit(30000);
           handwall_start();
           // move(MOVE_START);
           // move(MOVE_FRONT);
@@ -52,7 +53,7 @@ int main(void) {
           // move(MOVE_FRONT);
           // move(MOVE_LEFT);
           // move(MOVE_180W);
-          // move_straight(3*CELL_DIMENSION, 300, true);
+          // move_straight(CELL_DIMENSION/2, 300, false, true);
           // delay(50);
           // set_side_sensors_close_correction(true);
           // set_side_sensors_far_correction(true);
@@ -69,7 +70,7 @@ int main(void) {
           // delay(500);
           // set_competicion_iniciada(false);
         } else {
-          update_side_sensors_leds();
+          // update_side_sensors_leds();
           // set_motors_brake();
           // printf("%.4f\n", get_gyro_z_radps());
         }

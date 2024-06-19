@@ -284,7 +284,7 @@ void control_loop(void) {
   }
 
   if (front_sensors_correction_enabled) {
-    front_sensors_error = get_front_sensors_error();
+    front_sensors_error = get_front_sensors_angle_error();
     sum_front_sensors_error += front_sensors_error;
     last_front_sensors_error = front_sensors_error;
   } else {
