@@ -43,8 +43,8 @@ int main(void) {
         }
 
         if (is_competicion_iniciada()) {
-          set_front_sensors_correction(true);
-          handwall_set_time_limit(100000);
+          // set_front_sensors_correction(true);
+          handwall_set_time_limit(180000);
           // handwall_set_time_limit(30000);
           handwall_start();
           // move(MOVE_START);

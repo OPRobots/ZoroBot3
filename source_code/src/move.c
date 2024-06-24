@@ -100,12 +100,15 @@ static void move_side(enum movement movement) {
 }
 
 static void move_back(enum movement movement) {
-  set_front_sensors_correction(false);
+  set_front_sensors_correction(true);
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
 
-  move_straight((CELL_DIMENSION / 2) - calc_straight_stop_distance(300) - current_cell_start_mm, 300, false, false);
-  // move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
+  if (movement == MOVE_180W) {
+    move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
+  } else {
+    move_straight((CELL_DIMENSION / 2) - calc_straight_stop_distance(300) - current_cell_start_mm, 300, false, false);
+  }
 
   // delay(1500);
 
@@ -115,7 +118,7 @@ static void move_back(enum movement movement) {
   // move_inplace_angle(180 * sign, 10);
   move_inplace_turn(movement);
 
-  set_side_sensors_close_correction(true);
+  // set_side_sensors_close_correction(true);
 
   if (movement == MOVE_180W) {
     move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
@@ -210,7 +213,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   set_RGB_color(0, 0, 0);
   if (stop) {
     set_target_linear_speed(0);
-    while (is_competicion_iniciada() && get_encoder_avg_speed() != 0) {
+    while (is_competicion_iniciada() && get_ideal_linear_speed() != 0) {
     }
   }
 }
