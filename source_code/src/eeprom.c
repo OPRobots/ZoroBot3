@@ -30,6 +30,7 @@ void eeprom_load(void) {
 
   mpu_load_eeprom();
   sensors_load_eeprom();
+  floodfill_load_maze();
 }
 
 void eeprom_clear(void) {

@@ -31,23 +31,27 @@ int main(void) {
   eeprom_load();
   delay(1500);
 
+  // floodfill_debug_update_walls(0, true, true, true, false);
+  // floodfill_debug_update_walls(7, false, false, true, true);
+  // floodfill_debug_update_walls(8, false, true, false, true);
+
   while (1) {
     if (!is_competicion_iniciada()) {
       if (!check_menu_button()) {
         switch (check_iniciar_competicion()) {
           case SENSOR_FRONT_LEFT_WALL_ID:
-            handwall_use_left_hand();
+            floodfill_use_left_hand();
             break;
           case SENSOR_FRONT_RIGHT_WALL_ID:
-            handwall_use_right_hand();
+            floodfill_use_right_hand();
             break;
         }
 
         if (is_competicion_iniciada()) {
           // set_front_sensors_correction(true);
-          handwall_set_time_limit(180000);
+          floodfill_set_time_limit(30000);
           // handwall_set_time_limit(30000);
-          handwall_start();
+          floodfill_start();
           // move(MOVE_START);
           // move(MOVE_FRONT);
           // move(MOVE_FRONT);
@@ -78,7 +82,7 @@ int main(void) {
       }
     } else {
       // Loop de competición
-      handwall_loop();
+      floodfill_loop();
     }
 
     // ZONA DEBUG TEMPORAL

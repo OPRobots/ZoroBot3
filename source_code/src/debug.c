@@ -26,6 +26,7 @@ static void debug_sensors_raw(void) {
 
 static void debug_floodfill_maze(void) {
   floodfill_maze_print();
+  floodfill_save_maze();
   debug_enabled = false;
 }
 

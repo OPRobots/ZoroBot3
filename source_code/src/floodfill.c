@@ -4,7 +4,7 @@ static bool use_left_hand = true;
 static uint32_t start_ms = 0;
 static uint32_t time_limit = 0;
 
-static uint8_t maze[MAZE_CELLS];
+static uint16_t maze[MAZE_CELLS];
 
 static enum compass_direction initial_direction = NORTH;
 
@@ -152,6 +152,33 @@ static void update_walls(struct walls walls) {
   set_visited();
 }
 
+static bool check_all_visited(void) {
+  for (uint16_t i = 0; i < MAZE_CELLS; i++) {
+    if (!(maze[i] & VISITED_BIT)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void floodfill_debug_update_walls(uint8_t position, bool east, bool south, bool west, bool north) {
+  current_position = position;
+  current_direction = NORTH;
+  if (east) {
+    set_wall(EAST_BIT);
+  }
+  if (south) {
+    set_wall(SOUTH_BIT);
+  }
+  if (west) {
+    set_wall(WEST_BIT);
+  }
+  if (north) {
+    set_wall(NORTH_BIT);
+  }
+  set_visited();
+}
+
 void floodfill_use_left_hand(void) {
   use_left_hand = true;
 }
@@ -187,9 +214,9 @@ void floodfill_maze_print(void) {
       } else {
         printf("   ");
       }
-    //   if ((c + 1 % MAZE_COLUMNS) == 0) {
-    //     printf("|");
-    //   }
+      //   if ((c + 1 % MAZE_COLUMNS) == 0) {
+      //     printf("|");
+      //   }
     }
     printf("║\n");
 
@@ -204,6 +231,17 @@ void floodfill_maze_print(void) {
     }
   }
   printf("\n");
+}
+
+void floodfill_save_maze(void) {
+  eeprom_set_data(DATA_INDEX_MAZE, maze, MAZE_CELLS);
+}
+
+void floodfill_load_maze(void) {
+  uint16_t *data = eeprom_get_data();
+  for (uint16_t i = DATA_INDEX_MAZE; i < (DATA_INDEX_MAZE + MAZE_CELLS); i++) {
+    maze[i - DATA_INDEX_MAZE] = data[i];
+  }
 }
 
 void floodfill_start(void) {
@@ -222,7 +260,7 @@ void floodfill_start(void) {
 }
 
 void floodfill_loop(void) {
-  if (time_limit > 0 && get_clock_ticks() - start_ms >= time_limit) {
+  if ((time_limit > 0 && get_clock_ticks() - start_ms >= time_limit) || check_all_visited()) {
     set_competicion_iniciada(false);
     return;
   }
@@ -230,10 +268,10 @@ void floodfill_loop(void) {
   update_walls(walls);
   // TODO: update_floodfill
   set_RGB_color_while(0, 0, 255, 20);
-  if ((use_left_hand && !walls.left) || (!use_left_hand && walls.right && !walls.left)) {
+  if ((use_left_hand && !walls.left) || (!use_left_hand && walls.right && !walls.left && walls.front)) {
     move(MOVE_LEFT);
     update_position(LEFT);
-  } else if ((!use_left_hand && !walls.right) || (use_left_hand && walls.left && !walls.right)) {
+  } else if ((!use_left_hand && !walls.right) || (use_left_hand && walls.left && !walls.right && walls.front)) {
     move(MOVE_RIGHT);
     update_position(RIGHT);
   } else if (!walls.front) {
