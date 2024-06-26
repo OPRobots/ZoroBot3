@@ -5,7 +5,7 @@
 uint8_t modoConfig = MODE_DEBUG;
 
 #define NUM_MODOS_RACE 1
-#define NUM_MODOS_DEBUG 3
+#define NUM_MODOS_DEBUG 4
 
 int8_t valorConfig[NUM_MODOS_DEBUG] = {0, 1};
 #define NUM_VALORES_CALIBRATION 5
@@ -61,10 +61,10 @@ static void handle_menu_value(void) {
         case DEBUG_TYPE_SENSORS_RAW:
           set_RGB_color(0, 255, 0);
           break;
-        case DEBUG_GYRO_DEMO:
+        case DEBUG_FLOODFILL_MAZE:
           set_RGB_color(10, 10, 0);
           break;
-        case 4:
+        case DEBUG_GYRO_DEMO:
           set_RGB_color(255, 225, 0);
           break;
         case 5:

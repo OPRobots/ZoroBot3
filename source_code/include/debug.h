@@ -12,12 +12,14 @@
 #include <motors.h>
 #include <sensors.h>
 #include <usart.h>
+#include <floodfill.h>
 
 
 #define DEBUG_NONE 0
 #define DEBUG_MACROARRAY 1
 #define DEBUG_TYPE_SENSORS_RAW 2
-#define DEBUG_GYRO_DEMO 3
+#define DEBUG_FLOODFILL_MAZE 3
+#define DEBUG_GYRO_DEMO 4
 
 void debug_from_config(uint8_t type);
 

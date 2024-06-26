@@ -24,6 +24,11 @@ static void debug_sensors_raw(void) {
   }
 }
 
+static void debug_floodfill_maze(void) {
+  floodfill_maze_print();
+  debug_enabled = false;
+}
+
 static void check_debug_active(void) {
   if (get_menu_mode_btn()) {
     while (get_menu_mode_btn()) {
@@ -55,6 +60,9 @@ void debug_from_config(uint8_t type) {
         break;
       case DEBUG_TYPE_SENSORS_RAW:
         debug_sensors_raw();
+        break;
+      case DEBUG_FLOODFILL_MAZE:
+        debug_floodfill_maze();
         break;
       case DEBUG_GYRO_DEMO:
         debug_gyro_demo();

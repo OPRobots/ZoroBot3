@@ -3,6 +3,7 @@
 #include <control.h>
 #include <delay.h>
 #include <encoders.h>
+#include <floodfill.h>
 #include <handwall.h>
 #include <leds.h>
 #include <macroarray.h>
