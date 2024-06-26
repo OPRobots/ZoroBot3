@@ -11,9 +11,9 @@ static int32_t current_cell_start_mm = 0;
 static bool current_cell_wall_lost = false;
 static int32_t current_cell_absolute_start_mm = 0;
 
-static struct walls last_check_walls_loss = {false, false, false};
-static uint16_t count_check_walls_left = 0;
-static uint16_t count_check_walls_right = 0;
+// static struct walls last_check_walls_loss = {false, false, false};
+// static uint16_t count_check_walls_left = 0;
+// static uint16_t count_check_walls_right = 0;
 
 static int32_t calc_straight_stop_distance(int32_t speed) {
   return (speed * speed) / (2 * BASE_LINEAR_ACCEL);
@@ -42,7 +42,7 @@ static bool check_wall_loss_correction(struct walls initial_walls) {
     wall_lost = true;
   } else if (initial_walls.right && !current_walls.right) {
     wall_lost = true;
-  } else {
+  } /* else {
     if (last_check_walls_loss.left) {
       count_check_walls_left++;
       if (count_check_walls_left > 10 && !current_walls.left) {
@@ -62,7 +62,7 @@ static bool check_wall_loss_correction(struct walls initial_walls) {
       count_check_walls_right = 0;
     }
   }
-  last_check_walls_loss = current_walls;
+  last_check_walls_loss = current_walls; */
   if (wall_lost) {
     current_cell_wall_lost = true;
   }
