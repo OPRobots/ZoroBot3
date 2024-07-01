@@ -8,11 +8,6 @@
 #define ZOROBOT3_B 2
 
 /** Laberinto */
-#define MAZE_ROWS 5 
-#define MAZE_COLUMNS 7
-#define MAZE_CELLS (MAZE_ROWS * MAZE_COLUMNS)
-#define MAZE_MAX_DISTANCE (MAZE_CELLS - 1)
-
 #define CELL_DIMENSION 180
 #define CELL_DIAGONAL 127.3
 #define WALL_WIDTH 12

@@ -11,6 +11,22 @@ static enum compass_direction initial_direction = NORTH;
 static uint8_t current_position = 0;
 static enum compass_direction current_direction = NORTH;
 
+static void initialize_maze(void) {
+  for (uint16_t i = 0; i < MAZE_CELLS; i++) {
+    maze[i] = 0;
+  }
+
+  for (uint16_t i = 0; i < MAZE_ROWS; i++) {
+    maze[(MAZE_COLUMNS - 1) + i * (MAZE_COLUMNS)] |= EAST_BIT;
+    maze[i * MAZE_COLUMNS] |= WEST_BIT;
+  }
+
+  for (uint16_t i = 0; i < MAZE_COLUMNS; i++) {
+    maze[i] |= SOUTH_BIT;
+    maze[(MAZE_ROWS - 1) * MAZE_COLUMNS + i] |= NORTH_BIT;
+  }
+}
+
 static void set_initial_state(void) {
   current_position = 0;
   current_direction = initial_direction;
@@ -196,15 +212,19 @@ void floodfill_maze_print(void) {
     // Borde superior del laberinto
     if (r == MAZE_CELLS - MAZE_COLUMNS) {
       printf("·");
-      for (uint8_t i = 0; i < MAZE_COLUMNS; i++) {
-        printf("═══·");
+      for (uint8_t i = MAZE_CELLS - MAZE_COLUMNS; i < MAZE_CELLS; i++) {
+        if (maze[i] & NORTH_BIT) {
+          printf("═══·");
+        } else {
+          printf("   ·");
+        }
       }
     }
     printf("\n");
 
     // Paredes laterales del laberinto y VISITADO
     for (int16_t c = r; c < r + MAZE_COLUMNS; c++) {
-      if (maze[c] & WEST_BIT || c % MAZE_COLUMNS == 0) {
+      if (maze[c] & WEST_BIT /* || c % MAZE_COLUMNS == 0 */) {
         printf("║");
       } else {
         printf(" ");
@@ -217,13 +237,17 @@ void floodfill_maze_print(void) {
       //   if ((c + 1 % MAZE_COLUMNS) == 0) {
       //     printf("|");
       //   }
+      if (maze[c] & EAST_BIT) {
+        printf("║");
+      }
     }
-    printf("║\n");
+    // printf("║\n");
+    printf("\n");
 
     // Paredes inferiores del laberinto
     printf("·");
     for (int16_t c = r; c < r + MAZE_COLUMNS; c++) {
-      if (maze[c] & SOUTH_BIT || c / MAZE_COLUMNS == 0) {
+      if (maze[c] & SOUTH_BIT /* || c / MAZE_COLUMNS == 0 */) {
         printf("═══·");
       } else {
         printf("   ·");
@@ -245,9 +269,7 @@ void floodfill_load_maze(void) {
 }
 
 void floodfill_start(void) {
-  for (uint16_t i = 0; i < MAZE_CELLS; i++) {
-    maze[i] = 0;
-  }
+  initialize_maze();
   set_initial_state();
 
   struct walls walls = get_walls();

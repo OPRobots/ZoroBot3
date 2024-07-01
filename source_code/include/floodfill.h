@@ -2,11 +2,9 @@
 #define FLOODFILL_H
 
 #include <config.h>
+#include <constants.h>
 #include <usart.h>
 
-//TODO: ver por qué al incluir floodfill.h en debug.h no se puede acceder a MAZE_ROWS y MAZE_COLUMNS
-#define MAZE_ROWS 5
-#define MAZE_COLUMNS 7
 
 #define VISITED_BIT 1
 #define EAST_BIT 2
