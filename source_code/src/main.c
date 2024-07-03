@@ -35,6 +35,31 @@ int main(void) {
   // floodfill_debug_update_walls(7, false, false, true, true);
   // floodfill_debug_update_walls(8, false, true, false, true);
 
+  // floodfill_add_goal(1,5);
+  // // floodfill_add_goal(8,9);
+  // // floodfill_add_goal(9,8);
+  // // floodfill_add_goal(9,9);
+  // initialize_maze();
+  // // floodfill_add_goal(4,4);
+  // // floodfill_add_goal(4,5);
+  // // floodfill_add_goal(5,4);
+  // // floodfill_add_goal(5,5);
+  // floodfill_set_goal_as_target();
+  // floodfill_update();
+  // floodfill_maze_print();
+  // floodfill_debug_update_walls(0, true, true, true, false);
+  // floodfill_update();
+  // floodfill_maze_print();
+  // floodfill_debug_update_walls(7, false, false, true, true);
+  // floodfill_update();
+  // floodfill_maze_print();
+  // floodfill_debug_update_walls(8, false, true, false, true);
+  // floodfill_update();
+  // floodfill_maze_print();
+  // floodfill_debug_update_walls(15, true, true, true, false);
+  // floodfill_update();
+  // floodfill_maze_print();
+
   while (1) {
     if (!is_competicion_iniciada()) {
       if (!check_menu_button()) {
@@ -51,6 +76,9 @@ int main(void) {
           // set_front_sensors_correction(true);
           floodfill_set_time_limit(30000);
           // handwall_set_time_limit(30000);
+          floodfill_add_goal(1,5);
+          floodfill_set_goal_as_target();
+          
           floodfill_start();
           // move(MOVE_START);
           // move(MOVE_FRONT);

@@ -4,6 +4,7 @@ static bool use_left_hand = true;
 static uint32_t start_ms = 0;
 static uint32_t time_limit = 0;
 
+static uint8_t floodfill[MAZE_CELLS];
 static uint16_t maze[MAZE_CELLS];
 
 static enum compass_direction initial_direction = NORTH;
@@ -11,7 +12,12 @@ static enum compass_direction initial_direction = NORTH;
 static uint8_t current_position = 0;
 static enum compass_direction current_direction = NORTH;
 
-static void initialize_maze(void) {
+static struct cells_queue cells_queue;
+
+static struct cells_stack target_cells;
+static struct cells_stack goal_cells;
+
+void initialize_maze(void) {
   for (uint16_t i = 0; i < MAZE_CELLS; i++) {
     maze[i] = 0;
   }
@@ -177,6 +183,90 @@ static bool check_all_visited(void) {
   return true;
 }
 
+static bool check_goal_reached(void) {
+  for (uint8_t i = 0; i < goal_cells.size; i++) {
+    if (current_position == goal_cells.stack[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static void queue_push(uint8_t position) {
+  cells_queue.queue[cells_queue.head++] = position;
+}
+
+static uint8_t queue_pop(void) {
+  return cells_queue.queue[cells_queue.tail++];
+}
+
+static void add_target(uint8_t cell) {
+  target_cells.stack[target_cells.size++] = cell;
+}
+
+static void reset_floodfill_and_queue(void) {
+  for (uint16_t i = 0; i < MAZE_CELLS; i++) {
+    floodfill[i] = MAZE_MAX_DISTANCE;
+  }
+  cells_queue.head = 0;
+  cells_queue.tail = 0;
+}
+
+static enum step_direction get_next_floodfill_step(struct walls walls) {
+  if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill[current_position]) {
+    return FRONT;
+  }
+  if (!walls.left && floodfill[get_next_position(LEFT)] < floodfill[current_position]) {
+    return LEFT;
+  }
+  if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill[current_position]) {
+    return RIGHT;
+  }
+  return BACK;
+}
+
+void floodfill_update(void) {
+  reset_floodfill_and_queue();
+
+  for (uint8_t i = 0; i < target_cells.size; i++) {
+    // printf("target_cells.stack[%d] = %d\n", i, target_cells.stack[i]);
+    floodfill[target_cells.stack[i]] = 0;
+    queue_push(target_cells.stack[i]);
+  }
+
+  while (cells_queue.head != cells_queue.tail) {
+    uint8_t current_cell = queue_pop();
+    uint8_t next_distance = floodfill[current_cell] + 1;
+    if (!wall_exists(current_cell, EAST_BIT) && floodfill[current_cell + EAST] > next_distance) {
+      floodfill[current_cell + EAST] = next_distance;
+      queue_push(current_cell + EAST);
+    }
+    if (!wall_exists(current_cell, SOUTH_BIT) && floodfill[current_cell + SOUTH] > next_distance) {
+      floodfill[current_cell + SOUTH] = next_distance;
+      queue_push(current_cell + SOUTH);
+    }
+    if (!wall_exists(current_cell, WEST_BIT) && floodfill[current_cell + WEST] > next_distance) {
+      floodfill[current_cell + WEST] = next_distance;
+      queue_push(current_cell + WEST);
+    }
+    if (!wall_exists(current_cell, NORTH_BIT) && floodfill[current_cell + NORTH] > next_distance) {
+      floodfill[current_cell + NORTH] = next_distance;
+      queue_push(current_cell + NORTH);
+    }
+  }
+}
+
+void floodfill_set_goal_as_target(void) {
+  target_cells.size = 0;
+  for (uint8_t i = 0; i < goal_cells.size; i++) {
+    add_target(goal_cells.stack[i]);
+  }
+}
+
+void floodfill_add_goal(uint8_t x, uint8_t y) {
+  goal_cells.stack[goal_cells.size++] = (x - 1) + (y - 1) * MAZE_COLUMNS;
+}
+
 void floodfill_debug_update_walls(uint8_t position, bool east, bool south, bool west, bool north) {
   current_position = position;
   current_direction = NORTH;
@@ -212,7 +302,7 @@ void floodfill_maze_print(void) {
     // Borde superior del laberinto
     if (r == MAZE_CELLS - MAZE_COLUMNS) {
       printf("·");
-      for (uint8_t i = MAZE_CELLS - MAZE_COLUMNS; i < MAZE_CELLS; i++) {
+      for (uint16_t i = MAZE_CELLS - MAZE_COLUMNS; i < MAZE_CELLS; i++) {
         if (maze[i] & NORTH_BIT) {
           printf("═══·");
         } else {
@@ -230,14 +320,16 @@ void floodfill_maze_print(void) {
         printf(" ");
       }
       if (maze[c] & VISITED_BIT) {
-        printf(" V ");
+        // printf(" V ");
+        printf("%3d", floodfill[c]);
       } else {
-        printf("   ");
+        // printf("   ");
+        printf("%3d", floodfill[c]);
       }
       //   if ((c + 1 % MAZE_COLUMNS) == 0) {
       //     printf("|");
       //   }
-      if (maze[c] & EAST_BIT) {
+      if (maze[c] & EAST_BIT && ((c + 1) % MAZE_COLUMNS) == 0) {
         printf("║");
       }
     }
@@ -274,37 +366,76 @@ void floodfill_start(void) {
 
   struct walls walls = get_walls();
   update_walls(walls);
+  floodfill_update();
 
   start_ms = get_clock_ticks();
-  move(MOVE_START);
 
+  // TODO: obtener siguiente movimiento en base a floodfill?
+  move(MOVE_START);
   update_position(FRONT);
 }
 
 void floodfill_loop(void) {
-  if ((time_limit > 0 && get_clock_ticks() - start_ms >= time_limit) || check_all_visited()) {
+  if ((time_limit > 0 && get_clock_ticks() - start_ms >= time_limit) || check_goal_reached()) {
+    set_target_linear_speed(0);
+    set_ideal_angular_speed(0);
+    while (get_ideal_linear_speed() != 0) {
+      warning_status_led(50);
+    }
+    set_status_led(false);
+    delay(500);
     set_competicion_iniciada(false);
     return;
   }
   struct walls walls = get_walls();
   update_walls(walls);
-  // TODO: update_floodfill
+  floodfill_update();
+
+  enum step_direction next_step = get_next_floodfill_step(walls);
+
   set_RGB_color_while(0, 0, 255, 20);
-  if ((use_left_hand && !walls.left) || (!use_left_hand && walls.right && !walls.left && walls.front)) {
-    move(MOVE_LEFT);
-    update_position(LEFT);
-  } else if ((!use_left_hand && !walls.right) || (use_left_hand && walls.left && !walls.right && walls.front)) {
-    move(MOVE_RIGHT);
-    update_position(RIGHT);
-  } else if (!walls.front) {
-    move(MOVE_FRONT);
-    update_position(FRONT);
-  } else if (walls.front && walls.left && walls.right) {
-    move(MOVE_180W);
-    update_position(BACK);
-  } else {
-    set_target_linear_speed(0);
-    set_ideal_angular_speed(0);
-    warning_status_led(50);
+  switch (next_step) {
+    case FRONT:
+      move(MOVE_FRONT);
+      break;
+    case LEFT:
+      move(MOVE_LEFT);
+      break;
+    case RIGHT:
+      move(MOVE_RIGHT);
+      break;
+    case BACK:
+      if (walls.front) {
+        move(MOVE_180W);
+      } else {
+        move(MOVE_180);
+      }
+      break;
+    default:
+      while (true) {
+        set_target_linear_speed(0);
+        set_ideal_angular_speed(0);
+        warning_status_led(50);
+      }
+      break;
   }
+  update_position(next_step);
+
+  // if ((use_left_hand && !walls.left) || (!use_left_hand && walls.right && !walls.left && walls.front)) {
+  //   move(MOVE_LEFT);
+  //   update_position(LEFT);
+  // } else if ((!use_left_hand && !walls.right) || (use_left_hand && walls.left && !walls.right && walls.front)) {
+  //   move(MOVE_RIGHT);
+  //   update_position(RIGHT);
+  // } else if (!walls.front) {
+  //   move(MOVE_FRONT);
+  //   update_position(FRONT);
+  // } else if (walls.front && walls.left && walls.right) {
+  //   move(MOVE_180W);
+  //   update_position(BACK);
+  // } else {
+  //   set_target_linear_speed(0);
+  //   set_ideal_angular_speed(0);
+  //   warning_status_led(50);
+  // }
 }
