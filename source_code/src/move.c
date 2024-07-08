@@ -69,6 +69,20 @@ static bool check_wall_loss_correction(struct walls initial_walls) {
   return wall_lost;
 }
 
+static void move_home(void) {
+  set_front_sensors_correction(true);
+  set_side_sensors_close_correction(false);
+  set_side_sensors_far_correction(false);
+
+  move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
+
+  disable_sensors_correction();
+  reset_angular_control();
+  move_inplace_turn(MOVE_180);
+  move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
+  set_starting_position();
+}
+
 /**
  * @brief Movimiento frontal relativo a la celda actual; avanza a la siguiente celda
  *
@@ -302,6 +316,9 @@ void move_inplace_angle(float angle, float rads) {
 
 void move(enum movement movement) {
   switch (movement) {
+    case MOVE_HOME:
+      move_home();
+      break;
     case MOVE_START:
       set_starting_position();
       move_front();

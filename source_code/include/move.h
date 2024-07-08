@@ -4,6 +4,7 @@
 #include "control.h"
 
 enum movement {
+  MOVE_HOME,
   MOVE_START,
   MOVE_END,
   MOVE_FRONT,

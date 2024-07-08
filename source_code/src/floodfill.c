@@ -204,6 +204,11 @@ static void add_target(uint8_t cell) {
   target_cells.stack[target_cells.size++] = cell;
 }
 
+static void set_target(uint8_t cell) {
+  target_cells.size = 0;
+  add_target(cell);
+}
+
 static void reset_floodfill_and_queue(void) {
   for (uint16_t i = 0; i < MAZE_CELLS; i++) {
     floodfill[i] = MAZE_MAX_DISTANCE;
@@ -370,13 +375,12 @@ void floodfill_start(void) {
 
   start_ms = get_clock_ticks();
 
-  // TODO: obtener siguiente movimiento en base a floodfill?
   move(MOVE_START);
   update_position(FRONT);
 }
 
 void floodfill_loop(void) {
-  if ((time_limit > 0 && get_clock_ticks() - start_ms >= time_limit) || check_goal_reached()) {
+  if ((time_limit > 0 && get_clock_ticks() - start_ms >= time_limit)) {
     set_target_linear_speed(0);
     set_ideal_angular_speed(0);
     while (get_ideal_linear_speed() != 0) {
@@ -420,6 +424,31 @@ void floodfill_loop(void) {
       break;
   }
   update_position(next_step);
+
+  if (check_goal_reached()) {
+    // set_target_linear_speed(0);
+    // set_ideal_angular_speed(0);
+    // set_RGB_color_while(0, 255, 0, 20);
+    // while (true) {
+    //   warning_status_led(50);
+    // }
+    // delay(500);
+    set_target(0);
+    // set_competicion_iniciada(false);
+  } else if (target_cells.size == 1 && current_position == target_cells.stack[0] && current_position == 0) {
+    move(MOVE_HOME);
+    set_target_linear_speed(0);
+    set_ideal_angular_speed(0);
+    set_RGB_color_while(255, 0, 0, 20);
+    uint16_t ms = get_clock_ticks();
+    while (get_clock_ticks() - ms < 2000) {
+      warning_status_led(50);
+    }
+    set_status_led(false);
+    set_competicion_iniciada(false);
+    floodfill_set_goal_as_target();
+    floodfill_update();
+  }
 
   // if ((use_left_hand && !walls.left) || (!use_left_hand && walls.right && !walls.left && walls.front)) {
   //   move(MOVE_LEFT);
