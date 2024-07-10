@@ -4,6 +4,7 @@
 #include <config.h>
 #include <constants.h>
 #include <usart.h>
+#include <move.h>
 
 #define VISITED_BIT 1
 #define EAST_BIT 2

@@ -1,4 +1,4 @@
-#include <menu.h>
+#include <menu_configs.h>
 
 #define MODE_CALIBRATION 0
 #define MODE_DEBUG 1

@@ -1,5 +1,5 @@
-#ifndef __MENU_H
-#define __MENU_H
+#ifndef __MENU_CONFIGS_H
+#define __MENU_CONFIGS_H
 
 #include <buttons.h>
 #include <calibrations.h>

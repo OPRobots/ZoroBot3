@@ -7,7 +7,7 @@
 #include <handwall.h>
 #include <leds.h>
 #include <macroarray.h>
-#include <menu.h>
+#include <menu_configs.h>
 #include <motors.h>
 #include <move.h>
 #include <mpu.h>
@@ -63,50 +63,50 @@ int main(void) {
   while (1) {
     if (!is_competicion_iniciada()) {
       if (!check_menu_button()) {
-        switch (check_iniciar_competicion()) {
-          case SENSOR_FRONT_LEFT_WALL_ID:
-            floodfill_use_left_hand();
-            break;
-          case SENSOR_FRONT_RIGHT_WALL_ID:
-            floodfill_use_right_hand();
-            break;
-        }
+        // switch (check_iniciar_competicion()) {
+        //   case SENSOR_FRONT_LEFT_WALL_ID:
+        //     floodfill_use_left_hand();
+        //     break;
+        //   case SENSOR_FRONT_RIGHT_WALL_ID:
+        //     floodfill_use_right_hand();
+        //     break;
+        // }
 
-        if (is_competicion_iniciada()) {
-          // set_front_sensors_correction(true);
-          floodfill_set_time_limit(30000);
-          // handwall_set_time_limit(30000);
-          floodfill_add_goal(1,5);
-          floodfill_set_goal_as_target();
-          
-          floodfill_start();
-          // move(MOVE_START);
-          // move(MOVE_FRONT);
-          // move(MOVE_FRONT);
-          // move(MOVE_FRONT);
-          // move(MOVE_LEFT);
-          // move(MOVE_180W);
-          // move_straight(CELL_DIMENSION/2, 300, false, true);
-          // delay(50);
-          // set_side_sensors_close_correction(true);
-          // set_side_sensors_far_correction(true);
-          // move_straight(60, 500, false, true);
-          // move(MOVE_LEFT);
+        // if (is_competicion_iniciada()) {
+        //   // set_front_sensors_correction(true);
+        //   floodfill_set_time_limit(30000);
+        //   // handwall_set_time_limit(30000);
+        //   floodfill_add_goal(6, 4);
+        //   floodfill_set_goal_as_target();
 
-          // delay(100);
-          // move_inplace_turn(MOVE_180);
-          // set_side_sensors_close_correction(true);
-          // set_side_sensors_far_correction(true);
-          // move_straight(4*CELL_DIMENSION - ROBOT_FRONT_LENGTH - ROBOT_BACK_LENGTH, 500, true);
-          // delay(100);
-          // move_inplace_turn(MOVE_180);
-          // delay(500);
-          // set_competicion_iniciada(false);
-        } else {
-          // update_side_sensors_leds();
-          // set_motors_brake();
-          // printf("%.4f\n", get_gyro_z_radps());
-        }
+        //   floodfill_start();
+        //   // move(MOVE_START);
+        //   // move(MOVE_FRONT);
+        //   // move(MOVE_FRONT);
+        //   // move(MOVE_FRONT);
+        //   // move(MOVE_LEFT);
+        //   // move(MOVE_180W);
+        //   // move_straight(CELL_DIMENSION/2, 300, false, true);
+        //   // delay(50);
+        //   // set_side_sensors_close_correction(true);
+        //   // set_side_sensors_far_correction(true);
+        //   // move_straight(60, 500, false, true);
+        //   // move(MOVE_LEFT);
+
+        //   // delay(100);
+        //   // move_inplace_turn(MOVE_180);
+        //   // set_side_sensors_close_correction(true);
+        //   // set_side_sensors_far_correction(true);
+        //   // move_straight(4*CELL_DIMENSION - ROBOT_FRONT_LENGTH - ROBOT_BACK_LENGTH, 500, true);
+        //   // delay(100);
+        //   // move_inplace_turn(MOVE_180);
+        //   // delay(500);
+        //   // set_competicion_iniciada(false);
+        // } else {
+        //   // update_side_sensors_leds();
+        //   // set_motors_brake();
+        //   // printf("%.4f\n", get_gyro_z_radps());
+        // }
       }
     } else {
       // Loop de competición
@@ -196,12 +196,14 @@ int main(void) {
     //   while (get_menu_mode_btn())
     //     ;
     // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)-get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
-    // printf("\n");
-    // delay(100);
+    if (!is_competicion_iniciada()) {
+      printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
+      printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
+      printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
+      printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
+      printf("\n");
+      delay(100);
+    }
     // }
 
     // printf("%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t\n", get_sensor_log(0), get_sensor_raw_filter(0),  get_sensor_log(1), get_sensor_raw_filter(1),  get_sensor_log(2), get_sensor_raw_filter(2),  get_sensor_log(3), get_sensor_raw_filter(3));

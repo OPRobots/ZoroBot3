@@ -4,10 +4,11 @@
 #include <battery.h>
 #include <config.h>
 #include <constants.h>
+#include <macroarray.h>
+#include <menu_configs.h>
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
-#include <macroarray.h>
 #include <math.h>
 
 bool is_competicion_iniciada(void);
