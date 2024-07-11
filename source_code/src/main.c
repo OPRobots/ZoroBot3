@@ -29,7 +29,6 @@ int main(void) {
   setup();
   show_battery_level();
   eeprom_load();
-  delay(1500);
 
   while (1) {
     if (!is_race_started()) {
