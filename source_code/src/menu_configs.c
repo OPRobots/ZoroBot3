@@ -2,23 +2,22 @@
 
 #define MODE_CALIBRATION 0
 #define MODE_DEBUG 1
-uint8_t modoConfig = MODE_DEBUG;
+uint8_t modeConfig = MODE_CALIBRATION;
 
-#define NUM_MODOS_RACE 1
-#define NUM_MODOS_DEBUG 4
+#define NUM_MODES 2
 
-int8_t valorConfig[NUM_MODOS_DEBUG] = {0, 1};
-#define NUM_VALORES_CALIBRATION 5
-#define NUM_VALORES 10
+int8_t valueConfig[NUM_MODES] = {0, 0};
+#define NUM_VALUES_CALIBRATION 5
+#define NUM_VALUES_DEBUG 9
 
 /**
  * @brief Indicar el tipo de menú que está actualmente activo mediante el led de estado
  *
  */
-static void handle_menu_mode(void) {
-  switch (modoConfig) {
+static void handle_menu_config_mode(void) {
+  switch (modeConfig) {
     case MODE_CALIBRATION:
-      set_status_led(false);
+      warning_status_led(125);
       break;
     case MODE_DEBUG:
       set_status_led(true);
@@ -26,11 +25,11 @@ static void handle_menu_mode(void) {
   }
 }
 
-static void handle_menu_value(void) {
-  switch (modoConfig) {
+static void handle_menu_config_value(void) {
+  switch (modeConfig) {
     case MODE_CALIBRATION:
       set_RGB_color(0, 0, 0);
-      switch (valorConfig[modoConfig]) {
+      switch (valueConfig[modeConfig]) {
         case CALIBRATE_NONE:
           clear_info_leds();
           break;
@@ -47,120 +46,86 @@ static void handle_menu_value(void) {
           set_leds_blink(250);
           break;
       }
-      calibrate_from_config(valorConfig[modoConfig]);
+      calibrate_from_config(valueConfig[modeConfig]);
       break;
     case MODE_DEBUG:
-      clear_info_leds();
-      switch (valorConfig[modoConfig]) {
-        case DEBUG_NONE:
-          set_RGB_color(0, 0, 0);
-          break;
-        case DEBUG_MACROARRAY:
-          set_RGB_color(0, 10, 0);
-          break;
-        case DEBUG_TYPE_SENSORS_RAW:
-          set_RGB_color(0, 255, 0);
-          break;
-        case DEBUG_FLOODFILL_MAZE:
-          set_RGB_color(10, 10, 0);
-          break;
-        case DEBUG_GYRO_DEMO:
-          set_RGB_color(255, 225, 0);
-          break;
-        case 5:
-          set_RGB_color(10, 0, 0);
-          break;
-        case 6:
-          set_RGB_color(255, 0, 0);
-          break;
-        case 7:
-          set_RGB_color(10, 0, 10);
-          break;
-        case 8:
-          set_RGB_color(255, 0, 255);
-          break;
-        case 9:
-          set_RGB_color(255, 255, 255);
-          break;
+      for (uint8_t i = 1; i <= 8; i++) {
+        set_info_led(i - 1, i == valueConfig[modeConfig]);
       }
-      debug_from_config(valorConfig[modoConfig]);
+      debug_from_config(valueConfig[modeConfig]);
       break;
   }
 }
 
-static uint8_t get_num_modos(void) {
-  if (get_config_run() == CONFIG_RUN_RACE) {
-    return NUM_MODOS_RACE; // CALIBRATION
-  } else {
-    return NUM_MODOS_DEBUG; // CALIBRATION - DEBUG
-  }
-}
-
-bool check_menu_button(void) {
-  handle_menu_mode();
-  handle_menu_value();
+bool menu_config_handler(void) {
+  handle_menu_config_mode();
+  handle_menu_config_value();
 
   // Comprueba cambios del modo de configuración
-  if (!((modoConfig == MODE_CALIBRATION || modoConfig == MODE_DEBUG) && valorConfig[modoConfig] != 0)) {
+  if (valueConfig[modeConfig] == 0) {
     if (get_menu_mode_btn()) {
-      modoConfig++;
-      if (modoConfig >= get_num_modos()) {
-        modoConfig = 0;
-      }
+      uint32_t ms = get_clock_ticks();
       while (get_menu_mode_btn()) {
-        handle_menu_mode();
-        handle_menu_value();
+        if (get_clock_ticks() - ms >= 200) {
+          warning_status_led(50);
+        } else {
+          handle_menu_config_mode();
+        }
+        handle_menu_config_value();
       };
-      delay(50);
+      if (get_clock_ticks() - ms >= 200) {
+        return true;
+      } else {
+        modeConfig = (modeConfig + 1) % NUM_MODES;
+        delay(50);
+      }
     }
   }
 
   // Comprueba aumento de valor de configuración
-  if (get_menu_up_btn()) {
-    valorConfig[modoConfig]++;
-    switch (modoConfig) {
+  if (get_menu_up_btn() && !(modeConfig == MODE_DEBUG && is_debug_enabled())) {
+    valueConfig[modeConfig]++;
+    switch (modeConfig) {
       case MODE_CALIBRATION:
-        if (valorConfig[modoConfig] >= NUM_VALORES_CALIBRATION) {
-          valorConfig[modoConfig] = 0;
+        if (valueConfig[modeConfig] >= NUM_VALUES_CALIBRATION) {
+          valueConfig[modeConfig] = 0;
         }
         break;
-      default:
-        if (valorConfig[modoConfig] >= NUM_VALORES) {
-          valorConfig[modoConfig] = 0;
+      case MODE_DEBUG:
+        if (valueConfig[modeConfig] >= NUM_VALUES_DEBUG) {
+          valueConfig[modeConfig] = 0;
         }
         break;
     }
     clear_info_leds();
     while (get_menu_up_btn()) {
-      handle_menu_value();
-      handle_menu_mode();
+      handle_menu_config_value();
+      handle_menu_config_mode();
     };
     delay(50);
   }
 
   // Comprueba descenso de valor de configuración
-  if (get_menu_down_btn()) {
-    if (valorConfig[modoConfig] > 0) {
-      valorConfig[modoConfig]--;
+  if (get_menu_down_btn() && !(modeConfig == MODE_DEBUG && is_debug_enabled())) {
+    if (valueConfig[modeConfig] > 0) {
+      valueConfig[modeConfig]--;
     }
 
     clear_info_leds();
     while (get_menu_down_btn()) {
-      handle_menu_value();
-      handle_menu_mode();
+      handle_menu_config_value();
+      handle_menu_config_mode();
     };
     delay(50);
   }
-
-  return valorConfig[modoConfig] != 0;
+  return false;
 }
 
-bool in_debug_mode(void) {
-  return modoConfig == MODE_DEBUG;
+void menu_config_reset_values(void) {
+  valueConfig[MODE_CALIBRATION] = 0;
+  valueConfig[MODE_DEBUG] = 0;
 }
 
-void menu_reset(void){
-  modoConfig = MODE_DEBUG;
-  valorConfig[MODE_CALIBRATION] = 0;
-  valorConfig[MODE_DEBUG] = 1;
+void menu_config_reset_mode(void) {
+  modeConfig = MODE_CALIBRATION;
 }

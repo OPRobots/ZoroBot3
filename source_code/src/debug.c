@@ -8,6 +8,7 @@ uint32_t last_keep_z_angle = 0;
 static void debug_macroarray(void) {
   macroarray_print();
   debug_enabled = false;
+  menu_config_reset_values();
 }
 
 /**
@@ -26,8 +27,8 @@ static void debug_sensors_raw(void) {
 
 static void debug_floodfill_maze(void) {
   floodfill_maze_print();
-  floodfill_save_maze();
   debug_enabled = false;
+  menu_config_reset_values();
 }
 
 static void check_debug_active(void) {
@@ -35,17 +36,25 @@ static void check_debug_active(void) {
     while (get_menu_mode_btn()) {
     }
     debug_enabled = !debug_enabled;
+    if (!debug_enabled) {
+      menu_config_reset_values();
+    }
   }
 }
 
 static void debug_gyro_demo(void) {
   // if (get_clock_ticks() >= last_keep_z_angle + 1) {
-    do{
+  delay(1000);
+  do {
     keep_z_angle();
     check_debug_active();
-    }while(debug_enabled);
-    // last_keep_z_angle = get_clock_ticks();
+  } while (debug_enabled);
+  // last_keep_z_angle = get_clock_ticks();
   // }
+}
+
+bool is_debug_enabled(void) {
+  return debug_enabled;
 }
 
 void debug_from_config(uint8_t type) {
@@ -55,6 +64,7 @@ void debug_from_config(uint8_t type) {
     debug_enabled = false;
   }
   if (debug_enabled) {
+    set_RGB_color(0, 50, 0);
     switch (type) {
       case DEBUG_MACROARRAY:
         debug_macroarray();
@@ -69,5 +79,7 @@ void debug_from_config(uint8_t type) {
         debug_gyro_demo();
         break;
     }
+  } else {
+    set_RGB_color(0, 0, 0);
   }
 }

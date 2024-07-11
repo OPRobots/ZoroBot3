@@ -21,6 +21,7 @@
 #define DEBUG_FLOODFILL_MAZE 3
 #define DEBUG_GYRO_DEMO 4
 
+bool is_debug_enabled(void);
 void debug_from_config(uint8_t type);
 
 #endif

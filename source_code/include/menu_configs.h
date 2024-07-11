@@ -8,10 +8,8 @@
 #include <leds.h>
 
 
-bool check_menu_button(void);
-
-bool in_debug_mode(void);
-void reset_menu_mode(void);
-void menu_reset(void);
+bool menu_config_handler(void);
+void menu_config_reset_values(void);
+void menu_config_reset_mode(void);
 
 #endif

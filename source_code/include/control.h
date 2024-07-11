@@ -5,15 +5,15 @@
 #include <config.h>
 #include <constants.h>
 #include <macroarray.h>
-#include <menu_configs.h>
+#include <menu.h>
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
 #include <math.h>
 
-bool is_competicion_iniciada(void);
-void set_competicion_iniciada(bool state);
-int8_t check_iniciar_competicion(void);
+bool is_race_started(void);
+void set_race_started(bool state);
+int8_t check_start_run(void);
 void set_control_debug(bool state);
 
 void set_side_sensors_close_correction(bool enabled);

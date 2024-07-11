@@ -1,6 +1,5 @@
 #include <floodfill.h>
 
-static bool use_left_hand = true;
 static uint32_t start_ms = 0;
 static uint32_t time_limit = 0;
 
@@ -17,7 +16,9 @@ static struct cells_queue cells_queue;
 static struct cells_stack target_cells;
 static struct cells_stack goal_cells;
 
-void initialize_maze(void) {
+static bool race_mode = false;
+
+static void initialize_maze(void) {
   for (uint16_t i = 0; i < MAZE_CELLS; i++) {
     maze[i] = 0;
   }
@@ -86,42 +87,35 @@ static bool wall_exists(uint8_t position, uint8_t wall_bit) {
   return maze[position] & wall_bit;
 }
 
-static void build_wall(uint8_t position, uint8_t wall_bit) {
-  maze[position] |= wall_bit;
-  switch (wall_bit) {
-    case EAST_BIT:
-      if (position % MAZE_COLUMNS == MAZE_COLUMNS - 1) {
-        break;
-      }
-      maze[position + EAST] |= WEST_BIT;
-      break;
-    case SOUTH_BIT:
-      if (position / MAZE_COLUMNS == 0) {
-        break;
-      }
-      maze[position + SOUTH] |= NORTH_BIT;
-      break;
-    case WEST_BIT:
-      if (position % MAZE_COLUMNS == 0) {
-        break;
-      }
-      maze[position + WEST] |= EAST_BIT;
-      break;
-    case NORTH_BIT:
-      if (position / MAZE_COLUMNS == MAZE_ROWS - 1) {
-        break;
-      }
-      maze[position + NORTH] |= SOUTH_BIT;
-      break;
-  }
-}
-
-static bool set_wall(uint8_t wall_bit) {
+static void set_wall(uint8_t wall_bit) {
   if (!wall_exists(current_position, wall_bit)) {
-    build_wall(current_position, wall_bit);
-    return true;
-  } else {
-    return false;
+    maze[current_position] |= wall_bit;
+    switch (wall_bit) {
+      case EAST_BIT:
+        if (current_position % MAZE_COLUMNS == MAZE_COLUMNS - 1) {
+          break;
+        }
+        maze[current_position + EAST] |= WEST_BIT;
+        break;
+      case SOUTH_BIT:
+        if (current_position / MAZE_COLUMNS == 0) {
+          break;
+        }
+        maze[current_position + SOUTH] |= NORTH_BIT;
+        break;
+      case WEST_BIT:
+        if (current_position % MAZE_COLUMNS == 0) {
+          break;
+        }
+        maze[current_position + WEST] |= EAST_BIT;
+        break;
+      case NORTH_BIT:
+        if (current_position / MAZE_COLUMNS == MAZE_ROWS - 1) {
+          break;
+        }
+        maze[current_position + NORTH] |= SOUTH_BIT;
+        break;
+    }
   }
 }
 
@@ -174,15 +168,6 @@ static void update_walls(struct walls walls) {
   set_visited();
 }
 
-static bool check_all_visited(void) {
-  for (uint16_t i = 0; i < MAZE_CELLS; i++) {
-    if (!(maze[i] & VISITED_BIT)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 static bool check_goal_reached(void) {
   for (uint8_t i = 0; i < goal_cells.size; i++) {
     if (current_position == goal_cells.stack[i]) {
@@ -230,7 +215,24 @@ static enum step_direction get_next_floodfill_step(struct walls walls) {
   return BACK;
 }
 
-void floodfill_update(void) {
+static void floodfill_set_goal_as_target(void) {
+  target_cells.size = 0;
+  for (uint8_t i = 0; i < goal_cells.size; i++) {
+    add_target(goal_cells.stack[i]);
+  }
+}
+
+
+static void floodfill_add_goal(uint8_t x, uint8_t y) {
+  goal_cells.stack[goal_cells.size++] = (x - 1) + (y - 1) * MAZE_COLUMNS;
+}
+
+static void floodfill_save_maze(void) {
+  eeprom_set_data(DATA_INDEX_MAZE, maze, MAZE_CELLS);
+  eeprom_save();
+}
+
+static void floodfill_update(void) {
   reset_floodfill_and_queue();
 
   for (uint8_t i = 0; i < target_cells.size; i++) {
@@ -261,41 +263,80 @@ void floodfill_update(void) {
   }
 }
 
-void floodfill_set_goal_as_target(void) {
-  target_cells.size = 0;
-  for (uint8_t i = 0; i < goal_cells.size; i++) {
-    add_target(goal_cells.stack[i]);
+static void floodfill_loop_explore(void) {
+  if ((time_limit > 0 && get_clock_ticks() - start_ms >= time_limit)) {
+    set_target_linear_speed(0);
+    set_ideal_angular_speed(0);
+    while (get_ideal_linear_speed() != 0) {
+      warning_status_led(50);
+    }
+    set_status_led(false);
+    delay(500);
+    set_race_started(false);
+    return;
+  }
+  struct walls walls = get_walls();
+  update_walls(walls);
+  floodfill_update();
+
+  enum step_direction next_step = get_next_floodfill_step(walls);
+
+  set_RGB_color_while(0, 0, 255, 20);
+  switch (next_step) {
+    case FRONT:
+      move(MOVE_FRONT);
+      break;
+    case LEFT:
+      move(MOVE_LEFT);
+      break;
+    case RIGHT:
+      move(MOVE_RIGHT);
+      break;
+    case BACK:
+      if (walls.front) {
+        move(MOVE_180W);
+      } else {
+        move(MOVE_180);
+      }
+      break;
+    default:
+      while (true) {
+        set_target_linear_speed(0);
+        set_ideal_angular_speed(0);
+        warning_status_led(50);
+      }
+      break;
+  }
+  update_position(next_step);
+
+  if (check_goal_reached()) {
+    // set_target_linear_speed(0);
+    // set_ideal_angular_speed(0);
+    // set_RGB_color_while(0, 255, 0, 20);
+    // while (true) {
+    //   warning_status_led(50);
+    // }
+    // delay(500);
+    set_target(0);
+    // set_race_started(false);
+  } else if (target_cells.size == 1 && current_position == target_cells.stack[0] && current_position == 0) {
+    move(MOVE_HOME);
+    set_target_linear_speed(0);
+    set_ideal_angular_speed(0);
+    set_RGB_color_while(255, 0, 0, 20);
+    uint16_t ms = get_clock_ticks();
+    while (get_clock_ticks() - ms < 2000) {
+      warning_status_led(50);
+    }
+    set_status_led(false);
+    set_race_started(false);
+    floodfill_set_goal_as_target();
+    floodfill_update();
+    floodfill_save_maze();
   }
 }
 
-void floodfill_add_goal(uint8_t x, uint8_t y) {
-  goal_cells.stack[goal_cells.size++] = (x - 1) + (y - 1) * MAZE_COLUMNS;
-}
-
-void floodfill_debug_update_walls(uint8_t position, bool east, bool south, bool west, bool north) {
-  current_position = position;
-  current_direction = NORTH;
-  if (east) {
-    set_wall(EAST_BIT);
-  }
-  if (south) {
-    set_wall(SOUTH_BIT);
-  }
-  if (west) {
-    set_wall(WEST_BIT);
-  }
-  if (north) {
-    set_wall(NORTH_BIT);
-  }
-  set_visited();
-}
-
-void floodfill_use_left_hand(void) {
-  use_left_hand = true;
-}
-
-void floodfill_use_right_hand(void) {
-  use_left_hand = false;
+static void floodfill_loop_run(void) {
 }
 
 void floodfill_set_time_limit(uint32_t ms) {
@@ -354,10 +395,6 @@ void floodfill_maze_print(void) {
   printf("\n");
 }
 
-void floodfill_save_maze(void) {
-  eeprom_set_data(DATA_INDEX_MAZE, maze, MAZE_CELLS);
-}
-
 void floodfill_load_maze(void) {
   uint16_t *data = eeprom_get_data();
   for (uint16_t i = DATA_INDEX_MAZE; i < (DATA_INDEX_MAZE + MAZE_CELLS); i++) {
@@ -365,9 +402,13 @@ void floodfill_load_maze(void) {
   }
 }
 
-void floodfill_start(void) {
+void floodfill_start_explore(void) {
+  race_mode = false;
   initialize_maze();
   set_initial_state();
+
+  floodfill_add_goal(6, 4);
+  floodfill_set_goal_as_target();
 
   struct walls walls = get_walls();
   update_walls(walls);
@@ -379,92 +420,15 @@ void floodfill_start(void) {
   update_position(FRONT);
 }
 
+void floodfill_start_run(void) {
+  race_mode = true;
+  // TODO: race_mode things
+}
+
 void floodfill_loop(void) {
-  if ((time_limit > 0 && get_clock_ticks() - start_ms >= time_limit)) {
-    set_target_linear_speed(0);
-    set_ideal_angular_speed(0);
-    while (get_ideal_linear_speed() != 0) {
-      warning_status_led(50);
-    }
-    set_status_led(false);
-    delay(500);
-    set_competicion_iniciada(false);
-    return;
+  if (race_mode) {
+    floodfill_loop_run();
+  } else {
+    floodfill_loop_explore();
   }
-  struct walls walls = get_walls();
-  update_walls(walls);
-  floodfill_update();
-
-  enum step_direction next_step = get_next_floodfill_step(walls);
-
-  set_RGB_color_while(0, 0, 255, 20);
-  switch (next_step) {
-    case FRONT:
-      move(MOVE_FRONT);
-      break;
-    case LEFT:
-      move(MOVE_LEFT);
-      break;
-    case RIGHT:
-      move(MOVE_RIGHT);
-      break;
-    case BACK:
-      if (walls.front) {
-        move(MOVE_180W);
-      } else {
-        move(MOVE_180);
-      }
-      break;
-    default:
-      while (true) {
-        set_target_linear_speed(0);
-        set_ideal_angular_speed(0);
-        warning_status_led(50);
-      }
-      break;
-  }
-  update_position(next_step);
-
-  if (check_goal_reached()) {
-    // set_target_linear_speed(0);
-    // set_ideal_angular_speed(0);
-    // set_RGB_color_while(0, 255, 0, 20);
-    // while (true) {
-    //   warning_status_led(50);
-    // }
-    // delay(500);
-    set_target(0);
-    // set_competicion_iniciada(false);
-  } else if (target_cells.size == 1 && current_position == target_cells.stack[0] && current_position == 0) {
-    move(MOVE_HOME);
-    set_target_linear_speed(0);
-    set_ideal_angular_speed(0);
-    set_RGB_color_while(255, 0, 0, 20);
-    uint16_t ms = get_clock_ticks();
-    while (get_clock_ticks() - ms < 2000) {
-      warning_status_led(50);
-    }
-    set_status_led(false);
-    set_competicion_iniciada(false);
-    floodfill_set_goal_as_target();
-    floodfill_update();
-  }
-
-  // if ((use_left_hand && !walls.left) || (!use_left_hand && walls.right && !walls.left && walls.front)) {
-  //   move(MOVE_LEFT);
-  //   update_position(LEFT);
-  // } else if ((!use_left_hand && !walls.right) || (use_left_hand && walls.left && !walls.right && walls.front)) {
-  //   move(MOVE_RIGHT);
-  //   update_position(RIGHT);
-  // } else if (!walls.front) {
-  //   move(MOVE_FRONT);
-  //   update_position(FRONT);
-  // } else if (walls.front && walls.left && walls.right) {
-  //   move(MOVE_180W);
-  //   update_position(BACK);
-  // } else {
-  //   set_target_linear_speed(0);
-  //   set_ideal_angular_speed(0);
-  //   warning_status_led(50);
-  // }
 }

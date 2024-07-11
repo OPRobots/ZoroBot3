@@ -23,7 +23,7 @@ void handwall_start(void) {
 
 void handwall_loop(void) {
   if (time_limit > 0 && get_clock_ticks() - start_ms >= time_limit) {
-    set_competicion_iniciada(false);
+    set_race_started(false);
     return;
   }
   struct walls walls = get_walls();

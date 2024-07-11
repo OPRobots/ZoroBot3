@@ -1,7 +1,7 @@
 #include <control.h>
 
-static volatile bool competicionIniciada = false;
-static volatile uint32_t competicion_finish_ms = 0;
+static volatile bool race_started = false;
+static volatile uint32_t race_finish_ms = 0;
 static volatile uint32_t sensor_front_left_start_ms = 0;
 static volatile uint32_t sensor_front_right_start_ms = 0;
 
@@ -78,8 +78,8 @@ static float get_measured_angular_speed(void) {
  * @return bool
  */
 
-bool is_competicion_iniciada(void) {
-  return competicionIniciada;
+bool is_race_started(void) {
+  return race_started;
 }
 
 /**
@@ -88,12 +88,12 @@ bool is_competicion_iniciada(void) {
  * @param state Estado actual del robot
  */
 
-void set_competicion_iniciada(bool state) {
-  competicionIniciada = state;
+void set_race_started(bool state) {
+  race_started = state;
   reset_control();
   if (!state) {
     menu_reset();
-    competicion_finish_ms = get_clock_ticks();
+    race_finish_ms = get_clock_ticks();
   }
 }
 
@@ -101,7 +101,7 @@ void set_control_debug(bool state) {
   control_debug = state;
 }
 
-int8_t check_iniciar_competicion(void) {
+int8_t check_start_run(void) {
   if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= SENSOR_FRONT_DETECTION_START) {
     if (sensor_front_left_start_ms == 0) {
       sensor_front_left_start_ms = get_clock_ticks();
@@ -112,7 +112,7 @@ int8_t check_iniciar_competicion(void) {
       set_RGB_color(0, 50, 0);
       delay(2000);
       set_RGB_color(0, 0, 0);
-      set_competicion_iniciada(true);
+      set_race_started(true);
       return SENSOR_FRONT_LEFT_WALL_ID;
     } else {
       sensor_front_left_start_ms = 0;
@@ -129,7 +129,7 @@ int8_t check_iniciar_competicion(void) {
       set_RGB_color(0, 50, 0);
       delay(2000);
       set_RGB_color(0, 0, 0);
-      set_competicion_iniciada(true);
+      set_race_started(true);
       return SENSOR_FRONT_RIGHT_WALL_ID;
     } else {
       sensor_front_right_start_ms = 0;
@@ -218,19 +218,19 @@ void set_ideal_angular_speed(float angular_speed) {
  *
  */
 void control_loop(void) {
-  if (is_motor_saturated() && is_competicion_iniciada()) {
+  if (is_motor_saturated() && is_race_started()) {
     set_motors_speed(0, 0);
     set_fan_speed(0);
     if (get_clock_ticks() - get_motors_saturated_ms() < 1000) {
       blink_RGB_color(512, 0, 0, 50);
     } else {
       set_RGB_color(0, 0, 0);
-      set_competicion_iniciada(false);
+      set_race_started(false);
     }
     return;
   }
-  if (!competicionIniciada) {
-    if (competicion_finish_ms > 0 && get_clock_ticks() - competicion_finish_ms <= 3000) {
+  if (!race_started) {
+    if (race_finish_ms > 0 && get_clock_ticks() - race_finish_ms <= 3000) {
       set_motors_brake();
     } else {
       set_motors_speed(0, 0);

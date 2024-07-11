@@ -40,20 +40,11 @@ struct cells_stack {
   uint8_t size;
 };
 
-void floodfill_set_goal_as_target(void);
-void floodfill_add_goal(uint8_t x, uint8_t y);
-void floodfill_update(void);
-void initialize_maze(void);
-
-void floodfill_use_left_hand(void);
-void floodfill_use_right_hand(void);
 void floodfill_set_time_limit(uint32_t ms);
 void floodfill_maze_print(void);
-void floodfill_save_maze(void);
 void floodfill_load_maze(void);
-void floodfill_start(void);
+void floodfill_start_explore(void);
+void floodfill_start_run(void);
 void floodfill_loop(void);
-
-void floodfill_debug_update_walls(uint8_t position, bool east, bool south, bool west, bool north);
 
 #endif
