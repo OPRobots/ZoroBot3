@@ -39,7 +39,7 @@ static void set_initial_state(void) {
   current_direction = initial_direction;
 }
 
-static void floodfill_add_goal(uint8_t x, uint8_t y) {
+static void add_goal(uint8_t x, uint8_t y) {
   goal_cells.stack[goal_cells.size++] = (x - 1) + (y - 1) * MAZE_COLUMNS;
 }
 
@@ -52,7 +52,7 @@ static void set_target(uint8_t cell) {
   add_target(cell);
 }
 
-static void floodfill_set_goal_as_target(void) {
+static void set_goal_as_target(void) {
   target_cells.size = 0;
   for (uint8_t i = 0; i < goal_cells.size; i++) {
     add_target(goal_cells.stack[i]);
@@ -239,7 +239,7 @@ static uint8_t queue_pop(void) {
   return cells_queue.queue[cells_queue.tail++];
 }
 
-static void floodfill_update(void) {
+static void update_floodfill(void) {
   reset_floodfill_and_queue();
 
   for (uint8_t i = 0; i < target_cells.size; i++) {
@@ -282,12 +282,12 @@ static enum step_direction get_next_floodfill_step(struct walls walls) {
   return BACK;
 }
 
-static void floodfill_save_maze(void) {
+static void save_maze(void) {
   eeprom_set_data(DATA_INDEX_MAZE, maze, MAZE_CELLS);
   eeprom_save();
 }
 
-static void floodfill_check_time_limit(void) {
+static void check_time_limit(void) {
   if ((time_limit > 0 && get_clock_ticks() - start_ms >= time_limit)) {
     set_target_linear_speed(0);
     set_ideal_angular_speed(0);
@@ -309,8 +309,8 @@ static uint8_t find_unknown_interesting_cell(void) {
   enum step_direction next_step;
 
   set_initial_state();
-  floodfill_set_goal_as_target();
-  floodfill_update();
+  set_goal_as_target();
+  update_floodfill();
   while (floodfill[current_position] > 0) {
     next_step = get_next_floodfill_step(get_current_stored_walls());
     update_position(next_step);
@@ -325,16 +325,16 @@ static uint8_t find_unknown_interesting_cell(void) {
   return cell;
 }
 
-static void floodfill_go_to_target(void) {
+static void go_to_target(void) {
   struct walls walls;
   enum step_direction next_step;
 
-  floodfill_update();
+  update_floodfill();
   do {
     if (!current_cell_is_visited()) {
       walls = get_walls();
       update_walls(walls);
-      floodfill_update();
+      update_floodfill();
     } else {
       walls = get_current_stored_walls();
     }
@@ -372,9 +372,9 @@ static void floodfill_go_to_target(void) {
   update_walls(walls);
 }
 
-static void floodfill_loop_explore(void) {
+static void loop_explore(void) {
   while (is_race_started()) {
-    floodfill_go_to_target();
+    go_to_target();
 
     if (current_position == 0) {
       move(MOVE_HOME);
@@ -387,18 +387,18 @@ static void floodfill_loop_explore(void) {
       }
       set_status_led(false);
       set_race_started(false);
-      floodfill_set_goal_as_target();
-      floodfill_update();
-      floodfill_save_maze();
+      set_goal_as_target();
+      update_floodfill();
+      save_maze();
       return;
     }
     set_target(find_unknown_interesting_cell());
 
-    floodfill_check_time_limit();
+    check_time_limit();
   }
 }
 
-static void floodfill_loop_run(void) {
+static void loop_run(void) {
 }
 
 void floodfill_load_maze(void) {
@@ -519,12 +519,12 @@ void floodfill_start_explore(void) {
   initialize_maze();
   set_initial_state();
 
-  floodfill_add_goal(6, 4);
-  floodfill_set_goal_as_target();
+  add_goal(6, 4);
+  set_goal_as_target();
 
   struct walls walls = get_walls();
   update_walls(walls);
-  floodfill_update();
+  update_floodfill();
 
   start_ms = get_clock_ticks();
 
@@ -539,8 +539,8 @@ void floodfill_start_run(void) {
 
 void floodfill_loop(void) {
   if (race_mode) {
-    floodfill_loop_run();
+    loop_run();
   } else {
-    floodfill_loop_explore();
+    loop_explore();
   }
 }
