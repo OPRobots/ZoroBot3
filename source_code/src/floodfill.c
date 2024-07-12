@@ -17,6 +17,7 @@ static struct cells_stack target_cells;
 static struct cells_stack goal_cells;
 
 static bool race_mode = false;
+static char run_sequence[MAZE_CELLS + 3];
 
 static void initialize_maze(void) {
   for (uint16_t i = 0; i < MAZE_CELLS; i++) {
@@ -372,6 +373,48 @@ static void go_to_target(void) {
   update_walls(walls);
 }
 
+static void build_run_sequence(void) {
+  uint8_t i = 0;
+  enum step_direction step;
+
+  set_initial_state();
+  add_goal(6, 4);
+  add_goal(6, 5);
+  add_goal(7, 4);
+  add_goal(7, 5);
+  set_goal_as_target();
+  update_floodfill();
+
+  while (floodfill[current_position] > 0) {
+    step = get_next_floodfill_step(get_current_stored_walls());
+    switch (step) {
+      case FRONT:
+        run_sequence[i++] = (current_position == 0 ? 'B' : 'F');
+        break;
+      case LEFT:
+        run_sequence[i++] = 'L';
+        break;
+      case RIGHT:
+        run_sequence[i++] = 'R';
+        break;
+      default:
+        break;
+    }
+    update_position(step);
+  }
+  while (true) {
+    update_position(FRONT);
+    if (floodfill[current_position] != 0) {
+      break;
+    }
+    run_sequence[i++] = 'F';
+  }
+  run_sequence[i++] = 'S';
+  run_sequence[i] = '\0';
+
+  printf("Run sequence: %s\n", run_sequence);
+}
+
 static void loop_explore(void) {
   while (is_race_started()) {
     go_to_target();
@@ -399,6 +442,18 @@ static void loop_explore(void) {
 }
 
 static void loop_run(void) {
+  build_run_sequence();
+  move_run_sequence(run_sequence);
+
+  set_target_linear_speed(0);
+  set_ideal_angular_speed(0);
+  set_RGB_color_while(255, 0, 0, 20);
+  uint16_t ms = get_clock_ticks();
+  while (get_clock_ticks() - ms < 1000) {
+    warning_status_led(50);
+  }
+  set_status_led(false);
+  set_race_started(false);
 }
 
 void floodfill_load_maze(void) {
@@ -520,6 +575,9 @@ void floodfill_start_explore(void) {
   set_initial_state();
 
   add_goal(6, 4);
+  add_goal(6, 5);
+  add_goal(7, 4);
+  add_goal(7, 5);
   set_goal_as_target();
 
   struct walls walls = get_walls();

@@ -11,12 +11,8 @@ static int32_t current_cell_start_mm = 0;
 static bool current_cell_wall_lost = false;
 static int32_t current_cell_absolute_start_mm = 0;
 
-// static struct walls last_check_walls_loss = {false, false, false};
-// static uint16_t count_check_walls_left = 0;
-// static uint16_t count_check_walls_right = 0;
-
-static int32_t calc_straight_stop_distance(int32_t speed) {
-  return (speed * speed) / (2 * BASE_LINEAR_ACCEL);
+static int32_t calc_straight_to_speed_distance(int32_t from_speed, int32_t to_speed) {
+  return abs((to_speed * to_speed - from_speed * from_speed) / (2 * BASE_LINEAR_ACCEL));
 }
 
 static void enter_next_cell(void) {
@@ -121,7 +117,7 @@ static void move_back(enum movement movement) {
   if (movement == MOVE_180W) {
     move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
   } else {
-    move_straight((CELL_DIMENSION / 2) - calc_straight_stop_distance(300) - current_cell_start_mm, 300, false, false);
+    move_straight((CELL_DIMENSION / 2) - calc_straight_to_speed_distance(300, 0) - current_cell_start_mm, 300, false, false);
   }
 
   // delay(1500);
@@ -189,13 +185,13 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
       }
 
       if (stop) {
-        stop_distance = calc_straight_stop_distance(get_ideal_linear_speed());
+        stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
       }
     }
   } else {
     while (is_race_started() && get_encoder_avg_micrometers() >= current_distance - (distance + stop_distance) * MICROMETERS_PER_MILLIMETER) {
       if (stop) {
-        stop_distance = calc_straight_stop_distance(get_ideal_linear_speed());
+        stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
       }
     }
   }
@@ -220,7 +216,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   set_target_linear_speed(speed);
   while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
     if (stop) {
-      stop_distance = calc_straight_stop_distance(get_ideal_linear_speed());
+      stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
     }
     set_RGB_color(255, 0, 0);
   }
@@ -229,6 +225,26 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
     set_target_linear_speed(0);
     while (is_race_started() && get_ideal_linear_speed() != 0) {
     }
+  }
+}
+
+void run_straight(int32_t distance, int32_t speed, int32_t final_speed) {
+
+  set_front_sensors_correction(false);
+  set_side_sensors_close_correction(true);
+  set_side_sensors_far_correction(true);
+
+  int32_t current_distance = get_encoder_avg_micrometers();
+  int32_t slow_distance = 0;
+  set_ideal_angular_speed(0.0);
+  set_target_linear_speed(speed);
+  while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + (distance - slow_distance) * MICROMETERS_PER_MILLIMETER) {
+    if (final_speed != speed) {
+      slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed);
+    }
+  }
+  set_target_linear_speed(final_speed);
+  while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
   }
 }
 
@@ -338,5 +354,62 @@ void move(enum movement movement) {
       break;
     default:
       break;
+  }
+}
+
+void move_run_sequence(char *sequence) {
+  float distance = 0;
+  for (uint16_t i = 0; i < strlen(sequence); i++) {
+    switch (sequence[i]) {
+      case 'B':
+        // move(MOVE_START);
+        distance += CELL_DIMENSION - (ROBOT_BACK_LENGTH + WALL_WIDTH / 2);
+        break;
+      case 'F':
+        // move(MOVE_FRONT);
+        distance += CELL_DIMENSION;
+        break;
+      case 'L':
+        if (distance > 0) {
+          run_straight(distance, 2000, 500);
+          distance = 0;
+        }
+        move(MOVE_LEFT);
+        break;
+      case 'R':
+        if (distance > 0) {
+          run_straight(distance, 2000, 500);
+          distance = 0;
+        }
+        move(MOVE_RIGHT);
+        break;
+      case 'S':
+        if (distance > 0) {
+          run_straight(distance, 2000, 500);
+          distance = 0;
+        }
+        move(MOVE_HOME);
+        break;
+    }
+  }
+  delay(1000);
+  for (int16_t i = strlen(sequence) - 1; i >= 0; i--) {
+    switch (sequence[i]) {
+      case 'S':
+        move(MOVE_START);
+        break;
+      case 'F':
+        move(MOVE_FRONT);
+        break;
+      case 'R':
+        move(MOVE_LEFT);
+        break;
+      case 'L':
+        move(MOVE_RIGHT);
+        break;
+      case 'B':
+        move(MOVE_HOME);
+        break;
+    }
   }
 }

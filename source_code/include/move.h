@@ -2,6 +2,7 @@
 #define MOVE_H
 
 #include "control.h"
+#include <string.h>
 
 enum movement {
   MOVE_HOME,
@@ -36,6 +37,9 @@ void move_arc_turn(enum movement move);
 void move_inplace_turn(enum movement movement);
 void move_inplace_angle(float angle, float rads);
 
+void run_straight(int32_t distance, int32_t speed, int32_t final_speed);
+
 void move(enum movement movement);
+void move_run_sequence(char *sequence);
 
 #endif
