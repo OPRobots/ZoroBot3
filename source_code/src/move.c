@@ -1,8 +1,8 @@
 #include "move.h"
 
 struct turn_params turns[] = {
-    [MOVE_LEFT] = {22, 35, 500, 612.5, 9.625, 16, 148, -1},
-    [MOVE_RIGHT] = {22, 35, 500, 612.5, 9.625, 16, 148, 1},
+    [MOVE_LEFT] = {27, 35, 500, 612.5, 9.625, 16, 148, -1},
+    [MOVE_RIGHT] = {27, 35, 500, 612.5, 9.625, 16, 148, 1},
     [MOVE_180] = {0, 0, 0, 262.5, 9.625, 37, 291, 1},
     [MOVE_180W] = {0, 0, 0, 612.5, 9.625, 16, 310, -1},
 };
@@ -93,19 +93,36 @@ static void move_front(void) {
 
 static void move_side(enum movement movement) {
   set_front_sensors_correction(false);
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(true);
+  set_side_sensors_close_correction(false);
+  set_side_sensors_far_correction(false);
 
-  move_straight(turns[movement].start - current_cell_start_mm, 500, false, false);
+  int32_t end_distance_offset = 0;
+  struct walls walls = get_walls();
+  if (turns[movement].sign > 0) {
+    if (walls.left) {
+      end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID);
+    }
+  } else {
+    if (walls.right) {
+      end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID);
+    }
+  }
+
+  int32_t start_distance_offset = 0;
+  if (walls.front) {
+    start_distance_offset = get_front_wall_distance() - (CELL_DIMENSION - (WALL_WIDTH / 2));
+  }
+
+  move_straight(turns[movement].start - current_cell_start_mm + start_distance_offset, 500, false, false);
 
   disable_sensors_correction();
   reset_angular_control();
   move_arc_turn(movement);
 
   set_front_sensors_correction(false);
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(true);
-  move_straight(turns[movement].end - SENSING_POINT_DISTANCE, 500, false, false);
+  set_side_sensors_close_correction(false);
+  set_side_sensors_far_correction(false);
+  move_straight(turns[movement].end + end_distance_offset, 500, false, false);
   enter_next_cell();
 }
 
