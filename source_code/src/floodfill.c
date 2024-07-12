@@ -402,11 +402,14 @@ static void build_run_sequence(void) {
     }
     update_position(step);
   }
-  while (true) {
-    update_position(FRONT);
-    if (floodfill[current_position] != 0) {
-      break;
-    }
+  // while (true) {
+  //   update_position(FRONT);
+  //   if (floodfill[current_position] != 0) {
+  //     break;
+  //   }
+  //   run_sequence[i++] = 'F';
+  // }
+  if (goal_cells.size > 1) {
     run_sequence[i++] = 'F';
   }
   run_sequence[i++] = 'S';
@@ -464,6 +467,7 @@ void floodfill_load_maze(void) {
 }
 
 void floodfill_maze_print(void) {
+  build_run_sequence();
   for (int16_t r = MAZE_CELLS - MAZE_COLUMNS; r >= 0; r = r - MAZE_COLUMNS) {
     // Borde superior del laberinto
     if (r == MAZE_CELLS - MAZE_COLUMNS) {
