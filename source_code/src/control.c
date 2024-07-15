@@ -301,6 +301,10 @@ void control_loop(void) {
       KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
       KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error + KD_FRONT_SENSORS * (front_sensors_error - last_front_sensors_error);
 
+  if (get_ideal_linear_speed() > 0) {
+    angular_voltage *= get_ideal_linear_speed() / 500.0f; // TODO: definear 500 as explore speed
+  }
+
   voltage_left = linear_voltage + angular_voltage;
   voltage_right = linear_voltage - angular_voltage;
   pwm_left = voltage_to_motor_pwm(voltage_left);
@@ -318,20 +322,31 @@ void control_loop(void) {
   //     (int16_t)(get_measured_linear_speed()));
 
   // if (control_debug) {
+  // macroarray_store(
+  //     2,
+  //     0b1101, // 0b0001101001,
+  //     4,
+  //     // target_linear_speed,
+  //     // ideal_linear_speed,
+  //     // (int16_t)(get_measured_linear_speed()),
+  //     (int16_t)(ideal_angular_speed * 100.0),
+  //     (int16_t)(get_measured_angular_speed() * 100.0),
+  //     0,
+  //     (int16_t)(side_sensors_error * 100.0)
+  //     // pwm_left,
+  //     // pwm_right,
+  //     // (int16_t)(get_battery_voltage() * 100.0)
+  // );
+
   macroarray_store(
       2,
-      0b1101, // 0b0001101001,
-      4,
-      // target_linear_speed,
-      // ideal_linear_speed,
-      // (int16_t)(get_measured_linear_speed()),
-      (int16_t)(ideal_angular_speed * 100.0),
-      (int16_t)(get_measured_angular_speed() * 100.0),
-      0,
-      (int16_t)(side_sensors_error * 100.0)
-      // pwm_left,
-      // pwm_right,
-      // (int16_t)(get_battery_voltage() * 100.0)
-  );
+      0b000001,
+      6,
+      target_linear_speed,
+      ideal_linear_speed,
+      (int16_t)(get_measured_linear_speed()),
+      pwm_left,
+      pwm_right,
+      (int16_t)(get_battery_voltage() * 100.0));
   // }
 }
