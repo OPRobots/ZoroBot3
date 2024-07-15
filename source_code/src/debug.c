@@ -25,6 +25,16 @@ static void debug_sensors_raw(void) {
   }
 }
 
+static void debug_sensors_distances(void) {
+  if (get_clock_ticks() > last_print_debug + 50) {
+    for (int8_t sensor = 0; sensor < get_sensors_num(); sensor++) {
+      printf("%d\t", get_sensor_distance(sensor));
+    }
+    printf("\n");
+    last_print_debug = get_clock_ticks();
+  }
+}
+
 static void debug_floodfill_maze(void) {
   floodfill_maze_print();
   debug_enabled = false;
@@ -71,6 +81,9 @@ void debug_from_config(uint8_t type) {
         break;
       case DEBUG_TYPE_SENSORS_RAW:
         debug_sensors_raw();
+        break;
+      case DEBUG_TYPE_SENSORS_DISTANCES:
+        debug_sensors_distances();
         break;
       case DEBUG_FLOODFILL_MAZE:
         debug_floodfill_maze();
