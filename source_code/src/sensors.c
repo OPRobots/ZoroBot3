@@ -585,10 +585,10 @@ int16_t get_side_sensors_far_error(void) {
   int16_t right_error = sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
   // printf("\t\t%4d - %4d\n", left_error, right_error);
 
-  if ((left_error > 100) && (right_error < 40)) {
+  if ((left_error > 70) && (right_error < 50)) {
     return right_error;
   }
-  if ((right_error > 100) && (left_error < 40)) {
+  if ((right_error > 70) && (left_error < 50)) {
     return -left_error;
   }
 
