@@ -59,11 +59,11 @@ static void setup_systick(void) {
  * 
  */
 static void setup_timer_priorities(void) {
+  nvic_set_priority(NVIC_TIM2_IRQ, 16 * 0);
   nvic_set_priority(NVIC_SYSTICK_IRQ, 16 * 1);
   nvic_set_priority(NVIC_DMA2_STREAM0_IRQ, 16 * 2);
-  nvic_set_priority(NVIC_TIM2_IRQ, 16 * 3);
-  nvic_set_priority(NVIC_TIM5_IRQ, 16 * 4);
-  nvic_set_priority(NVIC_USART3_IRQ, 16 * 5);
+  nvic_set_priority(NVIC_TIM5_IRQ, 16 * 3);
+  nvic_set_priority(NVIC_USART3_IRQ, 16 * 4);
 
   nvic_enable_irq(NVIC_TIM5_IRQ);
   nvic_enable_irq(NVIC_TIM2_IRQ);
@@ -277,7 +277,7 @@ void tim5_isr(void) {
 static void setup_wall_sensor_manager(void) {
   rcc_periph_reset_pulse(RST_TIM2);
   timer_set_mode(TIM2, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-  timer_set_prescaler(TIM2, ((rcc_apb1_frequency * 2) / 16000000 - 1)); // 16kHz
+  timer_set_prescaler(TIM2, ((rcc_apb1_frequency * 2) / 16000000 - 1)); // 16.66 ~16kHz
   timer_disable_preload(TIM2);
   timer_continuous_mode(TIM2);
   timer_set_period(TIM2, 1024);
