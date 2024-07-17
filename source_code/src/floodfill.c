@@ -355,9 +355,9 @@ static void go_to_target(void) {
         break;
       case BACK:
         if (walls.front) {
-          move(MOVE_180W);
+          move(MOVE_BACK_WALL);
         } else {
-          move(MOVE_180);
+          move(MOVE_BACK);
         }
         break;
       default:

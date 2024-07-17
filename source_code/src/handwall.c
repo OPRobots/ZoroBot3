@@ -35,7 +35,7 @@ void handwall_loop(void) {
   } else if (!walls.front) {
     move(MOVE_FRONT);
   } else if (walls.front && walls.left && walls.right) {
-    move(MOVE_180W);
+    move(MOVE_BACK_WALL);
   } else {
     set_target_linear_speed(0);
     set_ideal_angular_speed(0);

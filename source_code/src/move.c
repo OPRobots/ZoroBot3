@@ -3,8 +3,13 @@
 struct turn_params turns[] = {
     [MOVE_LEFT] = {27, 35, 500, 612.5, 9.625, 16, 148, -1},
     [MOVE_RIGHT] = {27, 35, 500, 612.5, 9.625, 16, 148, 1},
-    [MOVE_180] = {0, 0, 0, 262.5, 9.625, 37, 291, 1},
-    [MOVE_180W] = {0, 0, 0, 612.5, 9.625, 16, 310, -1},
+    [MOVE_BACK] = {0, 0, 0, 262.5, 9.625, 37, 291, 1},
+    [MOVE_BACK_WALL] = {0, 0, 0, 612.5, 9.625, 16, 310, -1},
+
+    [MOVE_LEFT_90] = {0, 0, 860, 612.5, 9.625, 16, 148, -1},
+    [MOVE_RIGHT_90] = {0, 0, 860, 612.5, 9.625, 16, 148, 1},
+    [MOVE_LEFT_180] = {0, 0, 860, 612.5, 9.625, 16, 311, -1},
+    [MOVE_RIGHT_180] = {0, 0, 860, 612.5, 9.625, 16, 311, 1},
 };
 
 static int32_t current_cell_start_mm = 0;
@@ -74,7 +79,7 @@ static void move_home(void) {
 
   disable_sensors_correction();
   reset_angular_control();
-  move_inplace_turn(MOVE_180);
+  move_inplace_turn(MOVE_BACK);
   move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
   set_starting_position();
 }
@@ -109,11 +114,13 @@ static void move_side(enum movement movement) {
   }
 
   int32_t start_distance_offset = 0;
-  if (walls.front) {
-    start_distance_offset = get_front_wall_distance() - (CELL_DIMENSION - (WALL_WIDTH / 2));
-  }
+  // if (walls.front) {
+  //   start_distance_offset = get_front_wall_distance() - (CELL_DIMENSION - (WALL_WIDTH / 2));
+  // }
 
-  move_straight(turns[movement].start - current_cell_start_mm + start_distance_offset, 500, false, false);
+  if (turns[movement].start > 0) {
+    move_straight(turns[movement].start - current_cell_start_mm + start_distance_offset, 500, false, false);
+  }
 
   disable_sensors_correction();
   reset_angular_control();
@@ -122,7 +129,10 @@ static void move_side(enum movement movement) {
   set_front_sensors_correction(false);
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
-  move_straight(turns[movement].end + end_distance_offset, 500, false, false);
+
+  if (turns[movement].end > 0) {
+    move_straight(turns[movement].end + end_distance_offset, 500, false, false);
+  }
   enter_next_cell();
 }
 
@@ -131,7 +141,7 @@ static void move_back(enum movement movement) {
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
 
-  if (movement == MOVE_180W) {
+  if (movement == MOVE_BACK_WALL) {
     move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
   } else {
     move_straight((CELL_DIMENSION / 2) - calc_straight_to_speed_distance(300, 0) - current_cell_start_mm, 300, false, false);
@@ -147,7 +157,7 @@ static void move_back(enum movement movement) {
 
   // set_side_sensors_close_correction(true);
 
-  if (movement == MOVE_180W) {
+  if (movement == MOVE_BACK_WALL) {
     move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
     set_starting_position();
   } else {
@@ -396,12 +406,16 @@ void move(enum movement movement) {
       break;
     case MOVE_LEFT:
     case MOVE_RIGHT:
+    case MOVE_LEFT_90:
+    case MOVE_RIGHT_90:
+    case MOVE_LEFT_180:
+    case MOVE_RIGHT_180:
       set_control_debug(true);
       move_side(movement);
       set_control_debug(false);
       break;
-    case MOVE_180:
-    case MOVE_180W:
+    case MOVE_BACK:
+    case MOVE_BACK_WALL:
       move_back(movement);
       break;
     default:
@@ -413,7 +427,7 @@ void move_run_sequence(char *sequence) {
   float distance = 0;
   uint16_t straight_cells = 0;
   bool straight_has_begin = true;
-  for (uint16_t i = 0; i < strlen(sequence); i++) {
+  for (uint16_t i = 0; i < (uint16_t)strlen(sequence); i++) {
     switch (sequence[i]) {
       case 'B':
         // move(MOVE_START);
@@ -427,25 +441,35 @@ void move_run_sequence(char *sequence) {
         break;
       case 'L':
         if (distance > 0) {
-          run_straight(distance, straight_cells, straight_has_begin, 2000, 500);
+          run_straight(distance, straight_cells, straight_has_begin, 2000, 860);
           distance = 0;
           straight_cells = 0;
           straight_has_begin = false;
         }
-        move(MOVE_LEFT);
+        if (i + 1 < (uint16_t)strlen(sequence) && sequence[i + 1] == 'L') {
+          move(MOVE_LEFT_180);
+          i++;
+        } else {
+          move(MOVE_LEFT_90);
+        }
         break;
       case 'R':
         if (distance > 0) {
-          run_straight(distance, straight_cells, straight_has_begin, 2000, 500);
+          run_straight(distance, straight_cells, straight_has_begin, 2000, 860);
           distance = 0;
           straight_cells = 0;
           straight_has_begin = false;
         }
-        move(MOVE_RIGHT);
+        if (i + 1 < (uint16_t)strlen(sequence) && sequence[i + 1] == 'R') {
+          move(MOVE_RIGHT_180);
+          i++;
+        } else {
+          move(MOVE_RIGHT_90);
+        }
         break;
       case 'S':
         if (distance > 0) {
-          run_straight(distance, straight_cells, straight_has_begin, 2000, 500);
+          run_straight(distance, straight_cells, straight_has_begin, 2000, 860);
           distance = 0;
           straight_cells = 0;
           straight_has_begin = false;
