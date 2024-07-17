@@ -575,6 +575,8 @@ void floodfill_set_time_limit(uint32_t ms) {
 
 void floodfill_start_explore(void) {
   race_mode = false;
+  clear_info_leds();
+  set_RGB_color(0, 0, 0);
   initialize_maze();
   set_initial_state();
 
@@ -596,7 +598,8 @@ void floodfill_start_explore(void) {
 
 void floodfill_start_run(void) {
   race_mode = true;
-  // TODO: race_mode things
+  clear_info_leds();
+  set_RGB_color(0, 0, 0);
 }
 
 void floodfill_loop(void) {
