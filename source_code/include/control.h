@@ -6,6 +6,7 @@
 #include <constants.h>
 #include <macroarray.h>
 #include <menu.h>
+#include <move.h>
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>

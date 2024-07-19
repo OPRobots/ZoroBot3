@@ -57,12 +57,12 @@ static int32_t voltage_to_motor_pwm(float voltage) {
  */
 static void update_ideal_linear_speed(void) {
   if (ideal_linear_speed < target_linear_speed) {
-    ideal_linear_speed += BASE_LINEAR_ACCEL / CONTROL_FREQUENCY_HZ;
+    ideal_linear_speed += get_kinematics().linear_accel / CONTROL_FREQUENCY_HZ;
     if (ideal_linear_speed > target_linear_speed) {
       ideal_linear_speed = target_linear_speed;
     }
   } else if (ideal_linear_speed > target_linear_speed) {
-    ideal_linear_speed -= BASE_LINEAR_ACCEL / CONTROL_FREQUENCY_HZ;
+    ideal_linear_speed -= get_kinematics().linear_accel / CONTROL_FREQUENCY_HZ;
     if (ideal_linear_speed < target_linear_speed) {
       ideal_linear_speed = target_linear_speed;
     }
@@ -331,9 +331,9 @@ void control_loop(void) {
       KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KP_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error + KP_FRONT_DIAGONAL_SENSORS * (front_sensors_diagonal_error - last_front_sensors_diagonal_error)
       ;
 
-  if (get_ideal_linear_speed() > 0) {
-    angular_voltage *= get_ideal_linear_speed() / 500.0f; // TODO: definear 500 as explore speed
-  }
+  // if (get_ideal_linear_speed() > 0) {
+  //   angular_voltage *= get_ideal_linear_speed() / 500.0f; // TODO: definear 500 as explore speed
+  // }
 
   voltage_left = linear_voltage + angular_voltage;
   voltage_right = linear_voltage - angular_voltage;

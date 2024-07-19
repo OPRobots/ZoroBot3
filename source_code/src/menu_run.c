@@ -113,6 +113,10 @@ void menu_run_reset(void) {
   valueRun[MODE_RACE] = 0;
 }
 
+enum speed_strategy menu_run_get_speed(void){
+  return valueRun[MODE_SPEED]+1;
+}
+
 bool menu_run_can_start(void){
   return modeRun == MODE_RACE && valueRun[MODE_RACE] > 0;
 }

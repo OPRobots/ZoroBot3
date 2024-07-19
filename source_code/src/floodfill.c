@@ -378,10 +378,11 @@ static void build_run_sequence(void) {
   enum step_direction step;
 
   set_initial_state();
-  add_goal(6, 4);
+
   add_goal(6, 5);
-  add_goal(7, 4);
+  add_goal(6, 4);
   add_goal(7, 5);
+  add_goal(7, 4);
   set_goal_as_target();
   update_floodfill();
 
@@ -580,10 +581,10 @@ void floodfill_start_explore(void) {
   initialize_maze();
   set_initial_state();
 
-  add_goal(6, 4);
   add_goal(6, 5);
-  add_goal(7, 4);
+  add_goal(6, 4);
   add_goal(7, 5);
+  add_goal(7, 4);
   set_goal_as_target();
 
   struct walls walls = get_walls();
@@ -592,6 +593,7 @@ void floodfill_start_explore(void) {
 
   start_ms = get_clock_ticks();
 
+  configure_kinematics(SPEED_EXPLORE);
   move(MOVE_START);
   update_position(FRONT);
 }
@@ -600,6 +602,7 @@ void floodfill_start_run(void) {
   race_mode = true;
   clear_info_leds();
   set_RGB_color(0, 0, 0);
+  configure_kinematics(menu_run_get_speed());
 }
 
 void floodfill_loop(void) {

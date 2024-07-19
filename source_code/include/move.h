@@ -2,6 +2,8 @@
 #define MOVE_H
 
 #include "control.h"
+#include "menu.h"
+#include "menu_run.h"
 #include <string.h>
 
 enum movement {
@@ -29,6 +31,15 @@ struct turn_params {
   uint16_t t_max;
   int8_t sign;
 };
+
+struct kinematics {
+  int16_t linear_speed;
+  int16_t linear_accel;
+  struct turn_params *turns;
+};
+
+void configure_kinematics(enum speed_strategy speed);
+struct kinematics get_kinematics(void);
 
 void set_starting_position(void);
 int32_t get_current_cell_travelled_distance(void);
