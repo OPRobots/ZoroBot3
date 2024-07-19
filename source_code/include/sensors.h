@@ -77,5 +77,6 @@ uint16_t get_front_wall_distance(void);
 int16_t get_side_sensors_close_error(void);
 int16_t get_side_sensors_far_error(void);
 int16_t get_front_sensors_angle_error(void);
+int16_t get_front_sensors_diagonal_error(void);
 
 #endif

@@ -605,3 +605,18 @@ int16_t get_front_sensors_angle_error(void) {
   // last_front_sensors_angle_error = error;
   return abs(error) < 2 ? 0 : error;
 }
+
+int16_t get_front_sensors_diagonal_error(void) {
+  int16_t left_error = sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - 280;
+  int16_t right_error = sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] - 280;
+  // printf("\t\t%4d - %4d\n", left_error, right_error);
+
+  if (right_error < 0) {
+    return right_error;
+  }
+  if (left_error < 0) {
+    return -left_error;
+  }
+
+  return 0;
+}
