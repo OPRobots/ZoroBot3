@@ -18,6 +18,7 @@ static struct cells_stack goal_cells;
 
 static bool race_mode = false;
 static char run_sequence[MAZE_CELLS + 3];
+static enum movement run_sequence_movements[MAZE_CELLS + 3];
 
 static void initialize_maze(void) {
   for (uint16_t i = 0; i < MAZE_CELLS; i++) {
@@ -38,6 +39,10 @@ static void initialize_maze(void) {
 static void set_initial_state(void) {
   current_position = 0;
   current_direction = initial_direction;
+}
+
+static void clear_goals(void) {
+  goal_cells.size = 0;
 }
 
 static void add_goal(uint8_t x, uint8_t y) {
@@ -374,11 +379,11 @@ static void go_to_target(void) {
 }
 
 static void build_run_sequence(void) {
-  uint8_t i = 0;
   enum step_direction step;
 
   set_initial_state();
 
+  clear_goals();
   add_goal(6, 5);
   add_goal(6, 4);
   add_goal(7, 5);
@@ -386,6 +391,11 @@ static void build_run_sequence(void) {
   set_goal_as_target();
   update_floodfill();
 
+  for (uint16_t i = 0; i < strlen(run_sequence); i++) {
+    run_sequence[i] = '\0';
+  }
+
+  uint8_t i = 0;
   while (floodfill[current_position] > 0) {
     step = get_next_floodfill_step(get_current_stored_walls());
     switch (step) {
@@ -419,6 +429,78 @@ static void build_run_sequence(void) {
   printf("Run sequence: %s\n", run_sequence);
 }
 
+static void smooth_run_sequence(enum speed_strategy speed) {
+  enum movement turn_movement;
+
+  uint16_t index = 0;
+  while (index < MAZE_CELLS + 3) {
+    run_sequence_movements[index++] = MOVE_NONE;
+  }
+  index = 0;
+  switch (speed) {
+    case SPEED_EXPLORE:
+      for (uint8_t i = 0; i < strlen(run_sequence); i++) {
+        switch (run_sequence[i]) {
+          case 'B':
+            run_sequence_movements[index++] = MOVE_START;
+            break;
+          case 'F':
+            run_sequence_movements[index++] = MOVE_FRONT;
+            break;
+          case 'L':
+            run_sequence_movements[index++] = MOVE_LEFT;
+            break;
+          case 'R':
+            run_sequence_movements[index++] = MOVE_RIGHT;
+            break;
+          case 'S':
+            run_sequence_movements[index++] = MOVE_HOME;
+            break;
+        }
+      }
+      break;
+    case SPEED_NORMAL:
+    case SPEED_FAST:
+    case SPEED_DIAGONALS:
+      for (uint8_t i = 0; i < strlen(run_sequence); i++) {
+        switch (run_sequence[i]) {
+          case 'B':
+            run_sequence_movements[index++] = MOVE_START;
+            break;
+          case 'F':
+            run_sequence_movements[index++] = MOVE_FRONT;
+            break;
+          case 'L':
+            if (i + 1 < (uint16_t)strlen(run_sequence) && run_sequence[i + 1] == 'L') {
+              turn_movement = MOVE_LEFT_180;
+              i++;
+            } else {
+              turn_movement = MOVE_LEFT_90;
+            }
+            run_sequence_movements[index++] = turn_movement;
+            break;
+          case 'R':
+            if (i + 1 < (uint16_t)strlen(run_sequence) && run_sequence[i + 1] == 'R') {
+              turn_movement = MOVE_RIGHT_180;
+              i++;
+            } else {
+              turn_movement = MOVE_RIGHT_90;
+            }
+            run_sequence_movements[index++] = turn_movement;
+            break;
+          case 'S':
+            run_sequence_movements[index++] = MOVE_HOME;
+            break;
+        }
+      }
+      break;
+  }
+
+  for (uint16_t i = 0; i < index; i++) {
+    printf("%s\n", movement_string[run_sequence_movements[i]]);
+  }
+}
+
 static void loop_explore(void) {
   while (is_race_started()) {
     go_to_target();
@@ -446,9 +528,7 @@ static void loop_explore(void) {
 }
 
 static void loop_run(void) {
-  build_run_sequence();
-  move_run_sequence(run_sequence);
-
+  move_run_sequence(run_sequence, run_sequence_movements);
   set_target_linear_speed(0);
   set_ideal_angular_speed(0);
   set_RGB_color_while(255, 0, 0, 20);
@@ -469,6 +549,7 @@ void floodfill_load_maze(void) {
 
 void floodfill_maze_print(void) {
   build_run_sequence();
+  smooth_run_sequence(menu_run_get_speed());
   for (int16_t r = MAZE_CELLS - MAZE_COLUMNS; r >= 0; r = r - MAZE_COLUMNS) {
     // Borde superior del laberinto
     if (r == MAZE_CELLS - MAZE_COLUMNS) {
@@ -581,6 +662,7 @@ void floodfill_start_explore(void) {
   initialize_maze();
   set_initial_state();
 
+  clear_goals();
   add_goal(6, 5);
   add_goal(6, 4);
   add_goal(7, 5);
@@ -602,7 +684,10 @@ void floodfill_start_run(void) {
   race_mode = true;
   clear_info_leds();
   set_RGB_color(0, 0, 0);
+
   configure_kinematics(menu_run_get_speed());
+  build_run_sequence();
+  smooth_run_sequence(menu_run_get_speed());
 }
 
 void floodfill_loop(void) {

@@ -7,6 +7,7 @@
 #include <string.h>
 
 enum movement {
+  MOVE_NONE,
   MOVE_HOME,
   MOVE_START,
   MOVE_END,
@@ -19,6 +20,22 @@ enum movement {
   MOVE_RIGHT_180,
   MOVE_BACK,
   MOVE_BACK_WALL,
+};
+
+static const char *movement_string[] = {
+    "MOVE_NONE",
+    "MOVE_HOME",
+    "MOVE_START",
+    "MOVE_END",
+    "MOVE_FRONT",
+    "MOVE_LEFT",
+    "MOVE_RIGHT",
+    "MOVE_LEFT_90",
+    "MOVE_RIGHT_90",
+    "MOVE_LEFT_180",
+    "MOVE_RIGHT_180",
+    "MOVE_BACK",
+    "MOVE_BACK_WALL",
 };
 
 struct turn_params {
@@ -53,6 +70,6 @@ void move_inplace_angle(float angle, float rads);
 void run_straight(int32_t distance, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed);
 
 void move(enum movement movement);
-void move_run_sequence(char *sequence);
+void move_run_sequence(char *sequence, enum movement *sequence_movements);
 
 #endif
