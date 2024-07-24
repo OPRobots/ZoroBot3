@@ -108,37 +108,30 @@ void set_control_debug(bool state) {
 
 int8_t check_start_run(void) {
   if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= SENSOR_FRONT_DETECTION_START) {
-    if (sensor_front_left_start_ms == 0) {
+    if (sensor_front_left_start_ms == 0 && sensor_front_right_start_ms == 0) {
       sensor_front_left_start_ms = get_clock_ticks();
     }
   } else {
-    uint32_t elapsed_ms = get_clock_ticks() - sensor_front_left_start_ms;
-    if (elapsed_ms >= SENSOR_START_MIN_MS && elapsed_ms <= SENSOR_START_MAX_MS) {
-      set_RGB_color(0, 50, 0);
-      delay(2000);
-      set_RGB_color(0, 0, 0);
-      set_race_started(true);
-      return SENSOR_FRONT_LEFT_WALL_ID;
-    } else {
-      sensor_front_left_start_ms = 0;
-    }
+    sensor_front_left_start_ms = 0;
   }
-
   if (get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID) <= SENSOR_FRONT_DETECTION_START) {
-    if (sensor_front_right_start_ms == 0) {
+    if (sensor_front_left_start_ms == 0 && sensor_front_right_start_ms == 0) {
       sensor_front_right_start_ms = get_clock_ticks();
     }
   } else {
-    uint32_t elapsed_ms = get_clock_ticks() - sensor_front_right_start_ms;
-    if (elapsed_ms >= SENSOR_START_MIN_MS && elapsed_ms <= SENSOR_START_MAX_MS) {
-      set_RGB_color(0, 50, 0);
-      delay(2000);
-      set_RGB_color(0, 0, 0);
-      set_race_started(true);
-      return SENSOR_FRONT_RIGHT_WALL_ID;
-    } else {
-      sensor_front_right_start_ms = 0;
-    }
+    sensor_front_right_start_ms = 0;
+  }
+
+  if (sensor_front_left_start_ms >= SENSOR_START_MIN_MS || sensor_front_right_start_ms >= SENSOR_START_MIN_MS) {
+    // TODO: save menu eeprom
+    set_RGB_color(0, 50, 0);
+    delay(1000);
+    set_RGB_color(0, 0, 0);
+    set_race_started(true);
+    uint8_t sensor = sensor_front_left_start_ms >= SENSOR_START_MIN_MS ? SENSOR_FRONT_LEFT_WALL_ID : SENSOR_FRONT_RIGHT_WALL_ID;
+    sensor_front_left_start_ms = 0;
+    sensor_front_right_start_ms = 0;
+    return sensor;
   }
   return -1;
 }
@@ -328,8 +321,7 @@ void control_loop(void) {
       KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
       KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
       KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error + KD_FRONT_SENSORS * (front_sensors_error - last_front_sensors_error) +
-      KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KP_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error + KP_FRONT_DIAGONAL_SENSORS * (front_sensors_diagonal_error - last_front_sensors_diagonal_error)
-      ;
+      KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KP_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error + KP_FRONT_DIAGONAL_SENSORS * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
 
   // if (get_ideal_linear_speed() > 0) {
   //   angular_voltage *= get_ideal_linear_speed() / 500.0f; // TODO: definear 500 as explore speed
@@ -381,8 +373,7 @@ void control_loop(void) {
       (int16_t)(angular_voltage * 100),
       (int16_t)pwm_left,
       (int16_t)pwm_right,
-      (int16_t)(get_battery_voltage() * 100.0)
-  );
+      (int16_t)(get_battery_voltage() * 100.0));
 
   // Corrección lateral en rectas
   // macroarray_store(
