@@ -3,22 +3,22 @@
 static struct turn_params turns_explore[] = {
     [MOVE_LEFT] = {
         .start = 27,
-        .end = 35,
+        .end = 37,
         .linear_speed = 500,
         .angular_accel = 612.5,
         .max_angular_speed = 9.625,
         .t_accel = 16,
-        .t_max = 148,
+        .t_max = 150,
         .sign = -1,
     },
     [MOVE_RIGHT] = {
         .start = 27,
-        .end = 35,
+        .end = 37,
         .linear_speed = 500,
         .angular_accel = 612.5,
         .max_angular_speed = 9.625,
         .t_accel = 16,
-        .t_max = 148,
+        .t_max = 150,
         .sign = 1,
     },
     [MOVE_BACK] = {
@@ -209,7 +209,7 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_explore,
     },
     [SPEED_NORMAL] = {
-        .linear_speed = 1500,
+        .linear_speed = 860,
         .linear_accel = 3000,
         .turns = turns_normal,
     },
@@ -308,6 +308,7 @@ static void move_front(void) {
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
   move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
+  set_RGB_color_while(255, 0, 0, 150);
   enter_next_cell();
 }
 
