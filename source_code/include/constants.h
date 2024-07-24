@@ -2,8 +2,8 @@
 #define __CONSTANTS_H
 
 /** Laberinto */
-#define MAZE_ROWS 5
-#define MAZE_COLUMNS 7
+#define MAZE_ROWS 16
+#define MAZE_COLUMNS 16
 #define MAZE_CELLS (MAZE_ROWS * MAZE_COLUMNS)
 #define MAZE_MAX_DISTANCE (MAZE_CELLS - 1)
 
