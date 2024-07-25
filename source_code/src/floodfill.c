@@ -496,8 +496,22 @@ static void smooth_run_sequence(enum speed_strategy speed) {
       break;
   }
 
+  uint16_t count_same_move = 0;
   for (uint16_t i = 0; i < index; i++) {
-    printf("%s\n", movement_string[run_sequence_movements[i]]);
+    count_same_move = 1;
+    while (run_sequence_movements[i] == run_sequence_movements[i + 1]) {
+      count_same_move++;
+      i++;
+    }
+    if (count_same_move > 1) {
+      printf("%dx", count_same_move);
+    }
+    printf("%s", get_movement_string(run_sequence_movements[i]));
+    if (i + 1 == index) {
+      printf("\n");
+    } else {
+      printf(" > ");
+    }
   }
 }
 

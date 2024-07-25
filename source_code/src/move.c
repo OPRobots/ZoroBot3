@@ -1,5 +1,22 @@
 #include "move.h"
 
+
+static char *movement_string[] = {
+    "MOVE_NONE",
+    "MOVE_HOME",
+    "MOVE_START",
+    "MOVE_END",
+    "MOVE_FRONT",
+    "MOVE_LEFT",
+    "MOVE_RIGHT",
+    "MOVE_LEFT_90",
+    "MOVE_RIGHT_90",
+    "MOVE_LEFT_180",
+    "MOVE_RIGHT_180",
+    "MOVE_BACK",
+    "MOVE_BACK_WALL",
+};
+
 static struct turn_params turns_explore[] = {
     [MOVE_LEFT] = {
         .start = 27,
@@ -390,6 +407,10 @@ static void move_back(enum movement movement) {
   set_side_sensors_far_correction(false);
   move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
   enter_next_cell();
+}
+
+char *get_movement_string(enum movement movement) {
+  return movement_string[movement];
 }
 
 void configure_kinematics(enum speed_strategy speed) {

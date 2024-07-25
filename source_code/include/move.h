@@ -22,22 +22,6 @@ enum movement {
   MOVE_BACK_WALL,
 };
 
-static const char *movement_string[] = {
-    "MOVE_NONE",
-    "MOVE_HOME",
-    "MOVE_START",
-    "MOVE_END",
-    "MOVE_FRONT",
-    "MOVE_LEFT",
-    "MOVE_RIGHT",
-    "MOVE_LEFT_90",
-    "MOVE_RIGHT_90",
-    "MOVE_LEFT_180",
-    "MOVE_RIGHT_180",
-    "MOVE_BACK",
-    "MOVE_BACK_WALL",
-};
-
 struct turn_params {
   int16_t start;
   int16_t end;
@@ -55,6 +39,9 @@ struct kinematics {
   struct turn_params *turns;
 };
 
+char *get_movement_string(enum movement movement);
+
+enum speed_strategy;
 void configure_kinematics(enum speed_strategy speed);
 struct kinematics get_kinematics(void);
 
