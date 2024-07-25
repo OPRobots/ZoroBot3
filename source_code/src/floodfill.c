@@ -19,20 +19,34 @@ static struct cells_stack goal_cells;
 static bool race_mode = false;
 static char run_sequence[MAZE_CELLS + 3];
 static enum movement run_sequence_movements[MAZE_CELLS + 3];
+static struct compass_direction_values directions_values = {
+    .EAST = 1,
+    .SOUTH = -MAZE_COLUMNS,
+    .WEST = -1,
+    .NORTH = MAZE_COLUMNS,
+};
+
+static void initialize_directions_values(void) {
+  directions_values.EAST = 1;
+  directions_values.SOUTH = -maze_get_columns();
+  directions_values.WEST = -1;
+  directions_values.NORTH = maze_get_columns();
+}
 
 static void initialize_maze(void) {
   for (uint16_t i = 0; i < MAZE_CELLS; i++) {
     maze[i] = 0;
+    floodfill[i] = MAZE_MAX_DISTANCE;
   }
 
-  for (uint16_t i = 0; i < MAZE_ROWS; i++) {
-    maze[(MAZE_COLUMNS - 1) + i * (MAZE_COLUMNS)] |= EAST_BIT;
-    maze[i * MAZE_COLUMNS] |= WEST_BIT;
+  for (uint16_t i = 0; i < maze_get_rows(); i++) {
+    maze[(maze_get_columns() - 1) + i * (maze_get_columns())] |= EAST_BIT;
+    maze[i * maze_get_columns()] |= WEST_BIT;
   }
 
-  for (uint16_t i = 0; i < MAZE_COLUMNS; i++) {
+  for (uint16_t i = 0; i < maze_get_columns(); i++) {
     maze[i] |= SOUTH_BIT;
-    maze[(MAZE_ROWS - 1) * MAZE_COLUMNS + i] |= NORTH_BIT;
+    maze[(maze_get_rows() - 1) * maze_get_columns() + i] |= NORTH_BIT;
   }
 }
 
@@ -41,12 +55,12 @@ static void set_initial_state(void) {
   current_direction = initial_direction;
 }
 
-static void clear_goals(void) {
+static void set_goals_from_maze(void) {
   goal_cells.size = 0;
-}
-
-static void add_goal(uint8_t x, uint8_t y) {
-  goal_cells.stack[goal_cells.size++] = (x - 1) + (y - 1) * MAZE_COLUMNS;
+  struct cells_stack *goals = maze_get_goals();
+  for (uint8_t i = 0; i < goals->size; i++) {
+    goal_cells.stack[goal_cells.size++] = goals->stack[i];
+  }
 }
 
 static void add_target(uint8_t cell) {
@@ -100,8 +114,23 @@ static enum compass_direction get_next_direction(enum step_direction step) {
   return -current_direction;
 }
 
+static int8_t get_direction_value(enum compass_direction direction) {
+  switch (direction) {
+    case EAST:
+      return directions_values.EAST;
+    case SOUTH:
+      return directions_values.SOUTH;
+    case WEST:
+      return directions_values.WEST;
+    case NORTH:
+      return directions_values.NORTH;
+    default:
+      return 0;
+  }
+}
+
 static uint8_t get_next_position(enum step_direction step) {
-  return current_position + get_next_direction(step);
+  return current_position + get_direction_value(get_next_direction(step));
 }
 
 static void update_position(enum step_direction step) {
@@ -118,28 +147,28 @@ static void set_wall(uint8_t wall_bit) {
     maze[current_position] |= wall_bit;
     switch (wall_bit) {
       case EAST_BIT:
-        if (current_position % MAZE_COLUMNS == MAZE_COLUMNS - 1) {
+        if (current_position % maze_get_columns() == maze_get_columns() - 1) {
           break;
         }
-        maze[current_position + EAST] |= WEST_BIT;
+        maze[current_position + get_direction_value(EAST)] |= WEST_BIT;
         break;
       case SOUTH_BIT:
-        if (current_position / MAZE_COLUMNS == 0) {
+        if (current_position / maze_get_columns() == 0) {
           break;
         }
-        maze[current_position + SOUTH] |= NORTH_BIT;
+        maze[current_position + get_direction_value(SOUTH)] |= NORTH_BIT;
         break;
       case WEST_BIT:
-        if (current_position % MAZE_COLUMNS == 0) {
+        if (current_position % maze_get_columns() == 0) {
           break;
         }
-        maze[current_position + WEST] |= EAST_BIT;
+        maze[current_position + get_direction_value(WEST)] |= EAST_BIT;
         break;
       case NORTH_BIT:
-        if (current_position / MAZE_COLUMNS == MAZE_ROWS - 1) {
+        if (current_position / maze_get_columns() == maze_get_rows() - 1) {
           break;
         }
-        maze[current_position + NORTH] |= SOUTH_BIT;
+        maze[current_position + get_direction_value(NORTH)] |= SOUTH_BIT;
         break;
     }
   }
@@ -256,21 +285,21 @@ static void update_floodfill(void) {
   while (cells_queue.head != cells_queue.tail) {
     uint8_t current_cell = queue_pop();
     uint8_t next_distance = floodfill[current_cell] + 1;
-    if (!wall_exists(current_cell, EAST_BIT) && floodfill[current_cell + EAST] > next_distance) {
-      floodfill[current_cell + EAST] = next_distance;
-      queue_push(current_cell + EAST);
+    if (!wall_exists(current_cell, EAST_BIT) && floodfill[current_cell + get_direction_value(EAST)] > next_distance) {
+      floodfill[current_cell + get_direction_value(EAST)] = next_distance;
+      queue_push(current_cell + get_direction_value(EAST));
     }
-    if (!wall_exists(current_cell, SOUTH_BIT) && floodfill[current_cell + SOUTH] > next_distance) {
-      floodfill[current_cell + SOUTH] = next_distance;
-      queue_push(current_cell + SOUTH);
+    if (!wall_exists(current_cell, SOUTH_BIT) && floodfill[current_cell + get_direction_value(SOUTH)] > next_distance) {
+      floodfill[current_cell + get_direction_value(SOUTH)] = next_distance;
+      queue_push(current_cell + get_direction_value(SOUTH));
     }
-    if (!wall_exists(current_cell, WEST_BIT) && floodfill[current_cell + WEST] > next_distance) {
-      floodfill[current_cell + WEST] = next_distance;
-      queue_push(current_cell + WEST);
+    if (!wall_exists(current_cell, WEST_BIT) && floodfill[current_cell + get_direction_value(WEST)] > next_distance) {
+      floodfill[current_cell + get_direction_value(WEST)] = next_distance;
+      queue_push(current_cell + get_direction_value(WEST));
     }
-    if (!wall_exists(current_cell, NORTH_BIT) && floodfill[current_cell + NORTH] > next_distance) {
-      floodfill[current_cell + NORTH] = next_distance;
-      queue_push(current_cell + NORTH);
+    if (!wall_exists(current_cell, NORTH_BIT) && floodfill[current_cell + get_direction_value(NORTH)] > next_distance) {
+      floodfill[current_cell + get_direction_value(NORTH)] = next_distance;
+      queue_push(current_cell + get_direction_value(NORTH));
     }
   }
 }
@@ -383,11 +412,7 @@ static void build_run_sequence(void) {
 
   set_initial_state();
 
-  clear_goals();
-  add_goal(6, 5);
-  add_goal(6, 4);
-  add_goal(7, 5);
-  add_goal(7, 4);
+  set_goals_from_maze();
   set_goal_as_target();
   update_floodfill();
 
@@ -564,11 +589,11 @@ void floodfill_load_maze(void) {
 void floodfill_maze_print(void) {
   build_run_sequence();
   smooth_run_sequence(menu_run_get_speed());
-  for (int16_t r = MAZE_CELLS - MAZE_COLUMNS; r >= 0; r = r - MAZE_COLUMNS) {
+  for (int16_t r = maze_get_cells() - maze_get_columns(); r >= 0; r = r - maze_get_columns()) {
     // Borde superior del laberinto
-    if (r == MAZE_CELLS - MAZE_COLUMNS) {
+    if (r == maze_get_cells() - maze_get_columns()) {
       printf("·");
-      for (uint16_t i = MAZE_CELLS - MAZE_COLUMNS; i < MAZE_CELLS; i++) {
+      for (uint16_t i = maze_get_cells() - maze_get_columns(); i < maze_get_cells(); i++) {
         if (maze[i] & NORTH_BIT) {
           printf("═══·");
         } else {
@@ -579,8 +604,8 @@ void floodfill_maze_print(void) {
     printf("\n");
 
     // Paredes laterales del laberinto y VISITADO
-    for (int16_t c = r; c < r + MAZE_COLUMNS; c++) {
-      if (maze[c] & WEST_BIT /* || c % MAZE_COLUMNS == 0 */) {
+    for (int16_t c = r; c < r + maze_get_columns(); c++) {
+      if (maze[c] & WEST_BIT /* || c % maze_get_columns() == 0 */) {
         printf("║");
       } else {
         printf(" ");
@@ -592,10 +617,10 @@ void floodfill_maze_print(void) {
         // printf("   ");
         printf("%3d", floodfill[c]);
       }
-      //   if ((c + 1 % MAZE_COLUMNS) == 0) {
+      //   if ((c + 1 % maze_get_columns()) == 0) {
       //     printf("|");
       //   }
-      if (maze[c] & EAST_BIT && ((c + 1) % MAZE_COLUMNS) == 0) {
+      if (maze[c] & EAST_BIT && ((c + 1) % maze_get_columns()) == 0) {
         printf("║");
       }
     }
@@ -604,8 +629,8 @@ void floodfill_maze_print(void) {
 
     // Paredes inferiores del laberinto
     printf("·");
-    for (int16_t c = r; c < r + MAZE_COLUMNS; c++) {
-      if (maze[c] & SOUTH_BIT /* || c / MAZE_COLUMNS == 0 */) {
+    for (int16_t c = r; c < r + maze_get_columns(); c++) {
+      if (maze[c] & SOUTH_BIT /* || c / maze_get_columns() == 0 */) {
         printf("═══·");
       } else {
         printf("   ·");
@@ -614,11 +639,11 @@ void floodfill_maze_print(void) {
   }
   printf("\n");
 
-  for (int16_t r = MAZE_CELLS - MAZE_COLUMNS; r >= 0; r = r - MAZE_COLUMNS) {
+  for (int16_t r = maze_get_cells() - maze_get_columns(); r >= 0; r = r - maze_get_columns()) {
     // Borde superior del laberinto
-    if (r == MAZE_CELLS - MAZE_COLUMNS) {
+    if (r == maze_get_cells() - maze_get_columns()) {
       printf("·");
-      for (uint16_t i = MAZE_CELLS - MAZE_COLUMNS; i < MAZE_CELLS; i++) {
+      for (uint16_t i = maze_get_cells() - maze_get_columns(); i < maze_get_cells(); i++) {
         if (maze[i] & NORTH_BIT) {
           printf("═══·");
         } else {
@@ -629,8 +654,8 @@ void floodfill_maze_print(void) {
     printf("\n");
 
     // Paredes laterales del laberinto y VISITADO
-    for (int16_t c = r; c < r + MAZE_COLUMNS; c++) {
-      if (maze[c] & WEST_BIT /* || c % MAZE_COLUMNS == 0 */) {
+    for (int16_t c = r; c < r + maze_get_columns(); c++) {
+      if (maze[c] & WEST_BIT /* || c % maze_get_columns() == 0 */) {
         printf("║");
       } else {
         printf(" ");
@@ -642,10 +667,10 @@ void floodfill_maze_print(void) {
         printf("   ");
         // printf("%3d", floodfill[c]);
       }
-      //   if ((c + 1 % MAZE_COLUMNS) == 0) {
+      //   if ((c + 1 % maze_get_columns()) == 0) {
       //     printf("|");
       //   }
-      if (maze[c] & EAST_BIT && ((c + 1) % MAZE_COLUMNS) == 0) {
+      if (maze[c] & EAST_BIT && ((c + 1) % maze_get_columns()) == 0) {
         printf("║");
       }
     }
@@ -654,8 +679,8 @@ void floodfill_maze_print(void) {
 
     // Paredes inferiores del laberinto
     printf("·");
-    for (int16_t c = r; c < r + MAZE_COLUMNS; c++) {
-      if (maze[c] & SOUTH_BIT /* || c / MAZE_COLUMNS == 0 */) {
+    for (int16_t c = r; c < r + maze_get_columns(); c++) {
+      if (maze[c] & SOUTH_BIT /* || c / maze_get_columns() == 0 */) {
         printf("═══·");
       } else {
         printf("   ·");
@@ -673,14 +698,12 @@ void floodfill_start_explore(void) {
   race_mode = false;
   clear_info_leds();
   set_RGB_color(0, 0, 0);
+
+  initialize_directions_values();
   initialize_maze();
   set_initial_state();
 
-  clear_goals();
-  add_goal(6, 5);
-  add_goal(6, 4);
-  add_goal(7, 5);
-  add_goal(7, 4);
+  set_goals_from_maze();
   set_goal_as_target();
 
   struct walls walls = get_walls();
@@ -699,6 +722,7 @@ void floodfill_start_run(void) {
   clear_info_leds();
   set_RGB_color(0, 0, 0);
 
+  initialize_directions_values();
   configure_kinematics(menu_run_get_speed());
   build_run_sequence();
   smooth_run_sequence(menu_run_get_speed());

@@ -43,7 +43,6 @@ void eeprom_clear(void) {
 void eeprom_set_data(uint16_t index, uint16_t *data, uint16_t length) {
   for (uint16_t i = index; i < index + length; i++) {
     eeprom_data[i] = data[i - index];
-    printf("eeprom_data[%d] = %d\n", i, eeprom_data[i]);
   }
 }
 

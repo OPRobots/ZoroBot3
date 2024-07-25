@@ -5,6 +5,7 @@
 #include <constants.h>
 #include <usart.h>
 #include <move.h>
+#include <maze.h>
 
 #define VISITED_BIT 1
 #define EAST_BIT 2
@@ -19,6 +20,13 @@ enum compass_direction {
   SOUTH = -MAZE_COLUMNS,
   WEST = -1,
   NORTH = MAZE_COLUMNS,
+};
+
+struct compass_direction_values{
+  int8_t EAST;
+  int8_t SOUTH;
+  int8_t WEST;
+  int8_t NORTH;
 };
 
 enum step_direction {
