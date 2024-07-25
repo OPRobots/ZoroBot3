@@ -1,6 +1,5 @@
 #include "move.h"
 
-
 static char *movement_string[] = {
     "MOVE_NONE",
     "MOVE_HOME",
@@ -335,23 +334,26 @@ static void move_side(enum movement movement) {
   set_side_sensors_far_correction(false);
 
   int32_t end_distance_offset = 0;
-  // struct walls walls = get_walls();
-  // if (kinematics.turns[movement].sign > 0) {
-  //   if (walls.left) {
-  //     end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID);
-  //   }
-  // } else {
-  //   if (walls.right) {
-  //     end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID);
-  //   }
-  // }
+  struct walls walls = get_walls();
+  if (kinematics.turns[movement].sign > 0) {
+    if (walls.left) {
+      end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID);
+    }
+  } else {
+    if (walls.right) {
+      end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID);
+    }
+  }
 
   int32_t start_distance_offset = 0;
-  // if (walls.front) {
-  //   start_distance_offset = get_front_wall_distance() - (CELL_DIMENSION - (WALL_WIDTH / 2));
-  // }
+  if (walls.front) {
+    start_distance_offset = get_front_wall_distance() - (CELL_DIMENSION - (WALL_WIDTH / 2));
+  }
 
   if (kinematics.turns[movement].start > 0) {
+    if (abs(start_distance_offset) > kinematics.turns[movement].start / 2) {
+      start_distance_offset = start_distance_offset > 0 ? kinematics.turns[movement].start / 2 : -kinematics.turns[movement].start / 2;
+    }
     move_straight(kinematics.turns[movement].start - current_cell_start_mm + start_distance_offset, kinematics.turns[movement].linear_speed, false, false);
   }
 
@@ -364,6 +366,9 @@ static void move_side(enum movement movement) {
   set_side_sensors_far_correction(false);
 
   if (kinematics.turns[movement].end > 0) {
+    if (abs(end_distance_offset) > kinematics.turns[movement].end / 2) {
+      end_distance_offset = end_distance_offset > 0 ? kinematics.turns[movement].end / 2 : -kinematics.turns[movement].end / 2;
+    }
     move_straight(kinematics.turns[movement].end + end_distance_offset, kinematics.turns[movement].linear_speed, false, false);
   }
   enter_next_cell();
@@ -510,38 +515,38 @@ void run_straight(int32_t distance, uint16_t cells, bool has_begin, int32_t spee
   int32_t current_distance = get_encoder_avg_micrometers();
   int32_t slow_distance = 0;
 
-  // uint16_t current_cell = 0;
-  // int32_t current_cell_distance_left;
-  // if (has_begin) {
-  //   current_cell_distance_left = CELL_DIMENSION - (ROBOT_BACK_LENGTH + WALL_WIDTH / 2);
-  // } else {
-  //   current_cell_distance_left = CELL_DIMENSION;
-  // }
-  // bool wall_lost = false;
+  uint16_t current_cell = 0;
+  int32_t current_cell_distance_left;
+  if (has_begin) {
+    current_cell_distance_left = CELL_DIMENSION - (ROBOT_BACK_LENGTH + WALL_WIDTH / 2);
+  } else {
+    current_cell_distance_left = CELL_DIMENSION;
+  }
+  bool wall_lost = false;
 
-  // struct walls cell_walls = get_walls();
-  // struct walls current_walls;
+  struct walls cell_walls = get_walls();
+  struct walls current_walls;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + (distance - slow_distance) * MICROMETERS_PER_MILLIMETER) {
-    // current_walls = get_walls();
+    current_walls = get_walls();
 
-    // if (!wall_lost && ((cell_walls.left && !current_walls.left) || (cell_walls.right && !current_walls.right))) {
-    //   current_distance = get_encoder_avg_micrometers();
-    //   distance = 73 + CELL_DIMENSION * (cells - current_cell - 1);
-    //   current_cell_distance_left = 73;
-    //   set_RGB_color_while(0, 255, 0, 150);
-    //   wall_lost = true;
-    // }
-    // if (get_encoder_avg_micrometers() - current_distance >= (current_cell_distance_left * MICROMETERS_PER_MILLIMETER) && cells > current_cell + 1) {
-    //   current_distance = get_encoder_avg_micrometers();
-    //   distance = CELL_DIMENSION * (cells - current_cell - 1);
-    //   current_cell++;
-    //   current_cell_distance_left = CELL_DIMENSION;
-    //   cell_walls = current_walls;
-    //   set_RGB_color_while(0, 0, 255, 150);
-    //   wall_lost = false;
-    // }
+    if (!wall_lost && ((cell_walls.left && !current_walls.left) || (cell_walls.right && !current_walls.right))) {
+      current_distance = get_encoder_avg_micrometers();
+      distance = 73 + CELL_DIMENSION * (cells - current_cell - 1);
+      current_cell_distance_left = 73;
+      set_RGB_color_while(0, 255, 0, 150);
+      wall_lost = true;
+    }
+    if (get_encoder_avg_micrometers() - current_distance >= (current_cell_distance_left * MICROMETERS_PER_MILLIMETER) && cells > current_cell + 1) {
+      current_distance = get_encoder_avg_micrometers();
+      distance = CELL_DIMENSION * (cells - current_cell - 1);
+      current_cell++;
+      current_cell_distance_left = CELL_DIMENSION;
+      cell_walls = current_walls;
+      set_RGB_color_while(0, 0, 255, 150);
+      wall_lost = false;
+    }
 
     if (final_speed != speed) {
       slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed);
@@ -675,6 +680,7 @@ void move_run_sequence(char *sequence, enum movement *sequence_movements) {
       case MOVE_START:
         distance += CELL_DIMENSION - (ROBOT_BACK_LENGTH + WALL_WIDTH / 2);
         straight_cells++;
+        straight_has_begin = true;
         break;
       case MOVE_FRONT:
         distance += CELL_DIMENSION;
