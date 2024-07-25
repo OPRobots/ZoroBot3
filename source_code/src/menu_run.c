@@ -132,8 +132,8 @@ void menu_run_load_values(void) {
   uint16_t *data = eeprom_get_data();
   for (uint16_t i = DATA_INDEX_MENU_RUN; i < (DATA_INDEX_MENU_RUN + MENU_RUN_NUM_MODES); i++) {
     valueRun[i - DATA_INDEX_MENU_RUN] = data[i];
-    printf("valueRun[%d] = %d\n", i - DATA_INDEX_MENU_RUN, valueRun[i - DATA_INDEX_MENU_RUN]);
   }
+  valueRun[MODE_RACE] = 0;
 }
 
 bool menu_run_can_start(void) {
