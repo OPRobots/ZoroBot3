@@ -6,7 +6,7 @@ static uint32_t millis_save = 0;
 void eeprom_save(void) {
   uint32_t addr = EEPROM_BASE_ADDRESS;
   millis_save = get_clock_ticks();
-  while(get_clock_ticks() - millis_save < 500){
+  while(get_clock_ticks() - millis_save < 200){
     warning_status_led(50);
   }
   set_status_led(true);
@@ -31,6 +31,7 @@ void eeprom_load(void) {
   mpu_load_eeprom();
   sensors_load_eeprom();
   floodfill_load_maze();
+  menu_run_load_values();
 }
 
 void eeprom_clear(void) {
@@ -42,6 +43,7 @@ void eeprom_clear(void) {
 void eeprom_set_data(uint16_t index, uint16_t *data, uint16_t length) {
   for (uint16_t i = index; i < index + length; i++) {
     eeprom_data[i] = data[i - index];
+    printf("eeprom_data[%d] = %d\n", i, eeprom_data[i]);
   }
 }
 

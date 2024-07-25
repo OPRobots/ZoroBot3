@@ -123,14 +123,16 @@ int8_t check_start_run(void) {
   }
 
   if (sensor_front_left_start_ms >= SENSOR_START_MIN_MS || sensor_front_right_start_ms >= SENSOR_START_MIN_MS) {
-    // TODO: save menu eeprom
     set_RGB_color(0, 50, 0);
+    eeprom_set_data(DATA_INDEX_MENU_RUN, get_menu_run_values(), MENU_RUN_NUM_MODES);
+    eeprom_save();
     delay(1000);
     set_RGB_color(0, 0, 0);
-    set_race_started(true);
+    // set_race_started(true);
     uint8_t sensor = sensor_front_left_start_ms >= SENSOR_START_MIN_MS ? SENSOR_FRONT_LEFT_WALL_ID : SENSOR_FRONT_RIGHT_WALL_ID;
     sensor_front_left_start_ms = 0;
     sensor_front_right_start_ms = 0;
+    menu_run_reset();
     return sensor;
   }
   return -1;

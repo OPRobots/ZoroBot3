@@ -5,6 +5,8 @@
 #include <delay.h>
 #include <leds.h>
 
+#define MENU_RUN_NUM_MODES 4
+
 #define MODE_STRATEGY_HANDWALL 0
 #define MODE_STRATEGY_FLOODFILL 1
 
@@ -23,7 +25,10 @@ enum maze_type {
 bool menu_run_handler(void);
 void menu_run_reset(void);
 
+void menu_run_load_values(void);
+
 bool menu_run_can_start(void);
+uint16_t *get_menu_run_values(void);
 enum speed_strategy menu_run_get_speed(void);
 enum maze_type menu_run_get_maze_type(void);
 uint8_t menu_run_get_strategy(void);

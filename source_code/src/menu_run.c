@@ -6,14 +6,12 @@
 #define MODE_STRATEGY 3
 uint8_t modeRun = MODE_SPEED;
 
-#define NUM_MODES 4
-
 #define MODE_SPEED_VALUES 4
 #define MODE_RACE_VALUES 2
 #define MODE_MAZE_TYPE_VALUES 2
 #define MODE_STRATEGY_VALUES 2
 
-int8_t valueRun[NUM_MODES] = {0, 0, 0, 1};
+uint16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 1};
 
 uint32_t lastBlinkMs = 0;
 bool blinkState = false;
@@ -117,7 +115,7 @@ bool menu_run_handler(void) {
     if (get_clock_ticks() - ms >= 200) {
       return true;
     } else {
-      modeRun = (modeRun + 1) % NUM_MODES;
+      modeRun = (modeRun + 1) % MENU_RUN_NUM_MODES;
     }
   }
   handle_menu_run_btn();
@@ -130,8 +128,20 @@ void menu_run_reset(void) {
   valueRun[MODE_RACE] = 0;
 }
 
+void menu_run_load_values(void) {
+  uint16_t *data = eeprom_get_data();
+  for (uint16_t i = DATA_INDEX_MENU_RUN; i < (DATA_INDEX_MENU_RUN + MENU_RUN_NUM_MODES); i++) {
+    valueRun[i - DATA_INDEX_MENU_RUN] = data[i];
+    printf("valueRun[%d] = %d\n", i - DATA_INDEX_MENU_RUN, valueRun[i - DATA_INDEX_MENU_RUN]);
+  }
+}
+
 bool menu_run_can_start(void) {
   return modeRun == MODE_RACE && valueRun[MODE_RACE] > 0;
+}
+
+uint16_t *get_menu_run_values(void) {
+  return valueRun;
 }
 
 enum speed_strategy menu_run_get_speed(void) {
