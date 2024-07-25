@@ -234,6 +234,7 @@ void front_sensors_calibration(void) {
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
 
+  configure_kinematics(SPEED_EXPLORE);
   set_race_started(true);
   move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_FRONT_LENGTH, -100, false, true);
   delay(1000);
