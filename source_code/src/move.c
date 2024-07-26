@@ -12,6 +12,7 @@ static char *movement_string[] = {
     "MOVE_RIGHT_90",
     "MOVE_LEFT_180",
     "MOVE_RIGHT_180",
+    "MOVE_DIAGONAL",
     "MOVE_LEFT_TO_45",
     "MOVE_RIGHT_TO_45",
     "MOVE_LEFT_TO_135",

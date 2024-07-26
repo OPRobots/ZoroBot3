@@ -455,13 +455,17 @@ static void build_run_sequence(void) {
 }
 
 static void smooth_run_sequence(enum speed_strategy speed) {
-  enum movement turn_movement;
 
   uint16_t index = 0;
   while (index < MAZE_CELLS + 3) {
     run_sequence_movements[index++] = MOVE_NONE;
   }
   index = 0;
+
+  enum movement turn_movement;
+  bool run_diagonal = false;
+  char next_step_1;
+  char next_step_2;
   switch (speed) {
     case SPEED_EXPLORE:
       for (uint8_t i = 0; i < strlen(run_sequence); i++) {
@@ -486,7 +490,6 @@ static void smooth_run_sequence(enum speed_strategy speed) {
       break;
     case SPEED_NORMAL:
     case SPEED_FAST:
-    case SPEED_DIAGONALS:
       for (uint8_t i = 0; i < strlen(run_sequence); i++) {
         switch (run_sequence[i]) {
           case 'B':
@@ -512,6 +515,85 @@ static void smooth_run_sequence(enum speed_strategy speed) {
               turn_movement = MOVE_RIGHT_90;
             }
             run_sequence_movements[index++] = turn_movement;
+            break;
+          case 'S':
+            run_sequence_movements[index++] = MOVE_HOME;
+            break;
+        }
+      }
+      break;
+    case SPEED_DIAGONALS:
+      for (uint8_t i = 0; i < strlen(run_sequence); i++) {
+        switch (run_sequence[i]) {
+          case 'B':
+            run_sequence_movements[index++] = MOVE_START;
+            break;
+          case 'F':
+            run_sequence_movements[index++] = MOVE_FRONT;
+            break;
+          case 'L':
+            next_step_1 = run_sequence[i + 1];
+            next_step_2 = run_sequence[i + 2];
+            if (!run_diagonal) {
+              if (next_step_1 == 'F') {
+                run_sequence_movements[index++] = MOVE_LEFT_90;
+              } else if (next_step_1 == 'R') {
+                run_sequence_movements[index++] = MOVE_LEFT_TO_45;
+                run_diagonal = true;
+              } else if (next_step_1 == 'L' && next_step_2 == 'F') {
+                run_sequence_movements[index++] = MOVE_LEFT_180;
+              } else if (next_step_1 == 'L' && next_step_2 == 'R') {
+                run_sequence_movements[index++] = MOVE_LEFT_TO_135;
+                run_diagonal = true;
+                i++;
+              }
+            } else {
+              if (next_step_1 == 'R') {
+                run_sequence_movements[index++] = MOVE_DIAGONAL;
+              } else if (next_step_1 == 'F') {
+                run_sequence_movements[index++] = MOVE_LEFT_FROM_45;
+                run_diagonal = false;
+              } else if (next_step_1 == 'L' && next_step_2 == 'R') {
+                run_sequence_movements[index++] = MOVE_LEFT_45_TO_45;
+                i += 2;
+              } else if (next_step_1 == 'L' && next_step_2 == 'F') {
+                run_sequence_movements[index++] = MOVE_LEFT_FROM_45_180;
+                i++;
+                run_diagonal = false;
+              }
+            }
+            break;
+          case 'R':
+            next_step_1 = run_sequence[i + 1];
+            next_step_2 = run_sequence[i + 2];
+            if (!run_diagonal) {
+              if (next_step_1 == 'F') {
+                run_sequence_movements[index++] = MOVE_RIGHT_90;
+              } else if (next_step_1 == 'L') {
+                run_sequence_movements[index++] = MOVE_RIGHT_TO_45;
+                run_diagonal = true;
+              } else if (next_step_1 == 'R' && next_step_2 == 'F') {
+                run_sequence_movements[index++] = MOVE_RIGHT_180;
+              } else if (next_step_1 == 'R' && next_step_2 == 'L') {
+                run_sequence_movements[index++] = MOVE_RIGHT_TO_135;
+                run_diagonal = true;
+                i++;
+              }
+            } else {
+              if (next_step_1 == 'L') {
+                run_sequence_movements[index++] = MOVE_DIAGONAL;
+              } else if (next_step_1 == 'F') {
+                run_sequence_movements[index++] = MOVE_RIGHT_FROM_45;
+                run_diagonal = false;
+              } else if (next_step_1 == 'R' && next_step_2 == 'L') {
+                run_sequence_movements[index++] = MOVE_RIGHT_45_TO_45;
+                i += 2;
+              } else if (next_step_1 == 'R' && next_step_2 == 'F') {
+                run_sequence_movements[index++] = MOVE_RIGHT_FROM_45_180;
+                i++;
+                run_diagonal = false;
+              }
+            }
             break;
           case 'S':
             run_sequence_movements[index++] = MOVE_HOME;
