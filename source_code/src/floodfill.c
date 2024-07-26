@@ -587,6 +587,7 @@ void floodfill_load_maze(void) {
 }
 
 void floodfill_maze_print(void) {
+  initialize_directions_values();
   build_run_sequence();
   smooth_run_sequence(menu_run_get_speed());
   for (int16_t r = maze_get_cells() - maze_get_columns(); r >= 0; r = r - maze_get_columns()) {
