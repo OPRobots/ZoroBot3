@@ -231,6 +231,7 @@ void front_sensors_calibration(void) {
   bool done_right;
 
   set_front_sensors_correction(false);
+  set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
 

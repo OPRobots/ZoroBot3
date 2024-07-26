@@ -56,6 +56,15 @@ int main(void) {
                   floodfill_start_explore();
                   break;
               }
+              // configure_kinematics(SPEED_DIAGONALS);
+              // move_straight(CELL_DIMENSION - (ROBOT_BACK_LENGTH + WALL_WIDTH / 2)-50, 860, false, false);
+              // move(MOVE_LEFT_TO_45);
+              // set_front_sensors_diagonal_correction(true);
+              // move_straight(CELL_DIAGONAL * 5, 1500, false, false);
+              // move(MOVE_LEFT_TO_135);
+              // set_target_linear_speed(0);
+              // delay(2000);
+              // set_race_started(false);
               break;
             default:
               set_race_started(false);

@@ -143,6 +143,7 @@ void set_side_sensors_close_correction(bool enabled) {
     side_sensors_error = 0;
     last_side_sensors_error = 0;
     sum_side_sensors_error = 0;
+    sum_front_sensors_diagonal_error = 0;
   }
   side_sensors_close_correction_enabled = enabled;
 }
@@ -152,6 +153,7 @@ void set_side_sensors_far_correction(bool enabled) {
     side_sensors_error = 0;
     last_side_sensors_error = 0;
     sum_side_sensors_error = 0;
+    sum_front_sensors_diagonal_error = 0;
   }
   side_sensors_far_correction_enabled = enabled;
 }
@@ -161,6 +163,7 @@ void set_front_sensors_correction(bool enabled) {
     front_sensors_error = 0;
     last_front_sensors_error = 0;
     sum_front_sensors_error = 0;
+    sum_front_sensors_diagonal_error = 0;
   }
   front_sensors_correction_enabled = enabled;
 }
@@ -169,16 +172,16 @@ void set_front_sensors_diagonal_correction(bool enabled) {
   if (!front_sensors_diagonal_correction_enabled && enabled) {
     front_sensors_diagonal_error = 0;
     last_front_sensors_diagonal_error = 0;
-    sum_front_sensors_diagonal_error = 0;
+    // sum_front_sensors_diagonal_error = 0;
   }
   front_sensors_diagonal_correction_enabled = enabled;
 }
 
 void disable_sensors_correction(void) {
-  set_side_sensors_close_correction(false);
-  set_side_sensors_far_correction(false);
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
+  set_side_sensors_close_correction(false);
+  set_side_sensors_far_correction(false);
 }
 
 void reset_angular_control(void) {
@@ -312,7 +315,7 @@ void control_loop(void) {
     sum_front_sensors_diagonal_error += front_sensors_diagonal_error;
   } else {
     front_sensors_diagonal_error = 0;
-    sum_front_sensors_diagonal_error = 0;
+    // sum_front_sensors_diagonal_error = 0;
     last_front_sensors_diagonal_error = 0;
   }
 
@@ -323,7 +326,7 @@ void control_loop(void) {
       KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
       KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
       KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error + KD_FRONT_SENSORS * (front_sensors_error - last_front_sensors_error) +
-      KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KP_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error + KP_FRONT_DIAGONAL_SENSORS * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
+      KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KI_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error + KD_FRONT_DIAGONAL_SENSORS * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
 
   // if (get_ideal_linear_speed() > 0) {
   //   angular_voltage *= get_ideal_linear_speed() / 500.0f; // TODO: definear 500 as explore speed
