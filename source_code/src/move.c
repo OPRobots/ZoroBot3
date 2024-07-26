@@ -12,6 +12,16 @@ static char *movement_string[] = {
     "MOVE_RIGHT_90",
     "MOVE_LEFT_180",
     "MOVE_RIGHT_180",
+    "MOVE_LEFT_TO_45",
+    "MOVE_RIGHT_TO_45",
+    "MOVE_LEFT_TO_135",
+    "MOVE_RIGHT_TO_135",
+    "MOVE_LEFT_45_TO_45",
+    "MOVE_RIGHT_45_TO_45",
+    "MOVE_LEFT_FROM_45",
+    "MOVE_RIGHT_FROM_45",
+    "MOVE_LEFT_FROM_45_180",
+    "MOVE_RIGHT_FROM_45_180",
     "MOVE_BACK",
     "MOVE_BACK_WALL",
 };
@@ -204,6 +214,106 @@ static struct turn_params turns_diagonals[] = {
         .max_angular_speed = 9.625,
         .t_accel = 16,
         .t_max = 311,
+        .sign = 1,
+    },
+    [MOVE_LEFT_TO_45] = {
+        .start = -50,
+        .end = 77.28,
+        .linear_speed = 860,
+        .angular_accel = 612.5,
+        .max_angular_speed = 7.91,
+        .t_accel = 13,
+        .t_max = 87,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_TO_45] = {
+        .start = -50,
+        .end = 77.28,
+        .linear_speed = 860,
+        .angular_accel = 612.5,
+        .max_angular_speed = 7.91,
+        .t_accel = 13,
+        .t_max = 87,
+        .sign = 1,
+    },
+    [MOVE_LEFT_TO_135] = {
+        .start = 0,
+        .end = 74.56,
+        .linear_speed = 860,
+        .angular_accel = 612.5,
+        .max_angular_speed = 12.0225,
+        .t_accel = 7,
+        .t_max = 178,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_TO_135] = {
+        .start = 0,
+        .end = 74.56,
+        .linear_speed = 860,
+        .angular_accel = 612.5,
+        .max_angular_speed = 12.0225,
+        .t_accel = 20,
+        .t_max = 177,
+        .sign = 1,
+    },
+    [MOVE_LEFT_45_TO_45] = {
+        .start = 63.64,
+        .end = 63.64,
+        .linear_speed = 860,
+        .angular_accel = 612.5,
+        .max_angular_speed = 16.625,
+        .t_accel = 7,
+        .t_max = 178,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_45_TO_45] = {
+        .start = 63.64,
+        .end = 63.64,
+        .linear_speed = 860,
+        .angular_accel = 612.5,
+        .max_angular_speed = 16.625,
+        .t_accel = 27,
+        .t_max = 68,
+        .sign = 1,
+    },
+    [MOVE_LEFT_FROM_45] = {
+        .start = 77.28,
+        .end = -50,
+        .linear_speed = 860,
+        .angular_accel = 612.5,
+        .max_angular_speed = 7.91,
+        .t_accel = 13,
+        .t_max = 87,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_FROM_45] = {
+        .start = 77.28,
+        .end = -50,
+        .linear_speed = 860,
+        .angular_accel = 612.5,
+        .max_angular_speed = 7.91,
+        .t_accel = 13,
+        .t_max = 87,
+        .sign = 1,
+    },
+    [MOVE_LEFT_FROM_45_180] = {
+        .start = 74.56,
+        .end = 0,
+        .linear_speed = 860,
+        .angular_accel = 612.5,
+        .max_angular_speed = 12.0225,
+        .t_accel = 7,
+        .t_max = 178,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_FROM_45_180] = {
+        .start = 74.56,
+        .end = 0,
+        .linear_speed = 860,
+        .angular_accel = 612.5,
+        .max_angular_speed = 12.0225,
+        .t_accel = 7,
+        .t_max = 178,
         .sign = 1,
     },
     [MOVE_BACK] = {
@@ -657,6 +767,16 @@ void move(enum movement movement) {
     case MOVE_RIGHT_90:
     case MOVE_LEFT_180:
     case MOVE_RIGHT_180:
+    case MOVE_LEFT_TO_45:
+    case MOVE_RIGHT_TO_45:
+    case MOVE_LEFT_TO_135:
+    case MOVE_RIGHT_TO_135:
+    case MOVE_LEFT_45_TO_45:
+    case MOVE_RIGHT_45_TO_45:
+    case MOVE_LEFT_FROM_45:
+    case MOVE_RIGHT_FROM_45:
+    case MOVE_LEFT_FROM_45_180:
+    case MOVE_RIGHT_FROM_45_180:
       set_control_debug(true);
       move_side(movement);
       set_control_debug(false);
