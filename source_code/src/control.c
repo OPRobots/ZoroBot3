@@ -313,6 +313,11 @@ void control_loop(void) {
     last_front_sensors_diagonal_error = front_sensors_diagonal_error;
     front_sensors_diagonal_error = get_front_sensors_diagonal_error();
     sum_front_sensors_diagonal_error += front_sensors_diagonal_error;
+    if(front_sensors_diagonal_error != 0){
+      set_RGB_color(255,0,0);
+    }else{
+      set_RGB_color(0,255,0);
+    }
   } else {
     front_sensors_diagonal_error = 0;
     // sum_front_sensors_diagonal_error = 0;
@@ -366,19 +371,20 @@ void control_loop(void) {
   // );
 
   // Corrección angular en diagonales
-  macroarray_store(
-      1,
-      0b000111001,
-      9,
-      (int16_t)target_linear_speed,
-      (int16_t)ideal_linear_speed,
-      (int16_t)(get_measured_linear_speed()),
-      (int16_t)(front_sensors_diagonal_error * 100.0),
-      (int16_t)(angular_error * 100),
-      (int16_t)(angular_voltage * 100),
-      (int16_t)pwm_left,
-      (int16_t)pwm_right,
-      (int16_t)(get_battery_voltage() * 100.0));
+  if (front_sensors_diagonal_correction_enabled) {
+    macroarray_store(
+        1,
+        0b00,
+        2,
+        // (int16_t)target_linear_speed,
+        // (int16_t)ideal_linear_speed,
+        // (int16_t)(get_measured_linear_speed()),
+        (int16_t)(get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)),
+        (int16_t)(get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))
+        // (int16_t)(angular_error * 100),
+        // (int16_t)(angular_voltage * 100)
+    );
+  }
 
   // Corrección lateral en rectas
   // macroarray_store(

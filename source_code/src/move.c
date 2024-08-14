@@ -437,7 +437,7 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_explore,
     },
     [SPEED_NORMAL] = {
-        .linear_speed = 500,
+        .linear_speed = 900,
         .linear_accel = 3000,
         .turns = turns_normal,
     },
@@ -789,7 +789,7 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
   set_target_linear_speed(speed);
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + (distance - slow_distance) * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER * 2) {
+    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER * 1) {
       set_front_sensors_diagonal_correction(false);
       set_RGB_color_while(50, 0, 50, 150);
     }
@@ -801,7 +801,7 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
   set_target_linear_speed(final_speed);
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    if (remaining_distance < CELL_DIAGONAL * 2) {
+    if (remaining_distance < CELL_DIAGONAL * 1) {
       set_front_sensors_diagonal_correction(false);
       set_RGB_color_while(50, 0, 50, 150);
     }
