@@ -1,7 +1,7 @@
 #include <maze.h>
 
-#define MAZE_ROWS_HOME 5
-#define MAZE_COLUMNS_HOME 7
+#define MAZE_ROWS_HOME 6
+#define MAZE_COLUMNS_HOME 6
 
 #define MAZE_ROWS_COMPETITION 16
 #define MAZE_COLUMNS_COMPETITION 16
@@ -44,10 +44,10 @@ struct cells_stack *maze_get_goals(void) {
   goals.size = 0;
   switch (menu_run_get_maze_type()) {
     case MAZE_HOME:
+      add_goal(6, 6);
       add_goal(6, 5);
-      add_goal(6, 4);
-      add_goal(7, 5);
-      add_goal(7, 4);
+      add_goal(5, 6);
+      add_goal(5, 5);
       break;
     case MAZE_COMPETITION:
       add_goal(8, 8);
