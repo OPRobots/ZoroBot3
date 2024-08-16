@@ -4,8 +4,8 @@
 #include <buttons.h>
 #include <stdio.h>
 
-// #define ZOROBOT3_A 1
-#define ZOROBOT3_B 2
+#define ZOROBOT3_A 1
+// #define ZOROBOT3_B 2
 
 /** Laberinto */
 #define CELL_DIMENSION 180
@@ -16,7 +16,7 @@
 
 /** Características Físicas */
 #ifdef ZOROBOT3_A
-#define MICROMETERS_PER_TICK 9.4967
+#define MICROMETERS_PER_TICK 9.1901
 #endif
 #ifdef ZOROBOT3_B
 #define MICROMETERS_PER_TICK 9.1901
