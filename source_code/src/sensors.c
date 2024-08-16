@@ -24,7 +24,67 @@ uint16_t sensors_distance_intercept[NUM_SENSORES] = {SENSOR_FRONT_LEFT_WALL_INTE
                                                      SENSOR_FRONT_RIGHT_WALL_INTERCEPT,
                                                      SENSOR_SIDE_LEFT_WALL_INTERCEPT,
                                                      SENSOR_SIDE_RIGHT_WALL_INTERCEPT};
+#ifdef ZOROBOT3_A
+struct front_sensors_distance_calibration front_sensors_distance_calibrations[] = {
+    [SENSOR_FRONT_LEFT_WALL_ID] = {
+        .close_offset = 0,
+        .close_slope = -0.0346,
+        .close_intercept = 284,
+        .close_low_raw = 665,
+        .close_high_raw = 1553,
 
+        .far_offset = 0,
+        .far_slope = -0.082,
+        .far_intercept = 558,
+        .far_low_raw = 121,
+        .far_high_raw = 214,
+
+        .offset = 0,
+        .slope = -0.0545,
+        .intercept = 422,
+        .low_raw = -1,
+        .high_raw = -1,
+    },
+    [SENSOR_FRONT_RIGHT_WALL_ID] = {
+        .close_offset = 0,
+        .close_slope = -0.0378,
+        .close_intercept = 305,
+        .close_low_raw = 722,
+        .close_high_raw = 1501,
+
+        .far_offset = 0,
+        .far_slope = -0.0806,
+        .far_intercept = 544,
+        .far_low_raw = 96,
+        .far_high_raw = 215,
+
+        .offset = 0,
+        .slope = -0.0539,
+        .intercept = 414,
+        .low_raw = -1,
+        .high_raw = -1,
+    },
+};
+
+struct side_sensors_distance_calibration side_sensors_distance_calibrations[] = {
+    [SENSOR_SIDE_LEFT_WALL_ID] = {
+        .offset = 0,
+        .slope = -0.0492,
+        .intercept = 397,
+        .low_linearized = -1,
+        .high_linearized = -1,
+    },
+    [SENSOR_SIDE_RIGHT_WALL_ID] = {
+        .offset = 0,
+        .slope = -0.0486,
+        .intercept = 397,
+        .low_linearized = -1,
+        .high_linearized = -1,
+    },
+};
+#endif
+
+#ifdef ZOROBOT3_B
 struct front_sensors_distance_calibration front_sensors_distance_calibrations[] = {
     [SENSOR_FRONT_LEFT_WALL_ID] = {
         .close_offset = 0,
@@ -82,6 +142,7 @@ struct side_sensors_distance_calibration side_sensors_distance_calibrations[] = 
         .high_linearized = -1,
     },
 };
+#endif
 
 #define LOG_LINEARIZATION_TABLE_STEP 4
 #define LOG_LINEARIZATION_TABLE_SIZE (ADC_RESOLUTION / LOG_LINEARIZATION_TABLE_STEP)
