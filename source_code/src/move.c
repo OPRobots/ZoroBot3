@@ -535,8 +535,14 @@ static void move_home(void) {
 static void move_front(void) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
+  struct walls initial_walls = get_walls();
+  if (initial_walls.left || initial_walls.right) {
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
+  } else {
+    set_side_sensors_close_correction(false);
+    set_side_sensors_far_correction(false);
+  }
   move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
   set_RGB_color_while(255, 0, 0, 150);
   enter_next_cell();
