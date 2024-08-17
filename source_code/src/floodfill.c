@@ -4,7 +4,7 @@ static uint32_t start_ms = 0;
 static uint32_t time_limit = 0;
 
 static uint8_t floodfill[MAZE_CELLS];
-static uint16_t maze[MAZE_CELLS];
+static int16_t maze[MAZE_CELLS];
 
 static enum compass_direction initial_direction = NORTH;
 
@@ -556,7 +556,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 run_diagonal = false;
               } else if (next_step_1 == 'L' && next_step_2 == 'R') {
                 run_sequence_movements[index++] = MOVE_LEFT_45_TO_45;
-                i += 2;
+                i++;
               } else if (next_step_1 == 'L' && next_step_2 == 'F') {
                 run_sequence_movements[index++] = MOVE_LEFT_FROM_45_180;
                 i++;
@@ -588,7 +588,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 run_diagonal = false;
               } else if (next_step_1 == 'R' && next_step_2 == 'L') {
                 run_sequence_movements[index++] = MOVE_RIGHT_45_TO_45;
-                i += 2;
+                i++;
               } else if (next_step_1 == 'R' && next_step_2 == 'F') {
                 run_sequence_movements[index++] = MOVE_RIGHT_FROM_45_180;
                 i++;
