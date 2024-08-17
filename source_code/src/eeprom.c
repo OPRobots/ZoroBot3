@@ -1,6 +1,6 @@
 #include "eeprom.h"
 
-static uint16_t eeprom_data[DATA_LENGTH];
+static int16_t eeprom_data[DATA_LENGTH];
 static uint32_t millis_save = 0;
 
 void eeprom_save(void) {
@@ -24,7 +24,6 @@ void eeprom_load(void) {
   uint32_t addr = EEPROM_BASE_ADDRESS;
   for (uint16_t i = 0; i < DATA_LENGTH; i++) {
     eeprom_data[i] = MMIO32(addr);
-    // printf("eeprom_data[%d] = %d\n", i, eeprom_data[i]);
     addr += 4;
   }
 
@@ -40,12 +39,12 @@ void eeprom_clear(void) {
   flash_lock();
 }
 
-void eeprom_set_data(uint16_t index, uint16_t *data, uint16_t length) {
+void eeprom_set_data(uint16_t index, int16_t *data, uint16_t length) {
   for (uint16_t i = index; i < index + length; i++) {
     eeprom_data[i] = data[i - index];
   }
 }
 
-uint16_t *eeprom_get_data(void){
+int16_t *eeprom_get_data(void){
   return eeprom_data;
 }

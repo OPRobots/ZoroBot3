@@ -157,7 +157,7 @@ void gyro_z_calibration(void) {
   zout_c2 = -(int16_t)(zout_av * MPU_COMPLEMENT_2_FACTOR);
 
   int16_t eeprom_zout_c2;
-  uint16_t *eeprom_stored_data = eeprom_get_data();
+  int16_t *eeprom_stored_data = eeprom_get_data();
   eeprom_zout_c2 = eeprom_stored_data[1];
   if (eeprom_stored_data[0] == 0) {
     eeprom_zout_c2 = -eeprom_zout_c2;
@@ -166,13 +166,13 @@ void gyro_z_calibration(void) {
 
   set_gyro_z_calibration(zout_c2);
 
-  uint16_t eeprom_data[2] = {zout_c2 >= 0 ? 1 : 0, abs(zout_c2)};
+  int16_t eeprom_data[2] = {zout_c2 >= 0 ? 1 : 0, abs(zout_c2)};
   eeprom_set_data(DATA_INDEX_GYRO_Z, eeprom_data, 2);
 }
 
 void mpu_load_eeprom(void) {
   int16_t zout_c2;
-  uint16_t *eeprom_data = eeprom_get_data();
+  int16_t *eeprom_data = eeprom_get_data();
   zout_c2 = eeprom_data[1];
   if (eeprom_data[0] == 0) {
     zout_c2 = -zout_c2;

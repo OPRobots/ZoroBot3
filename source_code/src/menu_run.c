@@ -11,7 +11,7 @@ uint8_t modeRun = MODE_SPEED;
 #define MODE_MAZE_TYPE_VALUES 2
 #define MODE_STRATEGY_VALUES 2
 
-uint16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 1};
+int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 1};
 
 uint32_t lastBlinkMs = 0;
 bool blinkState = false;
@@ -129,7 +129,7 @@ void menu_run_reset(void) {
 }
 
 void menu_run_load_values(void) {
-  uint16_t *data = eeprom_get_data();
+  int16_t *data = eeprom_get_data();
   for (uint16_t i = DATA_INDEX_MENU_RUN; i < (DATA_INDEX_MENU_RUN + MENU_RUN_NUM_MODES); i++) {
     valueRun[i - DATA_INDEX_MENU_RUN] = data[i];
   }
@@ -140,7 +140,7 @@ bool menu_run_can_start(void) {
   return modeRun == MODE_RACE && valueRun[MODE_RACE] > 0;
 }
 
-uint16_t *get_menu_run_values(void) {
+int16_t *get_menu_run_values(void) {
   return valueRun;
 }
 

@@ -161,7 +161,7 @@ const float ln_linearization[LOG_LINEARIZATION_TABLE_SIZE] = {
 volatile uint16_t sensors_filtered[NUM_SENSORES];
 volatile uint16_t sensors_linearized[NUM_SENSORES];
 volatile uint16_t sensors_distance[NUM_SENSORES];
-uint16_t sensors_distance_offset[NUM_SENSORES] = {0, 0, 0, 0};
+int16_t sensors_distance_offset[NUM_SENSORES] = {0, 0, 0, 0};
 
 static volatile int16_t last_front_sensors_angle_error = 0;
 
@@ -296,11 +296,24 @@ void front_sensors_calibration(void) {
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
 
-  configure_kinematics(SPEED_EXPLORE);
-  set_race_started(true);
-  move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_FRONT_LENGTH, -100, false, true);
+  front_sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].close_offset = 0;
+  front_sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].close_offset = 0;
+  front_sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].far_offset = 0;
+  front_sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].far_offset = 0;
+
+  // configure_kinematics(SPEED_EXPLORE);
+  // set_race_started(true);
+  // move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_FRONT_LENGTH, -100, false, true);
+  // delay(1000);
+  // set_race_started(false);
+
+  while (!get_menu_mode_btn()) {
+    blink_RGB_color(50, 0, 50, 200);
+    while (get_menu_mode_btn()) {
+      blink_RGB_color(50, 0, 50, 200);
+    }
+  }
   delay(1000);
-  set_race_started(false);
 
   done_left = false;
   done_right = false;
@@ -345,10 +358,17 @@ void front_sensors_calibration(void) {
   set_info_led(7, !done_right);
   set_RGB_color(0, 0, 0);
 
-  set_race_started(true);
-  move_straight(CELL_DIMENSION / 2, -100, false, true);
+  // set_race_started(true);
+  // move_straight(CELL_DIMENSION / 2, -100, false, true);
+  // delay(1000);
+  // set_race_started(false);
+  while (!get_menu_mode_btn()) {
+    blink_RGB_color(50, 0, 50, 200);
+    while (get_menu_mode_btn()) {
+      blink_RGB_color(50, 0, 50, 200);
+    }
+  }
   delay(1000);
-  set_race_started(false);
 
   done_left = false;
   done_right = false;
@@ -397,7 +417,7 @@ void front_sensors_calibration(void) {
   set_info_led(7, !done_right);
   set_RGB_color(0, 0, 0);
 
-  uint16_t eeprom_data[4] = {
+  int16_t eeprom_data[4] = {
       front_sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].close_offset,
       front_sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].far_offset,
       front_sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].close_offset,
@@ -407,8 +427,10 @@ void front_sensors_calibration(void) {
 }
 
 void side_sensors_calibration(void) {
-  uint32_t right_temp = 0;
-  uint32_t left_temp = 0;
+  int32_t left_temp = 0;
+  int16_t left_offset = 0;
+  int32_t right_temp = 0;
+  int16_t right_offset = 0;
   int i;
 
   sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] = 0;
@@ -422,18 +444,25 @@ void side_sensors_calibration(void) {
     delay(5);
   }
   set_info_leds();
-  sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] = (left_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
-  sensors_distance_offset[SENSOR_SIDE_RIGHT_WALL_ID] = (right_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE;
+  left_offset = (int16_t)((left_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE);
+  right_offset = (int16_t)((right_temp / SENSOR_SIDE_CALIBRATION_READINGS) - MIDDLE_MAZE_DISTANCE);
+  // printf("l: %d r: %d\n", left_offset, right_offset);
+  sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] = left_offset;
+  sensors_distance_offset[SENSOR_SIDE_RIGHT_WALL_ID] = right_offset;
+
   delay(500);
   clear_info_leds();
   eeprom_set_data(DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset, NUM_SENSORES);
 }
 
 void sensors_load_eeprom(void) {
-  uint16_t *data = eeprom_get_data();
+  int16_t *data = eeprom_get_data();
   if (data != NULL) {
     for (uint8_t i = DATA_INDEX_SENSORS_OFFSETS; i < (DATA_INDEX_SENSORS_OFFSETS + NUM_SENSORES); i++) {
-      sensors_distance_offset[i - DATA_INDEX_SENSORS_OFFSETS] = data[i];
+      if (data[i] != 0) {
+        sensors_distance_offset[i - DATA_INDEX_SENSORS_OFFSETS] = data[i];
+        // printf("sensor %d offset: %d\n", i - DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset[i - DATA_INDEX_SENSORS_OFFSETS]);
+      }
     }
     {
       uint8_t i = DATA_INDEX_FRONT_SENSORS_CALIBRATION;
@@ -454,7 +483,7 @@ bool right_wall_detection(void) {
 }
 
 bool front_wall_detection(void) {
-  return (sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < SENSOR_FRONT_DETECTION) &&
+  return (sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < SENSOR_FRONT_DETECTION) ||
          (sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] < SENSOR_FRONT_DETECTION);
 }
 

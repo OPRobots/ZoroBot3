@@ -663,7 +663,7 @@ static void loop_run(void) {
 }
 
 void floodfill_load_maze(void) {
-  uint16_t *data = eeprom_get_data();
+  int16_t *data = eeprom_get_data();
   for (uint16_t i = DATA_INDEX_MAZE; i < (DATA_INDEX_MAZE + MAZE_CELLS); i++) {
     maze[i - DATA_INDEX_MAZE] = data[i];
   }
