@@ -543,6 +543,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 run_diagonal = true;
               } else if (next_step_1 == 'L' && next_step_2 == 'F') {
                 run_sequence_movements[index++] = MOVE_LEFT_180;
+                i++;
               } else if (next_step_1 == 'L' && next_step_2 == 'R') {
                 run_sequence_movements[index++] = MOVE_LEFT_TO_135;
                 run_diagonal = true;
@@ -575,6 +576,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 run_diagonal = true;
               } else if (next_step_1 == 'R' && next_step_2 == 'F') {
                 run_sequence_movements[index++] = MOVE_RIGHT_180;
+                i++;
               } else if (next_step_1 == 'R' && next_step_2 == 'L') {
                 run_sequence_movements[index++] = MOVE_RIGHT_TO_135;
                 run_diagonal = true;
