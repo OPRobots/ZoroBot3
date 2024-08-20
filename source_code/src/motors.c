@@ -97,7 +97,7 @@ void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
 void set_fan_speed(uint8_t vel) {
   uint32_t ocF = 0;
   if (vel != 0) {
-    ocF = map(abs(vel), 0, 1000, 0, MOTORES_MAX_PWM);
+    ocF = map(abs(vel), 0, 100, 0, MOTORES_MAX_PWM);
   }
   // printf("%ld\n", ocF);
   timer_set_oc_value(TIM8, TIM_OC2, ocF);
