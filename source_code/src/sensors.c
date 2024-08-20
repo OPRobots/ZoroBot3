@@ -296,6 +296,9 @@ void front_sensors_calibration(void) {
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
 
+   sensors_distance_offset[SENSOR_FRONT_LEFT_WALL_ID] = 0;
+   sensors_distance_offset[SENSOR_FRONT_RIGHT_WALL_ID] = 0;
+
   front_sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].close_offset = 0;
   front_sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].close_offset = 0;
   front_sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].far_offset = 0;
@@ -423,7 +426,8 @@ void front_sensors_calibration(void) {
       front_sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].close_offset,
       front_sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].far_offset,
   };
-  eeprom_set_data(DATA_INDEX_FRONT_SENSORS_CALIBRATION, eeprom_data, 4);
+  eeprom_set_data(DATA_INDEX_FRONT_SENSORS_CALIBRATION, eeprom_data, NUM_SENSORES);
+  eeprom_set_data(DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset, NUM_SENSORES);
 }
 
 void side_sensors_calibration(void) {
