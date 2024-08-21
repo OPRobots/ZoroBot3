@@ -29,9 +29,9 @@
 
 /** Movimiento */
 #define MAX_MOTOR_SATURATION_COUNT 20
-#define KP_LINEAR 0.0002
-#define KI_LINEAR 0.0003
-#define KD_LINEAR 0.00
+#define KP_LINEAR 0.00025
+#define KI_LINEAR 0.00
+#define KD_LINEAR 0.003
 
 // #define KP_ANGULAR 0.2
 // #define KI_ANGULAR 0.007

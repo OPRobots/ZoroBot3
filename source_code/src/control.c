@@ -260,18 +260,8 @@ void control_loop(void) {
   float linear_voltage = 0;
   float angular_voltage = 0;
 
-  // TODO: corrección de sensores
-
-  // TODO: corrección de gyro
-
-  linear_error = ideal_linear_speed - get_measured_linear_speed();
-  sum_linear_error += linear_error;
   last_linear_error = linear_error;
-  // if (sum_linear_error > 1000) {
-  //   sum_linear_error = 1000;
-  // } else if (sum_linear_error < -1000) {
-  //   sum_linear_error = -1000;
-  // }
+  linear_error += ideal_linear_speed - get_measured_linear_speed();
 
   // OPR
   // last_angular_error = angular_error;
@@ -313,10 +303,10 @@ void control_loop(void) {
     last_front_sensors_diagonal_error = front_sensors_diagonal_error;
     front_sensors_diagonal_error = get_front_sensors_diagonal_error();
     sum_front_sensors_diagonal_error += front_sensors_diagonal_error;
-    if(front_sensors_diagonal_error != 0){
-      set_RGB_color(255,0,0);
-    }else{
-      set_RGB_color(0,255,0);
+    if (front_sensors_diagonal_error != 0) {
+      set_RGB_color(255, 0, 0);
+    } else {
+      set_RGB_color(0, 255, 0);
     }
   } else {
     front_sensors_diagonal_error = 0;
@@ -324,8 +314,8 @@ void control_loop(void) {
     last_front_sensors_diagonal_error = 0;
   }
 
-  linear_voltage =
-      KP_LINEAR * linear_error + KI_LINEAR * sum_linear_error + KD_LINEAR * (linear_error - last_linear_error);
+  linear_voltage = KP_LINEAR * linear_error + KD_LINEAR * (linear_error - last_linear_error);
+
   angular_voltage =
       // KP_ANGULAR * angular_error /* + KI_ANGULAR * sum_angular_error */ + KD_ANGULAR * (angular_error - last_angular_error) +
       KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
