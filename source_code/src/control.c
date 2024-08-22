@@ -13,11 +13,9 @@ static volatile float ideal_angular_speed = 0.0;
 
 static volatile float linear_error;
 static volatile float last_linear_error;
-static volatile float sum_linear_error;
 
 static volatile float angular_error;
 static volatile float last_angular_error;
-static volatile float sum_angular_error;
 
 static volatile bool side_sensors_close_correction_enabled = false;
 static volatile bool side_sensors_far_correction_enabled = false;
@@ -187,7 +185,6 @@ void disable_sensors_correction(void) {
 void reset_angular_control(void) {
   angular_error = 0;
   last_angular_error = 0;
-  sum_angular_error = 0;
 }
 
 void reset_control(void) {
@@ -196,10 +193,8 @@ void reset_control(void) {
   ideal_angular_speed = 0.0;
   linear_error = 0;
   last_linear_error = 0;
-  sum_linear_error = 0;
   angular_error = 0;
   last_angular_error = 0;
-  sum_angular_error = 0;
   side_sensors_error = 0;
   last_side_sensors_error = 0;
   sum_side_sensors_error = 0;
@@ -263,15 +258,8 @@ void control_loop(void) {
   last_linear_error = linear_error;
   linear_error += ideal_linear_speed - get_measured_linear_speed();
 
-  // OPR
-  // last_angular_error = angular_error;
-  // angular_error = ideal_angular_speed - get_measured_angular_speed();
-  // sum_angular_error += angular_error;
-
-  // BuleBule
   last_angular_error = angular_error;
   angular_error += ideal_angular_speed - get_measured_angular_speed();
-  // sum_angular_error += angular_error;
 
   if (side_sensors_close_correction_enabled || side_sensors_far_correction_enabled) {
     last_side_sensors_error = side_sensors_error;
@@ -317,8 +305,7 @@ void control_loop(void) {
   linear_voltage = KP_LINEAR * linear_error + KD_LINEAR * (linear_error - last_linear_error);
 
   angular_voltage =
-      // KP_ANGULAR * angular_error /* + KI_ANGULAR * sum_angular_error */ + KD_ANGULAR * (angular_error - last_angular_error) +
-      KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
+      KP_ANGULAR * angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
       KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
       KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error + KD_FRONT_SENSORS * (front_sensors_error - last_front_sensors_error) +
       KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KI_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error + KD_FRONT_DIAGONAL_SENSORS * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
