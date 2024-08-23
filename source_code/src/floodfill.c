@@ -784,6 +784,8 @@ void floodfill_start_explore(void) {
   race_mode = false;
   clear_info_leds();
   set_RGB_color(0, 0, 0);
+  set_fan_speed(50);
+  delay(500);
 
   initialize_directions_values();
   initialize_maze();
@@ -807,6 +809,8 @@ void floodfill_start_run(void) {
   race_mode = true;
   clear_info_leds();
   set_RGB_color(0, 0, 0);
+  set_fan_speed(50);
+  delay(500);
 
   initialize_directions_values();
   configure_kinematics(menu_run_get_speed());
