@@ -23,6 +23,8 @@
 void eeprom_save(void);
 void eeprom_load(void);
 void eeprom_clear(void);
+void eeprom_backup(void);
+void eeprom_restore(void);
 void eeprom_set_data(uint16_t index, int16_t *data, uint16_t length);
 int16_t *eeprom_get_data(void);
 
