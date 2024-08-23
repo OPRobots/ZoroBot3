@@ -516,7 +516,7 @@ static bool check_wall_loss_correction(struct walls initial_walls) {
 static void move_home(void) {
   set_front_sensors_correction(true);
   set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(false);
+  set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(false);
 
   move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
@@ -537,8 +537,8 @@ static void move_front(void) {
   set_front_sensors_diagonal_correction(false);
   struct walls initial_walls = get_walls();
   if (initial_walls.left || initial_walls.right) {
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(true);
+    set_side_sensors_close_correction(true);
+    set_side_sensors_far_correction(true);
   } else {
     set_side_sensors_close_correction(false);
     set_side_sensors_far_correction(false);
@@ -551,8 +551,8 @@ static void move_front(void) {
 static void move_side(enum movement movement) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(false);
-  set_side_sensors_far_correction(false);
+  set_side_sensors_close_correction(true);
+  set_side_sensors_far_correction(true);
 
   int32_t end_distance_offset = 0;
   struct walls walls = get_walls();
@@ -584,8 +584,8 @@ static void move_side(enum movement movement) {
 
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(false);
-  set_side_sensors_far_correction(false);
+  set_side_sensors_close_correction(true);
+  set_side_sensors_far_correction(true);
 
   if (kinematics.turns[movement].end > 0) {
     if (abs(end_distance_offset) > kinematics.turns[movement].end / 2) {
@@ -599,8 +599,8 @@ static void move_side(enum movement movement) {
 static void move_back(enum movement movement) {
   set_front_sensors_correction(true);
   set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(false);
-  set_side_sensors_far_correction(false);
+  set_side_sensors_close_correction(true);
+  set_side_sensors_far_correction(true);
 
   if (movement == MOVE_BACK_WALL) {
     move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
@@ -633,7 +633,7 @@ static void move_back(enum movement movement) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(false);
+  set_side_sensors_far_correction(true);
   move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
   enter_next_cell();
 }
@@ -924,9 +924,7 @@ void move(enum movement movement) {
     case MOVE_RIGHT_FROM_45:
     case MOVE_LEFT_FROM_45_180:
     case MOVE_RIGHT_FROM_45_180:
-      set_control_debug(true);
       move_side(movement);
-      set_control_debug(false);
       break;
     case MOVE_BACK:
     case MOVE_BACK_WALL:
