@@ -320,64 +320,51 @@ void control_loop(void) {
   pwm_right = voltage_to_motor_pwm(voltage_right);
   set_motors_pwm(pwm_left, pwm_right);
 
-  // macroarray_store(
-  //     0,
-  //     0b0,
-  //     5,
-  //     get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID),
-  //     ((int32_t)((get_current_cell_travelled_distance() + ROBOT_BACK_LENGTH) / CELL_DIMENSION)) % 2 == 0 ? 1 : 0,
-  //     get_current_cell_travelled_distance(),
-  //     ideal_linear_speed,
-  //     (int16_t)(get_measured_linear_speed()));
-
-  // if (control_debug) {
-  // macroarray_store(
-  //     2,
-  //     0b1101, // 0b0001101001,
-  //     4,
-  //     // target_linear_speed,
-  //     // ideal_linear_speed,
-  //     // (int16_t)(get_measured_linear_speed()),
-  //     (int16_t)(ideal_angular_speed * 100.0),
-  //     (int16_t)(get_measured_angular_speed() * 100.0),
-  //     0,
-  //     (int16_t)(side_sensors_error * 100.0)
-  //     // pwm_left,
-  //     // pwm_right,
-  //     // (int16_t)(get_battery_voltage() * 100.0)
-  // );
+  //  Corrección de la velocidad lineal
+  //   macroarray_store(
+  //       0,
+  //       0b00011001, // 0b0001101001,
+  //       8,
+  //       (int16_t)target_linear_speed,
+  //       (int16_t)ideal_linear_speed,
+  //       (int16_t)(get_measured_linear_speed()),
+  //       (int16_t)(ideal_angular_speed * 100.0),
+  //       (int16_t)(get_measured_angular_speed() * 100.0),
+  //       (int16_t)pwm_left,
+  //       (int16_t)pwm_right,
+  //       (int16_t)(get_battery_voltage() * 100.0));
 
   // Corrección angular en diagonales
-  if (front_sensors_diagonal_correction_enabled) {
-    macroarray_store(
-        1,
-        0b00,
-        2,
-        // (int16_t)target_linear_speed,
-        // (int16_t)ideal_linear_speed,
-        // (int16_t)(get_measured_linear_speed()),
-        (int16_t)(get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)),
-        (int16_t)(get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))
-        // (int16_t)(angular_error * 100),
-        // (int16_t)(angular_voltage * 100)
-    );
-  }
+  // if (front_sensors_diagonal_correction_enabled) {
+  //   macroarray_store(
+  //       1,
+  //       0b00,
+  //       2,
+  //       // (int16_t)target_linear_speed,
+  //       // (int16_t)ideal_linear_speed,
+  //       // (int16_t)(get_measured_linear_speed()),
+  //       (int16_t)(get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)),
+  //       (int16_t)(get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))
+  //       // (int16_t)(angular_error * 100),
+  //       // (int16_t)(angular_voltage * 100)
+  //   );
+  // }
 
   // Corrección lateral en rectas
-  // macroarray_store(
-  //     1,
-  //     0b000111001,
-  //     9,
-  //     (int16_t)target_linear_speed,
-  //     (int16_t)ideal_linear_speed,
-  //     (int16_t)(get_measured_linear_speed()),
-  //     (int16_t)(side_sensors_error * 100.0),
-  //     (int16_t)(angular_error * 100),
-  //     (int16_t)(angular_voltage * 100),
-  //     (int16_t)pwm_left,
-  //     (int16_t)pwm_right,
-  //     (int16_t)(get_battery_voltage() * 100.0)
-  // );
+  macroarray_store(
+      0,
+      0b000111001,
+      9,
+      (int16_t)target_linear_speed,
+      (int16_t)ideal_linear_speed,
+      (int16_t)(get_measured_linear_speed()),
+      (int16_t)(side_sensors_error * 100.0),
+      (int16_t)(angular_error * 100),
+      (int16_t)(angular_voltage * 100),
+      (int16_t)pwm_left,
+      (int16_t)pwm_right,
+      (int16_t)(get_battery_voltage() * 100.0)
+  );
 
   // macroarray_store(
   //     2,
