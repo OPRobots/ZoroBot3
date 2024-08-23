@@ -4,8 +4,8 @@
 #include <buttons.h>
 #include <stdio.h>
 
-#define ZOROBOT3_A 1
-// #define ZOROBOT3_B 2
+// #define ZOROBOT3_A 1
+#define ZOROBOT3_B 2
 
 /** Laberinto */
 #define CELL_DIMENSION 180
@@ -30,20 +30,14 @@
 /** Movimiento */
 #define MAX_MOTOR_SATURATION_COUNT 20
 #define KP_LINEAR 0.00025
-#define KI_LINEAR 0.00
 #define KD_LINEAR 0.003
 
-// #define KP_ANGULAR 0.2
-// #define KI_ANGULAR 0.007
-// #define KD_ANGULAR 0.00
-
-#define KP_ANGULAR 0.0025
-#define KI_ANGULAR 0.0
-#define KD_ANGULAR 0.6
+#define KP_ANGULAR 0.04
+#define KD_ANGULAR 0.3
 
 #define KP_SIDE_SENSORS 0.08
-#define KI_SIDE_SENSORS 0.00
-#define KD_SIDE_SENSORS 0.10
+#define KI_SIDE_SENSORS 0.002
+#define KD_SIDE_SENSORS 0.0
 
 #define KP_FRONT_SENSORS 0.02
 #define KI_FRONT_SENSORS 0.00025
