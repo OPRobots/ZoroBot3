@@ -103,7 +103,7 @@ void set_fan_speed(uint8_t vel) {
   timer_set_oc_value(TIM8, TIM_OC2, ocF);
 }
 
-void clear_motors_saturated(void) {
+void reset_motors_saturated(void) {
   motors_saturated = false;
   motors_saturated_ms = 0;
   left_motor_saturation_count = 0;

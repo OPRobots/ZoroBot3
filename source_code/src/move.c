@@ -522,8 +522,8 @@ static void move_home(void) {
   move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
 
   disable_sensors_correction();
-  reset_angular_control();
   move_inplace_turn(MOVE_BACK);
+  reset_control_errors();
   move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
   set_starting_position();
 }
@@ -579,7 +579,7 @@ static void move_side(enum movement movement) {
   }
 
   disable_sensors_correction();
-  reset_angular_control();
+  // reset_control_errors(); //! Esto se había puesto por un problema en la acumulación de error según aumenta el número de giros realizados
   move_arc_turn(movement);
 
   set_front_sensors_correction(false);
@@ -608,15 +608,10 @@ static void move_back(enum movement movement) {
     move_straight((CELL_DIMENSION / 2) - calc_straight_to_speed_distance(300, 0) - current_cell_start_mm, 300, false, false);
   }
 
-  // delay(1500);
-
   disable_sensors_correction();
-  reset_angular_control();
-  // int8_t sign = (int8_t)(rand() % 2) * 2 - 1;
-  // move_inplace_angle(180 * sign, 10);
   move_inplace_turn(movement);
 
-  // set_side_sensors_close_correction(true);
+  //TODO: intentar corregir con las paredes marcha atras??
 
   if (movement == MOVE_BACK_WALL) {
     move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
@@ -625,10 +620,7 @@ static void move_back(enum movement movement) {
     move_straight(((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2, -100, false, true);
     current_cell_start_mm = ((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2;
   }
-
-  // delay(1500);
-  // set_race_started(false);
-  // return;
+  reset_control_errors(); //? Aquí sí reseteamos al estar en una "posición inicial estática"
 
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
