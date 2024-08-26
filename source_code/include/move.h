@@ -34,20 +34,19 @@ enum movement {
 };
 
 struct turn_params {
-  int16_t start;
-  int16_t end;
-  int16_t linear_speed;
-  float angular_accel;
-  float max_angular_speed;
-  uint16_t t_accel;
-  uint16_t t_max;
+  float start;
+  float end;
+  float radius;
+  int16_t transition;
+  int16_t angle;
   int8_t sign;
 };
 
 struct kinematics {
   int16_t linear_speed;
   int16_t linear_accel;
-  struct turn_params *turns;
+  int16_t turns_linear_speed;
+  struct turn_params *turns_params;
 };
 
 char *get_movement_string(enum movement movement);

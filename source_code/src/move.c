@@ -27,405 +27,150 @@ static char *movement_string[] = {
     "MOVE_BACK_WALL",
 };
 
-static struct turn_params turns_explore[] = {
+static struct turn_params turns_params[] = {
     [MOVE_LEFT] = {
         .start = 27,
         .end = 37,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 150,
+        .radius = 55,
+        .transition = 5,
+        .angle = 90,
         .sign = -1,
     },
     [MOVE_RIGHT] = {
         .start = 27,
         .end = 37,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 150,
+        .radius = 55,
+        .transition = 5,
+        .angle = 90,
         .sign = 1,
     },
     [MOVE_BACK] = {
         .start = 0,
         .end = 0,
-        .linear_speed = 0,
-        .angular_accel = 262.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 37,
-        .t_max = 291,
+        .radius = ROBOT_WIDTH / 2,
+        .transition = 5,
+        .angle = 180,
         .sign = 1,
     },
     [MOVE_BACK_WALL] = {
         .start = 0,
         .end = 0,
-        .linear_speed = 0,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 310,
+        .radius = ROBOT_WIDTH / 2,
+        .transition = 5,
+        .angle = 180,
         .sign = -1,
     },
-};
-
-static struct turn_params turns_normal[] = {
     [MOVE_LEFT_90] = {
         .start = 0,
         .end = 0,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 5.68,
-        .t_accel = 9,
-        .t_max = 268,
+        .radius = 90,
+        .transition = 5,
+        .angle = 90,
         .sign = -1,
     },
     [MOVE_RIGHT_90] = {
         .start = 0,
         .end = 0,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 5.68,
-        .t_accel = 9,
-        .t_max = 268,
+        .radius = 90,
+        .transition = 5,
+        .angle = 90,
         .sign = 1,
     },
     [MOVE_LEFT_180] = {
         .start = 0,
         .end = 0,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 5.6,
-        .t_accel = 9,
-        .t_max = 554,
+        .radius = 90,
+        .transition = 5,
+        .angle = 180,
         .sign = -1,
     },
     [MOVE_RIGHT_180] = {
         .start = 0,
         .end = 0,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 5.6,
-        .t_accel = 9,
-        .t_max = 554,
+        .radius = 90,
+        .transition = 5,
+        .angle = 180,
         .sign = 1,
     },
 
     [MOVE_LEFT_TO_45] = {
         .start = -50,
         .end = 77.28,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 4.2525,
-        .t_accel = 7,
-        .t_max = 178,
+        .radius = 120.71,
+        .transition = 5,
+        .angle = 45,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_45] = {
         .start = -50,
         .end = 77.28,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 4.2525,
-        .t_accel = 7,
-        .t_max = 178,
+        .radius = 120.71,
+        .transition = 5,
+        .angle = 45,
         .sign = 1,
     },
     [MOVE_LEFT_TO_135] = {
         .start = 0,
         .end = 74.56,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 6.825,
-        .t_accel = 11,
-        .t_max = 335,
+        .radius = 74.56,
+        .transition = 5,
+        .angle = 135,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_135] = {
         .start = 0,
         .end = 74.56,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 6.825,
-        .t_accel = 11,
-        .t_max = 335,
+        .radius = 74.56,
+        .transition = 5,
+        .angle = 135,
         .sign = 1,
     },
     [MOVE_LEFT_45_TO_45] = {
         .start = 63.64,
         .end = 63.64,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 8.33,
-        .t_accel = 14,
-        .t_max = 175,
+        .radius = 63.64,
+        .transition = 5,
+        .angle = 90,
         .sign = -1,
     },
     [MOVE_RIGHT_45_TO_45] = {
         .start = 63.64,
         .end = 63.64,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 8.33,
-        .t_accel = 14,
-        .t_max = 175,
+        .radius = 63.64,
+        .transition = 5,
+        .angle = 90,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45] = {
         .start = 77.28,
         .end = -50,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 4.2525,
-        .t_accel = 7,
-        .t_max = 178,
+        .radius = 120.71,
+        .transition = 5,
+        .angle = 45,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45] = {
         .start = 77.28,
         .end = -50,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 4.2525,
-        .t_accel = 7,
-        .t_max = 178,
+        .radius = 120.71,
+        .transition = 5,
+        .angle = 45,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
         .start = 74.56,
         .end = 0,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 6.825,
-        .t_accel = 11,
-        .t_max = 335,
+        .radius = 74.56,
+        .transition = 5,
+        .angle = 135,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
         .start = 74.56,
         .end = 0,
-        .linear_speed = 500,
-        .angular_accel = 612.5,
-        .max_angular_speed = 6.825,
-        .t_accel = 11,
-        .t_max = 335,
-        .sign = 1,
-    },
-    [MOVE_BACK] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 0,
-        .angular_accel = 262.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 37,
-        .t_max = 291,
-        .sign = 1,
-    },
-};
-
-static struct turn_params turns_fast[] = {
-    [MOVE_LEFT_90] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 148,
-        .sign = -1,
-    },
-    [MOVE_RIGHT_90] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 148,
-        .sign = 1,
-    },
-    [MOVE_LEFT_180] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 311,
-        .sign = -1,
-    },
-    [MOVE_RIGHT_180] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 311,
-        .sign = 1,
-    },
-    [MOVE_BACK] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 0,
-        .angular_accel = 262.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 37,
-        .t_max = 291,
-        .sign = 1,
-    },
-};
-
-static struct turn_params turns_diagonals[] = {
-    [MOVE_LEFT_90] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 148,
-        .sign = -1,
-    },
-    [MOVE_RIGHT_90] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 148,
-        .sign = 1,
-    },
-    [MOVE_LEFT_180] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 311,
-        .sign = -1,
-    },
-    [MOVE_RIGHT_180] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 16,
-        .t_max = 311,
-        .sign = 1,
-    },
-    [MOVE_LEFT_TO_45] = {
-        .start = -50,
-        .end = 77.28,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 7.91,
-        .t_accel = 13,
-        .t_max = 87,
-        .sign = -1,
-    },
-    [MOVE_RIGHT_TO_45] = {
-        .start = -50,
-        .end = 77.28,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 7.91,
-        .t_accel = 13,
-        .t_max = 87,
-        .sign = 1,
-    },
-    [MOVE_LEFT_TO_135] = {
-        .start = 0,
-        .end = 74.56,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 12.0225,
-        .t_accel = 7,
-        .t_max = 178,
-        .sign = -1,
-    },
-    [MOVE_RIGHT_TO_135] = {
-        .start = 0,
-        .end = 74.56,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 12.0225,
-        .t_accel = 20,
-        .t_max = 177,
-        .sign = 1,
-    },
-    [MOVE_LEFT_45_TO_45] = {
-        .start = 63.64,
-        .end = 63.64,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 16.625,
-        .t_accel = 7,
-        .t_max = 178,
-        .sign = -1,
-    },
-    [MOVE_RIGHT_45_TO_45] = {
-        .start = 63.64,
-        .end = 63.64,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 16.625,
-        .t_accel = 27,
-        .t_max = 68,
-        .sign = 1,
-    },
-    [MOVE_LEFT_FROM_45] = {
-        .start = 77.28,
-        .end = -50,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 7.91,
-        .t_accel = 13,
-        .t_max = 87,
-        .sign = -1,
-    },
-    [MOVE_RIGHT_FROM_45] = {
-        .start = 77.28,
-        .end = -50,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 7.91,
-        .t_accel = 13,
-        .t_max = 87,
-        .sign = 1,
-    },
-    [MOVE_LEFT_FROM_45_180] = {
-        .start = 74.56,
-        .end = 0,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 12.0225,
-        .t_accel = 7,
-        .t_max = 178,
-        .sign = -1,
-    },
-    [MOVE_RIGHT_FROM_45_180] = {
-        .start = 74.56,
-        .end = 0,
-        .linear_speed = 860,
-        .angular_accel = 612.5,
-        .max_angular_speed = 12.0225,
-        .t_accel = 7,
-        .t_max = 178,
-        .sign = 1,
-    },
-    [MOVE_BACK] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 0,
-        .angular_accel = 262.5,
-        .max_angular_speed = 9.625,
-        .t_accel = 37,
-        .t_max = 291,
+        .radius = 74.56,
+        .transition = 5,
+        .angle = 135,
         .sign = 1,
     },
 };
@@ -434,22 +179,26 @@ static struct kinematics kinematics_settings[] = {
     [SPEED_EXPLORE] = {
         .linear_speed = 500,
         .linear_accel = 3000,
-        .turns = turns_explore,
+        .turns_linear_speed = 500,
+        .turns_params = turns_params,
     },
     [SPEED_NORMAL] = {
         .linear_speed = 900,
         .linear_accel = 3000,
-        .turns = turns_normal,
+        .turns_linear_speed = 500,
+        .turns_params = turns_params,
     },
     [SPEED_FAST] = {
         .linear_speed = 2500,
         .linear_accel = 3000,
-        .turns = turns_fast,
+        .turns_linear_speed = 860,
+        .turns_params = turns_params,
     },
     [SPEED_DIAGONALS] = {
         .linear_speed = 3500,
         .linear_accel = 3000,
-        .turns = turns_diagonals,
+        .turns_linear_speed = 1200,
+        .turns_params = turns_params,
     },
 };
 
@@ -556,7 +305,7 @@ static void move_side(enum movement movement) {
 
   int32_t end_distance_offset = 0;
   struct walls walls = get_walls();
-  if (kinematics.turns[movement].sign > 0) {
+  if (kinematics.turns_params[movement].sign > 0) {
     if (walls.left) {
       end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID);
     }
@@ -571,11 +320,11 @@ static void move_side(enum movement movement) {
     start_distance_offset = get_front_wall_distance() - (CELL_DIMENSION - (WALL_WIDTH / 2));
   }
 
-  if (kinematics.turns[movement].start > 0) {
-    if (abs(start_distance_offset) > kinematics.turns[movement].start / 2) {
-      start_distance_offset = start_distance_offset > 0 ? kinematics.turns[movement].start / 2 : -kinematics.turns[movement].start / 2;
+  if (kinematics.turns_params[movement].start > 0) {
+    if (abs(start_distance_offset) > kinematics.turns_params[movement].start / 2) {
+      start_distance_offset = start_distance_offset > 0 ? kinematics.turns_params[movement].start / 2 : -kinematics.turns_params[movement].start / 2;
     }
-    move_straight(kinematics.turns[movement].start - current_cell_start_mm + start_distance_offset, kinematics.turns[movement].linear_speed, false, false);
+    move_straight(kinematics.turns_params[movement].start - current_cell_start_mm + start_distance_offset, kinematics.turns_linear_speed, false, false);
   }
 
   disable_sensors_correction();
@@ -587,11 +336,11 @@ static void move_side(enum movement movement) {
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
 
-  if (kinematics.turns[movement].end > 0) {
-    if (abs(end_distance_offset) > kinematics.turns[movement].end / 2) {
-      end_distance_offset = end_distance_offset > 0 ? kinematics.turns[movement].end / 2 : -kinematics.turns[movement].end / 2;
+  if (kinematics.turns_params[movement].end > 0) {
+    if (abs(end_distance_offset) > kinematics.turns_params[movement].end / 2) {
+      end_distance_offset = end_distance_offset > 0 ? kinematics.turns_params[movement].end / 2 : -kinematics.turns_params[movement].end / 2;
     }
-    move_straight(kinematics.turns[movement].end + end_distance_offset, kinematics.turns[movement].linear_speed, false, false);
+    move_straight(kinematics.turns_params[movement].end + end_distance_offset, kinematics.turns_linear_speed, false, false);
   }
   enter_next_cell();
 }
@@ -611,7 +360,7 @@ static void move_back(enum movement movement) {
   disable_sensors_correction();
   move_inplace_turn(movement);
 
-  //TODO: intentar corregir con las paredes marcha atras??
+  // TODO: intentar corregir con las paredes marcha atras??
 
   if (movement == MOVE_BACK_WALL) {
     move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
@@ -812,50 +561,83 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
  * @param turn_type
  */
 void move_arc_turn(enum movement turn_type) {
-  struct turn_params turn = kinematics.turns[turn_type];
+  struct turn_params turn = kinematics.turns_params[turn_type];
 
-  uint32_t ms_start = get_clock_ticks();
-  uint32_t ms_current = ms_start;
-  float angular_speed = 0;
-  while (true) {
+  int32_t start;
+  int32_t current;
+  float travelled;
+  float angular_speed;
+  float max_angular_speed;
+  float factor;
+  float arc;
+
+  start = get_encoder_avg_micrometers();
+  arc = 2 * PI * turn.radius * (turn.angle / 360.0);
+  max_angular_speed = turn.sign * (kinematics.turns_linear_speed / turn.radius);
+  while (is_race_started()) {
     set_RGB_color(255, 0, 0);
-    ms_current = get_clock_ticks();
-    if (ms_current - ms_start <= turn.t_accel) {
-      angular_speed = turn.angular_accel * (ms_current - ms_start) / 1000;
-    } else if (ms_current - ms_start <= (turn.t_accel + turn.t_max)) {
-      angular_speed = turn.max_angular_speed;
-    } else if (ms_current - ms_start <= (uint32_t)(turn.t_accel + turn.t_max + turn.t_accel)) {
-      angular_speed = turn.max_angular_speed - (turn.angular_accel * (ms_current - ms_start - turn.t_accel - turn.t_max) / 1000);
-    } else {
+    current = get_encoder_avg_micrometers();
+    travelled = (float)((current - start) / MICROMETERS_PER_MILLIMETER);
+    if (travelled >= arc) {
       break;
     }
-    set_ideal_angular_speed(angular_speed * turn.sign);
+    angular_speed = max_angular_speed;
+    if (travelled < turn.transition) {
+      factor = travelled / turn.transition;
+      angular_speed *= sin(factor * PI / 2);
+    } else if (travelled >= arc - turn.transition) {
+      factor = (travelled - (arc - (2 * turn.transition))) / turn.transition;
+      angular_speed *= sin(factor * PI / 2);
+    }
+    set_ideal_angular_speed(angular_speed);
   }
+  set_ideal_angular_speed(0);
   set_RGB_color(0, 0, 0);
   set_ideal_angular_speed(0);
 }
 
 void move_inplace_turn(enum movement movement) {
-  struct turn_params turn = kinematics.turns[movement];
-  set_target_linear_speed(turn.linear_speed);
+  struct turn_params turn = kinematics.turns_params[movement];
+  set_target_linear_speed(0);
 
-  uint32_t ms_start = get_clock_ticks();
-  uint32_t ms_current = ms_start;
-  float angular_speed = 0;
-  int8_t sign = turn.sign == 0 ? ((int8_t)(rand() % 2) * 2 - 1) : turn.sign;
-  while (true) {
-    ms_current = get_clock_ticks();
-    if (ms_current - ms_start <= turn.t_accel) {
-      angular_speed = turn.angular_accel * (ms_current - ms_start) / 1000;
-    } else if (ms_current - ms_start <= (turn.t_accel + turn.t_max)) {
-      angular_speed = turn.max_angular_speed;
-    } else if (ms_current - ms_start <= (uint32_t)(turn.t_accel + turn.t_max + turn.t_accel)) {
-      angular_speed = turn.max_angular_speed - (turn.angular_accel * (ms_current - ms_start - turn.t_accel - turn.t_max) / 1000);
-    } else {
-      set_ideal_angular_speed(0);
+  int32_t start;
+  int32_t current;
+  float time;
+  float angular_speed;
+  float max_angular_speed;
+  float angular_accel;
+  float factor;
+  float arc;
+  float transition;
+  float duration;
+  float transition_angle;
+
+  angular_accel = 612.5;
+  max_angular_speed = (300 / turn.radius);
+  duration = max_angular_speed / angular_accel * PI;
+  transition_angle = duration * max_angular_speed / PI;
+  arc = (PI - 2 * transition_angle) / max_angular_speed;
+  transition = duration / 2;
+  max_angular_speed *= turn.sign;
+
+  set_target_linear_speed(0);
+
+  start = get_clock_ticks();
+  while (is_race_started()) {
+    current = get_clock_ticks();
+    time = (float)(current - start) / SYSTICK_FREQUENCY_HZ;
+    if (time >= 2 * transition + arc) {
       break;
     }
-    set_ideal_angular_speed(angular_speed * sign);
+    angular_speed = max_angular_speed;
+    if (time < transition) {
+      factor = time / transition;
+      angular_speed *= sin(factor * PI / 2);
+    } else if (time >= transition + arc) {
+      factor = (time - arc) / transition;
+      angular_speed *= sin(factor * PI / 2);
+    }
+    set_ideal_angular_speed(angular_speed);
   }
   set_ideal_angular_speed(0);
 }
@@ -982,16 +764,16 @@ void move_run_sequence(char *sequence, enum movement *sequence_movements) {
       case MOVE_LEFT_FROM_45_180:
       case MOVE_RIGHT_FROM_45_180:
         if (distance > 0) {
-          if (kinematics.turns[sequence_movements[i]].start < 0) {
-            end_offset = kinematics.turns[sequence_movements[i]].start;
+          if (kinematics.turns_params[sequence_movements[i]].start < 0) {
+            end_offset = kinematics.turns_params[sequence_movements[i]].start;
           }
           if (running_diagonal) {
-            run_diagonal(distance, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
+            run_diagonal(distance, kinematics.linear_speed, kinematics.turns_linear_speed);
           } else {
-            run_straight(distance, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
+            run_straight(distance, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, kinematics.turns_linear_speed);
           }
-          if (kinematics.turns[sequence_movements[i]].end < 0) {
-            distance = kinematics.turns[sequence_movements[i]].end;
+          if (kinematics.turns_params[sequence_movements[i]].end < 0) {
+            distance = kinematics.turns_params[sequence_movements[i]].end;
           } else {
             distance = 0;
           }

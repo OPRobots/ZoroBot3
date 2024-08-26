@@ -489,6 +489,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
       }
       break;
 
+    case SPEED_NORMAL:
     case SPEED_FAST:
       for (uint8_t i = 0; i < strlen(run_sequence); i++) {
         switch (run_sequence[i]) {
@@ -522,7 +523,6 @@ static void smooth_run_sequence(enum speed_strategy speed) {
         }
       }
       break;
-    case SPEED_NORMAL:
     case SPEED_DIAGONALS:
       for (uint8_t i = 0; i < strlen(run_sequence); i++) {
         switch (run_sequence[i]) {

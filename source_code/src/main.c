@@ -36,31 +36,44 @@ int main(void) {
       if (menu_run_can_start()) {
         int8_t sensor_started = check_start_run();
         if (is_race_started()) {
-          switch (menu_run_get_strategy()) {
-            case MODE_STRATEGY_HANDWALL:
-              switch (sensor_started) {
-                case SENSOR_FRONT_LEFT_WALL_ID:
-                  handwall_use_left_hand();
-                  break;
-                case SENSOR_FRONT_RIGHT_WALL_ID:
-                  handwall_use_right_hand();
-                  break;
-              }
-              break;
-            case MODE_STRATEGY_FLOODFILL:
-              switch (sensor_started) {
-                case SENSOR_FRONT_LEFT_WALL_ID:
-                  floodfill_start_run();
-                  break;
-                case SENSOR_FRONT_RIGHT_WALL_ID:
-                  floodfill_start_explore();
-                  break;
-              }
-              break;
-            default:
-              set_race_started(false);
-              break;
-          }
+            switch (menu_run_get_strategy()) {
+              case MODE_STRATEGY_HANDWALL:
+                switch (sensor_started) {
+                  case SENSOR_FRONT_LEFT_WALL_ID:
+                    handwall_use_left_hand();
+                    break;
+                  case SENSOR_FRONT_RIGHT_WALL_ID:
+                    handwall_use_right_hand();
+                    break;
+                }
+                break;
+              case MODE_STRATEGY_FLOODFILL:
+                switch (sensor_started) {
+                  case SENSOR_FRONT_LEFT_WALL_ID:
+                    floodfill_start_run();
+                    break;
+                  case SENSOR_FRONT_RIGHT_WALL_ID:
+                    floodfill_start_explore();
+                    break;
+                }
+                break;
+              default:
+                set_race_started(false);
+                break;
+            }
+
+          // configure_kinematics(menu_run_get_speed());
+          // set_fan_speed(40);
+          // delay(200);
+          // set_fan_speed(65);
+          // delay(200);
+          // set_fan_speed(85);
+          // delay(500);
+          // move(MOVE_START);
+          // move(MOVE_LEFT);
+          // move(MOVE_HOME);
+          // set_fan_speed(0);
+          // set_race_started(false);
         }
       }
     } else {

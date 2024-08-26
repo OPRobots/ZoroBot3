@@ -32,8 +32,8 @@
 #define KP_LINEAR 0.00025
 #define KD_LINEAR 0.003
 
-#define KP_ANGULAR 0.04
-#define KD_ANGULAR 0.3
+#define KP_ANGULAR 0.01
+#define KD_ANGULAR 0.8
 
 #define KP_SIDE_SENSORS 0.08
 #define KI_SIDE_SENSORS 0.002
