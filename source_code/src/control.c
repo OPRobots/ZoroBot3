@@ -293,35 +293,36 @@ void control_loop(void) {
   //       (int16_t)(get_battery_voltage() * 100.0));
 
   // Corrección angular en diagonales
-  // if (front_sensors_diagonal_correction_enabled) {
-  //   macroarray_store(
-  //       1,
-  //       0b00,
-  //       2,
-  //       // (int16_t)target_linear_speed,
-  //       // (int16_t)ideal_linear_speed,
-  //       // (int16_t)(get_measured_linear_speed()),
-  //       (int16_t)(get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)),
-  //       (int16_t)(get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))
-  //       // (int16_t)(angular_error * 100),
-  //       // (int16_t)(angular_voltage * 100)
-  //   );
-  // }
+  if (front_sensors_diagonal_correction_enabled) {
+    macroarray_store(
+        0,
+        0b0001,
+        4,
+        (int16_t)target_linear_speed,
+        (int16_t)ideal_linear_speed,
+        (int16_t)(get_measured_linear_speed()),
+        (int16_t)(front_sensors_diagonal_error*100)
+        // (int16_t)(get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)),
+        // (int16_t)(get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))
+        // (int16_t)(angular_error * 100),
+        // (int16_t)(angular_voltage * 100)
+    );
+  }
 
   // Corrección lateral en rectas
-  macroarray_store(
-      0,
-      0b000111001,
-      9,
-      (int16_t)target_linear_speed,
-      (int16_t)ideal_linear_speed,
-      (int16_t)(get_measured_linear_speed()),
-      (int16_t)(side_sensors_error * 100.0),
-      (int16_t)(angular_error * 100),
-      (int16_t)(angular_voltage * 100),
-      (int16_t)pwm_left,
-      (int16_t)pwm_right,
-      (int16_t)(get_battery_voltage() * 100.0));
+  // macroarray_store(
+  //     0,
+  //     0b000111001,
+  //     9,
+  //     (int16_t)target_linear_speed,
+  //     (int16_t)ideal_linear_speed,
+  //     (int16_t)(get_measured_linear_speed()),
+  //     (int16_t)(side_sensors_error * 100.0),
+  //     (int16_t)(angular_error * 100),
+  //     (int16_t)(angular_voltage * 100),
+  //     (int16_t)pwm_left,
+  //     (int16_t)pwm_right,
+  //     (int16_t)(get_battery_voltage() * 100.0));
 
   // macroarray_store(
   //     2,

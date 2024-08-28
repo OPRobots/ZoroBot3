@@ -551,24 +551,51 @@ static void move_front(void) {
 static void move_side(enum movement movement) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(true);
 
   int32_t end_distance_offset = 0;
+  int32_t start_distance_offset = 0;
+  bool enable_end_distance_offset = true;
+  bool enable_start_distance_offset = true;
+
+  switch (movement) {
+    case MOVE_LEFT_TO_45:
+    case MOVE_RIGHT_TO_45:
+    case MOVE_LEFT_TO_135:
+    case MOVE_RIGHT_TO_135:
+    case MOVE_LEFT_45_TO_45:
+    case MOVE_RIGHT_45_TO_45:
+    case MOVE_LEFT_FROM_45:
+    case MOVE_RIGHT_FROM_45:
+    case MOVE_LEFT_FROM_45_180:
+    case MOVE_RIGHT_FROM_45_180:
+      enable_start_distance_offset = false;
+      enable_end_distance_offset = false;
+      set_side_sensors_close_correction(false);
+      set_side_sensors_far_correction(false);
+      break;
+    default:
+      set_side_sensors_close_correction(true);
+      set_side_sensors_far_correction(true);
+      break;
+  }
+
   struct walls walls = get_walls();
-  if (kinematics.turns[movement].sign > 0) {
-    if (walls.left) {
-      end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID);
-    }
-  } else {
-    if (walls.right) {
-      end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID);
+  if (enable_end_distance_offset) {
+    if (kinematics.turns[movement].sign > 0) {
+      if (walls.left) {
+        end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID);
+      }
+    } else {
+      if (walls.right) {
+        end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID);
+      }
     }
   }
 
-  int32_t start_distance_offset = 0;
-  if (walls.front) {
-    start_distance_offset = get_front_wall_distance() - (CELL_DIMENSION - (WALL_WIDTH / 2));
+  if (enable_start_distance_offset) {
+    if (walls.front) {
+      start_distance_offset = get_front_wall_distance() - (CELL_DIMENSION - (WALL_WIDTH / 2));
+    }
   }
 
   if (kinematics.turns[movement].start > 0) {
@@ -583,9 +610,22 @@ static void move_side(enum movement movement) {
   move_arc_turn(movement);
 
   set_front_sensors_correction(false);
-  set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
+
+  switch (movement) {
+    case MOVE_LEFT_TO_45:
+    case MOVE_RIGHT_TO_45:
+    case MOVE_LEFT_TO_135:
+    case MOVE_RIGHT_TO_135:
+    case MOVE_LEFT_45_TO_45:
+    case MOVE_RIGHT_45_TO_45:
+      set_front_sensors_diagonal_correction(true);
+      break;
+    default:
+      set_front_sensors_diagonal_correction(false);
+      break;
+  }
 
   if (kinematics.turns[movement].end > 0) {
     if (abs(end_distance_offset) > kinematics.turns[movement].end / 2) {
@@ -617,12 +657,12 @@ static void move_back(enum movement movement) {
   switch (movement) {
     case MOVE_BACK_WALL:
     case MOVE_BACK_STOP:
-    move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
-    set_starting_position();
+      move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
+      set_starting_position();
       break;
     case MOVE_BACK:
-    move_straight(((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2, -100, false, true);
-    current_cell_start_mm = ((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2;
+      move_straight(((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2, -100, false, true);
+      current_cell_start_mm = ((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2;
       break;
     default:
       break;
@@ -630,12 +670,12 @@ static void move_back(enum movement movement) {
   reset_control_errors(); //? Aquí sí reseteamos al estar en una "posición inicial estática"
 
   if (movement != MOVE_BACK_STOP) {
-  set_front_sensors_correction(false);
-  set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(true);
-  move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
-  enter_next_cell();
+    set_front_sensors_correction(false);
+    set_front_sensors_diagonal_correction(false);
+    set_side_sensors_close_correction(true);
+    set_side_sensors_far_correction(true);
+    move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
+    enter_next_cell();
   }
 }
 
@@ -796,10 +836,10 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
   set_target_linear_speed(speed);
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + (distance - slow_distance) * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER * 1) {
-      set_front_sensors_diagonal_correction(false);
-      set_RGB_color_while(50, 0, 50, 150);
-    }
+    // if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER * 0.5) {
+    //   set_front_sensors_diagonal_correction(false);
+    //   set_RGB_color_while(50, 0, 50, 150);
+    // }
 
     if (final_speed != speed) {
       slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed);
@@ -808,10 +848,10 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
   set_target_linear_speed(final_speed);
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    if (remaining_distance < CELL_DIAGONAL * 1) {
-      set_front_sensors_diagonal_correction(false);
-      set_RGB_color_while(50, 0, 50, 150);
-    }
+    // if (remaining_distance < CELL_DIAGONAL * 0.5) {
+    //   set_front_sensors_diagonal_correction(false);
+    //   set_RGB_color_while(50, 0, 50, 150);
+    // }
   }
 }
 
