@@ -31,6 +31,7 @@ enum movement {
   MOVE_RIGHT_FROM_45_180,
   MOVE_BACK,
   MOVE_BACK_WALL,
+  MOVE_BACK_STOP,
 };
 
 struct turn_params {

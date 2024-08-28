@@ -613,21 +613,30 @@ static void move_back(enum movement movement) {
 
   //TODO: intentar corregir con las paredes marcha atras??
 
-  if (movement == MOVE_BACK_WALL) {
+  set_side_sensors_close_correction(false);
+  switch (movement) {
+    case MOVE_BACK_WALL:
+    case MOVE_BACK_STOP:
     move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
     set_starting_position();
-  } else {
+      break;
+    case MOVE_BACK:
     move_straight(((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2, -100, false, true);
     current_cell_start_mm = ((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2;
+      break;
+    default:
+      break;
   }
   reset_control_errors(); //? Aquí sí reseteamos al estar en una "posición inicial estática"
 
+  if (movement != MOVE_BACK_STOP) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
   move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
   enter_next_cell();
+  }
 }
 
 char *get_movement_string(enum movement movement) {

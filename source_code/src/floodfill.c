@@ -388,10 +388,16 @@ static void go_to_target(void) {
         move(MOVE_RIGHT);
         break;
       case BACK:
-        if (walls.front) {
-          move(MOVE_BACK_WALL);
+        if (floodfill[current_position] == 0) {
+          move(MOVE_BACK_STOP);
+          save_maze();
+          move(MOVE_START);
         } else {
-          move(MOVE_BACK);
+          if (walls.front) {
+            move(MOVE_BACK_WALL);
+          } else {
+            move(MOVE_BACK);
+          }
         }
         break;
       default:
@@ -401,6 +407,9 @@ static void go_to_target(void) {
           warning_status_led(50);
         }
         break;
+    }
+    if (!is_race_started()) {
+      return;
     }
   } while (floodfill[current_position] > 0);
   walls = get_walls();
