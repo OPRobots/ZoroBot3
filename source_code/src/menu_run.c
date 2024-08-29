@@ -57,11 +57,12 @@ static void handle_menu_run_values(void) {
     if (valueRun[modeRun] == 1) {
       set_RGB_color(50, 0, 50);
     } else {
-      set_RGB_color(50, 0, 0);
+      if (blinkState) {
+        set_RGB_color(50, 0, 0);
+      } else {
+        set_RGB_color(0, 0, 0);
+      }
     }
-    set_info_led(4, blinkState);
-  } else {
-    set_info_led(4, false);
   }
 
   if (modeRun == MODE_MAZE_TYPE) {
