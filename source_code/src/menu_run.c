@@ -3,15 +3,17 @@
 #define MODE_SPEED 0
 #define MODE_RACE 1
 #define MODE_MAZE_TYPE 2
-#define MODE_STRATEGY 3
+#define MODE_SOLVE_STRATEGY 3
+#define MODE_EXPLORE_ALGORITHM 4
 uint8_t modeRun = MODE_SPEED;
 
-#define MODE_SPEED_VALUES 4
+#define MODE_SPEED_VALUES 5
 #define MODE_RACE_VALUES 2
 #define MODE_MAZE_TYPE_VALUES 2
-#define MODE_STRATEGY_VALUES 2
+#define MODE_EXPLORE_ALGORITHM_VALUES 2
+#define MODE_SOLVE_STRATEGY_VALUES 2
 
-int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 1};
+int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 0, 1};
 
 uint32_t lastBlinkMs = 0;
 bool blinkState = false;
@@ -23,16 +25,31 @@ static void handle_menu_run_values(void) {
   }
   if (modeRun == MODE_SPEED) {
     set_RGB_color(0, 0, 0);
-    for (uint8_t i = 0; i < 4; i++) {
-      if (i < valueRun[MODE_SPEED] || (valueRun[MODE_SPEED] == i && blinkState)) {
-        set_info_led(i, true);
-      } else {
-        set_info_led(i, false);
+
+    if (valueRun[MODE_SPEED] == MODE_SPEED_VALUES - 1) {
+      set_info_led(0, blinkState);
+      set_info_led(1, blinkState);
+      set_info_led(2, blinkState);
+      set_info_led(3, blinkState);
+    } else {
+      for (uint8_t i = 0; i < MODE_SPEED_VALUES - 1; i++) {
+        if ((valueRun[MODE_SPEED] == i && blinkState)) {
+          set_info_led(i, true);
+        } else {
+          set_info_led(i, false);
+        }
       }
     }
   } else {
-    for (uint8_t i = 0; i < 4; i++) {
-      set_info_led(i, i <= valueRun[MODE_SPEED]);
+    if (valueRun[MODE_SPEED] == MODE_SPEED_VALUES - 1) {
+      set_info_led(0, true);
+      set_info_led(1, true);
+      set_info_led(2, true);
+      set_info_led(3, true);
+    } else {
+      for (uint8_t i = 0; i < MODE_SPEED_VALUES - 1; i++) {
+        set_info_led(i, i == valueRun[MODE_SPEED]);
+      }
     }
   }
 
@@ -58,7 +75,18 @@ static void handle_menu_run_values(void) {
     set_info_led(5, valueRun[MODE_MAZE_TYPE] == 1);
   }
 
-  if (modeRun == MODE_STRATEGY) {
+  if (modeRun == MODE_SOLVE_STRATEGY) {
+    if (valueRun[modeRun] == 1) {
+      set_RGB_color(0, 50, 0);
+    } else {
+      set_RGB_color(0, 0, 0);
+    }
+    set_info_led(6, blinkState);
+  } else {
+    set_info_led(6, valueRun[MODE_SOLVE_STRATEGY] == 1);
+  }
+
+  if (modeRun == MODE_EXPLORE_ALGORITHM) {
     if (valueRun[modeRun] == 1) {
       set_RGB_color(0, 50, 0);
     } else {
@@ -66,7 +94,7 @@ static void handle_menu_run_values(void) {
     }
     set_info_led(7, blinkState);
   } else {
-    set_info_led(7, valueRun[MODE_STRATEGY] == 1);
+    set_info_led(7, valueRun[MODE_EXPLORE_ALGORITHM] == 1);
   }
 }
 
@@ -83,8 +111,8 @@ static void handle_menu_run_btn(void) {
       case MODE_MAZE_TYPE:
         mode_values = MODE_MAZE_TYPE_VALUES;
         break;
-      case MODE_STRATEGY:
-        mode_values = MODE_STRATEGY_VALUES;
+      case MODE_EXPLORE_ALGORITHM:
+        mode_values = MODE_EXPLORE_ALGORITHM_VALUES;
         break;
       case MODE_RACE:
         mode_values = MODE_RACE_VALUES;
@@ -152,6 +180,10 @@ enum maze_type menu_run_get_maze_type(void) {
   return valueRun[MODE_MAZE_TYPE];
 }
 
-uint8_t menu_run_get_strategy(void) {
-  return valueRun[MODE_STRATEGY];
+enum solve_strategy menu_run_get_solve_strategy(void) {
+  return valueRun[MODE_SOLVE_STRATEGY];
+}
+
+enum explore_algorithm menu_run_get_explore_algorithm(void) {
+  return valueRun[MODE_EXPLORE_ALGORITHM];
 }

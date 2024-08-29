@@ -36,8 +36,8 @@ int main(void) {
       if (menu_run_can_start()) {
         int8_t sensor_started = check_start_run();
         if (is_race_started()) {
-          switch (menu_run_get_strategy()) {
-            case MODE_STRATEGY_HANDWALL:
+          switch (menu_run_get_explore_algorithm()) {
+            case EXPLORE_HANDWALL:
               switch (sensor_started) {
                 case SENSOR_FRONT_LEFT_WALL_ID:
                   handwall_use_left_hand();
@@ -47,7 +47,7 @@ int main(void) {
                   break;
               }
               break;
-            case MODE_STRATEGY_FLOODFILL:
+            case EXPLORE_FLOODFILL:
               switch (sensor_started) {
                 case SENSOR_FRONT_LEFT_WALL_ID:
                   floodfill_start_run();
@@ -64,11 +64,11 @@ int main(void) {
         }
       }
     } else {
-      switch (menu_run_get_strategy()) {
-        case MODE_STRATEGY_HANDWALL:
+      switch (menu_run_get_explore_algorithm()) {
+        case EXPLORE_HANDWALL:
           handwall_loop();
           break;
-        case MODE_STRATEGY_FLOODFILL:
+        case EXPLORE_FLOODFILL:
           floodfill_loop();
           break;
         default:

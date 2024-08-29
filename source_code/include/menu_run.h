@@ -5,21 +5,29 @@
 #include <delay.h>
 #include <leds.h>
 
-#define MENU_RUN_NUM_MODES 4
-
-#define MODE_STRATEGY_HANDWALL 0
-#define MODE_STRATEGY_FLOODFILL 1
+#define MENU_RUN_NUM_MODES 5
 
 enum speed_strategy {
   SPEED_EXPLORE = 0,
   SPEED_NORMAL = 1,
-  SPEED_FAST = 2,
-  SPEED_DIAGONALS = 3,
+  SPEED_MEDIUM = 2,
+  SPEED_FAST = 3,
+  SPEED_HAKI = 4,
 };
 
 enum maze_type {
   MAZE_HOME = 0,
   MAZE_COMPETITION = 1,
+};
+
+enum solve_strategy {
+  SOLVE_STANDARD = 0,
+  SOLVE_DIAGONALS = 1,
+};
+
+enum explore_algorithm {
+  EXPLORE_HANDWALL = 0,
+  EXPLORE_FLOODFILL = 1,
 };
 
 bool menu_run_handler(void);
@@ -31,6 +39,7 @@ bool menu_run_can_start(void);
 int16_t *get_menu_run_values(void);
 enum speed_strategy menu_run_get_speed(void);
 enum maze_type menu_run_get_maze_type(void);
-uint8_t menu_run_get_strategy(void);
+enum solve_strategy menu_run_get_solve_strategy(void);
+enum explore_algorithm menu_run_get_explore_algorithm(void);
 
 #endif

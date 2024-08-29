@@ -48,6 +48,7 @@ struct turn_params {
 struct kinematics {
   int16_t linear_speed;
   int16_t linear_accel;
+  int16_t fan_speed;
   struct turn_params *turns;
 };
 
