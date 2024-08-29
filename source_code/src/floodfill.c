@@ -796,10 +796,12 @@ void floodfill_set_time_limit(uint32_t ms) {
 }
 
 void floodfill_start_explore(void) {
+  configure_kinematics(SPEED_EXPLORE);
+
   race_mode = false;
   clear_info_leds();
   set_RGB_color(0, 0, 0);
-  set_fan_speed(50);
+  set_fan_speed(get_kinematics().fan_speed);
   delay(500);
 
   initialize_directions_values();
@@ -814,21 +816,19 @@ void floodfill_start_explore(void) {
   update_floodfill();
 
   start_ms = get_clock_ticks();
-
-  configure_kinematics(SPEED_EXPLORE);
   move(MOVE_START);
   update_position(FRONT);
 }
 
 void floodfill_start_run(void) {
+  configure_kinematics(menu_run_get_speed());
   race_mode = true;
   clear_info_leds();
   set_RGB_color(0, 0, 0);
-  set_fan_speed(50);
+  set_fan_speed(get_kinematics().fan_speed);
   delay(500);
 
   initialize_directions_values();
-  configure_kinematics(menu_run_get_speed());
   build_run_sequence();
   smooth_run_sequence(menu_run_get_speed());
 }
