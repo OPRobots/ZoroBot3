@@ -11,6 +11,10 @@ static volatile int32_t target_linear_speed = 0;
 static volatile int32_t ideal_linear_speed = 0;
 static volatile float ideal_angular_speed = 0.0;
 
+static volatile int32_t target_fan_speed = 0;
+static volatile float ideal_fan_speed = 0;
+static volatile float fan_speed_accel = 0;
+
 static volatile float linear_error;
 static volatile float last_linear_error;
 
@@ -61,6 +65,20 @@ static void update_ideal_linear_speed(void) {
     ideal_linear_speed -= get_kinematics().linear_accel / CONTROL_FREQUENCY_HZ;
     if (ideal_linear_speed < target_linear_speed) {
       ideal_linear_speed = target_linear_speed;
+    }
+  }
+}
+
+static void update_fan_speed(void) {
+  if (ideal_fan_speed < target_fan_speed) {
+    ideal_fan_speed += fan_speed_accel / CONTROL_FREQUENCY_HZ;
+    if (ideal_fan_speed > target_fan_speed) {
+      ideal_fan_speed = target_fan_speed;
+    }
+  } else if (ideal_fan_speed > target_fan_speed) {
+    ideal_fan_speed -= fan_speed_accel / CONTROL_FREQUENCY_HZ;
+    if (ideal_fan_speed < target_fan_speed) {
+      ideal_fan_speed = target_fan_speed;
     }
   }
 }
@@ -195,6 +213,11 @@ void set_ideal_angular_speed(float angular_speed) {
   ideal_angular_speed = angular_speed;
 }
 
+void set_target_fan_speed(int32_t fan_speed, int32_t ms) {
+  target_fan_speed = fan_speed;
+  fan_speed_accel = (fan_speed - ideal_fan_speed) * CONTROL_FREQUENCY_HZ / ms;
+}
+
 /**
  * @brief Función de control general del robot
  * · Gestiona velocidades, aceleraciones, correcciones, ...
@@ -223,6 +246,8 @@ void control_loop(void) {
   }
 
   update_ideal_linear_speed();
+  update_fan_speed();
+  set_fan_speed(ideal_fan_speed);
 
   float linear_voltage = 0;
   float angular_voltage = 0;
@@ -279,18 +304,18 @@ void control_loop(void) {
   set_motors_pwm(pwm_left, pwm_right);
 
   //  Corrección de la velocidad lineal
-    macroarray_store(
-        0,
-        0b00011001, // 0b0001101001,
-        8,
-        (int16_t)target_linear_speed,
-        (int16_t)ideal_linear_speed,
-        (int16_t)(get_measured_linear_speed()),
-        (int16_t)(ideal_angular_speed * 100.0),
-        (int16_t)(get_measured_angular_speed() * 100.0),
-        (int16_t)pwm_left,
-        (int16_t)pwm_right,
-        (int16_t)(get_battery_voltage() * 100.0));
+  macroarray_store(
+      0,
+      0b00011001, // 0b0001101001,
+      8,
+      (int16_t)target_linear_speed,
+      (int16_t)ideal_linear_speed,
+      (int16_t)(get_measured_linear_speed()),
+      (int16_t)(ideal_angular_speed * 100.0),
+      (int16_t)(get_measured_angular_speed() * 100.0),
+      (int16_t)pwm_left,
+      (int16_t)pwm_right,
+      (int16_t)(get_battery_voltage() * 100.0));
 
   // Corrección angular en diagonales
   // if (front_sensors_diagonal_correction_enabled) {

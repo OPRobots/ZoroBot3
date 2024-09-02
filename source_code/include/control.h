@@ -30,6 +30,8 @@ void set_target_linear_speed(int32_t linear_speed);
 int32_t get_ideal_linear_speed(void);
 void set_ideal_angular_speed(float angular_speed);
 
+void set_target_fan_speed(int32_t fan_speed, int32_t ms);
+
 void control_loop(void);
 
 #endif

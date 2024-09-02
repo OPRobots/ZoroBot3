@@ -801,7 +801,7 @@ void floodfill_start_explore(void) {
   race_mode = false;
   clear_info_leds();
   set_RGB_color(0, 0, 0);
-  set_fan_speed(get_kinematics().fan_speed);
+  set_target_fan_speed(get_kinematics().fan_speed, 400);
   delay(500);
 
   initialize_directions_values();
@@ -825,7 +825,7 @@ void floodfill_start_run(void) {
   race_mode = true;
   clear_info_leds();
   set_RGB_color(0, 0, 0);
-  set_fan_speed(get_kinematics().fan_speed);
+  set_target_fan_speed(get_kinematics().fan_speed, 400);
   delay(500);
 
   initialize_directions_values();
