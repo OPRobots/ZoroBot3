@@ -76,7 +76,7 @@ static void update_fan_speed(void) {
       ideal_fan_speed = target_fan_speed;
     }
   } else if (ideal_fan_speed > target_fan_speed) {
-    ideal_fan_speed -= fan_speed_accel / CONTROL_FREQUENCY_HZ;
+    ideal_fan_speed += fan_speed_accel / CONTROL_FREQUENCY_HZ;
     if (ideal_fan_speed < target_fan_speed) {
       ideal_fan_speed = target_fan_speed;
     }
