@@ -213,6 +213,15 @@ static bool current_cell_is_visited(void) {
   return maze[current_position] & VISITED_BIT;
 }
 
+static bool current_cell_is_goal(void) {
+  for (uint8_t i = 0; i < goal_cells.size; i++) {
+    if (current_position == goal_cells.stack[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static void update_walls(struct walls walls) {
   bool cell_walls[4] = {false, false, false, false};
   switch (current_direction) {
@@ -366,6 +375,9 @@ static void go_to_target(void) {
 
   update_floodfill();
   do {
+    if (!is_race_started()) {
+      return;
+    }
     if (!current_cell_is_visited()) {
       walls = get_walls();
       update_walls(walls);
@@ -375,7 +387,6 @@ static void go_to_target(void) {
     }
 
     next_step = get_next_floodfill_step(walls);
-    update_position(next_step);
     set_RGB_color_while(0, 0, 255, 20);
     switch (next_step) {
       case FRONT:
@@ -388,16 +399,10 @@ static void go_to_target(void) {
         move(MOVE_RIGHT);
         break;
       case BACK:
-        if (floodfill[current_position] == 0) {
-          move(MOVE_BACK_STOP);
-          save_maze();
-          move(MOVE_START);
+        if (walls.front) {
+          move(MOVE_BACK_WALL);
         } else {
-          if (walls.front) {
-            move(MOVE_BACK_WALL);
-          } else {
-            move(MOVE_BACK);
-          }
+          move(MOVE_BACK);
         }
         break;
       default:
@@ -408,12 +413,27 @@ static void go_to_target(void) {
         }
         break;
     }
-    if (!is_race_started()) {
-      return;
-    }
+
+    update_position(next_step);
   } while (floodfill[current_position] > 0);
-  walls = get_walls();
-  update_walls(walls);
+  if (!current_cell_is_visited()) {
+    walls = get_walls();
+    update_walls(walls);
+  }
+
+  if (current_cell_is_goal()) {
+    move(MOVE_FRONT);
+    update_position(FRONT);
+    if (!current_cell_is_visited()) {
+      walls = get_walls();
+      update_walls(walls);
+    }
+
+    move(MOVE_BACK_STOP);
+    save_maze();
+    move(MOVE_START);
+    update_position(BACK);
+  }
 }
 
 static void build_run_sequence(void) {

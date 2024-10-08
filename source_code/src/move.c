@@ -68,6 +68,16 @@ static struct turn_params turns_explore[] = {
         .t_max = 310,
         .sign = -1,
     },
+    [MOVE_BACK_STOP] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 0,
+        .angular_accel = 612.5,
+        .max_angular_speed = 9.625,
+        .t_accel = 16,
+        .t_max = 310,
+        .sign = -1,
+    },
 };
 
 static struct turn_params turns_medium[] = {
@@ -220,6 +230,16 @@ static struct turn_params turns_medium[] = {
         .t_accel = 37,
         .t_max = 291,
         .sign = 1,
+    },
+    [MOVE_BACK_STOP] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 0,
+        .angular_accel = 612.5,
+        .max_angular_speed = 9.625,
+        .t_accel = 16,
+        .t_max = 310,
+        .sign = -1,
     },
 };
 
@@ -374,6 +394,16 @@ static struct turn_params turns_fast[] = {
         .t_max = 291,
         .sign = 1,
     },
+    [MOVE_BACK_STOP] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 0,
+        .angular_accel = 612.5,
+        .max_angular_speed = 9.625,
+        .t_accel = 16,
+        .t_max = 310,
+        .sign = -1,
+    },
 };
 
 static struct turn_params turns_haki[] = {
@@ -526,6 +556,16 @@ static struct turn_params turns_haki[] = {
         .t_accel = 37,
         .t_max = 291,
         .sign = 1,
+    },
+    [MOVE_BACK_STOP] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 0,
+        .angular_accel = 612.5,
+        .max_angular_speed = 9.625,
+        .t_accel = 16,
+        .t_max = 310,
+        .sign = -1,
     },
 };
 
@@ -782,6 +822,9 @@ static void move_back(enum movement movement) {
     set_side_sensors_far_correction(true);
     move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
     enter_next_cell();
+  }else{
+    set_side_sensors_close_correction(true);
+    set_side_sensors_far_correction(true);
   }
 }
 
@@ -1075,6 +1118,7 @@ void move(enum movement movement) {
       break;
     case MOVE_BACK:
     case MOVE_BACK_WALL:
+    case MOVE_BACK_STOP:
       move_back(movement);
       break;
     default:
