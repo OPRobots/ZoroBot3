@@ -16,8 +16,8 @@
 #include <mpu.h>
 #include <sensors.h>
 
-void setup();
-void setup_spi_high_speed();
-void setup_spi_low_speed();
+void setup(void);
+void setup_spi_high_speed(void);
+void setup_spi_low_speed(void);
 
 #endif

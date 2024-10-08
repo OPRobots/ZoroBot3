@@ -13,12 +13,15 @@
  * DWT
  *
  */
-static void setup_clock() {
-  rcc_clock_setup_hse_3v3(&hse_8mhz_3v3[CLOCK_3V3_168MHZ]);
+static void setup_clock(void) {
+  
+  rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
 
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_GPIOB);
   rcc_periph_clock_enable(RCC_GPIOC);
+
+  rcc_periph_clock_enable(RCC_SYSCFG);
 
   rcc_periph_clock_enable(RCC_USART3);
 
@@ -45,8 +48,8 @@ static void setup_clock() {
  * @brief Configura el SysTick para 1ms
  *
  */
-static void setup_systick() {
-  systick_set_frequency(SYSTICK_FREQUENCY_HZ, 168000000);
+static void setup_systick(void) {
+  systick_set_frequency(SYSTICK_FREQUENCY_HZ, SYSCLK_FREQUENCY_HZ);
   systick_counter_enable();
   systick_interrupt_enable();
 }
@@ -55,12 +58,12 @@ static void setup_systick() {
  * @brief Configura las prioridades de Timers para evitar bloqueos
  * 
  */
-static void setup_timer_priorities() {
+static void setup_timer_priorities(void) {
+  nvic_set_priority(NVIC_TIM2_IRQ, 16 * 0);
   nvic_set_priority(NVIC_SYSTICK_IRQ, 16 * 1);
   nvic_set_priority(NVIC_DMA2_STREAM0_IRQ, 16 * 2);
-  nvic_set_priority(NVIC_TIM2_IRQ, 16 * 3);
-  nvic_set_priority(NVIC_TIM5_IRQ, 16 * 4);
-  nvic_set_priority(NVIC_USART3_IRQ, 16 * 5);
+  nvic_set_priority(NVIC_TIM5_IRQ, 16 * 3);
+  nvic_set_priority(NVIC_USART3_IRQ, 16 * 4);
 
   nvic_enable_irq(NVIC_TIM5_IRQ);
   nvic_enable_irq(NVIC_TIM2_IRQ);
@@ -72,7 +75,7 @@ static void setup_timer_priorities() {
  * @brief Configura el USART3 para comunicacion Serial
  * 
  */
-static void setup_usart() {
+static void setup_usart(void) {
   usart_set_baudrate(USART3, 115200);
   usart_set_databits(USART3, 8);
   usart_set_stopbits(USART3, USART_STOPBITS_1);
@@ -88,7 +91,7 @@ static void setup_usart() {
  * @brief Configura los puertos GPIO
  * 
  */
-static void setup_gpio() {
+static void setup_gpio(void) {
   // Entradas digitales configuracion
   gpio_mode_setup(GPIOC, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO13 | GPIO14 | GPIO15);
 
@@ -144,9 +147,9 @@ static void setup_gpio() {
  * @brief Configura el ADC1 para lectura de sensores individualmente a partir de un trigger por software
  * 
  */
-static void setup_adc1() {
+static void setup_adc1(void) {
 
-  adc_off(ADC1);
+  adc_power_off(ADC1);
   adc_enable_scan_mode(ADC1);
   adc_set_single_conversion_mode(ADC1);
   adc_enable_external_trigger_injected(ADC1, ADC_CR2_JSWSTART, ADC_CR2_JEXTEN_RISING_EDGE);
@@ -162,11 +165,11 @@ static void setup_adc1() {
  * @brief Configura el ADC2 para lectura del sensor de batería
  * 
  */
-static void setup_adc2() {
+static void setup_adc2(void) {
   uint8_t lista_canales[16];
 
   lista_canales[0] = ADC_CHANNEL4;
-  adc_off(ADC2);
+  adc_power_off(ADC2);
   adc_disable_scan_mode(ADC2);
   adc_set_single_conversion_mode(ADC2);
   adc_set_right_aligned(ADC2);
@@ -179,10 +182,11 @@ static void setup_adc2() {
  * @brief Configura el TIM1 para manejar el el PWM del LED RGB
  * 
  */
-static void setup_leds_pwm() {
+static void setup_leds_pwm(void) {
   timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
 
-  timer_set_prescaler(TIM1, rcc_apb2_frequency * 2 / 400000);
+  // timer_set_prescaler(TIM1, rcc_apb2_frequency * 2 / 400000);
+  timer_set_prescaler(TIM1, ((rcc_apb1_frequency * 2) / 1000000 - 2));
   // 400000 es la frecuencia a la que irá el PWM 4 kHz, los dos últimos ceros no se porqué, pero son necesarios ya que rcc_apb2_frequency también añade dos ceros a mayores
   timer_set_repetition_counter(TIM1, 0);
   timer_enable_preload(TIM1);
@@ -208,12 +212,13 @@ static void setup_leds_pwm() {
  * @brief Configura el TIM8 para manejar el PWM de los Motores, inicialmente a 4kHz
  * 
  */
-static void setup_motors_pwm() {
+static void setup_motors_pwm(void) {
   timer_set_mode(TIM8, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
 
   //84000000
-  timer_set_prescaler(TIM8, rcc_apb2_frequency * 2 / 4000000 - 2);
-  // 4000000 es la frecuencia a la que irá el PWM 4 kHz, los dos últimos ceros no se porqué, pero son necesarios ya que rcc_apb2_frequency también añade dos ceros a mayores
+  timer_set_prescaler(TIM8, rcc_apb2_frequency * 2 / 40000000 - 2);
+  // 4000000 es la frecuencia a la que irá el PWM 25 kHz, los dos últimos ceros no se porqué,
+  // pero son necesarios ya que rcc_apb2_frequency también añade dos ceros a mayores
   timer_set_repetition_counter(TIM8, 0);
   timer_enable_preload(TIM8);
   timer_continuous_mode(TIM8);
@@ -236,10 +241,10 @@ static void setup_motors_pwm() {
 
 /**
  * @brief Configura el TIM5 como ISR para ejecutrase cada 1ms.
- * Esta función ISR será la que contenga el comportamiento principal del robot, tal como PID, Control de Velocidad, ...
+ * Esta función ISR será la que contenga la gestión del control del robot
  * 
  */
-static void setup_main_loop_timer() {
+static void setup_main_loop_timer(void) {
   rcc_periph_reset_pulse(RST_TIM5);
   timer_set_mode(TIM5, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
   timer_set_prescaler(TIM5, ((rcc_apb1_frequency * 2) / 1000000 - 2));
@@ -249,17 +254,18 @@ static void setup_main_loop_timer() {
 
   timer_enable_counter(TIM5);
   // El timer se iniciará en el arranque
-  // timer_enable_irq(TIM5, TIM_DIER_CC1IE);
+  timer_enable_irq(TIM5, TIM_DIER_CC1IE);
 }
 
 /**
  * @brief Función de uso interno que lanza el TIM5
  * 
  */
-void tim5_isr() {
+void tim5_isr(void) {
   if (timer_get_flag(TIM5, TIM_SR_CC1IF)) {
     timer_clear_flag(TIM5, TIM_SR_CC1IF);
-    //TODO: llamar a la función de control general
+    
+    control_loop();
   }
 }
 
@@ -268,10 +274,10 @@ void tim5_isr() {
  * Esta función ISR será la que maneje la lectura de sensores y el encendido/apagado de los emisores
  * 
  */
-static void setup_wall_sensor_manager() {
+static void setup_wall_sensor_manager(void) {
   rcc_periph_reset_pulse(RST_TIM2);
   timer_set_mode(TIM2, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-  timer_set_prescaler(TIM2, ((rcc_apb1_frequency * 2) / 16000000 - 1)); // 16kHz
+  timer_set_prescaler(TIM2, ((rcc_apb1_frequency * 2) / 16000000 - 1)); // 16.66 ~16kHz
   timer_disable_preload(TIM2);
   timer_continuous_mode(TIM2);
   timer_set_period(TIM2, 1024);
@@ -284,7 +290,7 @@ static void setup_wall_sensor_manager() {
  * @brief Función de uso interno que lanza el TIM2
  * 
  */
-void tim2_isr() {
+void tim2_isr(void) {
   if (timer_get_flag(TIM2, TIM_SR_CC1IF)) {
     timer_clear_flag(TIM2, TIM_SR_CC1IF);
 
@@ -296,7 +302,7 @@ void tim2_isr() {
  * @brief Configura los TIM3 y TIM4 para lectura en quadratura de encoders.
  * 
  */
-static void setup_quadrature_encoders() {
+static void setup_quadrature_encoders(void) {
   timer_set_period(TIM4, 0xFFFF);
   timer_slave_set_mode(TIM4, TIM_SMCR_SMS_EM3);
   timer_ic_set_input(TIM4, TIM_IC1, TIM_IC_IN_TI1);
@@ -345,7 +351,7 @@ static void setup_spi(uint8_t speed_div) {
  * 
  * Reference: https://github.com/Bulebots/meiga
  */
-void setup_spi_high_speed() {
+void setup_spi_high_speed(void) {
   setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_8);
   delay(100);
 }
@@ -357,7 +363,7 @@ void setup_spi_high_speed() {
  * 
  * Reference: https://github.com/Bulebots/meiga
  */
-void setup_spi_low_speed() {
+void setup_spi_low_speed(void) {
   setup_spi(SPI_CR1_BAUDRATE_FPCLK_DIV_128);
   delay(100);
 }
@@ -366,7 +372,7 @@ void setup_spi_low_speed() {
  * @brief Inicialización y configuración de todos los componentes del robot
  * 
  */
-void setup() {
+void setup(void) {
   setup_clock();
   setup_systick();
   setup_timer_priorities();

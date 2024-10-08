@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "source_code"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.tpl": "html",
+			"*.h": "c",
+			"*.c": "c",
+		}
+	}
+}
