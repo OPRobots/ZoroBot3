@@ -822,7 +822,7 @@ static void move_back(enum movement movement) {
     set_side_sensors_far_correction(true);
     move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
     enter_next_cell();
-  }else{
+  } else {
     set_side_sensors_close_correction(true);
     set_side_sensors_far_correction(true);
   }
@@ -1087,6 +1087,7 @@ void move_inplace_angle(float angle, float rads) {
 }
 
 void move(enum movement movement) {
+  set_check_motors_saturated_enabled(true);
   switch (movement) {
     case MOVE_HOME:
       move_home();
@@ -1119,7 +1120,9 @@ void move(enum movement movement) {
     case MOVE_BACK:
     case MOVE_BACK_WALL:
     case MOVE_BACK_STOP:
+      set_check_motors_saturated_enabled(false);
       move_back(movement);
+      set_check_motors_saturated_enabled(true);
       break;
     default:
       break;
