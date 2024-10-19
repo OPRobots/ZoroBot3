@@ -4,6 +4,7 @@
 #include "control.h"
 #include "menu.h"
 #include "menu_run.h"
+#include "motors.h"
 #include <string.h>
 
 enum movement {

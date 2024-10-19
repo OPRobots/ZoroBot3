@@ -522,40 +522,8 @@ static void smooth_run_sequence(enum speed_strategy speed) {
     case SPEED_MEDIUM:
     case SPEED_FAST:
     case SPEED_HAKI:
+      printf("Solve strategy: %d\n", menu_run_get_solve_strategy());
       switch (menu_run_get_solve_strategy()) {
-        case SOLVE_STANDARD:
-          for (uint8_t i = 0; i < strlen(run_sequence); i++) {
-            switch (run_sequence[i]) {
-              case 'B':
-                run_sequence_movements[index++] = MOVE_START;
-                break;
-              case 'F':
-                run_sequence_movements[index++] = MOVE_FRONT;
-                break;
-              case 'L':
-                if (i + 1 < (uint16_t)strlen(run_sequence) && run_sequence[i + 1] == 'L') {
-                  turn_movement = MOVE_LEFT_180;
-                  i++;
-                } else {
-                  turn_movement = MOVE_LEFT_90;
-                }
-                run_sequence_movements[index++] = turn_movement;
-                break;
-              case 'R':
-                if (i + 1 < (uint16_t)strlen(run_sequence) && run_sequence[i + 1] == 'R') {
-                  turn_movement = MOVE_RIGHT_180;
-                  i++;
-                } else {
-                  turn_movement = MOVE_RIGHT_90;
-                }
-                run_sequence_movements[index++] = turn_movement;
-                break;
-              case 'S':
-                run_sequence_movements[index++] = MOVE_HOME;
-                break;
-            }
-          }
-          break;
         case SOLVE_DIAGONALS:
           for (uint8_t i = 0; i < strlen(run_sequence); i++) {
             switch (run_sequence[i]) {
@@ -630,6 +598,40 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                     run_diagonal = false;
                   }
                 }
+                break;
+              case 'S':
+                run_sequence_movements[index++] = MOVE_HOME;
+                break;
+            }
+          }
+          break;
+        case SOLVE_STANDARD:
+        default:
+          for (uint8_t i = 0; i < strlen(run_sequence); i++) {
+            switch (run_sequence[i]) {
+              case 'B':
+                run_sequence_movements[index++] = MOVE_START;
+                break;
+              case 'F':
+                run_sequence_movements[index++] = MOVE_FRONT;
+                break;
+              case 'L':
+                if (i + 1 < (uint16_t)strlen(run_sequence) && run_sequence[i + 1] == 'L') {
+                  turn_movement = MOVE_LEFT_180;
+                  i++;
+                } else {
+                  turn_movement = MOVE_LEFT_90;
+                }
+                run_sequence_movements[index++] = turn_movement;
+                break;
+              case 'R':
+                if (i + 1 < (uint16_t)strlen(run_sequence) && run_sequence[i + 1] == 'R') {
+                  turn_movement = MOVE_RIGHT_180;
+                  i++;
+                } else {
+                  turn_movement = MOVE_RIGHT_90;
+                }
+                run_sequence_movements[index++] = turn_movement;
                 break;
               case 'S':
                 run_sequence_movements[index++] = MOVE_HOME;

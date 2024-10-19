@@ -118,6 +118,9 @@ static void handle_menu_run_btn(void) {
       case MODE_RACE:
         mode_values = MODE_RACE_VALUES;
         break;
+      case MODE_SOLVE_STRATEGY:
+        mode_values = MODE_SOLVE_STRATEGY_VALUES;
+        break;
     }
     valueRun[modeRun] = (valueRun[modeRun] + 1) % mode_values;
   }

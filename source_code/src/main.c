@@ -41,9 +41,11 @@ int main(void) {
               switch (sensor_started) {
                 case SENSOR_FRONT_LEFT_WALL_ID:
                   handwall_use_left_hand();
+                  handwall_start();
                   break;
                 case SENSOR_FRONT_RIGHT_WALL_ID:
                   handwall_use_right_hand();
+                  handwall_start();
                   break;
               }
               break;

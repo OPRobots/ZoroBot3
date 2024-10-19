@@ -18,6 +18,11 @@ void handwall_set_time_limit(uint32_t ms) {
 
 void handwall_start(void) {
   start_ms = get_clock_ticks();
+  configure_kinematics(menu_run_get_speed());
+  clear_info_leds();
+  set_RGB_color(0, 0, 0);
+  set_target_fan_speed(get_kinematics().fan_speed, 400);
+  delay(500);
   move(MOVE_START);
 }
 
