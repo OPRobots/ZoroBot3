@@ -28,6 +28,7 @@ enum solve_strategy {
 enum explore_algorithm {
   EXPLORE_HANDWALL = 0,
   EXPLORE_FLOODFILL = 1,
+  EXPLORE_HARDCODE = 2,
 };
 
 bool menu_run_handler(void);

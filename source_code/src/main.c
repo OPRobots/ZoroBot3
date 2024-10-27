@@ -5,6 +5,7 @@
 #include <encoders.h>
 #include <floodfill.h>
 #include <handwall.h>
+#include <hardcode.h>
 #include <leds.h>
 #include <macroarray.h>
 #include <menu.h>
@@ -23,18 +24,47 @@ void sys_tick_handler(void) {
   update_battery_voltage();
   check_leds_while();
   check_buttons();
+  if (is_race_started()) {
+    check_start_module_run();
+  }
 }
 
 int main(void) {
   setup();
   show_battery_level();
   eeprom_load();
+  int8_t sensor_started = SENSOR_FRONT_LEFT_WALL_ID;
 
   while (1) {
     if (!is_race_started()) {
       menu_handler();
       if (menu_run_can_start()) {
-        int8_t sensor_started = check_start_run();
+        // int8_t sensor_started = check_start_run();
+        // sensor_started = check_side_front_sensors();
+        if (get_menu_mode_btn()) {
+          while (get_menu_mode_btn()) {
+          }
+
+          if (sensor_started == SENSOR_FRONT_LEFT_WALL_ID) {
+            sensor_started = SENSOR_FRONT_RIGHT_WALL_ID;
+          } else {
+            sensor_started = SENSOR_FRONT_LEFT_WALL_ID;
+          }
+
+          set_RGB_color(0, 50, 0);
+          delay(250);
+          if (sensor_started == SENSOR_FRONT_LEFT_WALL_ID) {
+            set_RGB_color(50, 0, 0);
+          } else {
+            set_RGB_color(0, 0, 50);
+          }
+          eeprom_set_data(DATA_INDEX_MENU_RUN, get_menu_run_values(), MENU_RUN_NUM_MODES);
+          eeprom_save();
+          delay(1000);
+          set_RGB_color(0, 0, 0);
+        }
+
+        check_start_module_run();
         if (is_race_started()) {
           switch (menu_run_get_explore_algorithm()) {
             case EXPLORE_HANDWALL:
@@ -59,6 +89,17 @@ int main(void) {
                   break;
               }
               break;
+            case EXPLORE_HARDCODE:
+              switch (sensor_started) {
+                case SENSOR_FRONT_LEFT_WALL_ID:
+                  hardcode_use_left_hand();
+                  break;
+                case SENSOR_FRONT_RIGHT_WALL_ID:
+                  hardcode_use_right_hand();
+                  break;
+              }
+              hardcode_start();
+              break;
             default:
               set_race_started(false);
               break;
@@ -72,6 +113,9 @@ int main(void) {
           break;
         case EXPLORE_FLOODFILL:
           floodfill_loop();
+          break;
+        case EXPLORE_HARDCODE:
+          hardcode_loop();
           break;
         default:
           set_race_started(false);

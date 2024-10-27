@@ -27,6 +27,8 @@ void eeprom_load(void) {
     addr += 4;
   }
 
+  // eeprom_restore();
+
   mpu_load_eeprom();
   sensors_load_eeprom();
   floodfill_load_maze();

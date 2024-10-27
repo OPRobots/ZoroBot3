@@ -15,6 +15,8 @@
 bool is_race_started(void);
 void set_race_started(bool state);
 int8_t check_start_run(void);
+int8_t check_side_front_sensors(void);
+void check_start_module_run(void);
 void set_control_debug(bool state);
 
 void set_side_sensors_close_correction(bool enabled);

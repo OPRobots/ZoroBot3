@@ -152,6 +152,52 @@ int8_t check_start_run(void) {
   return -1;
 }
 
+int8_t check_side_front_sensors(void) {
+  if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= SENSOR_FRONT_DETECTION_START) {
+    if (sensor_front_left_start_ms == 0 && sensor_front_right_start_ms == 0) {
+      sensor_front_left_start_ms = get_clock_ticks();
+    }
+  } else {
+    sensor_front_left_start_ms = 0;
+  }
+  if (get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID) <= SENSOR_FRONT_DETECTION_START) {
+    if (sensor_front_left_start_ms == 0 && sensor_front_right_start_ms == 0) {
+      sensor_front_right_start_ms = get_clock_ticks();
+    }
+  } else {
+    sensor_front_right_start_ms = 0;
+  }
+  if (sensor_front_left_start_ms >= SENSOR_START_MIN_MS || sensor_front_right_start_ms >= SENSOR_START_MIN_MS) {
+    uint8_t sensor = sensor_front_left_start_ms >= SENSOR_START_MIN_MS ? SENSOR_FRONT_LEFT_WALL_ID : SENSOR_FRONT_RIGHT_WALL_ID;
+    set_RGB_color(0, 50, 0);
+    delay(1000);
+    if (sensor == SENSOR_FRONT_LEFT_WALL_ID) {
+      set_RGB_color(50, 0, 0);
+    } else {
+      set_RGB_color(0, 0, 50);
+    }
+    eeprom_set_data(DATA_INDEX_MENU_RUN, get_menu_run_values(), MENU_RUN_NUM_MODES);
+    eeprom_save();
+    delay(1000);
+    set_RGB_color(0, 0, 0);
+    sensor_front_left_start_ms = 0;
+    sensor_front_right_start_ms = 0;
+    return sensor;
+  }
+  return -1;
+}
+
+void check_start_module_run(void) {
+  bool state = gpio_get(GPIOB, GPIO9);
+  if (state && !is_race_started()) {
+    clear_info_leds();
+    set_RGB_color(0, 0, 0);
+    set_race_started(true);
+  } else if (!state && is_race_started()) {
+    set_race_started(false);
+  }
+}
+
 void set_side_sensors_close_correction(bool enabled) {
   side_sensors_close_correction_enabled = enabled;
 }
