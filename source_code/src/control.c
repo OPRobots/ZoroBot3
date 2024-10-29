@@ -350,18 +350,18 @@ void control_loop(void) {
   set_motors_pwm(pwm_left, pwm_right);
 
   //  Corrección de la velocidad lineal
-  macroarray_store(
-      0,
-      0b00011001, // 0b0001101001,
-      8,
-      (int16_t)target_linear_speed,
-      (int16_t)ideal_linear_speed,
-      (int16_t)(get_measured_linear_speed()),
-      (int16_t)(ideal_angular_speed * 100.0),
-      (int16_t)(get_measured_angular_speed() * 100.0),
-      (int16_t)pwm_left,
-      (int16_t)pwm_right,
-      (int16_t)(get_battery_voltage() * 100.0));
+  // macroarray_store(
+  //     0,
+  //     0b00011001, // 0b0001101001,
+  //     8,
+  //     (int16_t)target_linear_speed,
+  //     (int16_t)ideal_linear_speed,
+  //     (int16_t)(get_measured_linear_speed()),
+  //     (int16_t)(ideal_angular_speed * 100.0),
+  //     (int16_t)(get_measured_angular_speed() * 100.0),
+  //     (int16_t)pwm_left,
+  //     (int16_t)pwm_right,
+  //     (int16_t)(get_battery_voltage() * 100.0));
 
   // Corrección angular en diagonales
   // if (front_sensors_diagonal_correction_enabled) {

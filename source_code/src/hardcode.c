@@ -4,6 +4,13 @@ static bool use_left_hand = true;
 static uint32_t start_ms = 0;
 static uint32_t time_limit = 0;
 
+static void hardcode_sector(uint16_t distance, enum movement turn) {
+  run_straight_hardcoded(distance, get_kinematics().linear_speed, turn != MOVE_NONE ? get_kinematics().turns[turn].linear_speed : 0, false, false);
+  if (turn != MOVE_NONE) {
+    move_arc_turn(turn);
+  }
+}
+
 void hardcode_use_left_hand(void) {
   use_left_hand = true;
 }
@@ -21,8 +28,8 @@ void hardcode_start(void) {
   configure_kinematics(menu_run_get_speed());
   clear_info_leds();
   set_RGB_color(0, 0, 0);
-  // set_target_fan_speed(get_kinematics().fan_speed, 400);
-  // delay(500);
+  set_target_fan_speed(get_kinematics().fan_speed, 400);
+  delay(500);
   // move(MOVE_START);
 }
 
@@ -31,24 +38,35 @@ void hardcode_loop(void) {
     set_race_started(false);
     return;
   }
-  move_straight(100, get_kinematics().linear_speed, false, true);
-  move_straight(100, -get_kinematics().linear_speed, false, true);
-  move_straight(100, get_kinematics().linear_speed, false, true);
-  move_straight(100, -get_kinematics().linear_speed, false, true);
+
+  enum movement TURN_RIGHT = MOVE_RIGHT;
+  enum movement TURN_LEFT = MOVE_LEFT;
+  switch (menu_run_get_speed()) {
+    case SPEED_EXPLORE:
+    case SPEED_NORMAL:
+      TURN_RIGHT = MOVE_RIGHT;
+      TURN_LEFT = MOVE_LEFT;
+      break;
+    case SPEED_MEDIUM:
+    case SPEED_FAST:
+    case SPEED_HAKI:
+      TURN_RIGHT = MOVE_RIGHT_90;
+      TURN_LEFT = MOVE_LEFT_90;
+      break;
+  }
+
+  hardcode_sector(143, TURN_RIGHT);
+  hardcode_sector(502, TURN_LEFT);
+  hardcode_sector(253, TURN_RIGHT);
+  hardcode_sector(270, TURN_LEFT);
+  hardcode_sector(200, TURN_LEFT);
+  hardcode_sector(250, TURN_RIGHT);
+  hardcode_sector(185, TURN_RIGHT);
+  hardcode_sector(210, TURN_LEFT);
+  hardcode_sector(225, TURN_LEFT);
+  hardcode_sector(390, TURN_RIGHT);
+  hardcode_sector(275, TURN_LEFT);
+  hardcode_sector(450, TURN_RIGHT);
+  hardcode_sector(200, MOVE_NONE);
   set_race_started(false);
-  // struct walls walls = get_walls();
-  // set_RGB_color_while(0, 0, 255, 20);
-  // if ((use_left_hand && !walls.left) || (!use_left_hand && walls.right && !walls.left)) {
-  //   move(MOVE_LEFT);
-  // } else if ((!use_left_hand && !walls.right) || (use_left_hand && walls.left && !walls.right)) {
-  //   move(MOVE_RIGHT);
-  // } else if (!walls.front) {
-  //   move(MOVE_FRONT);
-  // } else if (walls.front && walls.left && walls.right) {
-  //   move(MOVE_BACK_WALL);
-  // } else {
-  //   set_target_linear_speed(0);
-  //   set_ideal_angular_speed(0);
-  //   warning_status_led(50);
-  // }
 }

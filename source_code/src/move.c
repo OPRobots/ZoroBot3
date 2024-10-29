@@ -971,6 +971,77 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
   }
 }
 
+void run_straight_hardcoded(int32_t distance, int32_t speed, int32_t final_speed, bool check_wall_loss, bool stop) {
+  set_front_sensors_correction(false);
+  set_front_sensors_diagonal_correction(false);
+  set_side_sensors_close_correction(false);
+  set_side_sensors_far_correction(false);
+
+  int32_t current_distance = get_encoder_avg_micrometers();
+  int32_t slow_distance = 0;
+  int32_t stop_distance = 0;
+  struct walls initial_walls = get_walls();
+
+  // macroarray_store(
+  //     1,
+  //     0b0,
+  //     8,
+  //     (int16_t)get_encoder_avg_micrometers(),
+  //     (int16_t)current_distance,
+  //     (int16_t)distance,
+  //     (int16_t)stop_distance,
+  //     (int16_t)slow_distance,
+  //     (int16_t)distance,
+  //     (int16_t)speed,
+  //     (int16_t)final_speed,
+  //     (int16_t)check_wall_loss_correction,
+  //     (int16_t)stop);
+
+  set_ideal_angular_speed(0.0);
+  set_target_linear_speed(speed);
+  if (speed >= 0) {
+    while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + (distance - stop_distance - slow_distance) * MICROMETERS_PER_MILLIMETER) {
+      // if (check_wall_loss && check_wall_loss_correction(initial_walls)) {
+      //   current_distance = get_encoder_avg_micrometers();
+      //   distance = 73;
+      //   set_RGB_color_while(0, 255, 0, 150);
+      // }
+      // macroarray_store(
+      //     1,
+      //     0b0,
+      //     8,
+      //     (int16_t)get_encoder_avg_micrometers(),
+      //     (int16_t)current_distance,
+      //     (int16_t)distance,
+      //     (int16_t)stop_distance,
+      //     (int16_t)slow_distance,
+      //     (int16_t)distance,
+      //     (int16_t)speed,
+      //     (int16_t)final_speed,
+      //     (int16_t)check_wall_loss_correction,
+      //     (int16_t)stop);
+
+      if (stop) {
+        stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
+      }
+
+      if (final_speed != speed && !stop) {
+        slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed);
+      }
+    }
+    // if (stop) {
+    //   set_target_linear_speed(0);
+    //   set_ideal_angular_speed(0.0);
+    //   while (is_race_started() && get_ideal_linear_speed() != 0) {
+    //   }
+    // }
+
+    set_target_linear_speed(final_speed);
+    while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
+    }
+  }
+}
+
 void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(true);
