@@ -55,18 +55,37 @@ void hardcode_loop(void) {
       break;
   }
 
-  hardcode_sector(143, TURN_RIGHT);
-  hardcode_sector(502, TURN_LEFT);
-  hardcode_sector(253, TURN_RIGHT);
-  hardcode_sector(270, TURN_LEFT);
-  hardcode_sector(200, TURN_LEFT);
-  hardcode_sector(250, TURN_RIGHT);
-  hardcode_sector(185, TURN_RIGHT);
-  hardcode_sector(210, TURN_LEFT);
-  hardcode_sector(225, TURN_LEFT);
-  hardcode_sector(390, TURN_RIGHT);
-  hardcode_sector(275, TURN_LEFT);
-  hardcode_sector(450, TURN_RIGHT);
-  hardcode_sector(200, MOVE_NONE);
-  set_race_started(false);
+  if (use_left_hand) {
+    hardcode_sector(70, TURN_RIGHT);
+    hardcode_sector(502, TURN_LEFT);
+    hardcode_sector(180, TURN_RIGHT);
+    hardcode_sector(220, TURN_LEFT);
+    hardcode_sector(150, TURN_LEFT);
+    hardcode_sector(350, TURN_RIGHT);
+    hardcode_sector(100, TURN_LEFT);
+    hardcode_sector(320, TURN_RIGHT);
+    hardcode_sector(160, TURN_RIGHT);
+    hardcode_sector(370, TURN_LEFT);
+    hardcode_sector(170, TURN_RIGHT);
+    hardcode_sector(430, TURN_LEFT);
+    hardcode_sector(300, MOVE_NONE);
+  } else {
+    hardcode_sector(70, TURN_RIGHT);
+    hardcode_sector(502, TURN_LEFT);
+    hardcode_sector(180, TURN_RIGHT);
+    hardcode_sector(220, TURN_LEFT);
+    hardcode_sector(150, TURN_LEFT);
+    hardcode_sector(350, TURN_RIGHT);
+    hardcode_sector(150, TURN_RIGHT);
+    hardcode_sector(290, TURN_LEFT);
+    hardcode_sector(170, TURN_LEFT);
+    hardcode_sector(450, TURN_RIGHT);
+    hardcode_sector(160, TURN_LEFT);
+    hardcode_sector(340, TURN_RIGHT);
+    hardcode_sector(300, MOVE_NONE);
+  }
+  force_target_linear_speed(0);
+  while(is_race_started()){
+    set_RGB_rainbow();
+  }
 }

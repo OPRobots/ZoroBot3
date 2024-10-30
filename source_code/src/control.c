@@ -251,6 +251,11 @@ void set_target_linear_speed(int32_t linear_speed) {
   target_linear_speed = linear_speed;
 }
 
+void force_target_linear_speed(int32_t linear_speed) {
+  target_linear_speed = linear_speed;
+  ideal_linear_speed = linear_speed;
+}
+
 int32_t get_ideal_linear_speed(void) {
   return ideal_linear_speed;
 }
