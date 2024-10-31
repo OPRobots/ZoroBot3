@@ -569,37 +569,99 @@ static struct turn_params turns_haki[] = {
     },
 };
 
-static struct kinematics kinematics_settings[] = {
-    [SPEED_EXPLORE] = {
-        .linear_speed = 500,
-        .linear_accel = 3000,
-        .fan_speed = 50,
-        .turns = turns_explore,
+static struct turn_params turns_hardcode[] = {
+    [MOVE_LEFT] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1200,
+        .angular_accel = 700,
+        .max_angular_speed = 15.435,
+        .t_accel = 22,
+        .t_max = 80,
+        .sign = -1,
     },
-    [SPEED_NORMAL] = {
-        .linear_speed = 1500,
-        .linear_accel = 3000,
-        .fan_speed = 75,
-        .turns = turns_explore,
+    [MOVE_RIGHT] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1200,
+        .angular_accel = 700,
+        .max_angular_speed = 15.435,
+        .t_accel = 22,
+        .t_max = 80,
+        .sign = 1,
     },
-    [SPEED_MEDIUM] = {
-        .linear_speed = 2500,
-        .linear_accel = 5000,
-        .fan_speed = 85,
-        .turns = turns_medium,
+    [MOVE_LEFT_90] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2000,
+        .angular_accel = 700,
+        .max_angular_speed = 15.435,
+        .t_accel = 22,
+        .t_max = 80,
+        .sign = -1,
     },
-    [SPEED_FAST] = {
-        .linear_speed = 3000,
-        .linear_accel = 7000,
-        .fan_speed = 85,
-        .turns = turns_fast,
+    [MOVE_RIGHT_90] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2000,
+        .angular_accel = 700,
+        .max_angular_speed = 15.435,
+        .t_accel = 22,
+        .t_max = 80,
+        .sign = 1,
     },
-    [SPEED_HAKI] = {
-        .linear_speed = 4000,
-        .linear_accel = 15000,
-        .fan_speed = 85,
-        .turns = turns_haki,
-    }};
+    [MOVE_LEFT_180] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2000,
+        .angular_accel = 700,
+        .max_angular_speed = 13.405,
+        .t_accel = 19,
+        .t_max = 216,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_180] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2000,
+        .angular_accel = 700,
+        .max_angular_speed = 13.405,
+        .t_accel = 19,
+        .t_max = 216,
+        .sign = 1,
+    },
+};
+
+static struct kinematics kinematics_settings[] = {[SPEED_EXPLORE] = {
+                                                      .linear_speed = 500,
+                                                      .linear_accel = 3000,
+                                                      .fan_speed = 50,
+                                                      .turns = turns_explore,
+                                                  },
+                                                  [SPEED_NORMAL] = {
+                                                      .linear_speed = 1500,
+                                                      .linear_accel = 3000,
+                                                      .fan_speed = 75,
+                                                      .turns = turns_explore,
+                                                  },
+                                                  [SPEED_MEDIUM] = {
+                                                      .linear_speed = 2500,
+                                                      .linear_accel = 5000,
+                                                      .fan_speed = 85,
+                                                      .turns = turns_medium,
+                                                  },
+                                                  [SPEED_FAST] = {
+                                                      .linear_speed = 3000,
+                                                      .linear_accel = 7000,
+                                                      .fan_speed = 85,
+                                                      .turns = turns_fast,
+                                                  },
+                                                  [SPEED_HAKI] = {
+                                                      .linear_speed = 4000,
+                                                      .linear_accel = 15000,
+                                                      .fan_speed = 85,
+                                                      .turns = turns_hardcode,
+                                                  }};
 
 static struct kinematics kinematics;
 

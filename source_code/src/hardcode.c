@@ -5,7 +5,9 @@ static uint32_t start_ms = 0;
 static uint32_t time_limit = 0;
 
 static void hardcode_sector(uint16_t distance, enum movement turn) {
-  run_straight_hardcoded(distance, get_kinematics().linear_speed, turn != MOVE_NONE ? get_kinematics().turns[turn].linear_speed : 0, false, false);
+  if (distance > 0) {
+    run_straight_hardcoded(distance, get_kinematics().linear_speed, turn != MOVE_NONE ? get_kinematics().turns[turn].linear_speed : 0, false, false);
+  }
   if (turn != MOVE_NONE) {
     move_arc_turn(turn);
   }
@@ -41,6 +43,8 @@ void hardcode_loop(void) {
 
   enum movement TURN_RIGHT = MOVE_RIGHT;
   enum movement TURN_LEFT = MOVE_LEFT;
+  enum movement TURN_RIGHT_180 = MOVE_RIGHT_180;
+  enum movement TURN_LEFT_180 = MOVE_LEFT_180;
   switch (menu_run_get_speed()) {
     case SPEED_EXPLORE:
     case SPEED_NORMAL:
@@ -52,40 +56,37 @@ void hardcode_loop(void) {
     case SPEED_HAKI:
       TURN_RIGHT = MOVE_RIGHT_90;
       TURN_LEFT = MOVE_LEFT_90;
+      TURN_RIGHT_180 = MOVE_RIGHT_180;
+      TURN_LEFT_180 = MOVE_LEFT_180;
       break;
   }
 
   if (use_left_hand) {
-    hardcode_sector(70, TURN_RIGHT);
+    hardcode_sector(50, MOVE_RIGHT);
     hardcode_sector(502, TURN_LEFT);
+    hardcode_sector(50, TURN_RIGHT);
+    hardcode_sector(0, TURN_LEFT_180);
     hardcode_sector(180, TURN_RIGHT);
-    hardcode_sector(220, TURN_LEFT);
-    hardcode_sector(150, TURN_LEFT);
-    hardcode_sector(350, TURN_RIGHT);
-    hardcode_sector(100, TURN_LEFT);
-    hardcode_sector(320, TURN_RIGHT);
-    hardcode_sector(160, TURN_RIGHT);
-    hardcode_sector(370, TURN_LEFT);
-    hardcode_sector(170, TURN_RIGHT);
-    hardcode_sector(430, TURN_LEFT);
+    hardcode_sector(70, TURN_LEFT);
+    hardcode_sector(260, TURN_RIGHT_180);
+    hardcode_sector(350, TURN_LEFT);
+    hardcode_sector(50, TURN_RIGHT);
+    hardcode_sector(300, TURN_LEFT);
     hardcode_sector(300, MOVE_NONE);
   } else {
-    hardcode_sector(70, TURN_RIGHT);
+    hardcode_sector(50, MOVE_RIGHT);
     hardcode_sector(502, TURN_LEFT);
-    hardcode_sector(180, TURN_RIGHT);
-    hardcode_sector(220, TURN_LEFT);
-    hardcode_sector(150, TURN_LEFT);
-    hardcode_sector(350, TURN_RIGHT);
-    hardcode_sector(150, TURN_RIGHT);
-    hardcode_sector(290, TURN_LEFT);
-    hardcode_sector(170, TURN_LEFT);
-    hardcode_sector(450, TURN_RIGHT);
-    hardcode_sector(160, TURN_LEFT);
-    hardcode_sector(340, TURN_RIGHT);
+    hardcode_sector(50, TURN_RIGHT);
+    hardcode_sector(0, TURN_LEFT_180);
+    hardcode_sector(180, TURN_RIGHT_180);
+    hardcode_sector(180, TURN_LEFT_180);
+    hardcode_sector(280, TURN_RIGHT);
+    hardcode_sector(110, TURN_LEFT);
+    hardcode_sector(290, TURN_RIGHT);
     hardcode_sector(300, MOVE_NONE);
   }
   force_target_linear_speed(0);
-  while(is_race_started()){
+  while (is_race_started()) {
     set_RGB_rainbow();
   }
 }
