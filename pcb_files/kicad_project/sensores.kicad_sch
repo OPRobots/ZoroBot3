@@ -3529,7 +3529,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "007dc194-9ae9-4b3e-a2fc-03ae52afe2a4")
-		(property "Reference" "Q2"
+		(property "Reference" "Q5"
 			(at 144.526 110.5916 0)
 			(effects
 				(font
@@ -3583,7 +3583,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "Q2")
+					(reference "Q5")
 					(unit 1)
 				)
 			)
@@ -3598,7 +3598,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0b7e2e68-d497-4182-a473-dbdde6380105")
-		(property "Reference" "LED_IR2"
+		(property "Reference" "LED_IR3"
 			(at 119.38 118.11 0)
 			(effects
 				(font
@@ -3651,7 +3651,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "LED_IR2")
+					(reference "LED_IR3")
 					(unit 1)
 				)
 			)
@@ -3666,7 +3666,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0ef683fc-518c-42b5-9f9f-6632ff6b8b00")
-		(property "Reference" "C44"
+		(property "Reference" "CS7"
 			(at 229.235 115.57 0)
 			(effects
 				(font
@@ -3720,7 +3720,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "C44")
+					(reference "CS7")
 					(unit 1)
 				)
 			)
@@ -3735,7 +3735,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "11a98439-9520-4ce3-8290-b888a187c41b")
-		(property "Reference" "R25"
+		(property "Reference" "RS5"
 			(at 117.602 80.01 90)
 			(effects
 				(font
@@ -3787,7 +3787,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R25")
+					(reference "RS5")
 					(unit 1)
 				)
 			)
@@ -3803,8 +3803,8 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "166452a4-fef4-4f28-9c29-3215ba0253ee")
-		(property "Reference" "Sen_D4"
-			(at 192.278 62.23 0)
+		(property "Reference" "CONN_SEN_PA_I1"
+			(at 196.342 61.976 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3820,7 +3820,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "custom_footprints:1x05 Pad"
 			(at 189.23 54.61 0)
 			(effects
 				(font
@@ -3862,7 +3862,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "Sen_D4")
+					(reference "CONN_SEN_PA_I1")
 					(unit 1)
 				)
 			)
@@ -3877,7 +3877,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "37270cd2-b161-460b-bfcb-542476b3e294")
-		(property "Reference" "C45"
+		(property "Reference" "CS4"
 			(at 257.175 60.96 0)
 			(effects
 				(font
@@ -3931,7 +3931,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "C45")
+					(reference "CS4")
 					(unit 1)
 				)
 			)
@@ -3946,7 +3946,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "4a73a7a9-1f6f-4f43-b515-9252498db754")
-		(property "Reference" "R26"
+		(property "Reference" "RS11"
 			(at 117.602 134.62 90)
 			(effects
 				(font
@@ -3998,7 +3998,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R26")
+					(reference "RS11")
 					(unit 1)
 				)
 			)
@@ -4013,7 +4013,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "4e60f16b-6cad-4582-b237-243cba9915ce")
-		(property "Reference" "R36"
+		(property "Reference" "RS8"
 			(at 219.202 106.68 90)
 			(effects
 				(font
@@ -4065,7 +4065,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R36")
+					(reference "RS8")
 					(unit 1)
 				)
 			)
@@ -4148,7 +4148,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "5a70e297-ffd0-48df-9d12-f1a73b75c4be")
-		(property "Reference" "C42"
+		(property "Reference" "CS6"
 			(at 164.465 115.57 0)
 			(effects
 				(font
@@ -4202,7 +4202,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "C42")
+					(reference "CS6")
 					(unit 1)
 				)
 			)
@@ -4217,7 +4217,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "600ccc14-a964-4e5d-897e-6189b4a7a5b8")
-		(property "Reference" "LED_IR3"
+		(property "Reference" "LED_IR2"
 			(at 214.63 63.5 0)
 			(effects
 				(font
@@ -4270,7 +4270,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "LED_IR3")
+					(reference "LED_IR2")
 					(unit 1)
 				)
 			)
@@ -4286,8 +4286,8 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "60d5653f-ee61-4b6d-b3bb-bfc0bb58f30d")
-		(property "Reference" "Sen_D5"
-			(at 189.738 116.84 0)
+		(property "Reference" "CONN_SEN_FRONT_I1"
+			(at 195.834 116.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4303,7 +4303,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "custom_footprints:1x05 Pad"
 			(at 186.69 109.22 0)
 			(effects
 				(font
@@ -4345,7 +4345,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "Sen_D5")
+					(reference "CONN_SEN_FRONT_I1")
 					(unit 1)
 				)
 			)
@@ -4360,7 +4360,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "68384403-8b8e-42e0-8ecd-708d24edfb4e")
-		(property "Reference" "C39"
+		(property "Reference" "CS1"
 			(at 133.985 60.96 0)
 			(effects
 				(font
@@ -4414,7 +4414,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "C39")
+					(reference "CS1")
 					(unit 1)
 				)
 			)
@@ -4429,7 +4429,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "69c73b4e-2b25-4fec-9258-165678905ff7")
-		(property "Reference" "C43"
+		(property "Reference" "CS3"
 			(at 229.235 60.96 0)
 			(effects
 				(font
@@ -4483,7 +4483,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "C43")
+					(reference "CS3")
 					(unit 1)
 				)
 			)
@@ -4498,7 +4498,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "6defbb7d-a4ea-4e26-8d44-d5e685afee56")
-		(property "Reference" "R31"
+		(property "Reference" "RS3"
 			(at 144.272 76.2 90)
 			(effects
 				(font
@@ -4550,7 +4550,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R31")
+					(reference "RS3")
 					(unit 1)
 				)
 			)
@@ -4636,7 +4636,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "7b1286a3-4b03-4da2-9b93-5cb063b2dbd5")
-		(property "Reference" "AO1"
+		(property "Reference" "MOSFET-N2"
 			(at 219.5322 74.168 0)
 			(effects
 				(font
@@ -4645,7 +4645,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MOSFET-N"
+		(property "Value" "AO3401"
 			(at 219.5322 75.692 0)
 			(effects
 				(font
@@ -4692,7 +4692,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "AO1")
+					(reference "MOSFET-N2")
 					(unit 1)
 				)
 			)
@@ -4707,7 +4707,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "80edcc6f-0ef4-4d4c-b207-c3edd1fd6049")
-		(property "Reference" "R32"
+		(property "Reference" "RS9"
 			(at 144.272 130.81 90)
 			(effects
 				(font
@@ -4759,7 +4759,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R32")
+					(reference "RS9")
 					(unit 1)
 				)
 			)
@@ -4774,7 +4774,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "8255c6d1-de05-4d03-93fd-236f154f9db6")
-		(property "Reference" "R35"
+		(property "Reference" "RS2"
 			(at 219.202 52.07 90)
 			(effects
 				(font
@@ -4826,7 +4826,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R35")
+					(reference "RS2")
 					(unit 1)
 				)
 			)
@@ -4909,7 +4909,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "882cf4cf-c89d-41bd-bc81-657987be6518")
-		(property "Reference" "Q1"
+		(property "Reference" "Q3"
 			(at 144.526 55.9816 0)
 			(effects
 				(font
@@ -4963,7 +4963,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "Q1")
+					(reference "Q3")
 					(unit 1)
 				)
 			)
@@ -4979,8 +4979,8 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "88d0f00e-468a-4f92-b3bb-febea4145937")
-		(property "Reference" "Sen_D2"
-			(at 97.028 62.23 0)
+		(property "Reference" "CONN_SEN_PA_D1"
+			(at 101.6 61.976 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4996,7 +4996,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "custom_footprints:1x05 Pad"
 			(at 93.98 54.61 0)
 			(effects
 				(font
@@ -5038,7 +5038,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "Sen_D2")
+					(reference "CONN_SEN_PA_D1")
 					(unit 1)
 				)
 			)
@@ -5053,7 +5053,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "8dd352c6-d3b6-4c0b-b41c-5d5b230e7fc3")
-		(property "Reference" "R28"
+		(property "Reference" "RS7"
 			(at 123.952 106.68 90)
 			(effects
 				(font
@@ -5105,7 +5105,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R28")
+					(reference "RS7")
 					(unit 1)
 				)
 			)
@@ -5120,7 +5120,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "92682e52-d741-43b7-a60d-8c537639a496")
-		(property "Reference" "Q4"
+		(property "Reference" "Q6"
 			(at 239.776 110.5916 0)
 			(effects
 				(font
@@ -5174,7 +5174,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "Q4")
+					(reference "Q6")
 					(unit 1)
 				)
 			)
@@ -5189,7 +5189,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "9533cb1a-e9bc-4995-81ff-ff1139a9f74c")
-		(property "Reference" "R38"
+		(property "Reference" "RS10"
 			(at 239.522 130.81 90)
 			(effects
 				(font
@@ -5241,7 +5241,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R38")
+					(reference "RS10")
 					(unit 1)
 				)
 			)
@@ -5256,7 +5256,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "958d623d-0e1d-4e17-bd16-4b018d30189e")
-		(property "Reference" "MOSFET-N2"
+		(property "Reference" "MOSFET-N3"
 			(at 124.2822 128.778 0)
 			(effects
 				(font
@@ -5312,7 +5312,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "MOSFET-N2")
+					(reference "MOSFET-N3")
 					(unit 1)
 				)
 			)
@@ -5327,7 +5327,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "97c74000-3f63-4049-9675-34274b5eb178")
-		(property "Reference" "C40"
+		(property "Reference" "CS5"
 			(at 133.985 115.57 0)
 			(effects
 				(font
@@ -5381,7 +5381,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "C40")
+					(reference "CS5")
 					(unit 1)
 				)
 			)
@@ -5396,7 +5396,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "a82a6202-974f-4f8a-9092-32fcbe9e9bb0")
-		(property "Reference" "Q3"
+		(property "Reference" "Q4"
 			(at 239.776 55.9816 0)
 			(effects
 				(font
@@ -5450,7 +5450,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "Q3")
+					(reference "Q4")
 					(unit 1)
 				)
 			)
@@ -5465,7 +5465,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "aa7aef7a-a010-44ad-b7ed-997d4abbb1b7")
-		(property "Reference" "AO2"
+		(property "Reference" "MOSFET-N4"
 			(at 219.5322 128.778 0)
 			(effects
 				(font
@@ -5474,7 +5474,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MOSFET-N"
+		(property "Value" "AO3401"
 			(at 219.5322 130.302 0)
 			(effects
 				(font
@@ -5521,7 +5521,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "AO2")
+					(reference "MOSFET-N4")
 					(unit 1)
 				)
 			)
@@ -5536,7 +5536,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "af7ac068-c3b2-46ef-903a-5e2b8b709ea7")
-		(property "Reference" "R34"
+		(property "Reference" "RS12"
 			(at 212.852 134.62 90)
 			(effects
 				(font
@@ -5588,7 +5588,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R34")
+					(reference "RS12")
 					(unit 1)
 				)
 			)
@@ -5604,8 +5604,8 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "bcc8af3f-27a9-4a20-948c-2df93011ce5f")
-		(property "Reference" "Sen_D3"
-			(at 93.218 116.84 0)
+		(property "Reference" "CONN_SEN_FRONT_D1"
+			(at 99.314 116.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5621,7 +5621,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "custom_footprints:1x05 Pad"
 			(at 90.17 109.22 0)
 			(effects
 				(font
@@ -5663,7 +5663,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "Sen_D3")
+					(reference "CONN_SEN_FRONT_D1")
 					(unit 1)
 				)
 			)
@@ -5678,7 +5678,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "c35f00c6-1844-4461-b7f7-0473e3a11f37")
-		(property "Reference" "R33"
+		(property "Reference" "RS6"
 			(at 212.852 80.01 90)
 			(effects
 				(font
@@ -5730,7 +5730,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R33")
+					(reference "RS6")
 					(unit 1)
 				)
 			)
@@ -5745,7 +5745,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "d64a8bed-be19-4b0e-9a6d-2e70d447b8c6")
-		(property "Reference" "C41"
+		(property "Reference" "CS2"
 			(at 161.925 60.96 0)
 			(effects
 				(font
@@ -5799,7 +5799,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "C41")
+					(reference "CS2")
 					(unit 1)
 				)
 			)
@@ -5814,7 +5814,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "d6a8757c-6445-4912-936f-27db0253e8d2")
-		(property "Reference" "R27"
+		(property "Reference" "RS1"
 			(at 123.952 52.07 90)
 			(effects
 				(font
@@ -5866,7 +5866,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R27")
+					(reference "RS1")
 					(unit 1)
 				)
 			)
@@ -5881,7 +5881,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "fd2cc98e-689b-47a4-b998-9ac00b460dc8")
-		(property "Reference" "R37"
+		(property "Reference" "RS4"
 			(at 239.522 76.2 90)
 			(effects
 				(font
@@ -5933,7 +5933,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "R37")
+					(reference "RS4")
 					(unit 1)
 				)
 			)
@@ -5948,7 +5948,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "fd5c42fd-7056-4441-ac50-a5411c5db7c5")
-		(property "Reference" "C46"
+		(property "Reference" "CS8"
 			(at 259.715 115.57 0)
 			(effects
 				(font
@@ -6002,7 +6002,7 @@
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "C46")
+					(reference "CS8")
 					(unit 1)
 				)
 			)
