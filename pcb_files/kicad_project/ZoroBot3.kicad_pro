@@ -582,16 +582,16 @@
       "Raíz"
     ],
     [
-      "8248a457-7827-474a-ac71-3bca4d83fd92",
-      "Sensores"
-    ],
-    [
-      "757d59e3-b3f4-4e38-b955-4211bb74f532",
+      "fe1aa100-f33c-4fed-9a9a-b5cbbb3bba93",
       "Encoders"
     ],
     [
-      "927bd2f9-57cb-465d-b51d-e99fccf35538",
+      "9d49d3a6-8e33-4528-aef9-1bba3efb9fbc",
       "Giroscopio"
+    ],
+    [
+      "fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b",
+      "Sensores"
     ]
   ],
   "text_variables": {}
