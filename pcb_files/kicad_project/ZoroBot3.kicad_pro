@@ -51,7 +51,13 @@
           "min_clearance": 0.5
         }
       },
-      "diff_pair_dimensions": [],
+      "diff_pair_dimensions": [
+        {
+          "gap": 0.0,
+          "via_gap": 0.0,
+          "width": 0.0
+        }
+      ],
       "drc_exclusions": [],
       "meta": {
         "version": 2
@@ -173,7 +179,9 @@
           "td_width_to_size_filter_ratio": 0.9
         }
       ],
-      "track_widths": [],
+      "track_widths": [
+        0.0
+      ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
           "corner_radius_percentage": 80,
@@ -200,7 +208,12 @@
           "spacing": 0.6
         }
       },
-      "via_dimensions": [],
+      "via_dimensions": [
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        }
+      ],
       "zones_allow_external_fillets": false
     },
     "ipc2581": {
@@ -471,7 +484,7 @@
       "plot": "G:/.shortcut-targets-by-id/1AN4BZZtHHbl9MeGnbDwb2W9vTeww5E2o/OPRobots.org/01. ROBOTS/05. LABERINTO/ZoroBot3/Rebuild_PCB/ZoroBot3/",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "G:/.shortcut-targets-by-id/1AN4BZZtHHbl9MeGnbDwb2W9vTeww5E2o/OPRobots.org/01. ROBOTS/05. LABERINTO/ZoroBot3/Rebuild_PCB/ZoroBot3.step",
+      "step": "G:/.shortcut-targets-by-id/1AN4BZZtHHbl9MeGnbDwb2W9vTeww5E2o/OPRobots.org/01. ROBOTS/05. LABERINTO/ZoroBot3/Rebuild_PCB/ZoroBot3_intento2.step",
       "svg": "",
       "vrml": ""
     },

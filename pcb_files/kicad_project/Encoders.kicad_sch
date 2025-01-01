@@ -1783,7 +1783,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" "custom_footprints:FujitoraBot2_PCBmodule_encoder"
+		(property "Footprint" "custom_footprints:ZoroBot3_PCBmodule_encoder"
 			(at 52.07 85.09 0)
 			(effects
 				(font
@@ -1928,7 +1928,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_SO:SSOP-20_5.3x7.2mm_P0.65mm"
+		(property "Footprint" "Package_SO:SSOP-16_5.3x6.2mm_P0.65mm"
 			(at 100.33 100.33 0)
 			(effects
 				(font
@@ -2362,7 +2362,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" "custom_footprints:FujitoraBot2_PCBmodule_encoder"
+		(property "Footprint" "custom_footprints:ZoroBot3_PCBmodule_encoder"
 			(at 168.91 83.82 0)
 			(effects
 				(font

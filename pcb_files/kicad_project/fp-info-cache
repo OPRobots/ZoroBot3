@@ -1,4 +1,4 @@
-23807757517941453
+23823379117705090
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -96656,6 +96656,13 @@ Bluetooth_BLE_1x1cm
 8
 8
 custom_footprints
+Connector_motor_1.25_Hirose_DF13-02P-1.25DSA_1x02_P1.25mm_Vertical
+Hirose DF13 through hole, DF13-02P-1.25DSA, 2 Pins per row (https://www.hirose.com/product/en/products/DF13/DF13-2P-1.25DSA%2850%29/), generated with kicad-footprint-generator
+connector Hirose DF13 vertical
+0
+2
+2
+custom_footprints
 Crystal_SMD_5032-2Pin_5.0x3.2mm
 SMD Crystal SERIES SMD2520/2 http://www.icbase.com/File/PDF/HKC/HKC00061008.pdf, 5.0x3.2mm^2 package
 SMD SMT crystal
@@ -96746,6 +96753,20 @@ Ultraminiature Surface Mount Slide Switch, right-angle, https://www.ckswitches.c
 0
 7
 3
+custom_footprints
+Generic_simple_1x_SMD_pin
+surface-mounted straight pin header, 1x02, 1.00mm pitch, single row, style 1 (pin 1 left)
+Surface mounted pin header SMD 1x02 1.00mm single row style1 pin1 left
+0
+1
+1
+custom_footprints
+IR_SENSOR_SMD_TSSP77038ETR
+Through hole straight pin header, 1x05, 2.54mm pitch, single row
+Through hole pin header THT 1x05 2.54mm single row
+0
+4
+4
 custom_footprints
 IR_Start
 Through hole straight pin header, 1x03, 2.54mm pitch, single row
@@ -96886,6 +96907,48 @@ RC Connector XT30
 0
 2
 2
+custom_footprints
+ZoroBot3_Data_MPU
+Through hole straight pin header, 1x05, 2.54mm pitch, single row
+Through hole pin header THT 1x05 2.54mm single row
+0
+4
+4
+custom_footprints
+ZoroBot3_Main_sensors
+Through hole straight pin header, 1x05, 2.54mm pitch, single row
+Through hole pin header THT 1x05 2.54mm single row
+0
+24
+4
+custom_footprints
+ZoroBot3_PCBmain_Encoder
+Through hole straight pin header, 1x04, 1.27mm pitch, single row
+Through hole pin header THT 1x04 1.27mm single row
+0
+40
+5
+custom_footprints
+ZoroBot3_PCBmodule_encoder
+Through hole straight pin header, 1x04, 1.27mm pitch, single row
+Through hole pin header THT 1x04 1.27mm single row
+0
+10
+5
+custom_footprints
+ZoroBot3_Power_MPU
+Through hole straight pin header, 1x05, 2.54mm pitch, single row
+Through hole pin header THT 1x05 2.54mm single row
+0
+2
+2
+custom_footprints
+ZoroBot3_Sensors
+Through hole straight pin header, 1x05, 2.54mm pitch, single row
+Through hole pin header THT 1x05 2.54mm single row
+0
+20
+4
 custom_footprints
 motor_pads
 
