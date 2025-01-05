@@ -885,48 +885,51 @@
 				)
 			)
 		)
-		(symbol "PCB_ZoroBot_v3-rescue:MOSFET-N-MOSFET-N"
+		(symbol "Simulation_SPICE:NMOS"
+			(pin_numbers hide)
 			(pin_names
-				(offset 1.016)
+				(offset 0)
 			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "U"
-				(at 0.762 3.048 0)
+			(property "Reference" "Q"
+				(at 5.08 1.27 0)
 				(effects
 					(font
-						(size 0.762 0.762)
+						(size 1.27 1.27)
 					)
 					(justify left)
 				)
 			)
-			(property "Value" "MOSFET-N-MOSFET-N"
-				(at 0.635 -2.921 0)
+			(property "Value" "NMOS"
+				(at 5.08 -1.27 0)
 				(effects
 					(font
-						(size 0.762 0.762)
+						(size 1.27 1.27)
 					)
 					(justify left)
 				)
 			)
 			(property "Footprint" ""
-				(at 0 -1.27 0)
+				(at 5.08 2.54 0)
 				(effects
 					(font
-						(size 1.524 1.524)
+						(size 1.27 1.27)
 					)
+					(hide yes)
 				)
 			)
-			(property "Datasheet" ""
-				(at 0 -1.27 0)
+			(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
+				(at 0 -12.7 0)
 				(effects
 					(font
-						(size 1.524 1.524)
+						(size 1.27 1.27)
 					)
+					(hide yes)
 				)
 			)
-			(property "Description" ""
+			(property "Description" "N-MOSFET transistor, drain/source/gate"
 				(at 0 0 0)
 				(effects
 					(font
@@ -935,7 +938,34 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "SOT95P237X112_123-3N"
+			(property "Sim.Device" "NMOS"
+				(at 0 -17.145 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Type" "VDMOS"
+				(at 0 -19.05 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Pins" "1=D 2=G 3=S"
+				(at 0 -15.24 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "transistor NMOS N-MOS N-MOSFET simulation"
 				(at 0 0 0)
 				(effects
 					(font
@@ -944,14 +974,14 @@
 					(hide yes)
 				)
 			)
-			(symbol "MOSFET-N-MOSFET-N_0_1"
+			(symbol "NMOS_0_1"
 				(polyline
 					(pts
-						(xy -1.905 2.54) (xy -1.905 -2.54)
+						(xy 0.254 0) (xy -2.54 0)
 					)
 					(stroke
 						(width 0)
-						(type solid)
+						(type default)
 					)
 					(fill
 						(type none)
@@ -959,11 +989,11 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 -2.54) (xy -1.27 -1.27)
+						(xy 0.254 1.905) (xy 0.254 -1.905)
 					)
 					(stroke
-						(width 0)
-						(type solid)
+						(width 0.254)
+						(type default)
 					)
 					(fill
 						(type none)
@@ -971,11 +1001,11 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 -0.762) (xy -1.27 0.762)
+						(xy 0.762 -1.27) (xy 0.762 -2.286)
 					)
 					(stroke
-						(width 0)
-						(type solid)
+						(width 0.254)
+						(type default)
 					)
 					(fill
 						(type none)
@@ -983,11 +1013,11 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 1.143) (xy -1.27 2.54)
+						(xy 0.762 0.508) (xy 0.762 -0.508)
 					)
 					(stroke
-						(width 0)
-						(type solid)
+						(width 0.254)
+						(type default)
 					)
 					(fill
 						(type none)
@@ -995,11 +1025,11 @@
 				)
 				(polyline
 					(pts
-						(xy 0.889 0.381) (xy 1.651 0.381)
+						(xy 0.762 2.286) (xy 0.762 1.27)
 					)
 					(stroke
-						(width 0)
-						(type solid)
+						(width 0.254)
+						(type default)
 					)
 					(fill
 						(type none)
@@ -1007,11 +1037,11 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 0) (xy 0 0) (xy 0 -1.905)
+						(xy 2.54 2.54) (xy 2.54 1.778)
 					)
 					(stroke
 						(width 0)
-						(type solid)
+						(type default)
 					)
 					(fill
 						(type none)
@@ -1019,11 +1049,11 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 1.905) (xy 1.27 1.905) (xy 1.27 -1.905) (xy -1.27 -1.905)
+						(xy 2.54 -2.54) (xy 2.54 0) (xy 0.762 0)
 					)
 					(stroke
 						(width 0)
-						(type solid)
+						(type default)
 					)
 					(fill
 						(type none)
@@ -1031,11 +1061,23 @@
 				)
 				(polyline
 					(pts
-						(xy -1.143 0.127) (xy -0.762 0.381) (xy -0.762 -0.381) (xy -1.27 0)
+						(xy 0.762 -1.778) (xy 3.302 -1.778) (xy 3.302 1.778) (xy 0.762 1.778)
 					)
 					(stroke
 						(width 0)
-						(type solid)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.016 0) (xy 2.032 0.381) (xy 2.032 -0.381) (xy 1.016 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
 					)
 					(fill
 						(type outline)
@@ -1043,22 +1085,67 @@
 				)
 				(polyline
 					(pts
-						(xy 1.651 -0.381) (xy 1.27 0.381) (xy 0.889 -0.381) (xy 1.651 -0.381)
+						(xy 2.794 0.508) (xy 2.921 0.381) (xy 3.683 0.381) (xy 3.81 0.254)
 					)
 					(stroke
 						(width 0)
-						(type solid)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.302 0.381) (xy 2.921 -0.254) (xy 3.683 -0.254) (xy 3.302 0.381)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 1.651 0)
+					(radius 2.794)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.54 -1.778)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(circle
+					(center 2.54 1.778)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
 					)
 					(fill
 						(type outline)
 					)
 				)
 			)
-			(symbol "MOSFET-N-MOSFET-N_1_1"
+			(symbol "NMOS_1_1"
 				(pin passive line
-					(at -5.08 0 0)
-					(length 3.0988)
-					(name "~"
+					(at 2.54 5.08 270)
+					(length 2.54)
+					(name "D"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1068,15 +1155,15 @@
 					(number "1"
 						(effects
 							(font
-								(size 0.762 0.762)
+								(size 1.27 1.27)
 							)
 						)
 					)
 				)
-				(pin passive line
-					(at 0 -5.08 90)
-					(length 3.0988)
-					(name "~"
+				(pin input line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "G"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1086,15 +1173,15 @@
 					(number "2"
 						(effects
 							(font
-								(size 0.762 0.762)
+								(size 1.27 1.27)
 							)
 						)
 					)
 				)
 				(pin passive line
-					(at 0 5.08 270)
-					(length 3.0988)
-					(name "~"
+					(at 2.54 -5.08 90)
+					(length 2.54)
+					(name "S"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1104,7 +1191,7 @@
 					(number "3"
 						(effects
 							(font
-								(size 0.762 0.762)
+								(size 1.27 1.27)
 							)
 						)
 					)
@@ -1123,6 +1210,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "0fb96c52-4ff5-43a9-b988-c2652f64030b")
+	)
+	(junction
+		(at 217.17 130.81)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "167f3ea5-c688-4857-8b67-22ceaea219f2")
 	)
 	(junction
 		(at 247.65 129.54)
@@ -1155,6 +1248,18 @@
 		(uuid "3037f9e0-227f-4bf0-9088-3bd245f24439")
 	)
 	(junction
+		(at 198.12 76.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "335e437e-e1a9-41c7-b4b9-c4a94d51a2c5")
+	)
+	(junction
+		(at 189.23 66.04)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3c0eac61-e0e9-4dff-9861-1bedfa9fd7df")
+	)
+	(junction
 		(at 77.47 129.54)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1167,7 +1272,13 @@
 		(uuid "46a49da3-b2bc-4368-b627-fc1e47c9aaee")
 	)
 	(junction
-		(at 76.2 66.04)
+		(at 189.23 76.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "526dfe4b-3f75-4d92-a113-8bff7350f483")
+	)
+	(junction
+		(at 73.66 66.04)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "5785bddd-fa00-4a2e-aef6-d2d17da5ad2b")
@@ -1179,7 +1290,7 @@
 		(uuid "6a5194d7-1b96-4457-bfee-294afc5f41b9")
 	)
 	(junction
-		(at 220.98 140.97)
+		(at 217.17 140.97)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "6bc6077d-82de-4451-adc4-b85d0bae7bd1")
@@ -1209,28 +1320,16 @@
 		(uuid "9885a9f1-3378-4c8d-a1f9-29942dd6a9b9")
 	)
 	(junction
-		(at 50.8 130.81)
+		(at 48.26 140.97)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "9c019096-e4a8-46cc-854c-e1d0a099d20a")
+		(uuid "a5576c77-a8b4-4f5e-b943-8a63ce999771")
 	)
 	(junction
 		(at 102.87 64.77)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "a7b44ad1-d25a-4941-8d4b-8f8fda20544c")
-	)
-	(junction
-		(at 220.98 130.81)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a7e53aef-4a0c-4b38-8f91-3a9509366b33")
-	)
-	(junction
-		(at 191.77 66.04)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ab7c44a2-d573-4c30-99cd-bc21a7891869")
 	)
 	(junction
 		(at 77.47 140.97)
@@ -1245,10 +1344,10 @@
 		(uuid "bf828748-92b4-4137-9aa7-b11fffb78150")
 	)
 	(junction
-		(at 198.12 76.2)
+		(at 48.26 130.81)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "c61df5bc-571c-46b9-9b2f-b476369b5de8")
+		(uuid "cbc49bde-c316-44a5-b42f-a257d10ac47d")
 	)
 	(junction
 		(at 218.44 76.2)
@@ -1269,28 +1368,16 @@
 		(uuid "db7d63a6-636d-4271-b902-491d3466dfa1")
 	)
 	(junction
-		(at 76.2 76.2)
+		(at 73.66 76.2)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e5f926f1-fc40-41af-809e-a811b1009014")
-	)
-	(junction
-		(at 191.77 76.2)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "e72cd5c6-de22-459a-85bf-905b6d47d973")
 	)
 	(junction
 		(at 57.15 140.97)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "f6304372-72b3-40a2-a488-968d89c4be0a")
-	)
-	(junction
-		(at 50.8 140.97)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f97e09bb-4bce-46ad-ab85-8ad3af2691a6")
 	)
 	(junction
 		(at 102.87 76.2)
@@ -1306,7 +1393,7 @@
 	)
 	(wire
 		(pts
-			(xy 50.8 132.08) (xy 50.8 130.81)
+			(xy 48.26 132.08) (xy 48.26 130.81)
 		)
 		(stroke
 			(width 0)
@@ -1326,7 +1413,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 139.7) (xy 220.98 140.97)
+			(xy 217.17 139.7) (xy 217.17 140.97)
 		)
 		(stroke
 			(width 0)
@@ -1386,7 +1473,7 @@
 	)
 	(wire
 		(pts
-			(xy 76.2 76.2) (xy 82.55 76.2)
+			(xy 73.66 76.2) (xy 82.55 76.2)
 		)
 		(stroke
 			(width 0)
@@ -1416,7 +1503,7 @@
 	)
 	(wire
 		(pts
-			(xy 191.77 74.93) (xy 191.77 76.2)
+			(xy 189.23 74.93) (xy 189.23 76.2)
 		)
 		(stroke
 			(width 0)
@@ -1526,7 +1613,7 @@
 	)
 	(wire
 		(pts
-			(xy 198.12 60.96) (xy 198.12 58.42)
+			(xy 198.12 58.42) (xy 198.12 60.96)
 		)
 		(stroke
 			(width 0)
@@ -1583,16 +1670,6 @@
 			(type default)
 		)
 		(uuid "39f3184b-2e1c-4290-a79c-6da5b0d5d9aa")
-	)
-	(wire
-		(pts
-			(xy 191.77 66.04) (xy 193.04 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3aaf292e-a633-40ff-8797-e8c3582c29fd")
 	)
 	(wire
 		(pts
@@ -1656,7 +1733,7 @@
 	)
 	(wire
 		(pts
-			(xy 199.39 130.81) (xy 220.98 130.81)
+			(xy 195.58 130.81) (xy 217.17 130.81)
 		)
 		(stroke
 			(width 0)
@@ -1666,7 +1743,7 @@
 	)
 	(wire
 		(pts
-			(xy 181.61 76.2) (xy 191.77 76.2)
+			(xy 179.07 76.2) (xy 189.23 76.2)
 		)
 		(stroke
 			(width 0)
@@ -1676,13 +1753,23 @@
 	)
 	(wire
 		(pts
-			(xy 210.82 140.97) (xy 220.98 140.97)
+			(xy 207.01 140.97) (xy 217.17 140.97)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "44525e6c-57c0-419e-9a73-5d79307c26a7")
+	)
+	(wire
+		(pts
+			(xy 48.26 130.81) (xy 49.53 130.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "49749ff1-3afa-4c8f-b684-9e69e7cd5163")
 	)
 	(wire
 		(pts
@@ -1756,6 +1843,16 @@
 	)
 	(wire
 		(pts
+			(xy 217.17 130.81) (xy 219.71 130.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5955e9d0-bfde-4e8b-bc5c-3a432d57e95b")
+	)
+	(wire
+		(pts
 			(xy 175.26 43.18) (xy 191.77 43.18)
 		)
 		(stroke
@@ -1763,6 +1860,16 @@
 			(type default)
 		)
 		(uuid "5a7d20a2-96ce-49e9-a092-5c7696b7a983")
+	)
+	(wire
+		(pts
+			(xy 82.55 76.2) (xy 93.98 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5b2ffef9-894c-41cf-b861-c651fb7db7ff")
 	)
 	(wire
 		(pts
@@ -1796,7 +1903,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 132.08) (xy 220.98 130.81)
+			(xy 217.17 132.08) (xy 217.17 130.81)
 		)
 		(stroke
 			(width 0)
@@ -1813,6 +1920,16 @@
 			(type default)
 		)
 		(uuid "63fafaec-2c45-46cb-acd4-665e2c69c212")
+	)
+	(wire
+		(pts
+			(xy 198.12 76.2) (xy 209.55 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "670efee5-7f67-4b72-b847-20f9a39deaf3")
 	)
 	(wire
 		(pts
@@ -1946,13 +2063,13 @@
 	)
 	(wire
 		(pts
-			(xy 50.8 130.81) (xy 52.07 130.81)
+			(xy 189.23 66.04) (xy 190.5 66.04)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "790d3acf-ec32-4091-b723-56371fd32f0b")
+		(uuid "7d9599f9-0f86-48bf-9682-35641f75bd56")
 	)
 	(wire
 		(pts
@@ -1966,7 +2083,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 140.97) (xy 227.33 140.97)
+			(xy 217.17 140.97) (xy 227.33 140.97)
 		)
 		(stroke
 			(width 0)
@@ -2096,7 +2213,7 @@
 	)
 	(wire
 		(pts
-			(xy 191.77 67.31) (xy 191.77 66.04)
+			(xy 189.23 67.31) (xy 189.23 66.04)
 		)
 		(stroke
 			(width 0)
@@ -2136,7 +2253,7 @@
 	)
 	(wire
 		(pts
-			(xy 76.2 66.04) (xy 77.47 66.04)
+			(xy 73.66 66.04) (xy 74.93 66.04)
 		)
 		(stroke
 			(width 0)
@@ -2156,7 +2273,7 @@
 	)
 	(wire
 		(pts
-			(xy 76.2 67.31) (xy 76.2 66.04)
+			(xy 73.66 67.31) (xy 73.66 66.04)
 		)
 		(stroke
 			(width 0)
@@ -2206,17 +2323,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 130.81) (xy 222.25 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "aa92f6e2-02db-4387-bdb6-7491b0f398d4")
-	)
-	(wire
-		(pts
-			(xy 59.69 66.04) (xy 76.2 66.04)
+			(xy 57.15 66.04) (xy 73.66 66.04)
 		)
 		(stroke
 			(width 0)
@@ -2226,7 +2333,7 @@
 	)
 	(wire
 		(pts
-			(xy 175.26 66.04) (xy 191.77 66.04)
+			(xy 172.72 66.04) (xy 189.23 66.04)
 		)
 		(stroke
 			(width 0)
@@ -2246,7 +2353,7 @@
 	)
 	(wire
 		(pts
-			(xy 31.75 130.81) (xy 50.8 130.81)
+			(xy 29.21 130.81) (xy 48.26 130.81)
 		)
 		(stroke
 			(width 0)
@@ -2306,7 +2413,7 @@
 	)
 	(wire
 		(pts
-			(xy 66.04 76.2) (xy 76.2 76.2)
+			(xy 63.5 76.2) (xy 73.66 76.2)
 		)
 		(stroke
 			(width 0)
@@ -2366,16 +2473,6 @@
 	)
 	(wire
 		(pts
-			(xy 191.77 76.2) (xy 198.12 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c4a876cb-cab9-4c88-a547-44607af6fed0")
-	)
-	(wire
-		(pts
 			(xy 238.76 127) (xy 238.76 140.97)
 		)
 		(stroke
@@ -2383,16 +2480,6 @@
 			(type default)
 		)
 		(uuid "c572b93a-4adf-4dc2-a54d-e2204447002b")
-	)
-	(wire
-		(pts
-			(xy 50.8 140.97) (xy 57.15 140.97)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c58a8959-e8c6-4878-88c7-55d2bb018571")
 	)
 	(polyline
 		(pts
@@ -2456,6 +2543,16 @@
 	)
 	(wire
 		(pts
+			(xy 48.26 140.97) (xy 57.15 140.97)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d8589e8d-36c2-47e3-b786-0a315027e6f9")
+	)
+	(wire
+		(pts
 			(xy 227.33 105.41) (xy 227.33 106.68)
 		)
 		(stroke
@@ -2493,16 +2590,6 @@
 			(type default)
 		)
 		(uuid "e11071c8-007a-4c8e-a488-1d5eba3def61")
-	)
-	(wire
-		(pts
-			(xy 198.12 76.2) (xy 209.55 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e19765f5-b92e-4c54-98f4-09994bc77e8e")
 	)
 	(wire
 		(pts
@@ -2566,7 +2653,7 @@
 	)
 	(wire
 		(pts
-			(xy 50.8 139.7) (xy 50.8 140.97)
+			(xy 48.26 139.7) (xy 48.26 140.97)
 		)
 		(stroke
 			(width 0)
@@ -2596,6 +2683,16 @@
 	)
 	(wire
 		(pts
+			(xy 189.23 76.2) (xy 198.12 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ebaa8df5-3c12-4c1e-b5e1-b8f456f43aae")
+	)
+	(wire
+		(pts
 			(xy 175.26 45.72) (xy 191.77 45.72)
 		)
 		(stroke
@@ -2603,16 +2700,6 @@
 			(type default)
 		)
 		(uuid "ebc0552d-c164-4bc7-8798-affe4cf983cd")
-	)
-	(wire
-		(pts
-			(xy 82.55 76.2) (xy 93.98 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f22ef854-752d-4df9-9a98-dcbcb8c384f1")
 	)
 	(wire
 		(pts
@@ -2626,7 +2713,7 @@
 	)
 	(wire
 		(pts
-			(xy 76.2 74.93) (xy 76.2 76.2)
+			(xy 73.66 74.93) (xy 73.66 76.2)
 		)
 		(stroke
 			(width 0)
@@ -2686,7 +2773,7 @@
 	)
 	(wire
 		(pts
-			(xy 40.64 140.97) (xy 50.8 140.97)
+			(xy 38.1 140.97) (xy 48.26 140.97)
 		)
 		(stroke
 			(width 0)
@@ -3125,7 +3212,7 @@
 		(uuid "e034c82f-d406-4524-859c-a45496e27907")
 	)
 	(label "EMI_FRONT_D_CONN"
-		(at 199.39 130.81 0)
+		(at 195.58 130.81 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3180,7 +3267,7 @@
 		(uuid "2842c1f4-f52f-4bc0-8f09-65bee3d9b712")
 	)
 	(label "GND_D"
-		(at 66.04 76.2 0)
+		(at 63.5 76.2 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3235,7 +3322,7 @@
 		(uuid "45bd285c-88eb-4c58-b385-7509e1332d8f")
 	)
 	(label "GND_FI"
-		(at 40.64 140.97 0)
+		(at 38.1 140.97 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3345,7 +3432,7 @@
 		(uuid "820f9385-af3d-4b6f-8d46-28429866efa7")
 	)
 	(label "EMI_PA_I_CONN"
-		(at 175.26 66.04 0)
+		(at 172.72 66.04 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3367,7 +3454,7 @@
 		(uuid "9186b751-8897-492c-964f-f1cca0db7516")
 	)
 	(label "EMI_FRONT_I_CONN"
-		(at 31.75 130.81 0)
+		(at 29.21 130.81 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3389,7 +3476,7 @@
 		(uuid "9b44b1ac-e3cc-4c0b-84ef-e9e98aa7cb4d")
 	)
 	(label "GND_I"
-		(at 181.61 76.2 0)
+		(at 179.07 76.2 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3400,7 +3487,7 @@
 		(uuid "9df5da66-7cec-42de-a568-fd896835fd6f")
 	)
 	(label "GND_FD"
-		(at 210.82 140.97 0)
+		(at 207.01 140.97 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3433,7 +3520,7 @@
 		(uuid "b8a2515c-8547-4e21-ad53-dd2b5cfb58ec")
 	)
 	(label "EMI_PA_D_CONN"
-		(at 59.69 66.04 0)
+		(at 57.15 66.04 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3728,7 +3815,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 76.2 71.12 0)
+		(at 73.66 71.12 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3736,7 +3823,7 @@
 		(dnp no)
 		(uuid "11a98439-9520-4ce3-8290-b888a187c41b")
 		(property "Reference" "RS5"
-			(at 78.232 71.12 90)
+			(at 75.692 71.12 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3744,7 +3831,7 @@
 			)
 		)
 		(property "Value" "47K"
-			(at 76.2 71.12 90)
+			(at 73.66 71.12 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3752,7 +3839,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder"
-			(at 74.422 71.12 90)
+			(at 71.882 71.12 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3761,7 +3848,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 76.2 71.12 0)
+			(at 73.66 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3770,7 +3857,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 76.2 71.12 0)
+			(at 73.66 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3869,6 +3956,204 @@
 		)
 	)
 	(symbol
+		(lib_id "Simulation_SPICE:NMOS")
+		(at 195.58 66.04 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1a920370-3407-46eb-bbc5-ca692b690b78")
+		(property "Reference" "MOSFET-N2"
+			(at 200.66 64.77 0)
+			(effects
+				(font
+					(size 0.75 0.75)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "AO3400 (A09T)"
+			(at 200.66 66.548 0)
+			(effects
+				(font
+					(size 0.75 0.75)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 200.66 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
+			(at 195.58 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "N-MOSFET transistor, drain/source/gate"
+			(at 195.58 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "NMOS"
+			(at 195.58 83.185 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" "VDMOS"
+			(at 195.58 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=D 2=G 3=S"
+			(at 195.58 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "2d928771-d2df-424d-9cb4-940660ff308a")
+		)
+		(pin "3"
+			(uuid "628b0da2-89ba-4c70-aae8-2de75796838c")
+		)
+		(pin "1"
+			(uuid "18987f44-d258-4973-9875-f0dc2c3d77f3")
+		)
+		(instances
+			(project "ZoroBot3"
+				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
+					(reference "MOSFET-N2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Simulation_SPICE:NMOS")
+		(at 224.79 130.81 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "20805281-b355-4845-ad43-727d667b49dd")
+		(property "Reference" "MOSFET-N3"
+			(at 229.87 129.54 0)
+			(effects
+				(font
+					(size 0.75 0.75)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "AO3400 (A09T)"
+			(at 229.87 131.318 0)
+			(effects
+				(font
+					(size 0.75 0.75)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 229.87 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
+			(at 224.79 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "N-MOSFET transistor, drain/source/gate"
+			(at 224.79 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "NMOS"
+			(at 224.79 147.955 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" "VDMOS"
+			(at 224.79 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=D 2=G 3=S"
+			(at 224.79 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "ccb93ed6-4ed5-457a-a059-b78a45bdce0d")
+		)
+		(pin "3"
+			(uuid "22d676b8-ce0d-474e-9878-6d8ee18e93a7")
+		)
+		(pin "1"
+			(uuid "3c578c8b-2fd1-44aa-adcb-59ba594e9842")
+		)
+		(instances
+			(project "ZoroBot3"
+				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
+					(reference "MOSFET-N3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 237.49 58.42 0)
 		(unit 1)
@@ -3939,7 +4224,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 220.98 135.89 0)
+		(at 217.17 135.89 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3947,7 +4232,7 @@
 		(dnp no)
 		(uuid "4a73a7a9-1f6f-4f43-b515-9252498db754")
 		(property "Reference" "RS11"
-			(at 223.012 135.89 90)
+			(at 219.202 135.89 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3955,7 +4240,7 @@
 			)
 		)
 		(property "Value" "47K"
-			(at 220.98 135.89 90)
+			(at 217.17 135.89 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3963,7 +4248,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder"
-			(at 219.202 135.89 90)
+			(at 215.392 135.89 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3972,7 +4257,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 220.98 135.89 0)
+			(at 217.17 135.89 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3981,7 +4266,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 220.98 135.89 0)
+			(at 217.17 135.89 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4490,6 +4775,105 @@
 		)
 	)
 	(symbol
+		(lib_id "Simulation_SPICE:NMOS")
+		(at 54.61 130.81 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6b5f53e0-cf19-4a37-805b-98c20aca2760")
+		(property "Reference" "MOSFET-N4"
+			(at 59.69 129.54 0)
+			(effects
+				(font
+					(size 0.75 0.75)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "AO3400 (A09T)"
+			(at 59.69 131.318 0)
+			(effects
+				(font
+					(size 0.75 0.75)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 59.69 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
+			(at 54.61 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "N-MOSFET transistor, drain/source/gate"
+			(at 54.61 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "NMOS"
+			(at 54.61 147.955 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" "VDMOS"
+			(at 54.61 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=D 2=G 3=S"
+			(at 54.61 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "60a9b061-f495-4f9a-9991-e6a35258c0af")
+		)
+		(pin "3"
+			(uuid "0a7feb06-0dd2-4d2f-8dee-452640b329ae")
+		)
+		(pin "1"
+			(uuid "d974d4ab-5a6e-4876-8d66-db9f1dd3b817")
+		)
+		(instances
+			(project "ZoroBot3"
+				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
+					(reference "MOSFET-N4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R")
 		(at 102.87 71.12 0)
 		(unit 1)
@@ -4557,51 +4941,34 @@
 		)
 	)
 	(symbol
-		(lib_id "PCB_ZoroBot_v3-rescue:MOSFET-N-MOSFET-N")
-		(at 82.55 66.04 0)
+		(lib_id "Simulation_SPICE:NMOS")
+		(at 80.01 66.04 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "6e89ccb7-07ea-4b59-8ac3-fa7d1f5cd364")
+		(uuid "70a58d53-7321-4f6e-b76f-74f7d602011e")
 		(property "Reference" "MOSFET-N1"
-			(at 84.9122 65.278 0)
+			(at 85.09 64.77 0)
 			(effects
 				(font
-					(size 0.762 0.762)
+					(size 0.75 0.75)
 				)
 				(justify left)
 			)
 		)
-		(property "Value" "AO3401"
-			(at 84.9122 66.802 0)
+		(property "Value" "AO3400 (A09T)"
+			(at 85.09 66.548 0)
 			(effects
 				(font
-					(size 0.762 0.762)
+					(size 0.75 0.75)
 				)
 				(justify left)
 			)
 		)
 		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 82.55 67.31 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 82.55 67.31 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 82.55 66.04 0)
+			(at 85.09 63.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4609,90 +4976,64 @@
 				(hide yes)
 			)
 		)
-		(pin "1"
-			(uuid "59a6751b-396a-4d03-8c68-e168ed1f7b3c")
+		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
+			(at 80.01 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
 		)
-		(pin "3"
-			(uuid "70967f8e-d72f-4231-ad8d-9f65ab14a291")
+		(property "Description" "N-MOSFET transistor, drain/source/gate"
+			(at 80.01 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "NMOS"
+			(at 80.01 83.185 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" "VDMOS"
+			(at 80.01 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=D 2=G 3=S"
+			(at 80.01 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
 		)
 		(pin "2"
-			(uuid "53458ac6-ee1e-4efb-ab74-203845565844")
+			(uuid "6224d186-716a-42ed-aa5f-0984d8136fef")
+		)
+		(pin "3"
+			(uuid "94b0fdd2-47a7-476e-ab8b-53fc2f394965")
+		)
+		(pin "1"
+			(uuid "fe5c6347-1c1c-45f8-a21d-eed03cf65ee8")
 		)
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
 					(reference "MOSFET-N1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "PCB_ZoroBot_v3-rescue:MOSFET-N-MOSFET-N")
-		(at 198.12 66.04 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "7b1286a3-4b03-4da2-9b93-5cb063b2dbd5")
-		(property "Reference" "MOSFET-N2"
-			(at 200.4822 65.278 0)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "AO3401"
-			(at 200.4822 66.802 0)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 198.12 67.31 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 198.12 67.31 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 198.12 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e7940ead-6eac-4a2b-ab1b-dfca64e3414c")
-		)
-		(pin "3"
-			(uuid "15ceb787-d9d4-4e2b-aff6-0633d9cbf531")
-		)
-		(pin "2"
-			(uuid "4bd3696a-ce75-4d6f-8674-4c0bb9b22557")
-		)
-		(instances
-			(project "ZoroBot3"
-				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "MOSFET-N2")
 					(unit 1)
 				)
 			)
@@ -5248,77 +5589,6 @@
 		)
 	)
 	(symbol
-		(lib_id "PCB_ZoroBot_v3-rescue:MOSFET-N-MOSFET-N")
-		(at 227.33 130.81 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "958d623d-0e1d-4e17-bd16-4b018d30189e")
-		(property "Reference" "MOSFET-N3"
-			(at 229.6922 130.048 0)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "AO3401"
-			(at 229.6922 131.572 0)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 227.33 132.08 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 227.33 132.08 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 227.33 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "3"
-			(uuid "1acb20b8-1251-44a6-a058-33b31b08dae1")
-		)
-		(pin "1"
-			(uuid "19c1970d-29cc-4c74-8b7c-07a72d45ada6")
-		)
-		(pin "2"
-			(uuid "951018f0-4b6a-4998-97eb-1fdd196a8801")
-		)
-		(instances
-			(project "ZoroBot3"
-				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "MOSFET-N3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C")
 		(at 238.76 123.19 0)
 		(unit 1)
@@ -5457,79 +5727,8 @@
 		)
 	)
 	(symbol
-		(lib_id "PCB_ZoroBot_v3-rescue:MOSFET-N-MOSFET-N")
-		(at 57.15 130.81 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "aa7aef7a-a010-44ad-b7ed-997d4abbb1b7")
-		(property "Reference" "MOSFET-N4"
-			(at 59.5122 130.048 0)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "AO3401"
-			(at 59.5122 131.572 0)
-			(effects
-				(font
-					(size 0.762 0.762)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 57.15 132.08 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 57.15 132.08 0)
-			(effects
-				(font
-					(size 1.524 1.524)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 57.15 130.81 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "3"
-			(uuid "6553cf4f-322c-41ac-8818-dfad1f18977c")
-		)
-		(pin "2"
-			(uuid "34b0036e-927a-4ed0-9763-e945414528b6")
-		)
-		(pin "1"
-			(uuid "8025af5a-9aa2-47dc-b553-78bcb918a169")
-		)
-		(instances
-			(project "ZoroBot3"
-				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "MOSFET-N4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
-		(at 50.8 135.89 0)
+		(at 48.26 135.89 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5537,7 +5736,7 @@
 		(dnp no)
 		(uuid "af7ac068-c3b2-46ef-903a-5e2b8b709ea7")
 		(property "Reference" "RS12"
-			(at 52.832 135.89 90)
+			(at 50.292 135.89 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5545,7 +5744,7 @@
 			)
 		)
 		(property "Value" "47K"
-			(at 50.8 135.89 90)
+			(at 48.26 135.89 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5553,7 +5752,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder"
-			(at 49.022 135.89 90)
+			(at 46.482 135.89 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5562,7 +5761,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 50.8 135.89 0)
+			(at 48.26 135.89 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5571,7 +5770,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 50.8 135.89 0)
+			(at 48.26 135.89 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5671,7 +5870,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 191.77 71.12 0)
+		(at 189.23 71.12 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5679,7 +5878,7 @@
 		(dnp no)
 		(uuid "c35f00c6-1844-4461-b7f7-0473e3a11f37")
 		(property "Reference" "RS6"
-			(at 193.802 71.12 90)
+			(at 191.262 71.12 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5687,7 +5886,7 @@
 			)
 		)
 		(property "Value" "47K"
-			(at 191.77 71.12 90)
+			(at 189.23 71.12 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5695,7 +5894,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric_Pad0.72x0.64mm_HandSolder"
-			(at 189.992 71.12 90)
+			(at 187.452 71.12 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5704,7 +5903,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 191.77 71.12 0)
+			(at 189.23 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5713,7 +5912,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 191.77 71.12 0)
+			(at 189.23 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)

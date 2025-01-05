@@ -1,4 +1,4 @@
-23823379117705090
+23825116272720871
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -96684,6 +96684,13 @@ ESP32_supermini
 16
 16
 custom_footprints
+Encoder_AS5145B
+SSOP, 16 Pin (https://assets.nexperia.com/documents/data-sheet/74HC_HCT165.pdf#page=14), generated with kicad-footprint-generator ipc_gullwing_generator.py
+SSOP SO
+0
+16
+16
+custom_footprints
 FPC0.5-8P
 TE FPC connector, 08 top-side contacts, 0.5mm pitch, SMT, https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Customer+Drawing%7F1734839%7FC%7Fpdf%7FEnglish%7FENG_CD_1734839_C_C_1734839.pdf%7F4-1734839-0
 te fpc 1734839
@@ -96919,7 +96926,7 @@ ZoroBot3_Main_sensors
 Through hole straight pin header, 1x05, 2.54mm pitch, single row
 Through hole pin header THT 1x05 2.54mm single row
 0
-24
+32
 4
 custom_footprints
 ZoroBot3_PCBmain_Encoder
