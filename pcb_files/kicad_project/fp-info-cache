@@ -1,4 +1,4 @@
-23825116272720871
+23832061419198199
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -96635,6 +96635,13 @@ Through hole pin header THT 1x05 2.54mm single row
 5
 5
 custom_footprints
+AD8418AWBZ_Current_Sensor
+8-Lead Plastic Small Outline (SM) - 5.28 mm Body [SOIC] (http://ww1.microchip.com/downloads/en/PackagingSpec/00000049BQ.pdf)
+SOIC 1.27
+0
+8
+8
+custom_footprints
 BTN_SMD_3x6x2.5mm
 Light Touch Switch, https://industrial.panasonic.com/cdbs/www-data/pdf/ATK0000/ATK0000CE7.pdf
 
@@ -96768,6 +96775,13 @@ Surface mounted pin header SMD 1x02 1.00mm single row style1 pin1 left
 1
 1
 custom_footprints
+IR TSOP38238 90º
+IR Receiver Vishay TSOP-xxxx, MINICAST package, see https://www.vishay.com/docs/82669/tsop32s40f.pdf
+IR Receiver Vishay TSOP-xxxx MINICAST
+0
+3
+3
+custom_footprints
 IR_SENSOR_SMD_TSSP77038ETR
 Through hole straight pin header, 1x05, 2.54mm pitch, single row
 Through hole pin header THT 1x05 2.54mm single row
@@ -96838,6 +96852,13 @@ Mini360
 4
 4
 custom_footprints
+PH-MP6551GQB-P
+WQFN, 14 Pin (https://www.onsemi.com/pub/Collateral/FUSB302B-D.PDF#page=32), generated with kicad-footprint-generator ipc_noLead_generator.py
+WQFN NoLead
+0
+14
+14
+custom_footprints
 PinHeader_1x03_P2.54mm_Vertical_NoPins
 Through hole straight pin header, 1x03, 2.54mm pitch, single row
 Through hole pin header THT 1x03 2.54mm single row
@@ -96869,6 +96890,13 @@ custom_footprints
 SOP8
 8-Lead Plastic Small Outline (SM) - 5.28 mm Body [SOIC] (http://ww1.microchip.com/downloads/en/PackagingSpec/00000049BQ.pdf)
 SOIC 1.27
+0
+8
+8
+custom_footprints
+ST7789V_LCD_RGB_135x240
+Through hole straight pin header, 1x08, 2.54mm pitch, single row
+Through hole pin header THT 1x08 2.54mm single row
 0
 8
 8
