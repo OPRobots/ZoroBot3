@@ -36,5 +36,6 @@ void calibrate_from_config(uint8_t type) {
     }
     set_RGB_color(0, 0, 0);
     calibration_enabled = false;
+    menu_config_reset_values();
   }
 }

@@ -2,8 +2,14 @@
 #define MOVE_H
 
 #include "control.h"
+#include "menu.h"
+#include "menu_run.h"
+#include "motors.h"
+#include <string.h>
 
 enum movement {
+  MOVE_NONE,
+  MOVE_HOME,
   MOVE_START,
   MOVE_END,
   MOVE_FRONT,
@@ -11,8 +17,22 @@ enum movement {
   MOVE_RIGHT,
   MOVE_LEFT_90,
   MOVE_RIGHT_90,
-  MOVE_180,
-  MOVE_180W,
+  MOVE_LEFT_180,
+  MOVE_RIGHT_180,
+  MOVE_DIAGONAL,
+  MOVE_LEFT_TO_45,
+  MOVE_RIGHT_TO_45,
+  MOVE_LEFT_TO_135,
+  MOVE_RIGHT_TO_135,
+  MOVE_LEFT_45_TO_45,
+  MOVE_RIGHT_45_TO_45,
+  MOVE_LEFT_FROM_45,
+  MOVE_RIGHT_FROM_45,
+  MOVE_LEFT_FROM_45_180,
+  MOVE_RIGHT_FROM_45_180,
+  MOVE_BACK,
+  MOVE_BACK_WALL,
+  MOVE_BACK_STOP,
 };
 
 struct turn_params {
@@ -26,6 +46,19 @@ struct turn_params {
   int8_t sign;
 };
 
+struct kinematics {
+  int16_t linear_speed;
+  int16_t linear_accel;
+  int16_t fan_speed;
+  struct turn_params *turns;
+};
+
+char *get_movement_string(enum movement movement);
+
+enum speed_strategy;
+void configure_kinematics(enum speed_strategy speed);
+struct kinematics get_kinematics(void);
+
 void set_starting_position(void);
 int32_t get_current_cell_travelled_distance(void);
 
@@ -35,6 +68,10 @@ void move_arc_turn(enum movement move);
 void move_inplace_turn(enum movement movement);
 void move_inplace_angle(float angle, float rads);
 
+void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed);
+void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed);
+
 void move(enum movement movement);
+void move_run_sequence(char *sequence, enum movement *sequence_movements);
 
 #endif

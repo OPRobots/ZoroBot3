@@ -18,12 +18,17 @@ void handwall_set_time_limit(uint32_t ms) {
 
 void handwall_start(void) {
   start_ms = get_clock_ticks();
+  configure_kinematics(menu_run_get_speed());
+  clear_info_leds();
+  set_RGB_color(0, 0, 0);
+  set_target_fan_speed(get_kinematics().fan_speed, 400);
+  delay(500);
   move(MOVE_START);
 }
 
 void handwall_loop(void) {
   if (time_limit > 0 && get_clock_ticks() - start_ms >= time_limit) {
-    set_competicion_iniciada(false);
+    set_race_started(false);
     return;
   }
   struct walls walls = get_walls();
@@ -35,7 +40,7 @@ void handwall_loop(void) {
   } else if (!walls.front) {
     move(MOVE_FRONT);
   } else if (walls.front && walls.left && walls.right) {
-    move(MOVE_180W);
+    move(MOVE_BACK_WALL);
   } else {
     set_target_linear_speed(0);
     set_ideal_angular_speed(0);

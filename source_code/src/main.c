@@ -3,6 +3,7 @@
 #include <control.h>
 #include <delay.h>
 #include <encoders.h>
+#include <floodfill.h>
 #include <handwall.h>
 #include <leds.h>
 #include <macroarray.h>
@@ -28,54 +29,54 @@ int main(void) {
   setup();
   show_battery_level();
   eeprom_load();
-  delay(1500);
 
   while (1) {
-    if (!is_competicion_iniciada()) {
-      if (!check_menu_button()) {
-        switch (check_iniciar_competicion()) {
-          case SENSOR_FRONT_LEFT_WALL_ID:
-            handwall_use_left_hand();
-            break;
-          case SENSOR_FRONT_RIGHT_WALL_ID:
-            handwall_use_right_hand();
-            break;
-        }
-
-        if (is_competicion_iniciada()) {
-          // handwall_set_time_limit(100000);
-          handwall_start();
-          // move(MOVE_START);
-          // move(MOVE_FRONT);
-          // move(MOVE_FRONT);
-          // move(MOVE_FRONT);
-          // move(MOVE_LEFT);
-          // move(MOVE_180W);
-          // move_straight(3*CELL_DIMENSION, 300, true);
-          // delay(50);
-          // set_side_sensors_close_correction(true);
-          // set_side_sensors_far_correction(true);
-          // move_straight(60, 500, false, true);
-          // move(MOVE_LEFT);
-
-          // delay(100);
-          // move_inplace_turn(MOVE_180);
-          // set_side_sensors_close_correction(true);
-          // set_side_sensors_far_correction(true);
-          // move_straight(4*CELL_DIMENSION - ROBOT_FRONT_LENGTH - ROBOT_BACK_LENGTH, 500, true);
-          // delay(100);
-          // move_inplace_turn(MOVE_180);
-          // delay(500);
-          //     set_competicion_iniciada(false);
-        } else {
-          update_side_sensors_leds();
-          // set_motors_brake();
-          // printf("%.4f\n", get_gyro_z_radps());
+    if (!is_race_started()) {
+      menu_handler();
+      if (menu_run_can_start()) {
+        int8_t sensor_started = check_start_run();
+        if (is_race_started()) {
+          switch (menu_run_get_explore_algorithm()) {
+            case EXPLORE_HANDWALL:
+              switch (sensor_started) {
+                case SENSOR_FRONT_LEFT_WALL_ID:
+                  handwall_use_left_hand();
+                  handwall_start();
+                  break;
+                case SENSOR_FRONT_RIGHT_WALL_ID:
+                  handwall_use_right_hand();
+                  handwall_start();
+                  break;
+              }
+              break;
+            case EXPLORE_FLOODFILL:
+              switch (sensor_started) {
+                case SENSOR_FRONT_LEFT_WALL_ID:
+                  floodfill_start_run();
+                  break;
+                case SENSOR_FRONT_RIGHT_WALL_ID:
+                  floodfill_start_explore();
+                  break;
+              }
+              break;
+            default:
+              set_race_started(false);
+              break;
+          }
         }
       }
     } else {
-      // Loop de competición
-      handwall_loop();
+      switch (menu_run_get_explore_algorithm()) {
+        case EXPLORE_HANDWALL:
+          handwall_loop();
+          break;
+        case EXPLORE_FLOODFILL:
+          floodfill_loop();
+          break;
+        default:
+          set_race_started(false);
+          break;
+      }
     }
 
     // ZONA DEBUG TEMPORAL
@@ -85,7 +86,7 @@ int main(void) {
 
     // LOG ERROR LATERAL
     // get_side_sensors_close_error();
-    // printf("%4d - %4d\n", get_side_sensors_close_error(), get_side_sensors_far_error());
+    // printf("%4d - %4d\n", get_side_sensors_close_error(true), get_side_sensors_far_error(true));
     // delay(100);
 
     // LOG MPU DEG
@@ -105,7 +106,7 @@ int main(void) {
     //   set_target_linear_speed(0);
     //   // printf("%d\n", 0);
     // } else {
-    // set_competicion_iniciada(false);
+    // set_race_started(false);
     // set_status_led(false);
     // warning_status_led(125);
     // }
@@ -116,10 +117,10 @@ int main(void) {
     //   set_ideal_angular_speed(0);
     //   // printf("%d\n", 200);
     // } else {
-    //   set_competicion_iniciada(false);
+    //   set_race_started(false);
     //   set_status_led(false);
     // }
-    // // if (is_competicion_iniciada()) {
+    // // if (is_race_started()) {
     // //   control_debug();
     // // }
     // // // set_motors_speed(80,80);
@@ -145,10 +146,12 @@ int main(void) {
     // static uint8_t count = 0;
     // if (get_encoder_average_micrometers()/10000 >= count || count == 0) {
     // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
+    // // printf("(%4d)\t", get_sensor_linearized(SENSOR_FRONT_LEFT_WALL_ID));
     // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
-    // // printf("%4d\t", (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)+get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))/2);
-    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
+    // // printf("(%4d)\t", get_sensor_linearized(SENSOR_FRONT_RIGHT_WALL_ID));
+    // // // printf("%4d\t", (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)+get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))/2);
+    // // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
+    // // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
     // printf("\n");
     // delay(100);
     // count++;
@@ -159,12 +162,14 @@ int main(void) {
     //   while (get_menu_mode_btn())
     //     ;
     // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)-get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
-    // printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
-    // printf("\n");
-    // delay(100);
+    // if (!is_race_started()) {
+    //   printf("%4d\t", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
+    //   printf("%4d\t", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
+    //   printf("%4d\t", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
+    //   printf("%4d\t", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
+    //   printf("\n");
+    //   delay(100);
+    // }
     // }
 
     // printf("%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t%.3f  (%d)\t\n", get_sensor_log(0), get_sensor_raw_filter(0),  get_sensor_log(1), get_sensor_raw_filter(1),  get_sensor_log(2), get_sensor_raw_filter(2),  get_sensor_log(3), get_sensor_raw_filter(3));

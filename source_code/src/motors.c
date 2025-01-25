@@ -5,8 +5,10 @@ static uint32_t motors_saturated_ms = 0;
 static uint16_t left_motor_saturation_count = 0;
 static uint16_t right_motor_saturation_count = 0;
 
+static bool check_motors_saturated_enabled = true;
+
 static void check_motors_saturated(void) {
-  if (left_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || right_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT) {
+  if (check_motors_saturated_enabled && (left_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || right_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT)) {
     if (!motors_saturated) {
       motors_saturated_ms = get_clock_ticks();
     }
@@ -14,6 +16,10 @@ static void check_motors_saturated(void) {
   } else {
     motors_saturated = false;
   }
+}
+
+void set_check_motors_saturated_enabled(bool enabled) {
+  check_motors_saturated_enabled = enabled;
 }
 
 void set_motors_speed(float velI, float velD) {
@@ -97,17 +103,18 @@ void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
 void set_fan_speed(uint8_t vel) {
   uint32_t ocF = 0;
   if (vel != 0) {
-    ocF = map(abs(vel), 0, 1000, 0, MOTORES_MAX_PWM);
+    ocF = map(abs(vel), 0, 100, 0, MOTORES_MAX_PWM);
   }
   // printf("%ld\n", ocF);
   timer_set_oc_value(TIM8, TIM_OC2, ocF);
 }
 
-void clear_motors_saturated(void) {
+void reset_motors_saturated(void) {
   motors_saturated = false;
   motors_saturated_ms = 0;
   left_motor_saturation_count = 0;
   right_motor_saturation_count = 0;
+  check_motors_saturated_enabled = true;
 }
 
 bool is_motor_saturated(void) {

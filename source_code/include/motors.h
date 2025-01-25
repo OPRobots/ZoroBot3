@@ -16,10 +16,11 @@
 void set_motors_speed(float velI, float velD);
 void set_motors_brake(void);
 void set_motors_pwm(int32_t pwm_left, int32_t pwm_right);
-
 void set_fan_speed(uint8_t vel);
-void clear_motors_saturated(void);
+
+void reset_motors_saturated(void);
 bool is_motor_saturated(void);
 uint32_t get_motors_saturated_ms(void);
+void set_check_motors_saturated_enabled(bool enabled);
 
 #endif

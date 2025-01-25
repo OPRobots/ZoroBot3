@@ -1,17 +1,14 @@
-#ifndef __MENU_H
-#define __MENU_H
+#ifndef MENU_H
+#define MENU_H
 
 #include <buttons.h>
-#include <calibrations.h>
-#include <config.h>
-#include <debug.h>
+#include <delay.h>
 #include <leds.h>
+#include <menu_configs.h>
+#include <menu_run.h>
+#include <usart.h>
 
-
-bool check_menu_button(void);
-
-bool in_debug_mode(void);
-void reset_menu_mode(void);
+void menu_handler(void);
 void menu_reset(void);
 
 #endif

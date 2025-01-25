@@ -1,6 +1,12 @@
 #ifndef __CONSTANTS_H
 #define __CONSTANTS_H
 
+/** Laberinto (dimensiones máximas)*/
+#define MAZE_ROWS 16
+#define MAZE_COLUMNS 16
+#define MAZE_CELLS (MAZE_ROWS * MAZE_COLUMNS)
+#define MAZE_MAX_DISTANCE (MAZE_CELLS - 1)
+
 /** Constantes matemáticas */
 #define PI 3.1415
 #define MICROMETERS_PER_MILLIMETER 1000
