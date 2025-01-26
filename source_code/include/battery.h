@@ -5,10 +5,11 @@
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
 
+#include "constants.h"
 #include "delay.h"
 #include "leds.h"
+#include "sensors.h"
 #include "setup.h"
-#include "constants.h"
 
 #define BATTERY_VOLTAGE_LOW_PASS_FILTER_ALPHA 0.1
 

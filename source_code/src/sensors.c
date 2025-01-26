@@ -1,12 +1,19 @@
 #include <sensors.h>
 
+static uint8_t aux_adc_channels[NUM_AUX_ADC_CHANNELS] = {
+    ADC_CHANNEL4, // BATERIA
+    ADC_CHANNEL5, // CORRIENTE MOT. IZQ.
+    ADC_CHANNEL6, // CORRIENTE MOT. DER.
+    ADC_CHANNEL7, // BTN. MENU
+};
+static volatile uint16_t aux_adc_raw[NUM_AUX_ADC_CHANNELS];
+
 static uint8_t sensores[NUM_SENSORES] = {
     ADC_CHANNEL10, // DETECTA SENSOR_FRONT_LEFT_WALL_ID - NO CAMBIAR
     ADC_CHANNEL13, // DETECTA SENSOR_FRONT_RIGHT_WALL_ID - NO CAMBIAR
     ADC_CHANNEL12, // DETECTA SENSOR_SIDE_LEFT_WALL_ID - NO CAMBIAR
     ADC_CHANNEL11, // DETECTA SENSOR_SIDE_RIGHT_WALL_ID - NO CAMBIAR
 };
-
 static volatile uint16_t sensors_raw[NUM_SENSORES];
 static volatile uint16_t sensors_off[NUM_SENSORES];
 static volatile uint16_t sensors_on[NUM_SENSORES];
@@ -165,6 +172,24 @@ int16_t sensors_distance_offset[NUM_SENSORES] = {0, 0, 0, 0};
 
 static volatile int16_t last_front_sensors_angle_error = 0;
 
+
+uint8_t *get_aux_adc_channels(void) {
+  return aux_adc_channels;
+}
+
+uint8_t get_aux_adc_channels_num(void) {
+  return NUM_AUX_ADC_CHANNELS;
+}
+
+volatile uint16_t *get_aux_adc_raw(void) {
+  return aux_adc_raw;
+}
+
+uint16_t get_aux_raw(uint8_t pos) {
+  return aux_adc_raw[pos];
+}
+
+
 /**
  * @brief Set an specific emitter ON.
  *
@@ -296,8 +321,8 @@ void front_sensors_calibration(void) {
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
 
-   sensors_distance_offset[SENSOR_FRONT_LEFT_WALL_ID] = 0;
-   sensors_distance_offset[SENSOR_FRONT_RIGHT_WALL_ID] = 0;
+  sensors_distance_offset[SENSOR_FRONT_LEFT_WALL_ID] = 0;
+  sensors_distance_offset[SENSOR_FRONT_RIGHT_WALL_ID] = 0;
 
   front_sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].close_offset = 0;
   front_sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].close_offset = 0;

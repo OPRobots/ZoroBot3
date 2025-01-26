@@ -18,8 +18,8 @@
 void sys_tick_handler(void) {
   clock_tick();
   update_encoder_readings();
-  update_sensors_magics();
-  update_gyro_readings();
+  // update_sensors_magics();
+  // update_gyro_readings();
   update_battery_voltage();
   check_leds_while();
   check_buttons();
@@ -27,6 +27,35 @@ void sys_tick_handler(void) {
 
 int main(void) {
   setup();
+
+  while (1) {
+    // LEDS MENU
+    for (uint8_t i = 0; i < 10; i++) {
+      clear_info_leds();
+      set_info_led(i, true);
+      delay(250);
+    }
+
+    // LED RGB
+    set_RGB_color(20, 0, 0);
+    delay(250);
+    set_RGB_color(0, 20, 0);
+    delay(250);
+    set_RGB_color(0, 0, 20);
+    delay(250);
+    set_RGB_color(0, 0, 0);
+
+    // MPU
+    printf("MPU: %#010X\n", mpu_who_am_i());
+    delay(500);
+
+    // VENTILADOR
+    set_fan_speed(30);
+
+    // MOTORES
+    set_motors_speed(30, 30);
+  }
+
   show_battery_level();
   eeprom_load();
 

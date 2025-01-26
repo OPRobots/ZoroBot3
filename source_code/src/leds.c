@@ -30,14 +30,14 @@ static uint32_t lastTicksWarningBateria = 0;
 
 void set_status_led(bool state) {
   if (state) {
-    gpio_set(GPIOA, GPIO12);
+    gpio_set(GPIOB, GPIO14);
   } else {
-    gpio_clear(GPIOA, GPIO12);
+    gpio_clear(GPIOB, GPIO14);
   }
 }
 
 void toggle_status_led(void) {
-  gpio_toggle(GPIOA, GPIO12);
+  gpio_toggle(GPIOB, GPIO14);
 }
 
 void warning_status_led(uint32_t ms) {
@@ -99,7 +99,7 @@ void set_RGB_rainbow(void) {
 void set_leds_wave(int ms) {
   if (get_clock_ticks() > lastTicksWave + ms) {
     gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
-    gpio_clear(GPIOC, GPIO4 | GPIO5);
+    gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO15 | GPIO14 | GPIO13);
     gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
 
     switch (currentIndexWave) {
@@ -108,20 +108,24 @@ void set_leds_wave(int ms) {
         gpio_set(GPIOC, GPIO5);
         break;
       case 1:
-        gpio_set(GPIOA, GPIO7);
         gpio_set(GPIOB, GPIO0);
+        gpio_set(GPIOB, GPIO1);
         break;
       case 2:
-        gpio_set(GPIOB, GPIO1);
-        gpio_set(GPIOA, GPIO6);
+        gpio_set(GPIOB, GPIO2);
+        gpio_set(GPIOC, GPIO15);
         break;
       case 3:
-        gpio_set(GPIOA, GPIO5);
-        gpio_set(GPIOB, GPIO2);
+        gpio_set(GPIOC, GPIO14);
+        gpio_set(GPIOC, GPIO13);
+        break;
+      case 4:
+        gpio_set(GPIOB, GPIO9);
+        gpio_set(GPIOB, GPIO8);
         break;
     }
 
-    if (currentIndexWave >= 3) {
+    if (currentIndexWave >= 4) {
       currentStepWave = -1;
     } else if (currentIndexWave <= 0) {
       currentStepWave = 1;
@@ -135,17 +139,17 @@ void set_leds_wave(int ms) {
 void set_leds_side_sensors(int ms) {
   if (get_clock_ticks() > lastTickSideSensors + ms) {
     gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
-    gpio_clear(GPIOC, GPIO4 | GPIO5);
+    gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO15 | GPIO14 | GPIO13);
     gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
 
     switch (currentIndexSideSensors) {
       case 0:
-        gpio_set(GPIOC, GPIO4);
-        gpio_set(GPIOC, GPIO5);
+        gpio_set(GPIOB, GPIO2);
+        gpio_set(GPIOC, GPIO15);
         break;
       case 1:
-        gpio_set(GPIOA, GPIO7);
-        gpio_set(GPIOB, GPIO0);
+        gpio_set(GPIOB, GPIO1);
+        gpio_set(GPIOC, GPIO14);
         break;
     }
 
@@ -163,17 +167,17 @@ void set_leds_side_sensors(int ms) {
 void set_leds_front_sensors(int ms) {
   if (get_clock_ticks() > lastTickFrontSensors + ms) {
     gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
-    gpio_clear(GPIOC, GPIO4 | GPIO5);
+    gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO15 | GPIO14 | GPIO13);
     gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
 
     switch (currentIndexFrontSensors) {
       case 0:
-        gpio_set(GPIOB, GPIO1);
-        gpio_set(GPIOA, GPIO6);
+        gpio_set(GPIOC, GPIO4);
+        gpio_set(GPIOB, GPIO8);
         break;
       case 1:
-        gpio_set(GPIOA, GPIO5);
-        gpio_set(GPIOB, GPIO2);
+        gpio_set(GPIOC, GPIO5);
+        gpio_set(GPIOB, GPIO9);
         break;
     }
 
@@ -191,7 +195,7 @@ void set_leds_front_sensors(int ms) {
 void set_leds_blink(int ms) {
   if (get_clock_ticks() > lastTicksLedsBlink + ms) {
     gpio_toggle(GPIOA, GPIO5 | GPIO6 | GPIO7);
-    gpio_toggle(GPIOC, GPIO4 | GPIO5);
+    gpio_toggle(GPIOC, GPIO4 | GPIO5 | GPIO15 | GPIO14 | GPIO13);
     gpio_toggle(GPIOB, GPIO0 | GPIO1 | GPIO2);
     lastTicksLedsBlink = get_clock_ticks();
   }
@@ -256,7 +260,7 @@ void all_leds_clear(void) {
   set_status_led(false);
 
   gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
-  gpio_clear(GPIOC, GPIO4 | GPIO5);
+  gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO15 | GPIO14 | GPIO13);
   gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
 }
 
@@ -264,73 +268,85 @@ void set_info_led(uint8_t index, bool state) {
   switch (index) {
     case 0:
       if (state) {
-        gpio_set(GPIOA, GPIO5);
-      } else {
-        gpio_clear(GPIOA, GPIO5);
-      }
-      break;
-    case 1:
-      if (state) {
-        gpio_set(GPIOA, GPIO6);
-      } else {
-        gpio_clear(GPIOA, GPIO6);
-      }
-      break;
-    case 2:
-      if (state) {
-        gpio_set(GPIOA, GPIO7);
-      } else {
-        gpio_clear(GPIOA, GPIO7);
-      }
-      break;
-    case 3:
-      if (state) {
         gpio_set(GPIOC, GPIO4);
       } else {
         gpio_clear(GPIOC, GPIO4);
       }
       break;
-    case 4:
+    case 1:
       if (state) {
         gpio_set(GPIOC, GPIO5);
       } else {
         gpio_clear(GPIOC, GPIO5);
       }
       break;
-    case 5:
+    case 2:
       if (state) {
         gpio_set(GPIOB, GPIO0);
       } else {
         gpio_clear(GPIOB, GPIO0);
       }
       break;
-    case 6:
+    case 3:
       if (state) {
         gpio_set(GPIOB, GPIO1);
       } else {
         gpio_clear(GPIOB, GPIO1);
       }
       break;
-    case 7:
+    case 4:
       if (state) {
         gpio_set(GPIOB, GPIO2);
       } else {
         gpio_clear(GPIOB, GPIO2);
       }
       break;
+    case 5:
+      if (state) {
+        gpio_set(GPIOC, GPIO15);
+      } else {
+        gpio_clear(GPIOC, GPIO15);
+      }
+      break;
+    case 6:
+      if (state) {
+        gpio_set(GPIOC, GPIO14);
+      } else {
+        gpio_clear(GPIOC, GPIO14);
+      }
+      break;
+    case 7:
+      if (state) {
+        gpio_set(GPIOC, GPIO13);
+      } else {
+        gpio_clear(GPIOC, GPIO13);
+      }
+      break;
+    case 8:
+      if (state) {
+        gpio_set(GPIOB, GPIO9);
+      } else {
+        gpio_clear(GPIOB, GPIO9);
+      }
+      break;
+    case 9:
+      if (state) {
+        gpio_set(GPIOB, GPIO10);
+      } else {
+        gpio_clear(GPIOB, GPIO10);
+      }
+      break;
   }
 }
 
 void set_info_leds(void) {
-
   gpio_set(GPIOA, GPIO5 | GPIO6 | GPIO7);
-  gpio_set(GPIOC, GPIO4 | GPIO5);
+  gpio_set(GPIOC, GPIO4 | GPIO5 | GPIO15 | GPIO14 | GPIO13);
   gpio_set(GPIOB, GPIO0 | GPIO1 | GPIO2);
 }
 
 void clear_info_leds(void) {
-
   gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
-  gpio_clear(GPIOC, GPIO4 | GPIO5);
+  gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO15 | GPIO14 | GPIO13);
   gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
 }

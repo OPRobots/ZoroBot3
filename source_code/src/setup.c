@@ -14,7 +14,7 @@
  *
  */
 static void setup_clock(void) {
-  
+
   rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
 
   rcc_periph_clock_enable(RCC_GPIOA);
@@ -36,6 +36,7 @@ static void setup_clock(void) {
   rcc_periph_clock_enable(RCC_TIM5);
   rcc_periph_clock_enable(RCC_TIM8);
 
+  rcc_periph_clock_enable(RCC_DMA1);
   rcc_periph_clock_enable(RCC_DMA2);
 
   rcc_periph_clock_enable(RCC_ADC1);
@@ -56,7 +57,7 @@ static void setup_systick(void) {
 
 /**
  * @brief Configura las prioridades de Timers para evitar bloqueos
- * 
+ *
  */
 static void setup_timer_priorities(void) {
   nvic_set_priority(NVIC_TIM2_IRQ, 16 * 0);
@@ -73,7 +74,7 @@ static void setup_timer_priorities(void) {
 
 /**
  * @brief Configura el USART3 para comunicacion Serial
- * 
+ *
  */
 static void setup_usart(void) {
   usart_set_baudrate(USART3, 115200);
@@ -89,11 +90,11 @@ static void setup_usart(void) {
 
 /**
  * @brief Configura los puertos GPIO
- * 
+ *
  */
 static void setup_gpio(void) {
-  // Entradas digitales configuracion
-  gpio_mode_setup(GPIOC, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO13 | GPIO14 | GPIO15);
+  // Entrada analógica menú
+  gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO7);
 
   // Entradas analógicas sensores
   gpio_mode_setup(GPIOC, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0 | GPIO1 | GPIO2 | GPIO3);
@@ -105,32 +106,35 @@ static void setup_gpio(void) {
   // Entrada analógica sensor de batería
   gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO4);
 
-  // Entradas digitales Switch
-  gpio_mode_setup(GPIOB, GPIO_MODE_INPUT, GPIO_PUPD_PULLDOWN, GPIO8 | GPIO9);
+  // Entrada analógica sensor de corriente de motores
+  gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO5 | GPIO6);
 
   // Entradas Encoders
   gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO4 | GPIO5 | GPIO6 | GPIO7);
   gpio_set_af(GPIOB, GPIO_AF2, GPIO4 | GPIO5 | GPIO6 | GPIO7);
+  gpio_mode_setup(GPIOB, GPIO_MODE_INPUT, GPIO_PUPD_PULLDOWN, GPIO3);
+  gpio_mode_setup(GPIOD, GPIO_MODE_INPUT, GPIO_PUPD_PULLDOWN, GPIO2);
 
   // Salida digital LED auxiliar
-  gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12);
+  gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO14);
 
   // Salidas digitales LEDs ventilador
-  gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5 | GPIO6 | GPIO7);
   gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO4 | GPIO5);
   gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO0 | GPIO1 | GPIO2);
+  gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO15 | GPIO14 | GPIO13);
+  gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5 | GPIO6 | GPIO7);
 
   // Salida PWM LEDS
   gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10 | GPIO11);
   gpio_set_af(GPIOA, GPIO_AF1, GPIO9 | GPIO10 | GPIO11);
 
   // Salida PWM Motores
-  gpio_mode_setup(GPIOC, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO7 | GPIO8 | GPIO9);
-  gpio_set_af(GPIOC, GPIO_AF3, GPIO7 | GPIO8 | GPIO9);
+  gpio_mode_setup(GPIOC, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO6 | GPIO7 | GPIO8 | GPIO9);
+  gpio_set_af(GPIOC, GPIO_AF3, GPIO6 | GPIO7 | GPIO8 | GPIO9);
 
-  // Salidas Digitales Motores
-  gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12 | GPIO13 | GPIO14 | GPIO15);
-  gpio_clear(GPIOB, GPIO12 | GPIO13 | GPIO14 | GPIO15);
+  // Salida PWM Succión
+  gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO8);
+  gpio_set_af(GPIOA, GPIO_AF1, GPIO8);
 
   // USART3
   gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO10 | GPIO11);
@@ -145,7 +149,7 @@ static void setup_gpio(void) {
 
 /**
  * @brief Configura el ADC1 para lectura de sensores individualmente a partir de un trigger por software
- * 
+ *
  */
 static void setup_adc1(void) {
 
@@ -159,28 +163,68 @@ static void setup_adc1(void) {
       ADC1, sizeof(get_sensors()) / sizeof(get_sensors()[0]),
       get_sensors());
   adc_power_on(ADC1);
-  }
+}
 
 /**
  * @brief Configura el ADC2 para lectura del sensor de batería
- * 
+ *
  */
 static void setup_adc2(void) {
-  uint8_t lista_canales[16];
-
-  lista_canales[0] = ADC_CHANNEL4;
   adc_power_off(ADC2);
-  adc_disable_scan_mode(ADC2);
-  adc_set_single_conversion_mode(ADC2);
+  adc_disable_external_trigger_regular(ADC2);
+  adc_set_resolution(ADC2, ADC_CR1_RES_12BIT);
   adc_set_right_aligned(ADC2);
+  // adc_set_clk_prescale(ADC_CCR_ADCPRE_BY2);
   adc_set_sample_time_on_all_channels(ADC2, ADC_SMPR_SMP_15CYC);
-  adc_set_regular_sequence(ADC2, 1, lista_canales);
+  adc_enable_scan_mode(ADC2);
+
+  adc_set_regular_sequence(ADC2, get_aux_adc_channels_num(), get_aux_adc_channels());
+  adc_set_continuous_conversion_mode(ADC2);
+  adc_enable_eoc_interrupt(ADC2);
+
   adc_power_on(ADC2);
+  int i;
+  for (i = 0; i < 800000; i++) {
+    /* Wait a bit. */
+    __asm__("nop");
+  }
+
+  adc_start_conversion_regular(ADC2);
+}
+
+static void setup_dma_adc2(void) {
+  rcc_peripheral_enable_clock(&RCC_APB2ENR, RCC_APB2ENR_ADC2EN);
+  rcc_peripheral_enable_clock(&RCC_AHB1ENR, RCC_AHB1ENR_DMA2EN);
+  dma_stream_reset(DMA2, DMA_STREAM0);
+
+  dma_set_peripheral_address(DMA2, DMA_STREAM0, (uint32_t)&ADC_DR(ADC1));
+  dma_set_memory_address(DMA2, DMA_STREAM0, (uint32_t)get_aux_adc_raw());
+  dma_enable_memory_increment_mode(DMA2, DMA_STREAM0);
+  dma_set_peripheral_size(DMA2, DMA_STREAM0, DMA_SxCR_PSIZE_16BIT);
+  dma_set_memory_size(DMA2, DMA_STREAM0, DMA_SxCR_MSIZE_16BIT);
+  dma_set_priority(DMA2, DMA_STREAM0, DMA_SxCR_PL_LOW);
+
+  dma_enable_transfer_complete_interrupt(DMA2, DMA_STREAM0);
+  // dma_enable_half_transfer_interrupt(DMA2, DMA_STREAM0);
+  dma_set_number_of_data(DMA2, DMA_STREAM0, get_aux_adc_channels_num());
+  dma_enable_circular_mode(DMA2, DMA_STREAM0);
+  dma_set_transfer_mode(DMA2, DMA_STREAM0, DMA_SxCR_DIR_PERIPHERAL_TO_MEM);
+  dma_channel_select(DMA2, DMA_STREAM0, DMA_SxCR_CHSEL_0);
+
+  dma_enable_stream(DMA2, DMA_STREAM0);
+  adc_enable_dma(ADC1);
+  adc_set_dma_continue(ADC1);
+}
+
+void dma2_stream0_isr(void) {
+  if (dma_get_interrupt_flag(DMA2, DMA_STREAM0, DMA_TCIF)) {
+    dma_clear_interrupt_flags(DMA2, DMA_STREAM0, DMA_TCIF);
+  }
 }
 
 /**
  * @brief Configura el TIM1 para manejar el el PWM del LED RGB
- * 
+ *
  */
 static void setup_leds_pwm(void) {
   timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
@@ -210,12 +254,12 @@ static void setup_leds_pwm(void) {
 
 /**
  * @brief Configura el TIM8 para manejar el PWM de los Motores, inicialmente a 4kHz
- * 
+ *
  */
 static void setup_motors_pwm(void) {
   timer_set_mode(TIM8, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
 
-  //84000000
+  // 84000000
   timer_set_prescaler(TIM8, rcc_apb2_frequency * 2 / 40000000 - 2);
   // 4000000 es la frecuencia a la que irá el PWM 25 kHz, los dos últimos ceros no se porqué,
   // pero son necesarios ya que rcc_apb2_frequency también añade dos ceros a mayores
@@ -242,7 +286,7 @@ static void setup_motors_pwm(void) {
 /**
  * @brief Configura el TIM5 como ISR para ejecutrase cada 1ms.
  * Esta función ISR será la que contenga la gestión del control del robot
- * 
+ *
  */
 static void setup_main_loop_timer(void) {
   rcc_periph_reset_pulse(RST_TIM5);
@@ -259,12 +303,12 @@ static void setup_main_loop_timer(void) {
 
 /**
  * @brief Función de uso interno que lanza el TIM5
- * 
+ *
  */
 void tim5_isr(void) {
   if (timer_get_flag(TIM5, TIM_SR_CC1IF)) {
     timer_clear_flag(TIM5, TIM_SR_CC1IF);
-    
+
     control_loop();
   }
 }
@@ -272,7 +316,7 @@ void tim5_isr(void) {
 /**
  * @brief Configura el TIM2 como ISR para ejecutarse 16 veces cada 1ms.
  * Esta función ISR será la que maneje la lectura de sensores y el encendido/apagado de los emisores
- * 
+ *
  */
 static void setup_wall_sensor_manager(void) {
   rcc_periph_reset_pulse(RST_TIM2);
@@ -288,7 +332,7 @@ static void setup_wall_sensor_manager(void) {
 
 /**
  * @brief Función de uso interno que lanza el TIM2
- * 
+ *
  */
 void tim2_isr(void) {
   if (timer_get_flag(TIM2, TIM_SR_CC1IF)) {
@@ -300,7 +344,7 @@ void tim2_isr(void) {
 
 /**
  * @brief Configura los TIM3 y TIM4 para lectura en quadratura de encoders.
- * 
+ *
  */
 static void setup_quadrature_encoders(void) {
   timer_set_period(TIM4, 0xFFFF);
@@ -330,7 +374,7 @@ static void setup_quadrature_encoders(void) {
  * - Frame format: MSB first.
  *
  * NSS is configured to be managed by software.
- * 
+ *
  * Reference: https://github.com/Bulebots/meiga
  */
 static void setup_spi(uint8_t speed_div) {
@@ -348,7 +392,7 @@ static void setup_spi(uint8_t speed_div) {
  * @brief Setup SPI for gyroscope read, less than 20 MHz.
  *
  * The clock baudrate is 84 MHz / 8 = 10.5 MHz.
- * 
+ *
  * Reference: https://github.com/Bulebots/meiga
  */
 void setup_spi_high_speed(void) {
@@ -360,7 +404,7 @@ void setup_spi_high_speed(void) {
  * @brief Setup SPI for gyroscope Write, less than 1 MHz.
  *
  * The clock baudrate is 84 MHz / 128 = 0.65625 MHz.
- * 
+ *
  * Reference: https://github.com/Bulebots/meiga
  */
 void setup_spi_low_speed(void) {
@@ -370,7 +414,7 @@ void setup_spi_low_speed(void) {
 
 /**
  * @brief Inicialización y configuración de todos los componentes del robot
- * 
+ *
  */
 void setup(void) {
   setup_clock();
@@ -378,9 +422,9 @@ void setup(void) {
   setup_timer_priorities();
   setup_usart();
   setup_gpio();
-  // setup_dma_adc1();
   setup_adc1();
   setup_adc2();
+  setup_dma_adc2();
   setup_leds_pwm();
   setup_motors_pwm();
   setup_main_loop_timer();

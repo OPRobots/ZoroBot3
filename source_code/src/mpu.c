@@ -17,7 +17,7 @@
 #define MPU_SIGNAL_PATH_RESET 104
 #define MPU_PWR_MGMT_1 107
 #define MPU_USER_CTRL 106
-#define MPU_WHOAMI 117
+#define MPU_WHOAMI 0x0F
 
 #define MPU_GYRO_ZOUT_H 71
 #define MPU_GYRO_ZOUT_L 72
