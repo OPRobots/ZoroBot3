@@ -1,5 +1,7 @@
 #include <setup.h>
 
+static enum RC5_TRIGGER rc5_trigger = RC5_TRIGGER_FALLING;
+
 /**
  * @brief Configura los relojes principales del robot
  *
@@ -15,7 +17,7 @@
  */
 static void setup_clock(void) {
 
-  rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
+  rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);
 
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_GPIOB);
@@ -26,8 +28,6 @@ static void setup_clock(void) {
   rcc_periph_clock_enable(RCC_USART3);
 
   rcc_periph_clock_enable(RCC_SPI3);
-
-  nvic_enable_irq(NVIC_EXTI0_IRQ);
 
   rcc_periph_clock_enable(RCC_TIM1);
   rcc_periph_clock_enable(RCC_TIM2);
@@ -70,6 +70,7 @@ static void setup_timer_priorities(void) {
   nvic_enable_irq(NVIC_TIM2_IRQ);
   nvic_enable_irq(NVIC_USART3_IRQ);
   nvic_enable_irq(NVIC_DMA2_STREAM0_IRQ);
+  nvic_enable_irq(NVIC_EXTI15_10_IRQ);
 }
 
 /**
@@ -118,11 +119,14 @@ static void setup_gpio(void) {
   // Salida digital LED auxiliar
   gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO14);
 
+  // Salida digital PIN auxiliar
+  gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO13);
+
   // Salidas digitales LEDs ventilador
   gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO4 | GPIO5);
   gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO0 | GPIO1 | GPIO2);
   gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO15 | GPIO14 | GPIO13);
-  gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5 | GPIO6 | GPIO7);
+  gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO9 | GPIO8);
 
   // Salida PWM LEDS
   gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10 | GPIO11);
@@ -131,6 +135,7 @@ static void setup_gpio(void) {
   // Salida PWM Motores
   gpio_mode_setup(GPIOC, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO6 | GPIO7 | GPIO8 | GPIO9);
   gpio_set_af(GPIOC, GPIO_AF3, GPIO6 | GPIO7 | GPIO8 | GPIO9);
+  gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO15);
 
   // Salida PWM Succión
   gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO8);
@@ -145,104 +150,120 @@ static void setup_gpio(void) {
   gpio_set(GPIOA, GPIO15);
   gpio_mode_setup(GPIOC, GPIO_MODE_AF, GPIO_PUPD_PULLDOWN, GPIO10 | GPIO11 | GPIO12);
   gpio_set_af(GPIOC, GPIO_AF6, GPIO10 | GPIO11 | GPIO12);
+
+  // IR 38kHz
+  exti_select_source(EXTI12, GPIOA);
+  rc5_trigger = RC5_TRIGGER_FALLING;
+  exti_set_trigger(EXTI12, EXTI_TRIGGER_FALLING);
+  exti_enable_request(EXTI12);
+}
+
+void exti15_10_isr(void) {
+  exti_reset_request(EXTI12);
+  rc5_register(rc5_trigger);
+  switch (rc5_trigger) {
+    case RC5_TRIGGER_FALLING:
+      rc5_trigger = RC5_TRIGGER_RISING;
+      exti_set_trigger(EXTI12, EXTI_TRIGGER_RISING);
+      break;
+    case RC5_TRIGGER_RISING:
+      rc5_trigger = RC5_TRIGGER_FALLING;
+      exti_set_trigger(EXTI12, EXTI_TRIGGER_FALLING);
+      break;
+  }
 }
 
 /**
  * @brief Configura el ADC1 para lectura de sensores individualmente a partir de un trigger por software
  *
  */
-static void setup_adc1(void) {
+static void setup_adc2(void) {
 
-  adc_power_off(ADC1);
-  adc_enable_scan_mode(ADC1);
-  adc_set_single_conversion_mode(ADC1);
-  adc_enable_external_trigger_injected(ADC1, ADC_CR2_JSWSTART, ADC_CR2_JEXTEN_RISING_EDGE);
-  adc_set_right_aligned(ADC1);
-  adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_15CYC);
+  adc_power_off(ADC2);
+  adc_enable_scan_mode(ADC2);
+  adc_set_single_conversion_mode(ADC2);
+  adc_enable_external_trigger_injected(ADC2, ADC_CR2_JSWSTART, ADC_CR2_JEXTEN_RISING_EDGE);
+  adc_set_right_aligned(ADC2);
+  adc_set_sample_time_on_all_channels(ADC2, ADC_SMPR_SMP_15CYC);
   adc_set_injected_sequence(
-      ADC1, sizeof(get_sensors()) / sizeof(get_sensors()[0]),
+      ADC2, sizeof(get_sensors()) / sizeof(get_sensors()[0]),
       get_sensors());
-  adc_power_on(ADC1);
+  adc_power_on(ADC2);
 }
 
 /**
  * @brief Configura el ADC2 para lectura del sensor de batería
  *
  */
-static void setup_adc2(void) {
-  adc_power_off(ADC2);
-  adc_disable_external_trigger_regular(ADC2);
-  adc_set_resolution(ADC2, ADC_CR1_RES_12BIT);
-  adc_set_right_aligned(ADC2);
+static void setup_adc1(void) {
+  adc_power_off(ADC1);
+  adc_disable_external_trigger_regular(ADC1);
+  adc_set_resolution(ADC1, ADC_CR1_RES_12BIT);
+  adc_set_right_aligned(ADC1);
   // adc_set_clk_prescale(ADC_CCR_ADCPRE_BY2);
-  adc_set_sample_time_on_all_channels(ADC2, ADC_SMPR_SMP_15CYC);
-  adc_enable_scan_mode(ADC2);
+  adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_15CYC);
+  adc_enable_scan_mode(ADC1);
 
-  adc_set_regular_sequence(ADC2, get_aux_adc_channels_num(), get_aux_adc_channels());
-  adc_set_continuous_conversion_mode(ADC2);
-  adc_enable_eoc_interrupt(ADC2);
+  adc_set_regular_sequence(ADC1, get_aux_adc_channels_num(), get_aux_adc_channels());
+  adc_set_continuous_conversion_mode(ADC1);
+  adc_enable_eoc_interrupt(ADC1);
 
-  adc_power_on(ADC2);
+  adc_power_on(ADC1);
   int i;
   for (i = 0; i < 800000; i++) {
     /* Wait a bit. */
     __asm__("nop");
   }
 
-  adc_start_conversion_regular(ADC2);
+  adc_start_conversion_regular(ADC1);
 }
 
-static void setup_dma_adc2(void) {
-  rcc_peripheral_enable_clock(&RCC_APB2ENR, RCC_APB2ENR_ADC2EN);
+static void setup_dma_adc1(void) {
+  rcc_peripheral_enable_clock(&RCC_APB2ENR, RCC_APB2ENR_ADC1EN);
   rcc_peripheral_enable_clock(&RCC_AHB1ENR, RCC_AHB1ENR_DMA2EN);
-  dma_stream_reset(DMA2, DMA_STREAM0);
+  dma_stream_reset(DMA2, DMA_STREAM4);
 
-  dma_set_peripheral_address(DMA2, DMA_STREAM0, (uint32_t)&ADC_DR(ADC1));
-  dma_set_memory_address(DMA2, DMA_STREAM0, (uint32_t)get_aux_adc_raw());
-  dma_enable_memory_increment_mode(DMA2, DMA_STREAM0);
-  dma_set_peripheral_size(DMA2, DMA_STREAM0, DMA_SxCR_PSIZE_16BIT);
-  dma_set_memory_size(DMA2, DMA_STREAM0, DMA_SxCR_MSIZE_16BIT);
-  dma_set_priority(DMA2, DMA_STREAM0, DMA_SxCR_PL_LOW);
+  dma_set_peripheral_address(DMA2, DMA_STREAM4, (uint32_t)&ADC_DR(ADC1));
+  dma_set_memory_address(DMA2, DMA_STREAM4, (uint32_t)get_aux_adc_raw());
+  dma_enable_memory_increment_mode(DMA2, DMA_STREAM4);
+  dma_set_peripheral_size(DMA2, DMA_STREAM4, DMA_SxCR_PSIZE_16BIT);
+  dma_set_memory_size(DMA2, DMA_STREAM4, DMA_SxCR_MSIZE_16BIT);
+  dma_set_priority(DMA2, DMA_STREAM4, DMA_SxCR_PL_LOW);
 
-  dma_enable_transfer_complete_interrupt(DMA2, DMA_STREAM0);
-  // dma_enable_half_transfer_interrupt(DMA2, DMA_STREAM0);
-  dma_set_number_of_data(DMA2, DMA_STREAM0, get_aux_adc_channels_num());
-  dma_enable_circular_mode(DMA2, DMA_STREAM0);
-  dma_set_transfer_mode(DMA2, DMA_STREAM0, DMA_SxCR_DIR_PERIPHERAL_TO_MEM);
-  dma_channel_select(DMA2, DMA_STREAM0, DMA_SxCR_CHSEL_0);
+  dma_enable_transfer_complete_interrupt(DMA2, DMA_STREAM4);
+  // dma_enable_half_transfer_interrupt(DMA2, DMA_STREAM4);
+  dma_set_number_of_data(DMA2, DMA_STREAM4, get_aux_adc_channels_num());
+  dma_enable_circular_mode(DMA2, DMA_STREAM4);
+  dma_set_transfer_mode(DMA2, DMA_STREAM4, DMA_SxCR_DIR_PERIPHERAL_TO_MEM);
+  dma_channel_select(DMA2, DMA_STREAM4, DMA_SxCR_CHSEL_0);
 
-  dma_enable_stream(DMA2, DMA_STREAM0);
+  dma_enable_stream(DMA2, DMA_STREAM4);
   adc_enable_dma(ADC1);
   adc_set_dma_continue(ADC1);
 }
 
-void dma2_stream0_isr(void) {
-  if (dma_get_interrupt_flag(DMA2, DMA_STREAM0, DMA_TCIF)) {
-    dma_clear_interrupt_flags(DMA2, DMA_STREAM0, DMA_TCIF);
-  }
-}
-
 /**
- * @brief Configura el TIM1 para manejar el el PWM del LED RGB
+ * @brief Configura el TIM1 para manejar el el PWM del LED RGB y el Ventilador a 20kHz
  *
  */
 static void setup_leds_pwm(void) {
   timer_set_mode(TIM1, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
 
-  // timer_set_prescaler(TIM1, rcc_apb2_frequency * 2 / 400000);
-  timer_set_prescaler(TIM1, ((rcc_apb1_frequency * 2) / 1000000 - 2));
-  // 400000 es la frecuencia a la que irá el PWM 4 kHz, los dos últimos ceros no se porqué, pero son necesarios ya que rcc_apb2_frequency también añade dos ceros a mayores
+  timer_set_prescaler(TIM1, ((rcc_apb2_frequency * 2) / 20000000 - 1)); // 20kHz
   timer_set_repetition_counter(TIM1, 0);
   timer_enable_preload(TIM1);
   timer_continuous_mode(TIM1);
   timer_set_period(TIM1, LEDS_MAX_PWM);
 
+  timer_set_oc_mode(TIM1, TIM_OC1, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM1, TIM_OC2, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM1, TIM_OC3, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM1, TIM_OC4, TIM_OCM_PWM1);
+  timer_set_oc_value(TIM1, TIM_OC1, 0);
   timer_set_oc_value(TIM1, TIM_OC2, 0);
   timer_set_oc_value(TIM1, TIM_OC3, 0);
   timer_set_oc_value(TIM1, TIM_OC4, 0);
+  timer_enable_oc_output(TIM1, TIM_OC1);
   timer_enable_oc_output(TIM1, TIM_OC2);
   timer_enable_oc_output(TIM1, TIM_OC3);
   timer_enable_oc_output(TIM1, TIM_OC4);
@@ -253,27 +274,27 @@ static void setup_leds_pwm(void) {
 }
 
 /**
- * @brief Configura el TIM8 para manejar el PWM de los Motores, inicialmente a 4kHz
+ * @brief Configura el TIM8 para manejar el PWM de los Motores, a 20kHz
  *
  */
 static void setup_motors_pwm(void) {
   timer_set_mode(TIM8, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
 
-  // 84000000
-  timer_set_prescaler(TIM8, rcc_apb2_frequency * 2 / 40000000 - 2);
-  // 4000000 es la frecuencia a la que irá el PWM 25 kHz, los dos últimos ceros no se porqué,
-  // pero son necesarios ya que rcc_apb2_frequency también añade dos ceros a mayores
+  timer_set_prescaler(TIM8, rcc_apb2_frequency * 2 / 20000000 - 1); // 20kHz
   timer_set_repetition_counter(TIM8, 0);
   timer_enable_preload(TIM8);
   timer_continuous_mode(TIM8);
   timer_set_period(TIM8, MOTORES_MAX_PWM);
 
+  timer_set_oc_mode(TIM8, TIM_OC1, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM8, TIM_OC2, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM8, TIM_OC3, TIM_OCM_PWM1);
   timer_set_oc_mode(TIM8, TIM_OC4, TIM_OCM_PWM1);
+  timer_set_oc_value(TIM8, TIM_OC1, 0);
   timer_set_oc_value(TIM8, TIM_OC2, 0);
   timer_set_oc_value(TIM8, TIM_OC3, 0);
   timer_set_oc_value(TIM8, TIM_OC4, 0);
+  timer_enable_oc_output(TIM8, TIM_OC1);
   timer_enable_oc_output(TIM8, TIM_OC2);
   timer_enable_oc_output(TIM8, TIM_OC3);
   timer_enable_oc_output(TIM8, TIM_OC4);
@@ -291,10 +312,10 @@ static void setup_motors_pwm(void) {
 static void setup_main_loop_timer(void) {
   rcc_periph_reset_pulse(RST_TIM5);
   timer_set_mode(TIM5, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-  timer_set_prescaler(TIM5, ((rcc_apb1_frequency * 2) / 1000000 - 2));
+  timer_set_prescaler(TIM5, ((rcc_apb1_frequency * 2) / 1000000 - 1));
   timer_disable_preload(TIM5);
   timer_continuous_mode(TIM5);
-  timer_set_period(TIM5, 1024);
+  timer_set_period(TIM5, 498);
 
   timer_enable_counter(TIM5);
   // El timer se iniciará en el arranque
@@ -324,7 +345,7 @@ static void setup_wall_sensor_manager(void) {
   timer_set_prescaler(TIM2, ((rcc_apb1_frequency * 2) / 16000000 - 1)); // 16.66 ~16kHz
   timer_disable_preload(TIM2);
   timer_continuous_mode(TIM2);
-  timer_set_period(TIM2, 1024);
+  timer_set_period(TIM2, 520); // 16khz
 
   timer_enable_counter(TIM2);
   timer_enable_irq(TIM2, TIM_DIER_CC1IE);
@@ -338,6 +359,7 @@ void tim2_isr(void) {
   if (timer_get_flag(TIM2, TIM_SR_CC1IF)) {
     timer_clear_flag(TIM2, TIM_SR_CC1IF);
 
+    // gpio_toggle(GPIOB, GPIO13);
     sm_emitter_adc();
   }
 }
@@ -380,7 +402,8 @@ static void setup_quadrature_encoders(void) {
 static void setup_spi(uint8_t speed_div) {
   spi_reset(SPI3);
 
-  spi_init_master(SPI3, speed_div, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE, SPI_CR1_CPHA_CLK_TRANSITION_1, SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
+  spi_init_master(SPI3, speed_div, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE,
+                  SPI_CR1_CPHA_CLK_TRANSITION_1, SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
 
   spi_enable_software_slave_management(SPI3);
   spi_set_nss_high(SPI3);
@@ -420,15 +443,15 @@ void setup(void) {
   setup_clock();
   setup_systick();
   setup_timer_priorities();
-  setup_usart();
   setup_gpio();
-  setup_adc1();
+  setup_usart();
   setup_adc2();
-  setup_dma_adc2();
+  setup_adc1();
+  setup_dma_adc1();
   setup_leds_pwm();
   setup_motors_pwm();
   setup_main_loop_timer();
   setup_wall_sensor_manager();
   setup_quadrature_encoders();
-  setup_mpu();
+  // setup_mpu();
 }

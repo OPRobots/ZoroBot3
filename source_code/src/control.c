@@ -224,6 +224,7 @@ void set_target_fan_speed(int32_t fan_speed, int32_t ms) {
  *
  */
 void control_loop(void) {
+  return;
   if (is_motor_saturated() && is_race_started()) {
     set_motors_speed(0, 0);
     set_fan_speed(0);

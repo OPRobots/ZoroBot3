@@ -1,10 +1,10 @@
 #include <sensors.h>
 
 static uint8_t aux_adc_channels[NUM_AUX_ADC_CHANNELS] = {
-    ADC_CHANNEL4, // BATERIA
-    ADC_CHANNEL5, // CORRIENTE MOT. IZQ.
-    ADC_CHANNEL6, // CORRIENTE MOT. DER.
-    ADC_CHANNEL7, // BTN. MENU
+    ADC_CHANNEL4,
+    ADC_CHANNEL5,
+    ADC_CHANNEL6,
+    ADC_CHANNEL7,
 };
 static volatile uint16_t aux_adc_raw[NUM_AUX_ADC_CHANNELS];
 
@@ -172,7 +172,6 @@ int16_t sensors_distance_offset[NUM_SENSORES] = {0, 0, 0, 0};
 
 static volatile int16_t last_front_sensors_angle_error = 0;
 
-
 uint8_t *get_aux_adc_channels(void) {
   return aux_adc_channels;
 }
@@ -188,7 +187,6 @@ volatile uint16_t *get_aux_adc_raw(void) {
 uint16_t get_aux_raw(uint8_t pos) {
   return aux_adc_raw[pos];
 }
-
 
 /**
  * @brief Set an specific emitter ON.
@@ -263,21 +261,21 @@ void sm_emitter_adc(void) {
 
   switch (emitter_status) {
     case 1:
-      sensors_off[sensor_index] = adc_read_injected(ADC1, (sensor_index + 1));
+      sensors_off[sensor_index] = adc_read_injected(ADC2, (sensor_index + 1));
       set_emitter_on(sensor_index);
       emitter_status = 2;
       break;
     case 2:
-      adc_start_conversion_injected(ADC1);
+      adc_start_conversion_injected(ADC2);
       emitter_status = 3;
       break;
     case 3:
-      sensors_on[sensor_index] = adc_read_injected(ADC1, (sensor_index + 1));
+      sensors_on[sensor_index] = adc_read_injected(ADC2, (sensor_index + 1));
       set_emitter_off(sensor_index);
       emitter_status = 4;
       break;
     case 4:
-      adc_start_conversion_injected(ADC1);
+      adc_start_conversion_injected(ADC2);
       emitter_status = 1;
       if (sensor_index == (NUM_SENSORES - 1))
         sensor_index = 0;

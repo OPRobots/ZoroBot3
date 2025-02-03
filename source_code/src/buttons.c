@@ -17,18 +17,18 @@ void check_buttons(void) {
     btn_menu_up_ms = 0;
   }
   if (btn_analog >= 2000 && btn_analog <= 3000) {
-    if (btn_menu_down_ms == 0) {
-      btn_menu_down_ms = get_clock_ticks();
-    }
-  } else {
-    btn_menu_down_ms = 0;
-  }
-  if (btn_analog >= 3000 && btn_analog <= 4000) {
     if (btn_menu_mode_ms == 0) {
       btn_menu_mode_ms = get_clock_ticks();
     }
   } else {
     btn_menu_mode_ms = 0;
+  }
+  if (btn_analog >= 3000) {
+    if (btn_menu_down_ms == 0) {
+      btn_menu_down_ms = get_clock_ticks();
+    }
+  } else {
+    btn_menu_down_ms = 0;
   }
 }
 

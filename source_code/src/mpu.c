@@ -57,7 +57,7 @@ static uint8_t mpu_read_register(uint8_t address) {
   reading = spi_read(SPI3);
   gpio_set(GPIOA, GPIO15);
   //! Este delay_us(0) ralentiza lo suficiente la lectura de registros del MPU para que no se prenda fuego
-  delay_us(0);
+  // delay_us(0);
 
   return reading;
 }
@@ -105,13 +105,13 @@ uint8_t mpu_who_am_i(void) {
  * - Wait 100 ms
  */
 void setup_mpu(void) {
-  setup_spi_low_speed();
-  mpu_write_register(MPU_PWR_MGMT_1, 0x80);
-  mpu_write_register(MPU_SIGNAL_PATH_RESET, 0x07);
-  mpu_write_register(MPU_USER_CTRL, 0x10);
-  mpu_write_register(MPU_SMPLRT_DIV, 0x00);
-  mpu_write_register(MPU_CONFIG, 0x00);
-  mpu_write_register(MPU_GYRO_CONFIG, 0x18);
+  // setup_spi_low_speed();
+  // mpu_write_register(MPU_PWR_MGMT_1, 0x80);
+  // mpu_write_register(MPU_SIGNAL_PATH_RESET, 0x07);
+  // mpu_write_register(MPU_USER_CTRL, 0x10);
+  // mpu_write_register(MPU_SMPLRT_DIV, 0x00);
+  // mpu_write_register(MPU_CONFIG, 0x00);
+  // mpu_write_register(MPU_GYRO_CONFIG, 0x18);
   setup_spi_high_speed();
 }
 

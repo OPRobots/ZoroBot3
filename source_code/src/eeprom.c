@@ -27,10 +27,11 @@ void eeprom_load(void) {
     addr += 4;
   }
 
-  mpu_load_eeprom();
-  sensors_load_eeprom();
-  floodfill_load_maze();
-  menu_run_load_values();
+  // mpu_load_eeprom();
+  // sensors_load_eeprom();
+  // floodfill_load_maze();
+  // menu_run_load_values();
+  rc5_init();
 }
 
 void eeprom_clear(void) {
