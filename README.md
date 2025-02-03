@@ -6,7 +6,7 @@ Tercera versión de nuestro primer robot. Un robot micromouse de alto rendimient
 ## Hardware
 - STM32F405RGT6
 - Driver de motores TB6612FNG
-- 2x Motores coreless
+- 2x Motores coreless 2010 7.4v aliexpress
 - DIP Switch 3p SMD
 - LiPo 2S ~190 mAh
 - 4x Pares emisor receptor IR
