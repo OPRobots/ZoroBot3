@@ -1210,24 +1210,24 @@ void move_run_sequence(char *sequence, enum movement *sequence_movements) {
     }
   }
   delay(1000);
-  configure_kinematics(SPEED_EXPLORE);
-  for (int16_t i = strlen(sequence) - 1; i >= 0; i--) {
-    switch (sequence[i]) {
-      case 'S':
-        move(MOVE_START);
-        break;
-      case 'F':
-        move(MOVE_FRONT);
-        break;
-      case 'R':
-        move(MOVE_LEFT);
-        break;
-      case 'L':
-        move(MOVE_RIGHT);
-        break;
-      case 'B':
-        move(MOVE_HOME);
-        break;
-    }
-  }
+  // configure_kinematics(SPEED_EXPLORE);
+  // for (int16_t i = strlen(sequence) - 1; i >= 0; i--) {
+  //   switch (sequence[i]) {
+  //     case 'S':
+  //       move(MOVE_START);
+  //       break;
+  //     case 'F':
+  //       move(MOVE_FRONT);
+  //       break;
+  //     case 'R':
+  //       move(MOVE_LEFT);
+  //       break;
+  //     case 'L':
+  //       move(MOVE_RIGHT);
+  //       break;
+  //     case 'B':
+  //       move(MOVE_HOME);
+  //       break;
+  //   }
+  // }
 }
