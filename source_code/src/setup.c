@@ -411,6 +411,12 @@ static void setup_spi(uint8_t speed_div) {
   spi_enable(SPI3);
 }
 
+static void setup_mpu(void) {
+  setup_spi_high_speed();
+  lsm6dsr_init();
+  lsm6dsr_gyro_z_calibration();
+}
+
 /**
  * @brief Setup SPI for gyroscope read, less than 20 MHz.
  *
@@ -453,5 +459,5 @@ void setup(void) {
   setup_main_loop_timer();
   setup_wall_sensor_manager();
   setup_quadrature_encoders();
-  // setup_mpu();
+  setup_mpu();
 }

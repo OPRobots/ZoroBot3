@@ -21,8 +21,7 @@ void sys_tick_handler(void) {
   clock_tick();
   update_encoder_readings();
   // update_sensors_magics();
-  // update_gyro_readings();
-  // update_battery_voltage();
+  update_battery_voltage();
   check_leds_while();
   check_buttons();
   lsm6dsr_update();
@@ -32,9 +31,6 @@ int main(void) {
   setup();
   //eeprom_load();
 
-  //setup_spi_high_speed();
-  //lsm6dsr_init();
-  //lsm6dsr_gyro_z_calibration();
 
   while (1) {
     //warning_status_led(125);
@@ -62,12 +58,12 @@ int main(void) {
     // MPU
     // printf("MPU: 0x%02X\t", lsm6dsr_who_am_i());
     // printf("MPU: 0x%02X\t", lsm6dsr_read_register(WHO_AM_I_ADDR));
-    //printf("Z(raw): %6d Z(radps): %6.4f Z(dps): %6.4f Z(deg): %6.4f\t", lsm6dsr_get_gyro_z_raw(), lsm6dsr_get_gyro_z_radps(), lsm6dsr_get_gyro_z_dps(), lsm6dsr_get_gyro_z_degrees());
+    printf("Z(raw): %6d Z(radps): %6.4f Z(dps): %6.4f Z(deg): %6.4f\t", lsm6dsr_get_gyro_z_raw(), lsm6dsr_get_gyro_z_radps(), lsm6dsr_get_gyro_z_dps(), lsm6dsr_get_gyro_z_degrees());
     // printf("Z(raw): %6d\t", lsm6dsr_get_gyro_z_raw());
     // delay(500);
 
     //VENTILADOR
-    //set_fan_speed(95);
+    // set_fan_speed(50);
 
     // MOTORES
     // gpio_set(GPIOB, GPIO15);
@@ -79,10 +75,10 @@ int main(void) {
     // gpio_clear(GPIOA, GPIO2); // EMITTER OFF
 
     // SENSORES
-     printf("%4d", get_sensor_raw(SENSOR_SIDE_LEFT_WALL_ID, true));
+    // printf("S1: %4d S2: %4d S3: %4d S4: %4d\t", get_sensor_raw(SENSOR_FRONT_LEFT_WALL_ID, true), get_sensor_raw(SENSOR_FRONT_RIGHT_WALL_ID, true), get_sensor_raw(SENSOR_SIDE_LEFT_WALL_ID, true), get_sensor_raw(SENSOR_SIDE_RIGHT_WALL_ID, true));
     // AUX ANALÓGICOS
     // printf("BA: %4d CI: %4d CD: %4d BO: %4d\t", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
-    // printf("BA: %4d\n", get_aux_raw(AUX_BATTERY_ID));
+    // printf("BA: %.2f\n", get_battery_voltage());
 
     // ENCODERS
     // printf("L: %ld R: %ld\t", get_encoder_left_ticks(), get_encoder_right_ticks());
@@ -156,7 +152,7 @@ int main(void) {
     // delay(100);
 
     // LOG MPU DEG
-    // printf("%.4f\n", get_gyro_z_degrees());
+    // printf("%.4f\n", lsm6dsr_get_gyro_z_degrees());
     // delay(100);
 
     // MOVIMIENTO RECTO

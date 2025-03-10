@@ -1066,8 +1066,8 @@ void move_inplace_turn(enum movement movement) {
  * @param rads
  */
 void move_inplace_angle(float angle, float rads) {
-  set_gyro_z_degrees(0);
-  float current_angle = get_gyro_z_degrees();
+  lsm6dsr_set_gyro_z_degrees(0);
+  float current_angle = lsm6dsr_get_gyro_z_degrees();
   float target_angle = current_angle + angle;
   if (target_angle > 360.0) {
     target_angle = 360.0 - target_angle;
@@ -1077,11 +1077,11 @@ void move_inplace_angle(float angle, float rads) {
   set_target_linear_speed(0.0);
   if (angle >= 0) {
     set_ideal_angular_speed(rads);
-    while (is_race_started() && get_gyro_z_degrees() <= target_angle) {
+    while (is_race_started() && lsm6dsr_get_gyro_z_degrees() <= target_angle) {
     }
   } else {
     set_ideal_angular_speed(-rads);
-    while (is_race_started() && get_gyro_z_degrees() >= target_angle) {
+    while (is_race_started() && lsm6dsr_get_gyro_z_degrees() >= target_angle) {
     }
   }
   set_ideal_angular_speed(0.0);

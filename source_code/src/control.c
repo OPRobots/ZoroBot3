@@ -88,7 +88,7 @@ static float get_measured_linear_speed(void) {
 }
 
 static float get_measured_angular_speed(void) {
-  return -get_gyro_z_radps();
+  return -lsm6dsr_get_gyro_z_radps();
 }
 
 /**

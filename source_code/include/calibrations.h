@@ -5,7 +5,7 @@
 
 #include <delay.h>
 #include <eeprom.h>
-#include <mpu6500.h>
+#include <lsm6dsr.h>
 #include <move.h>
 #include <sensors.h>
 
