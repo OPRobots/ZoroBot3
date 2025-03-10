@@ -662,7 +662,7 @@ static bool check_wall_loss_correction(struct walls initial_walls) {
 }
 
 static void move_home(void) {
-  set_front_sensors_correction(true);
+  set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(false);
@@ -905,7 +905,8 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   int32_t stop_distance = 0;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
-  while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
+  // while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
+  while (is_race_started() && get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) > (distance + stop_distance)) {
     if (stop) {
       stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
     }
