@@ -12,10 +12,10 @@
 #include <stdint.h>
 
 #define NUM_AUX_ADC_CHANNELS 4
-#define AUX_BATTERY_ID 2
-#define AUX_CURRENT_LEFT_ID 0
-#define AUX_CURRENT_RIGHT_ID 3
-#define AUX_MENU_BTN_ID 1
+#define AUX_BATTERY_ID 0
+#define AUX_CURRENT_LEFT_ID 2
+#define AUX_CURRENT_RIGHT_ID 1
+#define AUX_MENU_BTN_ID 3
 
 
 #define NUM_SENSORES 4
