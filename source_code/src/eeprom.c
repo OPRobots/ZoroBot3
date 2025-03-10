@@ -4,6 +4,7 @@ static int16_t eeprom_data[DATA_LENGTH];
 static uint32_t millis_save = 0;
 
 void eeprom_save(void) {
+  return;
   uint32_t addr = EEPROM_BASE_ADDRESS;
   millis_save = get_clock_ticks();
   while(get_clock_ticks() - millis_save < 200){

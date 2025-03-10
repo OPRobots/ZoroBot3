@@ -13,6 +13,7 @@
 #include <lsm6dsr_reg.h>
 
 void lsm6dsr_init(void);
+void lsm6dsr_gyro_z_calibration(void);
 
 uint8_t lsm6dsr_who_am_i(void);
 void lsm6dsr_update(void);

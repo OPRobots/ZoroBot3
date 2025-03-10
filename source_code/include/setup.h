@@ -14,7 +14,7 @@
 #include <libopencm3/stm32/exti.h>
 
 #include <config.h>
-#include <mpu.h>
+#include <mpu6500.h>
 #include <sensors.h>
 #include "rc5.h"
 #include "usart.h"

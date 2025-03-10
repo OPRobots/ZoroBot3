@@ -2,7 +2,7 @@
     Reference: https://github.com/Bulebots/bulebule
 */
 
-#include "mpu.h"
+#include "mpu6500.h"
 
 #define BYTE 8
 #define MPU_CAL_SAMPLE_NUM 300

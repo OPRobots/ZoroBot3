@@ -3118,6 +3118,26 @@
 		)
 		(uuid fe014502-d3b9-4e26-879e-72670afaa461)
 	)
+	(text_box "WARNING!!!\nLos mosfets tienen la huella mal.\nRevisar en la proxima version."
+		(exclude_from_sim no)
+		(at 130.81 149.86 0)
+		(size 35.56 8.89)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+		)
+		(uuid "307bcf8e-d0ed-4a62-8629-41c300ebe7c7")
+	)
 	(text "SENSORES PARED"
 		(exclude_from_sim no)
 		(at 190.5 178.054 0)
@@ -4306,7 +4326,7 @@
 				)
 			)
 		)
-		(property "Value" "150"
+		(property "Value" "33"
 			(at 57.15 110.49 90)
 			(effects
 				(font
@@ -4890,7 +4910,7 @@
 				)
 			)
 		)
-		(property "Value" "6.8K"
+		(property "Value" "3.3K"
 			(at 102.87 71.12 90)
 			(effects
 				(font
@@ -5056,7 +5076,7 @@
 				)
 			)
 		)
-		(property "Value" "6.8K"
+		(property "Value" "1.5K"
 			(at 247.65 135.89 90)
 			(effects
 				(font
@@ -5123,7 +5143,7 @@
 				)
 			)
 		)
-		(property "Value" "150"
+		(property "Value" "33"
 			(at 198.12 45.72 90)
 			(effects
 				(font
@@ -5402,7 +5422,7 @@
 				)
 			)
 		)
-		(property "Value" "150"
+		(property "Value" "33"
 			(at 227.33 110.49 90)
 			(effects
 				(font
@@ -5538,7 +5558,7 @@
 				)
 			)
 		)
-		(property "Value" "6.8K"
+		(property "Value" "1.5K"
 			(at 77.47 135.89 90)
 			(effects
 				(font
@@ -6021,7 +6041,7 @@
 				)
 			)
 		)
-		(property "Value" "150"
+		(property "Value" "33"
 			(at 82.55 45.72 90)
 			(effects
 				(font
@@ -6088,7 +6108,7 @@
 				)
 			)
 		)
-		(property "Value" "6.8K"
+		(property "Value" "3.3K"
 			(at 218.44 71.12 90)
 			(effects
 				(font

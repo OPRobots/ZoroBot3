@@ -2,8 +2,8 @@
     Reference: https://github.com/Bulebots/bulebule
 */
 
-#ifndef __MPU_H
-#define __MPU_H
+#ifndef __MPU6500_H
+#define __MPU6500_H
 
 #include <stdint.h>
 
@@ -33,4 +33,4 @@ void set_gyro_z_degrees(float deg);
 
 void mpu_load_eeprom(void);
 
-#endif /* __MPU_H */
+#endif /* __MPU6500_H */

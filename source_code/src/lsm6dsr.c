@@ -18,9 +18,12 @@
 #define GYRO_SENSITIVITY_4000DPS 140.0f
 #define MPU_DPS_TO_RADPS (PI / 180)
 
+static stmdev_ctx_t dev_ctx;
+
 static volatile float deg_integ;
 static volatile int16_t gyro_z_raw;
 static bool mpu_updating = false;
+static int16_t offset_z = 0;
 
 static uint8_t lsm6dsr_read_register(uint8_t address) {
   uint8_t reading;
@@ -67,11 +70,10 @@ static void platform_delay(uint32_t ms) {
 static int16_t lsm6dsr_read_gyro_z_raw(void) {
   uint8_t zl = lsm6dsr_read_register(OUTZ_L_G);
   uint8_t zh = lsm6dsr_read_register(OUTZ_H_G);
-  return (zh << 8) | zl;
+  return ((zh << 8) | zl) - offset_z;
 }
 
 void lsm6dsr_init(void) {
-  stmdev_ctx_t dev_ctx;
 
   /* Initialize mems driver interface */
   dev_ctx.write_reg = platform_write;
@@ -89,6 +91,7 @@ void lsm6dsr_init(void) {
   lsm6dsr_i3c_disable_set(&dev_ctx, LSM6DSR_I3C_DISABLE);
   /* Enable Block Data Update */
   lsm6dsr_block_data_update_set(&dev_ctx, PROPERTY_DISABLE);
+
   /* Set Output Data Rate */
   lsm6dsr_xl_data_rate_set(&dev_ctx, LSM6DSR_XL_ODR_12Hz5);
   lsm6dsr_gy_data_rate_set(&dev_ctx, LSM6DSR_GY_ODR_1666Hz);
@@ -101,8 +104,7 @@ void lsm6dsr_init(void) {
   lsm6dsr_xl_hp_path_on_out_set(&dev_ctx, LSM6DSR_LP_ODR_DIV_100);
   lsm6dsr_xl_filter_lp2_set(&dev_ctx, PROPERTY_ENABLE);
 
-  delay(100);
-  mpu_updating = true;
+  delay(1000);
 }
 
 uint8_t lsm6dsr_who_am_i(void) {
@@ -110,6 +112,24 @@ uint8_t lsm6dsr_who_am_i(void) {
   // uint8_t whoamI = 0;
   // lsm6dsr_device_id_get(&dev_ctx, &whoamI);
   // return whoamI;
+}
+
+void lsm6dsr_gyro_z_calibration(void) {
+  int32_t sum_z = 0;
+
+  offset_z = 0;
+  for (int i = 0; i < 100; i++) {
+    sum_z += lsm6dsr_read_gyro_z_raw();
+    delay(10);
+    set_info_leds();
+  }
+  clear_info_leds();
+
+  offset_z = (int16_t)(sum_z / 100);
+  printf("Offset Z: %d\n", offset_z);
+
+  delay(100);
+  mpu_updating = true;
 }
 
 void lsm6dsr_update(void) {
