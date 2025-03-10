@@ -29,11 +29,10 @@ void sys_tick_handler(void) {
 
 int main(void) {
   setup();
-  //eeprom_load();
-
+  // eeprom_load();
 
   while (1) {
-    //warning_status_led(125);
+    // warning_status_led(125);
     set_leds_wave(125);
     // LEDS MENU
     // for (uint8_t i = 0; i < 10; i++) {
@@ -58,16 +57,16 @@ int main(void) {
     // MPU
     // printf("MPU: 0x%02X\t", lsm6dsr_who_am_i());
     // printf("MPU: 0x%02X\t", lsm6dsr_read_register(WHO_AM_I_ADDR));
-    printf("Z(raw): %6d Z(radps): %6.4f Z(dps): %6.4f Z(deg): %6.4f\t", lsm6dsr_get_gyro_z_raw(), lsm6dsr_get_gyro_z_radps(), lsm6dsr_get_gyro_z_dps(), lsm6dsr_get_gyro_z_degrees());
+    // printf("Z(raw): %6d Z(radps): %6.4f Z(dps): %6.4f Z(deg): %6.4f\t", lsm6dsr_get_gyro_z_raw(), lsm6dsr_get_gyro_z_radps(), lsm6dsr_get_gyro_z_dps(), lsm6dsr_get_gyro_z_degrees());
     // printf("Z(raw): %6d\t", lsm6dsr_get_gyro_z_raw());
     // delay(500);
 
-    //VENTILADOR
-    // set_fan_speed(50);
+    // VENTILADOR
+    //  set_fan_speed(50);
 
     // MOTORES
     // gpio_set(GPIOB, GPIO15);
-    // set_motors_speed(100, 100);
+    // set_motors_speed(20, 20);
 
     // gpio_clear(GPIOA, GPIO0); // EMITTER OFF
     // gpio_clear(GPIOA, GPIO3); // EMITTER OFF
@@ -76,12 +75,13 @@ int main(void) {
 
     // SENSORES
     // printf("S1: %4d S2: %4d S3: %4d S4: %4d\t", get_sensor_raw(SENSOR_FRONT_LEFT_WALL_ID, true), get_sensor_raw(SENSOR_FRONT_RIGHT_WALL_ID, true), get_sensor_raw(SENSOR_SIDE_LEFT_WALL_ID, true), get_sensor_raw(SENSOR_SIDE_RIGHT_WALL_ID, true));
+
     // AUX ANALÓGICOS
     // printf("BA: %4d CI: %4d CD: %4d BO: %4d\t", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
     // printf("BA: %.2f\n", get_battery_voltage());
 
     // ENCODERS
-    // printf("L: %ld R: %ld\t", get_encoder_left_ticks(), get_encoder_right_ticks());
+    printf("L: %ld R: %ld\t", get_encoder_left_millimeters(), get_encoder_right_millimeters());
 
     // printf("PATO\n");
     // gpio_toggle(GPIOB, GPIO13);

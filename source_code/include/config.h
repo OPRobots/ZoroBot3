@@ -16,10 +16,10 @@
 
 /** Características Físicas */
 #ifdef ZOROBOT3_A
-#define MICROMETERS_PER_TICK 9.1901
+#define MICROMETERS_PER_TICK 10.71395
 #endif
 #ifdef ZOROBOT3_B
-#define MICROMETERS_PER_TICK 9.1901
+#define MICROMETERS_PER_TICK 10.71395
 #endif
 #define ROBOT_FRONT_LENGTH 51.30
 #define ROBOT_BACK_LENGTH 37.64
