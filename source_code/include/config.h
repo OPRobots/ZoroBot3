@@ -93,7 +93,7 @@
 #define SENSOR_START_MIN_MS 350
 
 /** Divisor de Voltage */
-#define VOLT_DIV_FACTOR 2.654
+#define VOLT_DIV_FACTOR 3.15
 #define BATTERY_HIGH_LIMIT_VOLTAGE 8.4
 #define BATTERY_LOW_LIMIT_VOLTAGE 7.4
 
