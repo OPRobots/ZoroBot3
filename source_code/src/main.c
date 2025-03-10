@@ -6,11 +6,13 @@
 #include <floodfill.h>
 #include <handwall.h>
 #include <leds.h>
+#include <lsm6dsr.h>
 #include <macroarray.h>
 #include <menu.h>
 #include <motors.h>
 #include <move.h>
-#include <mpu.h>
+// #include <mpu6500.h>
+#include <rc5.h>
 #include <sensors.h>
 #include <setup.h>
 #include <usart.h>
@@ -18,17 +20,81 @@
 void sys_tick_handler(void) {
   clock_tick();
   update_encoder_readings();
-  update_sensors_magics();
-  update_gyro_readings();
-  update_battery_voltage();
+  // update_sensors_magics();
+  // update_gyro_readings();
+  // update_battery_voltage();
   check_leds_while();
   check_buttons();
+  lsm6dsr_update();
 }
 
 int main(void) {
   setup();
+  //eeprom_load();
+
+  //setup_spi_high_speed();
+  //lsm6dsr_init();
+  //lsm6dsr_gyro_z_calibration();
+
+  while (1) {
+    //warning_status_led(125);
+    set_leds_wave(125);
+    // LEDS MENU
+    // for (uint8_t i = 0; i < 10; i++) {
+    //   clear_info_leds();
+    //   set_info_led(i, true);
+    //   printf("LED %i\n", i);
+    //   delay(250);
+    // }
+
+    // LED RGB
+    // set_RGB_color(20, 0, 0);
+    // delay(250);
+    // set_RGB_color(0, 20, 0);
+    // delay(250);
+    // set_RGB_color(0, 0, 20);
+    // delay(250);
+    // set_RGB_color(LEDS_MAX_PWM, LEDS_MAX_PWM, LEDS_MAX_PWM);
+    // set_info_leds();
+    // set_status_led(true);
+    // set_RGB_rainbow();
+
+    // MPU
+    // printf("MPU: 0x%02X\t", lsm6dsr_who_am_i());
+    // printf("MPU: 0x%02X\t", lsm6dsr_read_register(WHO_AM_I_ADDR));
+    //printf("Z(raw): %6d Z(radps): %6.4f Z(dps): %6.4f Z(deg): %6.4f\t", lsm6dsr_get_gyro_z_raw(), lsm6dsr_get_gyro_z_radps(), lsm6dsr_get_gyro_z_dps(), lsm6dsr_get_gyro_z_degrees());
+    // printf("Z(raw): %6d\t", lsm6dsr_get_gyro_z_raw());
+    // delay(500);
+
+    //VENTILADOR
+    //set_fan_speed(95);
+
+    // MOTORES
+    // gpio_set(GPIOB, GPIO15);
+    // set_motors_speed(100, 100);
+
+    // gpio_clear(GPIOA, GPIO0); // EMITTER OFF
+    // gpio_clear(GPIOA, GPIO3); // EMITTER OFF
+    // gpio_clear(GPIOA, GPIO1); // EMITTER OFF
+    // gpio_clear(GPIOA, GPIO2); // EMITTER OFF
+
+    // SENSORES
+     printf("%4d", get_sensor_raw(SENSOR_SIDE_LEFT_WALL_ID, true));
+    // AUX ANALÓGICOS
+    // printf("BA: %4d CI: %4d CD: %4d BO: %4d\t", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
+    // printf("BA: %4d\n", get_aux_raw(AUX_BATTERY_ID));
+
+    // ENCODERS
+    // printf("L: %ld R: %ld\t", get_encoder_left_ticks(), get_encoder_right_ticks());
+
+    // printf("PATO\n");
+    // gpio_toggle(GPIOB, GPIO13);
+
+    printf("\n");
+    delay(50);
+  }
+
   show_battery_level();
-  eeprom_load();
 
   while (1) {
     if (!is_race_started()) {

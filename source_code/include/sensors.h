@@ -11,8 +11,14 @@
 #include <libopencm3/stm32/rcc.h>
 #include <stdint.h>
 
-#define NUM_SENSORES 4
+#define NUM_AUX_ADC_CHANNELS 4
+#define AUX_BATTERY_ID 2
+#define AUX_CURRENT_LEFT_ID 0
+#define AUX_CURRENT_RIGHT_ID 3
+#define AUX_MENU_BTN_ID 1
 
+
+#define NUM_SENSORES 4
 #define SENSOR_FRONT_LEFT_WALL_ID 0
 #define SENSOR_FRONT_RIGHT_WALL_ID 1
 #define SENSOR_SIDE_LEFT_WALL_ID 2
@@ -49,6 +55,12 @@ struct side_sensors_distance_calibration {
   int16_t low_linearized;
   int16_t high_linearized;
 };
+
+uint8_t *get_aux_adc_channels(void);
+uint8_t get_aux_adc_channels_num(void);
+volatile uint16_t *get_aux_adc_raw(void);
+uint16_t get_aux_raw(uint8_t pos);
+
 
 uint8_t *get_sensors(void);
 uint8_t get_sensors_num(void);

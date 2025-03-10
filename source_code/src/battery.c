@@ -3,10 +3,7 @@
 static volatile float battery_voltage = 0;
 
 void update_battery_voltage(void) {
-  adc_start_conversion_regular(ADC2);
-  while (!adc_eoc(ADC2))
-    ;
-  float voltage = adc_read_regular(ADC2) * ADC_LSB * VOLT_DIV_FACTOR;
+  float voltage = get_aux_raw(AUX_BATTERY_ID) * ADC_LSB * VOLT_DIV_FACTOR;
   if (battery_voltage == 0) {
     battery_voltage = voltage;
   } else {

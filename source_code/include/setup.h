@@ -11,10 +11,13 @@
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
+#include <libopencm3/stm32/exti.h>
 
 #include <config.h>
-#include <mpu.h>
+#include <mpu6500.h>
 #include <sensors.h>
+#include "rc5.h"
+#include "usart.h"
 
 void setup(void);
 void setup_spi_high_speed(void);

@@ -4,6 +4,7 @@ static int16_t eeprom_data[DATA_LENGTH];
 static uint32_t millis_save = 0;
 
 void eeprom_save(void) {
+  return;
   uint32_t addr = EEPROM_BASE_ADDRESS;
   millis_save = get_clock_ticks();
   while(get_clock_ticks() - millis_save < 200){
@@ -27,10 +28,11 @@ void eeprom_load(void) {
     addr += 4;
   }
 
-  mpu_load_eeprom();
-  sensors_load_eeprom();
-  floodfill_load_maze();
-  menu_run_load_values();
+  // mpu_load_eeprom();
+  // sensors_load_eeprom();
+  // floodfill_load_maze();
+  // menu_run_load_values();
+  rc5_init();
 }
 
 void eeprom_clear(void) {

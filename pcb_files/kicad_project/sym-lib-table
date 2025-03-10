@@ -1,5 +1,4 @@
 (sym_lib_table
-  (lib (name PCB_Fujitora-rescue)(type Legacy)(uri ${KIPRJMOD}/PCB_Fujitora-rescue.lib)(options "")(descr ""))
-  (lib (name PCB_ZoroBot_v3-rescue)(type Legacy)(uri ${KIPRJMOD}/PCB_ZoroBot_v3-rescue.lib)(options "")(descr ""))
-  (lib (name AS5145B-HSST)(type Legacy)(uri "C:/Users/Manuel/Downloads/Librerias Kicad/AS5145B-HSST/AS5145B-HSST.lib")(options "")(descr ""))
+  (version 7)
+  (lib (name "custom_symbols")(type "KiCad")(uri "${KIPRJMOD}/custom_libraries/custom_symbols.kicad_sym")(options "")(descr ""))
 )
