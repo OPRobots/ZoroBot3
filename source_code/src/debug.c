@@ -63,6 +63,15 @@ static void debug_gyro_demo(void) {
   // }
 }
 
+static void debug_fan_demo(void) {
+  delay(1000);
+  do {
+    set_fan_speed(75);
+    check_debug_active();
+  } while (debug_enabled);
+  set_fan_speed(0);
+}
+
 bool is_debug_enabled(void) {
   return debug_enabled;
 }
@@ -90,6 +99,9 @@ void debug_from_config(uint8_t type) {
         break;
       case DEBUG_GYRO_DEMO:
         debug_gyro_demo();
+        break;
+      case DEBUG_FAN_DEMO:
+        debug_fan_demo();
         break;
     }
   } else {
