@@ -414,7 +414,6 @@ static void setup_spi(uint8_t speed_div) {
 static void setup_mpu(void) {
   setup_spi_high_speed();
   lsm6dsr_init();
-  lsm6dsr_gyro_z_calibration();
 }
 
 /**

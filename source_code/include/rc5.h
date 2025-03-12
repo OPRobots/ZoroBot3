@@ -17,7 +17,7 @@ enum RC5_TRIGGER {
 
 #define RC5_DATA_LENGTH 5
 
-void rc5_init(void);
+void rc5_load_eeprom(void);
 void rc5_register(enum RC5_TRIGGER trigger);
 
 #endif

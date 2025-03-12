@@ -29,7 +29,7 @@ void sys_tick_handler(void) {
 
 int main(void) {
   setup();
-  // eeprom_load();
+  eeprom_load();
 
   while (1) {
     // warning_status_led(125);
@@ -81,7 +81,7 @@ int main(void) {
     // printf("BA: %.2f\n", get_battery_voltage());
 
     // ENCODERS
-    printf("L: %ld R: %ld\t", get_encoder_left_millimeters(), get_encoder_right_millimeters());
+    // printf("L: %ld R: %ld\t", get_encoder_left_millimeters(), get_encoder_right_millimeters());
 
     // printf("PATO\n");
     // gpio_toggle(GPIOB, GPIO13);

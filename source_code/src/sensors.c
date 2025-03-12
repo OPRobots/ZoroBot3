@@ -256,6 +256,12 @@ uint8_t get_sensors_num(void) {
  *
  */
 void sm_emitter_adc(void) {
+  gpio_clear(GPIOA, GPIO0);
+  gpio_clear(GPIOA, GPIO3);
+  gpio_clear(GPIOA, GPIO1);
+  gpio_clear(GPIOA, GPIO2);
+  return;
+
   static uint8_t emitter_status = 1;
   static uint8_t sensor_index = SENSOR_FRONT_LEFT_WALL_ID;
 

@@ -135,7 +135,7 @@ static void rc5_decode_pulse(enum RC5_TRIGGER trigger, uint32_t elapsed) {
   }
 }
 
-void rc5_init(void) {
+void rc5_load_eeprom(void) {
   int16_t *eeprom_data = eeprom_get_data();
   for (uint16_t i = DATA_INDEX_RC5; i < (DATA_INDEX_RC5 + RC5_DATA_LENGTH); i++) {
     rc5_stored_data[i - DATA_INDEX_RC5] = eeprom_data[i];

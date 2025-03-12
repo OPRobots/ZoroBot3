@@ -115,6 +115,7 @@ uint8_t lsm6dsr_who_am_i(void) {
 }
 
 void lsm6dsr_gyro_z_calibration(void) {
+  mpu_updating = false;
   int32_t sum_z = 0;
 
   offset_z = 0;
@@ -129,6 +130,15 @@ void lsm6dsr_gyro_z_calibration(void) {
   printf("Offset Z: %d\n", offset_z);
 
   delay(100);
+  mpu_updating = true;
+}
+
+void lsm6dsr_load_eeprom(void) {
+  int16_t *eeprom_data = eeprom_get_data();
+  offset_z = eeprom_data[1];
+  if (eeprom_data[0] == 0) {
+    offset_z = -offset_z;
+  }
   mpu_updating = true;
 }
 
@@ -159,7 +169,6 @@ float lsm6dsr_get_gyro_z_degrees(void) {
 void lsm6dsr_set_gyro_z_degrees(float deg) {
   deg_integ = deg;
 }
-
 
 #define KP_GYRO 10
 #define KD_GYRO 30
