@@ -67,7 +67,7 @@ static void rc5_manage_command(uint16_t message) {
   // unsigned char toggle = (message & TOGGLE_MASK) >> TOGGLE_SHIFT;
   unsigned char address = (message & ADDRESS_MASK) >> ADDRESS_SHIFT;
   unsigned char command = (message & COMMAND_MASK) >> COMMAND_SHIFT;
-  printf("RC5: %d %d\n", address, command);
+  // printf("RC5: %d %d\n", address, command);
   switch (address) {
     case ADDRESS_PROG:
       rc5_stored_data[DATA_STOP] = command;

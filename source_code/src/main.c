@@ -77,7 +77,7 @@ int main(void) {
     // printf("S1: %4d S2: %4d S3: %4d S4: %4d\t", get_sensor_raw(SENSOR_FRONT_LEFT_WALL_ID, true), get_sensor_raw(SENSOR_FRONT_RIGHT_WALL_ID, true), get_sensor_raw(SENSOR_SIDE_LEFT_WALL_ID, true), get_sensor_raw(SENSOR_SIDE_RIGHT_WALL_ID, true));
 
     // AUX ANALÓGICOS
-    // printf("BA: %4d CI: %4d CD: %4d BO: %4d\t", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
+    printf("BA: %4d CI: %4d CD: %4d BO: %4d\t", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
     // printf("BA: %.2f\n", get_battery_voltage());
 
     // ENCODERS
@@ -86,7 +86,12 @@ int main(void) {
     // printf("PATO\n");
     // gpio_toggle(GPIOB, GPIO13);
 
+    // printf("%d\n", get_clock_ticks());
     printf("\n");
+    if(get_menu_mode_btn()){
+      while(get_menu_mode_btn());
+      eeprom_save();
+    }
     delay(50);
   }
 

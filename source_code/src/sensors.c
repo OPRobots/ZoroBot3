@@ -1,5 +1,10 @@
 #include <sensors.h>
 
+static bool sensors_enabled = false;
+
+static uint8_t emitter_status = 1;
+static uint8_t sensor_index = SENSOR_FRONT_LEFT_WALL_ID;
+
 static uint8_t aux_adc_channels[NUM_AUX_ADC_CHANNELS] = {
     ADC_CHANNEL4,
     ADC_CHANNEL5,
@@ -236,6 +241,14 @@ static void set_emitter_off(uint8_t emitter) {
   }
 }
 
+void set_sensors_enabled(bool enabled) {
+  if (!sensors_enabled && enabled) {
+    emitter_status = 1;
+    sensor_index = SENSOR_FRONT_LEFT_WALL_ID;
+  }
+  sensors_enabled = enabled;
+}
+
 void get_sensors_raw(uint16_t *on, uint16_t *off) {
   for (uint8_t i = 0; i < NUM_SENSORES; i++) {
     on[i] = sensors_on[i];
@@ -256,14 +269,13 @@ uint8_t get_sensors_num(void) {
  *
  */
 void sm_emitter_adc(void) {
-  gpio_clear(GPIOA, GPIO0);
-  gpio_clear(GPIOA, GPIO3);
-  gpio_clear(GPIOA, GPIO1);
-  gpio_clear(GPIOA, GPIO2);
-  return;
-
-  static uint8_t emitter_status = 1;
-  static uint8_t sensor_index = SENSOR_FRONT_LEFT_WALL_ID;
+  if (!sensors_enabled) {
+    gpio_clear(GPIOA, GPIO0);
+    gpio_clear(GPIOA, GPIO3);
+    gpio_clear(GPIOA, GPIO1);
+    gpio_clear(GPIOA, GPIO2);
+    return;
+  }
 
   switch (emitter_status) {
     case 1:

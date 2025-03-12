@@ -56,6 +56,8 @@ struct side_sensors_distance_calibration {
   int16_t high_linearized;
 };
 
+void set_sensors_enabled(bool enabled);
+
 uint8_t *get_aux_adc_channels(void);
 uint8_t get_aux_adc_channels_num(void);
 volatile uint16_t *get_aux_adc_raw(void);
