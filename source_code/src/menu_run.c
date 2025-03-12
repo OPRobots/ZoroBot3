@@ -7,7 +7,7 @@
 #define MODE_EXPLORE_ALGORITHM 4
 uint8_t modeRun = MODE_SPEED;
 
-#define MODE_SPEED_VALUES 5
+#define MODE_SPEED_VALUES 6
 #define MODE_RACE_VALUES 2
 #define MODE_MAZE_TYPE_VALUES 2
 #define MODE_EXPLORE_ALGORITHM_VALUES 2
@@ -31,6 +31,7 @@ static void handle_menu_run_values(void) {
       set_info_led(1, blinkState);
       set_info_led(2, blinkState);
       set_info_led(3, blinkState);
+      set_info_led(4, blinkState);
     } else {
       for (uint8_t i = 0; i < MODE_SPEED_VALUES - 1; i++) {
         if ((valueRun[MODE_SPEED] == i && blinkState)) {
@@ -46,6 +47,7 @@ static void handle_menu_run_values(void) {
       set_info_led(1, true);
       set_info_led(2, true);
       set_info_led(3, true);
+      set_info_led(4, true);
     } else {
       for (uint8_t i = 0; i < MODE_SPEED_VALUES - 1; i++) {
         set_info_led(i, i == valueRun[MODE_SPEED]);
@@ -71,9 +73,9 @@ static void handle_menu_run_values(void) {
     } else {
       set_RGB_color(0, 0, 0);
     }
-    set_info_led(5, blinkState);
+    set_info_led(7, blinkState);
   } else {
-    set_info_led(5, valueRun[MODE_MAZE_TYPE] == 1);
+    set_info_led(7, valueRun[MODE_MAZE_TYPE] == 1);
   }
 
   if (modeRun == MODE_SOLVE_STRATEGY) {
@@ -82,9 +84,9 @@ static void handle_menu_run_values(void) {
     } else {
       set_RGB_color(0, 0, 0);
     }
-    set_info_led(6, blinkState);
+    set_info_led(8, blinkState);
   } else {
-    set_info_led(6, valueRun[MODE_SOLVE_STRATEGY] == 1);
+    set_info_led(8, valueRun[MODE_SOLVE_STRATEGY] == 1);
   }
 
   if (modeRun == MODE_EXPLORE_ALGORITHM) {
@@ -93,9 +95,9 @@ static void handle_menu_run_values(void) {
     } else {
       set_RGB_color(0, 0, 0);
     }
-    set_info_led(7, blinkState);
+    set_info_led(9, blinkState);
   } else {
-    set_info_led(7, valueRun[MODE_EXPLORE_ALGORITHM] == 1);
+    set_info_led(9, valueRun[MODE_EXPLORE_ALGORITHM] == 1);
   }
 }
 
@@ -123,6 +125,11 @@ static void handle_menu_run_btn(void) {
         break;
     }
     valueRun[modeRun] = (valueRun[modeRun] + 1) % mode_values;
+    if (modeRun == MODE_RACE && valueRun[modeRun] == 1) {
+      set_RGB_color(50, 0, 0);
+      eeprom_set_data(DATA_INDEX_MENU_RUN, valueRun, MENU_RUN_NUM_MODES);
+      eeprom_save();
+    }
   }
 
   if (get_menu_down_btn()) {
