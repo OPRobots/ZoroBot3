@@ -28,7 +28,31 @@ void menu_handler(void) {
   }
 }
 
-void menu_reset(void){
+void menu_reset(void) {
   current_menu = MENU_RUN;
   menu_run_reset();
+}
+
+void menu_rc5_mode_change(void) {
+  switch (current_menu) {
+    case MENU_RUN:
+      menu_run_mode_change();
+      break;
+  }
+}
+
+void menu_rc5_up(void) {
+  switch (current_menu) {
+    case MENU_RUN:
+      menu_run_up();
+      break;
+  }
+}
+
+void menu_rc5_down(void) {
+  switch (current_menu) {
+    case MENU_RUN:
+      menu_run_down();
+      break;
+  }
 }

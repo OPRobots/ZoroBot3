@@ -87,14 +87,11 @@ static void rc5_manage_command(uint16_t message) {
       break;
     case ADDRESS_MENU:
       if (command == CUSTOM_CMD_MENU || command == rc5_stored_data[DATA_MENU]) {
-        // menu_mode_change();
-        printf("Menu mode change\n");
+        menu_rc5_mode_change();
       } else if (command == CUSTOM_CMD_MENU_UP || command == rc5_stored_data[DATA_MENU_UP]) {
-        // menu_config_change();
-        printf("Menu config change UP\n");
+        menu_rc5_up();
       } else if (command == CUSTOM_CMD_MENU_DOWN || command == rc5_stored_data[DATA_MENU_DOWN]) {
-        // menu_config_change();
-        printf("Menu config change DOWN\n");
+        menu_rc5_down();
       }
       break;
   }

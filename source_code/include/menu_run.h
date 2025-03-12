@@ -36,6 +36,11 @@ void menu_run_reset(void);
 void menu_run_load_values(void);
 
 bool menu_run_can_start(void);
+
+void menu_run_mode_change(void);
+void menu_run_up(void);
+void menu_run_down(void);
+
 int16_t *get_menu_run_values(void);
 enum speed_strategy menu_run_get_speed(void);
 enum maze_type menu_run_get_maze_type(void);
