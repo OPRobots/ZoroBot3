@@ -207,45 +207,46 @@ void set_leds_blink(int ms) {
 void set_leds_battery_level(float battery_level) {
   float percent_battery_level = map(battery_level, BATTERY_LOW_LIMIT_VOLTAGE, BATTERY_HIGH_LIMIT_VOLTAGE, 0.0f, 100.0f);
   if (percent_battery_level <= 10) {
-
-    gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
-    gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
+    gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO9 | GPIO8);
+    gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO14 | GPIO13);
     if (get_clock_ticks() > lastTicksWarningBateria + 50) {
 
-      gpio_toggle(GPIOC, GPIO4 | GPIO5);
+      gpio_toggle(GPIOB, GPIO2);
+      gpio_toggle(GPIOC, GPIO15);
 
       lastTicksWarningBateria = get_clock_ticks();
     }
 
-  } else if (percent_battery_level <= 25) {
+  } else if (percent_battery_level <= 26) {
+    gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO9 | GPIO8);
+    gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO14 | GPIO13);
 
-    gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
-    gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
+    gpio_set(GPIOB, GPIO2);
+    gpio_set(GPIOC, GPIO15);
 
-    gpio_set(GPIOC, GPIO4 | GPIO5);
+  } else if (percent_battery_level <= 42) {
+    gpio_clear(GPIOB, GPIO0 | GPIO9 | GPIO8);
+    gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO13);
 
-  } else if (percent_battery_level <= 50) {
-    gpio_clear(GPIOA, GPIO5 | GPIO6);
-    gpio_clear(GPIOB, GPIO1 | GPIO2);
+    gpio_set(GPIOB, GPIO1 | GPIO2);
+    gpio_set(GPIOC, GPIO15 | GPIO14);
 
-    gpio_set(GPIOC, GPIO4 | GPIO5);
-    gpio_set(GPIOA, GPIO7);
-    gpio_set(GPIOB, GPIO0);
+  } else if (percent_battery_level <= 58) {
+    gpio_clear(GPIOB, GPIO9 | GPIO8);
+    gpio_clear(GPIOC, GPIO4 | GPIO5);
 
-  } else if (percent_battery_level <= 75) {
+    gpio_set(GPIOB, GPIO1 | GPIO2 | GPIO0);
+    gpio_set(GPIOC, GPIO15 | GPIO14 | GPIO13);
 
-    gpio_clear(GPIOA, GPIO5);
-    gpio_clear(GPIOB, GPIO2);
+  } else if (percent_battery_level <= 74) {
+    gpio_clear(GPIOB, GPIO8);
+    gpio_clear(GPIOC, GPIO4);
 
-    gpio_set(GPIOC, GPIO4 | GPIO5);
-    gpio_set(GPIOA, GPIO7 | GPIO6);
-    gpio_set(GPIOB, GPIO0 | GPIO1);
-
+    gpio_set(GPIOB, GPIO1 | GPIO2 | GPIO0 | GPIO9);
+    gpio_set(GPIOC, GPIO15 | GPIO14 | GPIO13 | GPIO5);
   } else if (percent_battery_level <= 90) {
-
-    gpio_set(GPIOA, GPIO5 | GPIO6 | GPIO7);
-    gpio_set(GPIOC, GPIO4 | GPIO5);
-    gpio_set(GPIOB, GPIO0 | GPIO1 | GPIO2);
+    gpio_set(GPIOB, GPIO1 | GPIO2 | GPIO0 | GPIO9 | GPIO8);
+    gpio_set(GPIOC, GPIO15 | GPIO14 | GPIO13 | GPIO5 | GPIO4);
   } else {
     if (get_clock_ticks() > lastTicksWarningBateria + 50) {
 
