@@ -54,6 +54,7 @@ static void check_debug_active(void) {
 
 static void debug_gyro_demo(void) {
   // if (get_clock_ticks() >= last_keep_z_angle + 1) {
+  lsm6dsr_set_gyro_z_degrees(0);
   delay(1000);
   do {
     lsm6dsr_keep_z_angle();

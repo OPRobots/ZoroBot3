@@ -223,7 +223,9 @@ void lsm6dsr_keep_z_angle(void) {
     }
     // printf("%d \n", (int16_t)(sumError * 100));
     correccion = p + i + d;
+    // printf("%d \n", (int16_t)correccion);
     // correccion = constrain(correccion, -200, 200);
+    gpio_set(GPIOB, GPIO15);
     set_motors_speed(/* 60+ */ correccion, /* 80 */ -correccion);
   } else {
     sumError = 0;
