@@ -37,39 +37,46 @@ int main(void) {
   while (1) {
     if (!is_race_started()) {
       menu_handler();
-      // if (menu_run_can_start()) {
-      //   int8_t sensor_started = check_start_run();
-      //   if (is_race_started()) {
-      //     switch (menu_run_get_explore_algorithm()) {
-      //       case EXPLORE_HANDWALL:
-      //         switch (sensor_started) {
-      //           case SENSOR_FRONT_LEFT_WALL_ID:
-      //             handwall_use_left_hand();
-      //             handwall_start();
-      //             break;
-      //           case SENSOR_FRONT_RIGHT_WALL_ID:
-      //             handwall_use_right_hand();
-      //             handwall_start();
-      //             break;
-      //         }
-      //         break;
-      //       case EXPLORE_FLOODFILL:
-      //         switch (sensor_started) {
-      //           case SENSOR_FRONT_LEFT_WALL_ID:
-      //             floodfill_start_run();
-      //             break;
-      //           case SENSOR_FRONT_RIGHT_WALL_ID:
-      //             floodfill_start_explore();
-      //             break;
-      //         }
-      //         break;
-      //       default:
-      //         set_race_started(false);
-      //         break;
-      //     }
-      //   }
-      // }
+      if (menu_run_can_start()) {
+        configure_kinematics(SPEED_EXPLORE);
+        clear_info_leds();
+        set_RGB_color(0, 0, 0);
+        delay(2000);
+        set_race_started(true);
+        // int8_t sensor_started = check_start_run();
+        // if (is_race_started()) {
+        //   switch (menu_run_get_explore_algorithm()) {
+        //     case EXPLORE_HANDWALL:
+        //       switch (sensor_started) {
+        //         case SENSOR_FRONT_LEFT_WALL_ID:
+        //           handwall_use_left_hand();
+        //           handwall_start();
+        //           break;
+        //         case SENSOR_FRONT_RIGHT_WALL_ID:
+        //           handwall_use_right_hand();
+        //           handwall_start();
+        //           break;
+        //       }
+        //       break;
+        //     case EXPLORE_FLOODFILL:
+        //       switch (sensor_started) {
+        //         case SENSOR_FRONT_LEFT_WALL_ID:
+        //           floodfill_start_run();
+        //           break;
+        //         case SENSOR_FRONT_RIGHT_WALL_ID:
+        //           floodfill_start_explore();
+        //           break;
+        //       }
+        //       break;
+        //     default:
+        //       set_race_started(false);
+        //       break;
+        //   }
+        // }
+      }
     } else {
+      move_straight(100, 500, false, true);
+      set_race_started(false);
       // switch (menu_run_get_explore_algorithm()) {
       //   case EXPLORE_HANDWALL:
       //     handwall_loop();

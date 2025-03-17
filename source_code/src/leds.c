@@ -168,9 +168,10 @@ void set_leds_side_sensors(int ms) {
 
 void set_leds_front_sensors(int ms) {
   if (get_clock_ticks() > lastTickFrontSensors + ms) {
-    gpio_clear(GPIOA, GPIO5 | GPIO6 | GPIO7);
-    gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO15 | GPIO14 | GPIO13);
+    gpio_clear(GPIOC, GPIO4 | GPIO5);
     gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
+    gpio_clear(GPIOC, GPIO15 | GPIO14 | GPIO13);
+    gpio_clear(GPIOB, GPIO9 | GPIO8);
 
     switch (currentIndexFrontSensors) {
       case 0:

@@ -224,10 +224,10 @@ void set_target_fan_speed(int32_t fan_speed, int32_t ms) {
  *
  */
 void control_loop(void) {
-  gpio_set(GPIOB, GPIO13);
-  delay_us(100);
-  gpio_clear(GPIOB, GPIO13);
-  return;
+  // gpio_set(GPIOB, GPIO13);
+  // delay_us(100);
+  // gpio_clear(GPIOB, GPIO13);
+  // return;
   if (is_motor_saturated() && is_race_started()) {
     set_motors_speed(0, 0);
     set_fan_speed(0);
@@ -244,9 +244,12 @@ void control_loop(void) {
       set_motors_brake();
     } else {
       set_motors_speed(0, 0);
+      set_motors_enable(false);
     }
     set_fan_speed(0);
     return;
+  } else {
+    set_motors_enable(true);
   }
 
   update_ideal_linear_speed();
