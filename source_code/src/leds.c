@@ -251,9 +251,8 @@ void set_leds_battery_level(float battery_level) {
   } else {
     if (get_clock_ticks() > lastTicksWarningBateria + 50) {
 
-      gpio_toggle(GPIOA, GPIO5 | GPIO6 | GPIO7);
-      gpio_toggle(GPIOC, GPIO4 | GPIO5);
-      gpio_toggle(GPIOB, GPIO0 | GPIO1 | GPIO2);
+    gpio_toggle(GPIOB, GPIO1 | GPIO2 | GPIO0 | GPIO9 | GPIO8);
+    gpio_toggle(GPIOC, GPIO15 | GPIO14 | GPIO13 | GPIO5 | GPIO4);
 
       lastTicksWarningBateria = get_clock_ticks();
     }
