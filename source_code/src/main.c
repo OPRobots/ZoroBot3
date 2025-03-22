@@ -75,7 +75,15 @@ int main(void) {
         // }
       }
     } else {
-      move_straight(100, 500, false, true);
+      set_target_fan_speed(50, 400);
+      delay(500);
+      // move_straight(CELL_DIMENSION*4, 500, false, true);
+      move(MOVE_START);
+      move(MOVE_RIGHT);
+      set_target_linear_speed(0);
+      set_target_fan_speed(0, 400);
+      // move(MOVE_HOME);
+      delay(1000);
       set_race_started(false);
       // switch (menu_run_get_explore_algorithm()) {
       //   case EXPLORE_HANDWALL:
