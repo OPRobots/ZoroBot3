@@ -20,7 +20,7 @@
 void sys_tick_handler(void) {
   clock_tick();
   update_encoder_readings();
-  // update_sensors_magics();
+  update_sensors_magics();
   update_battery_voltage();
   check_leds_while();
   check_buttons();
