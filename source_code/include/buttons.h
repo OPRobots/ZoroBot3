@@ -16,4 +16,7 @@ bool get_menu_up_btn(void);
 bool get_menu_down_btn(void);
 bool get_menu_mode_btn(void);
 
+void set_debug_btn(bool state);
+bool get_debug_btn(void);
+
 #endif
