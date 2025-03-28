@@ -161,11 +161,8 @@ void update_encoder_readings(void) {
   left_millimeters = left_micrometers / MICROMETERS_PER_MILLIMETER;
   right_millimeters = right_micrometers / MICROMETERS_PER_MILLIMETER;
 
-  float new_left_speed = left_diff_ticks * (MICROMETERS_PER_TICK / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
-  float new_right_speed = right_diff_ticks * (MICROMETERS_PER_TICK / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
-
-  left_speed = 0.3f * new_left_speed + (1 - 0.3f) * left_speed;
-  right_speed = 0.3f * new_right_speed + (1 - 0.3f) * right_speed;
+  left_speed = left_diff_ticks * (MICROMETERS_PER_TICK / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
+  right_speed = right_diff_ticks * (MICROMETERS_PER_TICK / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
 
   last_left_ticks = left_ticks;
   last_right_ticks = right_ticks;
