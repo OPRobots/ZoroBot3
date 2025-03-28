@@ -52,6 +52,15 @@ static void check_debug_active(void) {
   }
 }
 
+static void debug_motors_current(void) {
+  if (get_clock_ticks() > last_print_debug + 50) {
+    set_motors_enable(true);
+    set_motors_speed(150, 0);
+    printf("BA: %4d CI: %4d CD: %4d BO: %4d\n", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
+    last_print_debug = get_clock_ticks();
+  }
+}
+
 static void debug_gyro_demo(void) {
   // if (get_clock_ticks() >= last_keep_z_angle + 1) {
   lsm6dsr_set_gyro_z_degrees(0);
@@ -98,11 +107,17 @@ void debug_from_config(uint8_t type) {
       case DEBUG_FLOODFILL_MAZE:
         debug_floodfill_maze();
         break;
+      case DEBUG_MOTORS_CURRENT:
+        debug_motors_current();
+        break;
       case DEBUG_GYRO_DEMO:
         debug_gyro_demo();
         break;
       case DEBUG_FAN_DEMO:
         debug_fan_demo();
+        break;
+      default:
+        debug_enabled = false;
         break;
     }
   } else {

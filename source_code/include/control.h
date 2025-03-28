@@ -4,6 +4,7 @@
 #include <battery.h>
 #include <config.h>
 #include <constants.h>
+#include <debug.h>
 #include <macroarray.h>
 #include <menu.h>
 #include <move.h>

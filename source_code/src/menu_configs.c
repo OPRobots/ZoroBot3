@@ -8,7 +8,7 @@ uint8_t modeConfig = MODE_CALIBRATION;
 
 int8_t valueConfig[NUM_MODES] = {0, 0};
 #define NUM_VALUES_CALIBRATION 5
-#define NUM_VALUES_DEBUG 9
+#define NUM_VALUES_DEBUG 10
 
 /**
  * @brief Indicar el tipo de menú que está actualmente activo mediante el led de estado
@@ -49,7 +49,7 @@ static void handle_menu_config_value(void) {
       calibrate_from_config(valueConfig[modeConfig]);
       break;
     case MODE_DEBUG:
-      for (uint8_t i = 1; i <= 8; i++) {
+      for (uint8_t i = 1; i <= NUM_VALUES_DEBUG; i++) {
         set_info_led(i - 1, i == valueConfig[modeConfig]);
       }
       debug_from_config(valueConfig[modeConfig]);
