@@ -225,6 +225,7 @@ static void setup_dma_adc1(void) {
 
   dma_set_peripheral_address(DMA2, DMA_STREAM4, (uint32_t)&ADC_DR(ADC1));
   dma_set_memory_address(DMA2, DMA_STREAM4, (uint32_t)get_aux_adc_raw());
+  dma_set_number_of_data(DMA2, DMA_STREAM4, get_aux_adc_channels_num());
   dma_enable_memory_increment_mode(DMA2, DMA_STREAM4);
   dma_set_peripheral_size(DMA2, DMA_STREAM4, DMA_SxCR_PSIZE_16BIT);
   dma_set_memory_size(DMA2, DMA_STREAM4, DMA_SxCR_MSIZE_16BIT);
@@ -232,7 +233,7 @@ static void setup_dma_adc1(void) {
 
   dma_enable_transfer_complete_interrupt(DMA2, DMA_STREAM4);
   // dma_enable_half_transfer_interrupt(DMA2, DMA_STREAM4);
-  dma_set_number_of_data(DMA2, DMA_STREAM4, get_aux_adc_channels_num());
+  // dma_set_number_of_data(DMA2, DMA_STREAM4, get_aux_adc_channels_num());
   dma_enable_circular_mode(DMA2, DMA_STREAM4);
   dma_set_transfer_mode(DMA2, DMA_STREAM4, DMA_SxCR_DIR_PERIPHERAL_TO_MEM);
   dma_channel_select(DMA2, DMA_STREAM4, DMA_SxCR_CHSEL_0);
@@ -446,17 +447,17 @@ void setup_spi_low_speed(void) {
  */
 void setup(void) {
   setup_clock();
-  setup_systick();
   setup_timer_priorities();
   setup_gpio();
   setup_usart();
   setup_adc2();
-  setup_adc1();
   setup_dma_adc1();
+  setup_adc1();
   setup_leds_pwm();
   setup_motors_pwm();
   setup_main_loop_timer();
   setup_wall_sensor_manager();
   setup_quadrature_encoders();
+  setup_systick();
   setup_mpu();
 }
