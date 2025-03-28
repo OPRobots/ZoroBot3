@@ -6,6 +6,8 @@ static uint32_t btn_menu_up_ms = 0;
 static uint32_t btn_menu_down_ms = 0;
 static uint32_t btn_menu_mode_ms = 0;
 
+static bool debug_btn = false;
+
 void check_buttons(void) {
   btn_analog = get_aux_raw(AUX_MENU_BTN_ID);
 
@@ -57,4 +59,12 @@ bool get_menu_down_btn(void) {
  */
 bool get_menu_mode_btn(void) {
   return btn_menu_mode_ms > 0 && get_clock_ticks() - btn_menu_mode_ms > 50;
+}
+
+void set_debug_btn(bool state){
+  debug_btn = state;
+}
+
+bool get_debug_btn(void){
+  return debug_btn;
 }
