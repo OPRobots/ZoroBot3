@@ -188,6 +188,10 @@ void set_sensors_enabled(bool enabled) {
   sensors_enabled = enabled;
 }
 
+bool get_sensors_enabled(void) {
+  return sensors_enabled;
+}
+
 void get_sensors_raw(uint16_t *on, uint16_t *off) {
   for (uint8_t i = 0; i < NUM_SENSORES; i++) {
     on[i] = sensors_on[i];
@@ -319,7 +323,7 @@ void update_sensors_magics(void) {
         new_sensor_distance = 0;
       }
 
-      switch (expression) {
+      switch (sensor) {
         case SENSOR_FRONT_LEFT_WALL_ID:
         case SENSOR_FRONT_RIGHT_WALL_ID:
           new_sensor_distance += ROBOT_FRONT_LENGTH;

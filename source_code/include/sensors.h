@@ -37,6 +37,7 @@ struct sensors_distance_calibration {
 };
 
 void set_sensors_enabled(bool enabled);
+bool get_sensors_enabled(void);
 
 uint8_t *get_aux_adc_channels(void);
 uint8_t get_aux_adc_channels_num(void);
