@@ -12,7 +12,8 @@ enum speed_strategy {
   SPEED_NORMAL = 1,
   SPEED_MEDIUM = 2,
   SPEED_FAST = 3,
-  SPEED_HAKI = 4,
+  SPEED_SUPER = 4,
+  SPEED_HAKI = 5,
 };
 
 enum maze_type {
