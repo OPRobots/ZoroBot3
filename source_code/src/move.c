@@ -1055,7 +1055,7 @@ static void move_back(enum movement movement) {
   if (movement == MOVE_BACK_WALL) {
     move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
   } else {
-    move_straight((CELL_DIMENSION / 2) - calc_straight_to_speed_distance(300, 0) - current_cell_start_mm, 300, false, false);
+    move_straight((CELL_DIMENSION / 2) - calc_straight_to_speed_distance(300, 0) - current_cell_start_mm, 300, false, true);
   }
 
   disable_sensors_correction();
