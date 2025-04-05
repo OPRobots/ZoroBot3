@@ -61,7 +61,7 @@
 #define SENSOR_SIDE_DETECTION ((CELL_DIMENSION * 0.9))
 
 /** Control de inicio de competición */
-#define SENSOR_FRONT_DETECTION_START 130
+#define SENSOR_FRONT_DETECTION_START 100
 #define SENSOR_START_MIN_MS 350
 
 /** Divisor de Voltage */
