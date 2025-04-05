@@ -55,7 +55,7 @@ static void check_debug_active(void) {
 static void debug_motors_current(void) {
   if (get_clock_ticks() > last_print_debug + 50) {
     set_motors_enable(true);
-    set_motors_speed(150, 0);
+    set_motors_speed(150, 150);
     printf("BA: %4d CI: %4d CD: %4d BO: %4d\n", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
     last_print_debug = get_clock_ticks();
   }
