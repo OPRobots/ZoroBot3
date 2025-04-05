@@ -1135,7 +1135,7 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
         //   printf("%ld\n", left_distance);
         // }
         current_distance = get_encoder_avg_micrometers();
-        distance = 73;
+        distance = 117;
         set_RGB_color_while(0, 255, 0, 150);
       }
 
