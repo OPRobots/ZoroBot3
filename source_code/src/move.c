@@ -1065,7 +1065,9 @@ static void move_back(enum movement movement) {
   switch (movement) {
     case MOVE_BACK_WALL:
     case MOVE_BACK_STOP:
+      set_check_motors_saturated_enabled(false);
       move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
+      set_check_motors_saturated_enabled(true);
       set_starting_position();
       break;
     case MOVE_BACK:
@@ -1383,9 +1385,7 @@ void move(enum movement movement) {
     case MOVE_BACK:
     case MOVE_BACK_WALL:
     case MOVE_BACK_STOP:
-      set_check_motors_saturated_enabled(false);
       move_back(movement);
-      set_check_motors_saturated_enabled(true);
       break;
     default:
       break;
