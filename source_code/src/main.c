@@ -37,6 +37,12 @@ int main(void) {
   while (1) {
     if (!is_race_started()) {
       menu_handler();
+      if (!get_sensors_enabled() && menu_run_can_start()) {
+        set_sensors_enabled(menu_run_can_start());
+        delay(200);
+      } else {
+        set_sensors_enabled(menu_run_can_start());
+      }
       if (menu_run_can_start()) {
         configure_kinematics(SPEED_EXPLORE);
         clear_info_leds();
