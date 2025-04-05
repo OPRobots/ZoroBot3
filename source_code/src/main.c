@@ -44,56 +44,49 @@ int main(void) {
         set_sensors_enabled(menu_run_can_start());
       }
       if (menu_run_can_start()) {
-        configure_kinematics(SPEED_EXPLORE);
-        clear_info_leds();
-        set_RGB_color(0, 0, 0);
-        delay(2000);
-        set_race_started(true);
-        // int8_t sensor_started = check_start_run();
-        // if (is_race_started()) {
-        //   switch (menu_run_get_explore_algorithm()) {
-        //     case EXPLORE_HANDWALL:
-        //       switch (sensor_started) {
-        //         case SENSOR_FRONT_LEFT_WALL_ID:
-        //           handwall_use_left_hand();
-        //           handwall_start();
-        //           break;
-        //         case SENSOR_FRONT_RIGHT_WALL_ID:
-        //           handwall_use_right_hand();
-        //           handwall_start();
-        //           break;
-        //       }
-        //       break;
-        //     case EXPLORE_FLOODFILL:
-        //       switch (sensor_started) {
-        //         case SENSOR_FRONT_LEFT_WALL_ID:
-        //           floodfill_start_run();
-        //           break;
-        //         case SENSOR_FRONT_RIGHT_WALL_ID:
-        //           floodfill_start_explore();
-        //           break;
-        //       }
-        //       break;
-        //     default:
-        //       set_race_started(false);
-        //       break;
-        //   }
-        // }
+        int8_t sensor_started = check_start_run();
+        if (is_race_started()) {
+          switch (menu_run_get_explore_algorithm()) {
+            case EXPLORE_HANDWALL:
+              switch (sensor_started) {
+                case SENSOR_FRONT_LEFT_WALL_ID:
+                  handwall_use_left_hand();
+                  handwall_start();
+                  break;
+                case SENSOR_FRONT_RIGHT_WALL_ID:
+                  handwall_use_right_hand();
+                  handwall_start();
+                  break;
+              }
+              break;
+            case EXPLORE_FLOODFILL:
+              switch (sensor_started) {
+                case SENSOR_FRONT_LEFT_WALL_ID:
+                  floodfill_start_run();
+                  break;
+                case SENSOR_FRONT_RIGHT_WALL_ID:
+                  floodfill_start_explore();
+                  break;
+              }
+              break;
+            default:
+              set_race_started(false);
+              break;
+          }
+        }
       }
     } else {
-      move_straight(100, 500, false, true);
-      set_race_started(false);
-      // switch (menu_run_get_explore_algorithm()) {
-      //   case EXPLORE_HANDWALL:
-      //     handwall_loop();
-      //     break;
-      //   case EXPLORE_FLOODFILL:
-      //     floodfill_loop();
-      //     break;
-      //   default:
-      //     set_race_started(false);
-      //     break;
-      // }
+      switch (menu_run_get_explore_algorithm()) {
+        case EXPLORE_HANDWALL:
+          handwall_loop();
+          break;
+        case EXPLORE_FLOODFILL:
+          floodfill_loop();
+          break;
+        default:
+          set_race_started(false);
+          break;
+      }
     }
   }
 
@@ -104,7 +97,7 @@ int main(void) {
     // warning_status_led(125);
 
     // LEDS MENU
-    set_leds_wave(125);
+    // set_leds_wave(125);
 
     // LED RGB
     // set_RGB_color(20, 0, 0);
@@ -139,8 +132,8 @@ int main(void) {
     // ENCODERS
     // printf("L: %ld R: %ld\t", get_encoder_left_millimeters(), get_encoder_right_millimeters());
 
-    printf("\n");
-    delay(50);
+    // printf("\n");
+    // delay(50);
   }
 
   return 0;
