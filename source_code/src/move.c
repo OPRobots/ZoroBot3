@@ -53,7 +53,7 @@ static struct turn_params turns_explore[] = {
         .end = 0,
         .linear_speed = 0,
         .angular_accel = 612.5,
-        .max_angular_speed = 13.465,
+        .max_angular_speed = 13.460,
         .t_accel = 22,
         .t_max = 209,
         .sign = -1,
@@ -63,7 +63,7 @@ static struct turn_params turns_explore[] = {
         .end = 0,
         .linear_speed = 0,
         .angular_accel = 612.5,
-        .max_angular_speed = 13.465,
+        .max_angular_speed = 13.460,
         .t_accel = 22,
         .t_max = 209,
         .sign = -1,
@@ -73,7 +73,7 @@ static struct turn_params turns_explore[] = {
         .end = 0,
         .linear_speed = 0,
         .angular_accel = 612.5,
-        .max_angular_speed = 13.465,
+        .max_angular_speed = 13.460,
         .t_accel = 22,
         .t_max = 209,
         .sign = -1,
@@ -928,8 +928,13 @@ static void move_home(void) {
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(false);
+  
+  struct walls initial_walls = get_walls();
+  if (initial_walls.front && (!initial_walls.left || !initial_walls.right)) {
+    set_side_sensors_close_correction(false);
+  }
 
-  move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
+  move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
 
   disable_sensors_correction();
   move_inplace_turn(MOVE_BACK);
@@ -1053,7 +1058,7 @@ static void move_back(enum movement movement) {
   set_side_sensors_far_correction(true);
 
   struct walls initial_walls = get_walls();
-  if (initial_walls.front) {
+  if (initial_walls.front && (!initial_walls.left || !initial_walls.right)) {
     set_side_sensors_close_correction(false);
   }
 
