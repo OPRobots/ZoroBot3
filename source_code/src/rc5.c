@@ -86,7 +86,7 @@ static void rc5_manage_command(uint16_t message) {
           set_debug_btn(true);
         }
       } else if (command == rc5_stored_data[DATA_STOP]) {
-        // set_competicion_iniciada(false);
+        set_race_started(false);
       }
       break;
     case ADDRESS_MENU:
