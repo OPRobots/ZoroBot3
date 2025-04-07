@@ -1052,6 +1052,11 @@ static void move_back(enum movement movement) {
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
 
+  struct walls initial_walls = get_walls();
+  if (initial_walls.front) {
+    set_side_sensors_close_correction(false);
+  }
+
   if (movement == MOVE_BACK_WALL) {
     move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
   } else {
