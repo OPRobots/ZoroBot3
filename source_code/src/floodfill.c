@@ -387,7 +387,7 @@ static void go_to_target(void) {
     }
 
     next_step = get_next_floodfill_step(walls);
-    set_RGB_color_while(0, 0, 255, 20);
+    set_RGB_color_while(255, 255, 0, 20);
     switch (next_step) {
       case FRONT:
         move(MOVE_FRONT);

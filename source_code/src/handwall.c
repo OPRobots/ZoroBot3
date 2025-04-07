@@ -32,7 +32,7 @@ void handwall_loop(void) {
     return;
   }
   struct walls walls = get_walls();
-  set_RGB_color_while(0, 0, 255, 20);
+  set_RGB_color_while(255, 255, 0, 20);
   if ((use_left_hand && !walls.left) || (!use_left_hand && walls.right && !walls.left)) {
     move(MOVE_LEFT);
   } else if ((!use_left_hand && !walls.right) || (use_left_hand && walls.left && !walls.right)) {

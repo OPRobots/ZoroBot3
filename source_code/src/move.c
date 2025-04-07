@@ -877,7 +877,7 @@ static void enter_next_cell(void) {
   current_cell_start_mm = -SENSING_POINT_DISTANCE;
   current_cell_absolute_start_mm = get_encoder_avg_millimeters();
   current_cell_wall_lost = false;
-  set_RGB_color_while(0, 0, 255, 150);
+  set_RGB_color_while(255, 255, 0, 150);
   // if (front_wall_detection()) {
   //   int16_t distance = get_front_wall_distance() - ((CELL_DIMENSION - WALL_WIDTH / 2) + SENSING_POINT_DISTANCE);
   //   if(abs(distance)>5){
@@ -1228,7 +1228,7 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
       current_cell++;
       current_cell_distance_left = CELL_DIMENSION;
       cell_walls = current_walls;
-      set_RGB_color_while(0, 0, 255, 150);
+      set_RGB_color_while(255, 255, 0, 150);
       wall_lost = false;
     }
 
@@ -1257,7 +1257,7 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
     // remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
     // if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER * 0.5) {
     //   set_front_sensors_diagonal_correction(false);
-    //   set_RGB_color_while(50, 0, 50, 150);
+    //   set_RGB_color_while(50, 50, 0, 150);
     // }
 
     if (final_speed != speed) {
@@ -1269,7 +1269,7 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
     // remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
     // if (remaining_distance < CELL_DIAGONAL * 0.5) {
     //   set_front_sensors_diagonal_correction(false);
-    //   set_RGB_color_while(50, 0, 50, 150);
+    //   set_RGB_color_while(50, 50, 0, 150);
     // }
   }
 }
