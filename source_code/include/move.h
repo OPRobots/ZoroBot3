@@ -35,7 +35,7 @@ enum movement {
   MOVE_BACK_STOP,
 };
 
-struct turn_params {
+struct inplace_params {
   int16_t start;
   int16_t end;
   int16_t linear_speed;
@@ -43,6 +43,15 @@ struct turn_params {
   float max_angular_speed;
   uint16_t t_accel;
   uint16_t t_max;
+  int8_t sign;
+};
+struct turn_params {
+  float start;
+  float end;
+  int16_t linear_speed;
+  float max_angular_speed;
+  float transition;
+  float arc;
   int8_t sign;
 };
 
