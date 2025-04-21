@@ -35,7 +35,6 @@ void set_motors_speed(float velI, float velD) {
   float ocI = 0;
   float ocD = 0;
 
-  if (velI != 0) {
     ocI = map(abs(velI), 0, 1000, 0, MOTORES_MAX_PWM);
     if (velI > 0) {
       timer_set_oc_value(TIM8, TIM_OC4, MOTORES_MAX_PWM - (uint32_t)ocI);
@@ -44,9 +43,7 @@ void set_motors_speed(float velI, float velD) {
       timer_set_oc_value(TIM8, TIM_OC3, MOTORES_MAX_PWM - (uint32_t)ocI);
       timer_set_oc_value(TIM8, TIM_OC4, MOTORES_MAX_PWM);
     }
-  }
 
-  if (velD != 0) {
     ocD = map(abs(velD), 0, 1000, 0, MOTORES_MAX_PWM);
     if (velD > 0) {
       timer_set_oc_value(TIM8, TIM_OC2, MOTORES_MAX_PWM - (uint32_t)ocD);
@@ -55,7 +52,6 @@ void set_motors_speed(float velI, float velD) {
       timer_set_oc_value(TIM8, TIM_OC1, MOTORES_MAX_PWM - (uint32_t)ocD);
       timer_set_oc_value(TIM8, TIM_OC2, MOTORES_MAX_PWM);
     }
-  }
   // printf("%ld - %ld\n", (uint32_t)ocI, (uint32_t)ocD);
 }
 
