@@ -21,6 +21,7 @@ static volatile float avg_millimeters;
 /* Speed, in millimeters per second */
 static volatile float left_speed;
 static volatile float right_speed;
+static volatile float angular_speed;
 
 /**
  * @brief Read left motor encoder counter.
@@ -107,6 +108,10 @@ float get_encoder_avg_speed(void) {
   return (left_speed + right_speed) / 2.0f;
 }
 
+float get_encoder_angular_speed(void) {
+  return angular_speed;
+}
+
 /**
  * @brief Return the most likely counter difference.
  *
@@ -163,6 +168,7 @@ void update_encoder_readings(void) {
 
   left_speed = left_diff_ticks * (MICROMETERS_PER_TICK / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
   right_speed = right_diff_ticks * (MICROMETERS_PER_TICK / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
+  angular_speed = (float)((right_speed-left_speed) / MILLIMETERS_PER_METER) / ((float)WHEELS_SEPARATION / (float)MILLIMETERS_PER_METER);
 
   last_left_ticks = left_ticks;
   last_right_ticks = right_ticks;

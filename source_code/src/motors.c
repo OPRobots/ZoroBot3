@@ -4,11 +4,12 @@ static bool motors_saturated = false;
 static uint32_t motors_saturated_ms = 0;
 static uint16_t left_motor_saturation_count = 0;
 static uint16_t right_motor_saturation_count = 0;
+static uint16_t angular_speed_saturation_count = 0;
 
 static bool check_motors_saturated_enabled = true;
 
 static void check_motors_saturated(void) {
-  if (check_motors_saturated_enabled && (left_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || right_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT)) {
+  if (check_motors_saturated_enabled && (left_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || right_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || angular_speed_saturation_count > MAX_MOTOR_SATURATION_COUNT)) {
     if (!motors_saturated) {
       motors_saturated_ms = get_clock_ticks();
     }
@@ -68,13 +69,16 @@ void set_motors_brake(void) {
 void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
   if (pwm_left > MOTORES_MAX_PWM) {
     pwm_left = MOTORES_MAX_PWM;
-    left_motor_saturation_count++;
   } else if (pwm_left < -MOTORES_MAX_PWM) {
     pwm_left = -MOTORES_MAX_PWM;
+  }
+
+  if (abs(pwm_left) >= MOTORES_SATURATION_PWM) {
     left_motor_saturation_count++;
   } else {
     left_motor_saturation_count = 0;
   }
+
   if (pwm_left >= 0) {
     timer_set_oc_value(TIM8, TIM_OC4, MOTORES_MAX_PWM - abs(pwm_left));
     timer_set_oc_value(TIM8, TIM_OC3, MOTORES_MAX_PWM);
@@ -85,9 +89,11 @@ void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
 
   if (pwm_right > MOTORES_MAX_PWM) {
     pwm_right = MOTORES_MAX_PWM;
-    right_motor_saturation_count++;
   } else if (pwm_right < -MOTORES_MAX_PWM) {
     pwm_right = -MOTORES_MAX_PWM;
+  }
+
+  if (abs(pwm_right) >= MOTORES_SATURATION_PWM) {
     right_motor_saturation_count++;
   } else {
     right_motor_saturation_count = 0;
@@ -100,6 +106,13 @@ void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
     timer_set_oc_value(TIM8, TIM_OC1, MOTORES_MAX_PWM - abs(pwm_right));
     timer_set_oc_value(TIM8, TIM_OC2, MOTORES_MAX_PWM);
   }
+
+  if(abs(get_encoder_angular_speed()) >= MOTORES_SATURATION_ANGULAR_SPEED) {
+    angular_speed_saturation_count++;
+  } else {
+    angular_speed_saturation_count = 0;
+  }
+
   check_motors_saturated();
   // printf("%d - %d\n", abs(pwm_left), abs(pwm_right));
 }
