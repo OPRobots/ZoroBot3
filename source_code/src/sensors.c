@@ -516,7 +516,7 @@ int16_t get_front_sensors_angle_error(void) {
   int16_t error = sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID];
   // error = 0.1 * error + (1 - 0.1) * last_front_sensors_angle_error;
   // last_front_sensors_angle_error = error;
-  return abs(error) < 2 ? 0 : error;
+  return error;
 }
 
 int16_t get_front_sensors_diagonal_error(void) {

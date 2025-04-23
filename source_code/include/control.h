@@ -21,6 +21,7 @@ void set_control_debug(bool state);
 void set_side_sensors_close_correction(bool enabled);
 void set_side_sensors_far_correction(bool enabled);
 void set_front_sensors_correction(bool enabled);
+bool is_front_sensors_correction_enabled(void);
 void set_front_sensors_diagonal_correction(bool enabled);
 void disable_sensors_correction(void);
 void reset_control_errors(void);

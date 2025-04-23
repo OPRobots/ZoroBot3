@@ -25,6 +25,7 @@ static char *movement_string[] = {
     "MOVE_RIGHT_FROM_45_180",
     "MOVE_BACK",
     "MOVE_BACK_WALL",
+    "MOVE_BACK_STOP",
 };
 
 static struct inplace_params turns_inplace[] = {
@@ -863,32 +864,36 @@ static void move_side(enum movement movement) {
 }
 
 static void move_back(enum movement movement) {
-  set_front_sensors_correction(true);
+  set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
 
   struct walls initial_walls = get_walls();
-  if (initial_walls.front && (!initial_walls.left || !initial_walls.right)) {
+  if (initial_walls.front) {
+    move_straight(10, 300, false, false);
+    current_cell_start_mm += 10;
     set_side_sensors_close_correction(false);
+    set_side_sensors_far_correction(false);
+    set_front_sensors_correction(true);
   }
 
-  if (movement == MOVE_BACK_WALL) {
-    move_straight_until_front_distance(CELL_DIMENSION / 2, 300, true);
+  if (initial_walls.front) {
+    move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
   } else {
-    move_straight((CELL_DIMENSION / 2) - calc_straight_to_speed_distance(300, 0) - current_cell_start_mm, 300, false, true);
+    move_straight((CELL_DIMENSION / 2) - current_cell_start_mm - calc_straight_to_speed_distance(300, 0), 300, false, true);
   }
 
   disable_sensors_correction();
+
   move_inplace_turn(movement);
 
-  set_side_sensors_close_correction(false);
   switch (movement) {
     case MOVE_BACK_WALL:
     case MOVE_BACK_STOP:
-      set_check_motors_saturated_enabled(false);
-      move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
-      set_check_motors_saturated_enabled(true);
+      // set_check_motors_saturated_enabled(false);
+      move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH + 15, -100, false, true);
+      // set_check_motors_saturated_enabled(true);
       set_starting_position();
       break;
     case MOVE_BACK:
@@ -907,9 +912,6 @@ static void move_back(enum movement movement) {
     set_side_sensors_far_correction(true);
     move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
     enter_next_cell();
-  } else {
-    set_side_sensors_close_correction(true);
-    set_side_sensors_far_correction(true);
   }
 }
 
@@ -1000,7 +1002,18 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   set_RGB_color(0, 0, 0);
   if (stop) {
     set_target_linear_speed(0);
-    while (is_race_started() && get_ideal_linear_speed() != 0) {
+    while (is_race_started() && (get_ideal_linear_speed() != 0 || (is_front_sensors_correction_enabled() && get_front_sensors_angle_error() != 0))) {
+    }
+    if (is_front_sensors_correction_enabled()) {
+      uint32_t timeout = get_clock_ticks() + 1000;
+      uint16_t count = 0;
+      while (count < 250 && get_clock_ticks() < timeout) {
+        if (get_front_sensors_angle_error() == 0) {
+          count++;
+        } else {
+          count = 0;
+        }
+      }
     }
   }
 }

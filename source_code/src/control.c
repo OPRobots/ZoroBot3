@@ -164,6 +164,10 @@ void set_front_sensors_correction(bool enabled) {
   front_sensors_correction_enabled = enabled;
 }
 
+bool is_front_sensors_correction_enabled(void) {
+  return front_sensors_correction_enabled;
+}
+
 void set_front_sensors_diagonal_correction(bool enabled) {
   front_sensors_diagonal_correction_enabled = enabled;
 }
