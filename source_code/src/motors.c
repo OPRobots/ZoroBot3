@@ -9,7 +9,7 @@ static uint16_t angular_speed_saturation_count = 0;
 static bool check_motors_saturated_enabled = true;
 
 static void check_motors_saturated(void) {
-  if (check_motors_saturated_enabled && (left_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || right_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || angular_speed_saturation_count > MAX_MOTOR_SATURATION_COUNT)) {
+  if (check_motors_saturated_enabled && (left_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || right_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || angular_speed_saturation_count > MAX_MOTOR_ANGULAR_SATURATION_COUNT)) {
     if (!motors_saturated) {
       motors_saturated_ms = get_clock_ticks();
     }
