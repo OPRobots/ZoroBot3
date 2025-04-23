@@ -238,7 +238,7 @@ void control_loop(void) {
   if (is_motor_saturated() && is_race_started()) {
     set_motors_speed(0, 0);
     set_fan_speed(0);
-    if (get_clock_ticks() - get_motors_saturated_ms() < 1000) {
+    if (get_clock_ticks() - get_motors_saturated_ms() < 3000) {
       blink_RGB_color(512, 0, 0, 50);
     } else {
       set_RGB_color(0, 0, 0);
@@ -246,7 +246,7 @@ void control_loop(void) {
     }
     return;
   }
-  if (!race_started) {
+  if (!is_race_started()) {
     if (race_finish_ms > 0 && get_clock_ticks() - race_finish_ms <= 3000) {
       set_motors_brake();
     } else {
