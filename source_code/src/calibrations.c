@@ -39,3 +39,11 @@ void calibrate_from_config(uint8_t type) {
     menu_config_reset_values();
   }
 }
+
+void calibrate_manual_distances(void) {
+  if (get_debug_btn()) {
+    delay(500);
+    printf("L: %4d FL: %4d FR: %4d R: %4d\n", get_sensor_raw_filter(SENSOR_SIDE_LEFT_WALL_ID), get_sensor_raw_filter(SENSOR_FRONT_LEFT_WALL_ID), get_sensor_raw_filter(SENSOR_FRONT_RIGHT_WALL_ID), get_sensor_raw_filter(SENSOR_SIDE_RIGHT_WALL_ID));
+    set_debug_btn(false);
+  }
+}

@@ -16,5 +16,6 @@
 #define CALIBRATE_STORE_EEPROM 4
 
 void calibrate_from_config(uint8_t type);
+void calibrate_manual_distances(void);
 
 #endif
