@@ -54,24 +54,24 @@ struct sensors_distance_calibration sensors_distance_calibrations[] = {
 #ifdef ZOROBOT3_B
 struct sensors_distance_calibration sensors_distance_calibrations[] = {
     [SENSOR_FRONT_LEFT_WALL_ID] = {
-        .a = 0,
-        .b = 0,
-        .c = 0,
+        .a = 2.915,
+        .b = 0.346,
+        .c = 23.996,
     },
     [SENSOR_FRONT_RIGHT_WALL_ID] = {
-        .a = 0,
-        .b = 0,
-        .c = 0,
+        .a = 2.649,
+        .b = 0.318,
+        .c = 28.761,
     },
     [SENSOR_SIDE_LEFT_WALL_ID] = {
-        .a = 0,
-        .b = 0,
-        .c = 0,
+        .a = 2.277,
+        .b = 0.289,
+        .c = 29.466,
     },
     [SENSOR_SIDE_RIGHT_WALL_ID] = {
-        .a = 0,
-        .b = 0,
-        .c = 0,
+        .a = 2.374,
+        .b = 0.307,
+        .c = -12.683,
     },
 };
 #endif
