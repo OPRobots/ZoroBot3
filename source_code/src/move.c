@@ -801,8 +801,8 @@ static void move_side(enum movement movement) {
       set_side_sensors_far_correction(false);
       break;
     default:
-      set_side_sensors_close_correction(true);
-      set_side_sensors_far_correction(true);
+      set_side_sensors_close_correction(false);
+      set_side_sensors_far_correction(false);
       break;
   }
 
@@ -837,8 +837,8 @@ static void move_side(enum movement movement) {
   move_arc_turn(movement);
 
   set_front_sensors_correction(false);
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(true);
+  set_side_sensors_close_correction(false);
+  set_side_sensors_far_correction(false);
 
   switch (movement) {
     case MOVE_LEFT_TO_45:
