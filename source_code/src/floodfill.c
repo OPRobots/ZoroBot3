@@ -497,7 +497,6 @@ static void smooth_run_sequence(enum speed_strategy speed) {
   char next_step_2;
   switch (speed) {
     case SPEED_EXPLORE:
-    case SPEED_NORMAL:
       for (uint8_t i = 0; i < strlen(run_sequence); i++) {
         switch (run_sequence[i]) {
           case 'B':
@@ -519,8 +518,10 @@ static void smooth_run_sequence(enum speed_strategy speed) {
       }
       break;
 
+    case SPEED_NORMAL:
     case SPEED_MEDIUM:
     case SPEED_FAST:
+    case SPEED_SUPER:
     case SPEED_HAKI:
       printf("Solve strategy: %d\n", menu_run_get_solve_strategy());
       switch (menu_run_get_solve_strategy()) {
