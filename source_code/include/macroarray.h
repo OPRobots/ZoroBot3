@@ -9,7 +9,7 @@
 #define MACROARRAY_LENGTH 30000
 #define MACROARRAY_SEPARATOR "\t"
 
-void macroarray_store(uint8_t ms, uint16_t float_bits, uint8_t size, ...);
+void macroarray_store(uint8_t ms, uint16_t float_bits, uint8_t size, char **labels, ...);
 void macroarray_print(void);
 
 #endif
