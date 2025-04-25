@@ -1116,7 +1116,7 @@ void move_arc_turn(enum movement turn_type) {
   float travelled;
   float angular_speed;
   float factor;
-  while (true) {
+  while (true && is_race_started()) {
     current = get_encoder_avg_micrometers();
     travelled = (float)(current - start) / MICROMETERS_PER_MILLIMETER;
     if (travelled >= 2 * turn.transition + turn.arc) {
