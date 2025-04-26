@@ -1295,6 +1295,19 @@ void move_run_sequence(char *sequence, enum movement *sequence_movements) {
           if (running_diagonal) {
             run_diagonal(distance, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
           } else {
+
+            // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
+            switch (sequence_movements[i]) {
+              case MOVE_LEFT_180:
+              case MOVE_RIGHT_180:
+                if ((i + 1) < (MAZE_CELLS + 3) && sequence_movements[i + 1] != MOVE_FRONT) {
+                  end_offset = 0;
+                }
+                break;
+              default:
+                // Nothing to do
+                break;
+            }
             run_straight(distance, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
           }
           if (kinematics.turns[sequence_movements[i]].end < 0) {
@@ -1302,6 +1315,20 @@ void move_run_sequence(char *sequence, enum movement *sequence_movements) {
           } else {
             distance = 0;
           }
+
+          // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
+          switch (sequence_movements[i]) {
+            case MOVE_LEFT_180:
+            case MOVE_RIGHT_180:
+              if ((i + 1) < (MAZE_CELLS + 3) && sequence_movements[i + 1] != MOVE_FRONT) {
+                distance = 0;
+              }
+              break;
+            default:
+              // Nothing to do
+              break;
+          }
+
           end_offset = 0;
           straight_cells = 0;
           straight_has_begin = false;
