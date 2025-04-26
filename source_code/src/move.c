@@ -103,7 +103,7 @@ static struct turn_params turns_normal[] = {
     },
     [MOVE_LEFT_180] = {
         .start = -44.9900,
-        .end = -163.6711,
+        .end = -44.9900,
         .linear_speed = 1000,
         .max_angular_speed = 11.1111,
         .transition = 63.3450,
@@ -112,7 +112,7 @@ static struct turn_params turns_normal[] = {
     },
     [MOVE_RIGHT_180] = {
         .start = -44.9900,
-        .end = -163.6711,
+        .end = -44.9900,
         .linear_speed = 1000,
         .max_angular_speed = 11.1111,
         .transition = 63.3450,
@@ -142,7 +142,7 @@ static struct turn_params turns_medium[] = {
     },
     [MOVE_LEFT_180] = {
         .start = -44.9860,
-        .end = -163.6645,
+        .end = -44.9860,
         .linear_speed = 1400,
         .max_angular_speed = 15.5556,
         .transition = 63.3500,
@@ -151,7 +151,7 @@ static struct turn_params turns_medium[] = {
     },
     [MOVE_RIGHT_180] = {
         .start = -44.9860,
-        .end = -163.6645,
+        .end = -44.9860,
         .linear_speed = 1400,
         .max_angular_speed = 15.5556,
         .transition = 63.3500,
@@ -271,7 +271,7 @@ static struct turn_params turns_fast[] = {
     },
     [MOVE_LEFT_180] = {
         .start = -44.9820,
-        .end = -163.6711,
+        .end = -44.9820,
         .linear_speed = 1800,
         .max_angular_speed = 20.0000,
         .transition = 63.3510,
@@ -280,7 +280,7 @@ static struct turn_params turns_fast[] = {
     },
     [MOVE_RIGHT_180] = {
         .start = -44.9820,
-        .end = -163.6711,
+        .end = -44.9820,
         .linear_speed = 1800,
         .max_angular_speed = 20.0000,
         .transition = 63.3510,
@@ -400,7 +400,7 @@ static struct turn_params turns_super[] = {
     },
     [MOVE_LEFT_180] = {
         .start = -44.9780,
-        .end = -163.6695,
+        .end = -44.9780,
         .linear_speed = 2200,
         .max_angular_speed = 24.4444,
         .transition = 63.3600,
@@ -409,7 +409,7 @@ static struct turn_params turns_super[] = {
     },
     [MOVE_RIGHT_180] = {
         .start = -44.9780,
-        .end = -163.6695,
+        .end = -44.9780,
         .linear_speed = 2200,
         .max_angular_speed = 24.4444,
         .transition = 63.3600,
@@ -529,7 +529,7 @@ static struct turn_params turns_haki[] = {
     },
     [MOVE_LEFT_180] = {
         .start = -44.9740,
-        .end = -163.6711,
+        .end = -44.9740,
         .linear_speed = 2600,
         .max_angular_speed = 28.8889,
         .transition = 63.3620,
@@ -538,7 +538,7 @@ static struct turn_params turns_haki[] = {
     },
     [MOVE_RIGHT_180] = {
         .start = -44.9740,
-        .end = -163.6711,
+        .end = -44.9740,
         .linear_speed = 2600,
         .max_angular_speed = 28.8889,
         .transition = 63.3620,
