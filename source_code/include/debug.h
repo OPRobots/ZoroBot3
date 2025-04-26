@@ -26,5 +26,6 @@
 
 bool is_debug_enabled(void);
 void debug_from_config(uint8_t type);
+void debug_from_main(uint8_t type);
 
 #endif

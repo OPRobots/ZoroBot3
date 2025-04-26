@@ -26,10 +26,11 @@ static void debug_sensors_raw(void) {
 }
 
 static void debug_sensors_distances(void) {
-  if (get_clock_ticks() > last_print_debug + 50) {
-    for (int8_t sensor = 0; sensor < get_sensors_num(); sensor++) {
-      printf("%d\t", get_sensor_distance(sensor));
-    }
+  if (get_clock_ticks() > last_print_debug + 1) {
+    printf("SL: %4d ", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
+    printf("FL: %4d ", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
+    printf("FR: %4d ", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
+    printf("SR: %4d ", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
     printf("\n");
     last_print_debug = get_clock_ticks();
   }
@@ -93,6 +94,7 @@ void debug_from_config(uint8_t type) {
     debug_enabled = false;
   }
   if (debug_enabled) {
+    set_sensors_enabled(true);
     set_RGB_color(0, 50, 0);
     switch (type) {
       case DEBUG_MACROARRAY:
@@ -123,4 +125,10 @@ void debug_from_config(uint8_t type) {
   } else {
     set_RGB_color(0, 0, 0);
   }
+}
+
+void debug_from_main(uint8_t type) {
+  debug_enabled = true;
+  set_sensors_enabled(true);
+  debug_from_config(type);
 }
