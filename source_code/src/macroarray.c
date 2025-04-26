@@ -9,7 +9,7 @@ static int16_t macroarray[MACROARRAY_LENGTH];
 static char *macroarray_labels[20];
 
 
-void macroarray_store(uint8_t ms, uint16_t float_bits, uint8_t size, char **labels, ...) {
+void macroarray_store(uint8_t ms, uint16_t float_bits, char **labels, uint8_t size, ...) {
   if (get_clock_ticks() - macroarray_last_update_ms < ms || size > 20) {
     return;
   } else {
