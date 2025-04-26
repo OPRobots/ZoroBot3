@@ -57,7 +57,7 @@ static void handle_menu_run_values(void) {
 
   if (modeRun == MODE_RACE) {
     if (valueRun[modeRun] == 1) {
-      set_RGB_color(50, 0, 50);
+      set_RGB_color(50, 0, 0);
     } else {
       if (blinkState) {
         set_RGB_color(50, 0, 0);
