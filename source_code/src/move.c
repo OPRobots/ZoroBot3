@@ -690,6 +690,7 @@ static void enter_next_cell(void) {
   current_cell_absolute_start_mm = get_encoder_avg_millimeters();
   current_cell_wall_lost = false;
   set_RGB_color_while(255, 255, 0, 150);
+  toggle_status_led();
   // if (front_wall_detection()) {
   //   int16_t distance = get_front_wall_distance() - ((CELL_DIMENSION - WALL_WIDTH / 2) + SENSING_POINT_DISTANCE);
   //   if(abs(distance)>5){
@@ -958,7 +959,7 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
         //   printf("%ld\n", left_distance);
         // }
         current_distance = get_encoder_avg_micrometers();
-        distance = 117;
+        distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
         set_RGB_color_while(0, 255, 0, 150);
       }
 
@@ -1046,8 +1047,8 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
 
     if (!wall_lost && ((cell_walls.left && !current_walls.left) || (cell_walls.right && !current_walls.right))) {
       current_distance = get_encoder_avg_micrometers();
-      distance = 73 + CELL_DIMENSION * (cells - current_cell - 1) + end_offset;
-      current_cell_distance_left = 73;
+      distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell - 1) + end_offset;
+      current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
       set_RGB_color_while(0, 255, 0, 150);
       wall_lost = true;
     }
@@ -1123,17 +1124,20 @@ void move_arc_turn(enum movement turn_type) {
       break;
     }
     angular_speed = turn.sign * turn.max_angular_speed;
+    set_RGB_color(255, 0, 0);
     if (travelled < turn.transition) {
       factor = travelled / turn.transition;
       angular_speed *= sin(factor * PI / 2);
+      set_RGB_color(255, 255, 0);
     } else if (travelled >= turn.transition + turn.arc) {
       factor = (travelled - turn.arc) / turn.transition;
       angular_speed *= sin(factor * PI / 2);
+      set_RGB_color(255, 255, 0);
     }
     set_ideal_angular_speed(angular_speed);
   }
-  set_RGB_color(0, 0, 0);
   set_ideal_angular_speed(0);
+  set_RGB_color(0, 0, 0);
 }
 
 void move_inplace_turn(enum movement movement) {
