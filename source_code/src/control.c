@@ -27,6 +27,7 @@ static volatile bool front_sensors_correction_enabled = false;
 static volatile bool front_sensors_diagonal_correction_enabled = false;
 
 static volatile float side_sensors_error;
+static volatile float last_side_sensors_error;
 static volatile float sum_side_sensors_error;
 
 static volatile float front_sensors_error;
@@ -138,8 +139,6 @@ int8_t check_start_run(void) {
 
   if (sensor_front_left_start_ms >= SENSOR_START_MIN_MS || sensor_front_right_start_ms >= SENSOR_START_MIN_MS) {
     set_RGB_color(0, 50, 0);
-    // eeprom_set_data(DATA_INDEX_MENU_RUN, get_menu_run_values(), MENU_RUN_NUM_MODES);
-    // eeprom_save();
     delay(1000);
     set_RGB_color(0, 0, 0);
     set_race_started(true);
@@ -181,6 +180,7 @@ void disable_sensors_correction(void) {
 
 void reset_control_errors(void) {
   sum_side_sensors_error = 0;
+  last_side_sensors_error = 0;
   sum_front_sensors_error = 0;
   sum_front_sensors_diagonal_error = 0;
   linear_error = 0;
@@ -272,14 +272,25 @@ void control_loop(void) {
   last_angular_error = angular_error;
   angular_error += ideal_angular_speed - get_measured_angular_speed();
 
+  // side_sensors_error = 0;
+  // if (side_sensors_close_correction_enabled) {
+  //   side_sensors_error += get_side_sensors_close_error();
+  //   sum_side_sensors_error += side_sensors_error;
+  // }
+  // if (side_sensors_far_correction_enabled) {
+  //   side_sensors_error += get_side_sensors_far_error();
+  //   sum_side_sensors_error += side_sensors_error;
+  // }
+
   side_sensors_error = 0;
   if (side_sensors_close_correction_enabled) {
-    side_sensors_error += get_side_sensors_close_error();
+    side_sensors_error += get_side_sensors_error();
     sum_side_sensors_error += side_sensors_error;
   }
-  if (side_sensors_far_correction_enabled) {
-    side_sensors_error += get_side_sensors_far_error();
-    sum_side_sensors_error += side_sensors_error;
+
+  if (!side_sensors_close_correction_enabled && !side_sensors_far_correction_enabled) {
+    sum_side_sensors_error = 0;
+    last_side_sensors_error = 0;
   }
 
   front_sensors_error = 0;
@@ -303,9 +314,11 @@ void control_loop(void) {
 
   angular_voltage =
       KP_ANGULAR * angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
-      KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error +
+      KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
       KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error +
       KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KI_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error;
+
+  last_side_sensors_error = side_sensors_error;
 
   // if (get_ideal_linear_speed() > 0) {
   //   angular_voltage *= get_ideal_linear_speed() / 500.0f; // TODO: definear 500 as explore speed

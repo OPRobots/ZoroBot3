@@ -508,6 +508,21 @@ int16_t get_side_sensors_far_error(void) {
   return 0;
 }
 
+int16_t get_side_sensors_error(void) {
+  int16_t left_error = sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
+  int16_t right_error = sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
+  
+  if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 90 && sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 90) {
+    return right_error - left_error;
+  } else if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 90) {
+    return -2 * left_error;
+  } else if (sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 90) {
+    return 2 * right_error;
+  } else {
+    return 0;
+  }
+}
+
 int16_t get_front_sensors_angle_error(void) {
   if (!front_wall_detection()) {
     last_front_sensors_angle_error = 0;
