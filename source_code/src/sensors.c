@@ -523,6 +523,17 @@ int16_t get_side_sensors_error(void) {
   }
 }
 
+int16_t get_diagonal_sensors_error(void) {
+  bool left_correction = sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID];
+
+  if (left_correction && sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < 320) {
+    return -(sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - 320);
+  } else if (!left_correction && sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] < 320) {
+    return sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] - 320;
+  }
+  return 0;
+}
+
 int16_t get_front_sensors_angle_error(void) {
   if (!front_wall_detection()) {
     last_front_sensors_angle_error = 0;
