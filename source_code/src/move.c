@@ -1169,16 +1169,16 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
 
   int32_t current_distance = get_encoder_avg_micrometers();
   int32_t slow_distance = 0;
-  // int32_t remaining_distance = 0;
+  int32_t remaining_distance = 0;
 
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + (distance - slow_distance) * MICROMETERS_PER_MILLIMETER) {
-    // remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    // if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER * 0.5) {
-    //   set_front_sensors_diagonal_correction(false);
-    //   set_RGB_color_while(50, 50, 0, 150);
-    // }
+    remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
+    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER /* * 0.5 */) {
+      set_front_sensors_diagonal_correction(false);
+      set_RGB_color_while(50, 50, 0, 150);
+    }
 
     if (final_speed != speed) {
       slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed);
@@ -1186,11 +1186,11 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
   }
   set_target_linear_speed(final_speed);
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
-    // remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    // if (remaining_distance < CELL_DIAGONAL * 0.5) {
-    //   set_front_sensors_diagonal_correction(false);
-    //   set_RGB_color_while(50, 50, 0, 150);
-    // }
+    remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
+    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER /* * 0.5 */) {
+      set_front_sensors_diagonal_correction(false);
+      set_RGB_color_while(50, 50, 0, 150);
+    }
   }
 }
 
