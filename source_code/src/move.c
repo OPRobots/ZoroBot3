@@ -119,6 +119,96 @@ static struct turn_params turns_normal[] = {
         .arc = 202.1000,
         .sign = 1,
     },
+    [MOVE_LEFT_TO_45] = {
+        .start = -73.0659,
+        .end = 54.2130,
+        .linear_speed = 1000,
+        .max_angular_speed = 8.3333,
+        .transition = 63.3400,
+        .arc = 13.6100,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_TO_45] = {
+        .start = -73.0659,
+        .end = 54.2130,
+        .linear_speed = 1000,
+        .max_angular_speed = 8.3333,
+        .transition = 63.3400,
+        .arc = 13.6100,
+        .sign = 1,
+    },
+    [MOVE_LEFT_TO_135] = {
+        .start = -26.5865,
+        .end = -79.3075,
+        .linear_speed = 1000,
+        .max_angular_speed = 13.4120,
+        .transition = 63.3400,
+        .arc = 95.0400,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_TO_135] = {
+        .start = -26.5865,
+        .end = -79.3075,
+        .linear_speed = 1000,
+        .max_angular_speed = 13.4120,
+        .transition = 63.3400,
+        .arc = 95.0400,
+        .sign = 1,
+    },
+    [MOVE_LEFT_45_TO_45] = {
+        .start = 39.0156,
+        .end = 39.0130,
+        .linear_speed = 1000,
+        .max_angular_speed = 15.7134,
+        .transition = 63.3450,
+        .arc = 19.3200,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_45_TO_45] = {
+        .start = 39.0156,
+        .end = 39.0130,
+        .linear_speed = 1000,
+        .max_angular_speed = 15.7134,
+        .transition = 63.3450,
+        .arc = 19.3200,
+        .sign = 1,
+    },
+    [MOVE_LEFT_FROM_45] = {
+        .start = 54.2133,
+        .end = -73.0662,
+        .linear_speed = 1000,
+        .max_angular_speed = 8.3333,
+        .transition = 63.3400,
+        .arc = 13.6100,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_FROM_45] = {
+        .start = 54.2133,
+        .end = -73.0662,
+        .linear_speed = 1000,
+        .max_angular_speed = 8.3333,
+        .transition = 63.3400,
+        .arc = 13.6100,
+        .sign = 1,
+    },
+    [MOVE_LEFT_FROM_45_180] = {
+        .start = 47.9719,
+        .end = -26.5867,
+        .linear_speed = 1000,
+        .max_angular_speed = 13.4120,
+        .transition = 63.3400,
+        .arc = 95.0400,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_FROM_45_180] = {
+        .start = 47.9719,
+        .end = -26.5867,
+        .linear_speed = 1000,
+        .max_angular_speed = 13.4120,
+        .transition = 63.3400,
+        .arc = 95.0400,
+        .sign = 1,
+    },
 };
 
 static struct turn_params turns_medium[] = {
@@ -892,9 +982,9 @@ static void move_back(enum movement movement) {
   switch (movement) {
     case MOVE_BACK_WALL:
     case MOVE_BACK_STOP:
-      // set_check_motors_saturated_enabled(false);
-      move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH + 15, -100, false, true);
-      // set_check_motors_saturated_enabled(true);
+      set_check_motors_saturated_enabled(false);
+      move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH + 10, -100, false, true);
+      set_check_motors_saturated_enabled(true);
       set_starting_position();
       break;
     case MOVE_BACK:
