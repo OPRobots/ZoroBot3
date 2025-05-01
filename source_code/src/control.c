@@ -345,60 +345,73 @@ void control_loop(void) {
   pwm_right = voltage_to_motor_pwm(voltage_right);
   set_motors_pwm(pwm_left, pwm_right);
 
-  //  Corrección de la velocidad lineal
-  macroarray_store(
-      0,
-      0b00011001, // 0b0001101001,
-      8,
-      (int16_t)target_linear_speed,
-      (int16_t)ideal_linear_speed,
-      (int16_t)(get_measured_linear_speed()),
-      (int16_t)(ideal_angular_speed * 100.0),
-      (int16_t)(get_measured_angular_speed() * 100.0),
-      (int16_t)pwm_left,
-      (int16_t)pwm_right,
-      (int16_t)(get_battery_voltage() * 100.0));
+  if (ideal_linear_speed != 0 || ideal_angular_speed != 0) {
+    // static char *labels[] = {
+    //     "target_linear_speed",
+    //     "ideal_linear_speed",
+    //     "measured_linear_speed",
+    //     "ideal_angular_speed",
+    //     "side_sensors_error",
+    //     "last_side_sensors_error",
+    //     "measured_angular_speed",
+    //     "encoder_avg_millimeters",
+    //     "pwm_left",
+    //     "pwm_right",
+    //     "battery_voltage"};
+    // macroarray_store(
+    //     2,
+    //     0b00010010001,
+    //     labels,
+    //     11,
+    //     (int16_t)target_linear_speed,
+    //     (int16_t)ideal_linear_speed,
+    //     (int16_t)(get_measured_linear_speed()),
+    //     (int16_t)(ideal_angular_speed * 100.0),
+    //     (int16_t)side_sensors_error,
+    //     (int16_t)last_side_sensors_error,
+    //     (int16_t)(get_measured_angular_speed() * 100),
+    //     (int16_t)is_status_led_on() ? 1 : 0,
+    //     (int16_t)pwm_left,
+    //     (int16_t)pwm_right,
+    //     (int16_t)(get_battery_voltage() * 100.0));
 
-  // Corrección angular en diagonales
-  // if (front_sensors_diagonal_correction_enabled) {
-  //   macroarray_store(
-  //       0,
-  //       0b0001,
-  //       4,
-  //       (int16_t)target_linear_speed,
-  //       (int16_t)ideal_linear_speed,
-  //       (int16_t)(get_measured_linear_speed()),
-  //       (int16_t)(front_sensors_diagonal_error*100)
-  //       // (int16_t)(get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID)),
-  //       // (int16_t)(get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID))
-  //       // (int16_t)(angular_error * 100),
-  //       // (int16_t)(angular_voltage * 100)
-  //   );
-  // }
+    static char *labels[] = {
+        "target_linear_speed",
+        "ideal_linear_speed",
+        "measured_linear_speed",
+        "ideal_angular_speed",
+        "measured_angular_speed",
+        "front_left_distance",
+        "front_right_distance",
+        "diagonal_error"};
+    macroarray_store(
+        0,
+        0b00011000,
+        labels,
+        8,
+        (int16_t)target_linear_speed,
+        (int16_t)ideal_linear_speed,
+        (int16_t)(get_measured_linear_speed()),
+        (int16_t)(ideal_angular_speed * 100.0),
+        (int16_t)(get_measured_angular_speed() * 100),
+        (int16_t)get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID),
+        (int16_t)get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID),
+        (int16_t)front_sensors_diagonal_error);
 
-  // Corrección lateral en rectas
-  // macroarray_store(
-  //     0,
-  //     0b000111001,
-  //     9,
-  //     (int16_t)target_linear_speed,
-  //     (int16_t)ideal_linear_speed,
-  //     (int16_t)(get_measured_linear_speed()),
-  //     (int16_t)(side_sensors_error * 100.0),
-  //     (int16_t)(angular_error * 100),
-  //     (int16_t)(angular_voltage * 100),
-  //     (int16_t)pwm_left,
-  //     (int16_t)pwm_right,
-  //     (int16_t)(get_battery_voltage() * 100.0));
-
-  // macroarray_store(
-  //     2,
-  //     0b000001,
-  //     6,
-  //     target_linear_speed,
-  //     ideal_linear_speed,
-  //     (int16_t)(get_measured_linear_speed()),
-  //     pwm_left,
-  //     pwm_right,
-  //     (int16_t)(get_battery_voltage() * 100.0));
+    // static char *labels[] = {
+    //     "sl",
+    //     "fl",
+    //     "fr",
+    //     "sr",
+    // };
+    // macroarray_store(
+    //     0,
+    //     0b0,
+    //     labels,
+    //     4,
+    //     (int16_t)get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID),
+    //     (int16_t)get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID),
+    //     (int16_t)get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID),
+    //     (int16_t)get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
+  }
 }
