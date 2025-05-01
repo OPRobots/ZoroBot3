@@ -14,6 +14,7 @@
 void set_status_led(bool state);
 void toggle_status_led(void);
 void warning_status_led(uint32_t ms);
+bool is_status_led_on(void);
 void set_RGB_color(uint32_t r, uint32_t g, uint32_t b);
 void set_RGB_rainbow(void);
 void set_RGB_color_while(uint32_t r, uint32_t g, uint32_t b, uint32_t ms);
