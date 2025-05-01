@@ -26,7 +26,7 @@ static void debug_sensors_raw(void) {
 }
 
 static void debug_sensors_distances(void) {
-  if (get_clock_ticks() > last_print_debug + 1) {
+  if (get_clock_ticks() > last_print_debug + 50) {
     printf("SL: %4d ", get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID));
     printf("FL: %4d ", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
     printf("FR: %4d ", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
