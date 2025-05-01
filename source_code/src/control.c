@@ -34,8 +34,8 @@ static volatile float front_sensors_error;
 static volatile float sum_front_sensors_error;
 
 static volatile float front_sensors_diagonal_error;
-static volatile float sum_front_sensors_diagonal_error;
 static volatile float last_front_sensors_diagonal_error;
+static volatile float sum_front_sensors_diagonal_error;
 
 static volatile float voltage_left;
 static volatile float voltage_right;
@@ -299,15 +299,29 @@ void control_loop(void) {
     sum_front_sensors_error += front_sensors_error;
   }
 
-  front_sensors_diagonal_error = 0;
+  // front_sensors_diagonal_error = 0;
+  // if (front_sensors_diagonal_correction_enabled) {
+  //   front_sensors_diagonal_error = get_front_sensors_diagonal_error();
+  //   sum_front_sensors_diagonal_error += front_sensors_diagonal_error;
+  //   if (front_sensors_diagonal_error != 0) {
+  //     set_RGB_color(255, 0, 0);
+  //   } else {
+  //     set_RGB_color(0, 255, 0);
+  //   }
+  // }
+
   if (front_sensors_diagonal_correction_enabled) {
-    front_sensors_diagonal_error = get_front_sensors_diagonal_error();
+    front_sensors_diagonal_error = get_diagonal_sensors_error();
     sum_front_sensors_diagonal_error += front_sensors_diagonal_error;
     if (front_sensors_diagonal_error != 0) {
       set_RGB_color(255, 0, 0);
     } else {
       set_RGB_color(0, 255, 0);
     }
+  } else {
+    front_sensors_diagonal_error = 0;
+    sum_front_sensors_diagonal_error = 0;
+    last_front_sensors_diagonal_error = 0;
   }
 
   linear_voltage = KP_LINEAR * linear_error + KD_LINEAR * (linear_error - last_linear_error);
@@ -316,9 +330,10 @@ void control_loop(void) {
       KP_ANGULAR * angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
       KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
       KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error +
-      KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KI_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error;
+      KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KI_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error + KD_FRONT_DIAGONAL_SENSORS * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
 
   last_side_sensors_error = side_sensors_error;
+  last_front_sensors_diagonal_error = front_sensors_diagonal_error;
 
   // if (get_ideal_linear_speed() > 0) {
   //   angular_voltage *= get_ideal_linear_speed() / 500.0f; // TODO: definear 500 as explore speed
