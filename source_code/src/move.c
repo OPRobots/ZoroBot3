@@ -1186,7 +1186,7 @@ void run_diagonal(int32_t distance, uint16_t cells, int32_t speed, int32_t final
   set_target_linear_speed(speed);
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + (distance - slow_distance) * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER /* * 0.5 */) {
+    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER * 0.5) {
       set_front_sensors_diagonal_correction(false);
       set_RGB_color_while(50, 50, 0, 150);
     }
@@ -1205,7 +1205,7 @@ void run_diagonal(int32_t distance, uint16_t cells, int32_t speed, int32_t final
   set_target_linear_speed(final_speed);
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER /* * 0.5 */) {
+    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER * 0.5) {
       set_front_sensors_diagonal_correction(false);
       set_RGB_color_while(50, 50, 0, 150);
     }
