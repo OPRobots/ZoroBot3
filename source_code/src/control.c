@@ -203,6 +203,7 @@ void reset_control_all(void) {
   reset_control_errors();
   reset_control_speed();
   reset_motors_saturated();
+  reset_encoder_avg();
 }
 
 void set_target_linear_speed(int32_t linear_speed) {
@@ -383,12 +384,15 @@ void control_loop(void) {
         "measured_angular_speed",
         "front_left_distance",
         "front_right_distance",
-        "diagonal_error"};
+        "diagonal_error",
+        "encoder_avg_millimeters",
+        "wall_lost_toggle_state",
+        "cell_change_toggle_state"};
     macroarray_store(
-        0,
-        0b00011000,
+        2,
+        0b00011000000,
         labels,
-        8,
+        11,
         (int16_t)target_linear_speed,
         (int16_t)ideal_linear_speed,
         (int16_t)(get_measured_linear_speed()),
@@ -396,7 +400,11 @@ void control_loop(void) {
         (int16_t)(get_measured_angular_speed() * 100),
         (int16_t)get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID),
         (int16_t)get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID),
-        (int16_t)front_sensors_diagonal_error);
+        (int16_t)front_sensors_diagonal_error,
+        (int16_t)get_encoder_avg_millimeters(),
+        (int16_t)get_wall_lost_toggle_state() ? 1 : 0,
+        (int16_t)get_cell_change_toggle_state() ? 1 : 0
+        );
 
     // static char *labels[] = {
     //     "sl",

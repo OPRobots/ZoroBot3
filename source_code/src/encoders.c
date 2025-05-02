@@ -87,6 +87,15 @@ int32_t get_encoder_avg_millimeters(void) {
   return (left_millimeters + right_millimeters) / 2;
 }
 
+void reset_encoder_avg(void) {
+  left_micrometers = 0;
+  right_micrometers = 0;
+  avg_micrometers = 0;
+  left_millimeters = 0;
+  right_millimeters = 0;
+  avg_millimeters = 0;
+}
+
 /**
  * @brief Read left motor speed in millimeters per second.
  */
@@ -168,7 +177,7 @@ void update_encoder_readings(void) {
 
   left_speed = left_diff_ticks * (MICROMETERS_PER_TICK / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
   right_speed = right_diff_ticks * (MICROMETERS_PER_TICK / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
-  angular_speed = (float)((right_speed-left_speed) / MILLIMETERS_PER_METER) / ((float)WHEELS_SEPARATION / (float)MILLIMETERS_PER_METER);
+  angular_speed = (float)((right_speed - left_speed) / MILLIMETERS_PER_METER) / ((float)WHEELS_SEPARATION / (float)MILLIMETERS_PER_METER);
 
   last_left_ticks = left_ticks;
   last_right_ticks = right_ticks;

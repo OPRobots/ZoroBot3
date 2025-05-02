@@ -20,6 +20,7 @@ int32_t get_encoder_avg_micrometers(void);
 int32_t get_encoder_left_millimeters(void);
 int32_t get_encoder_right_millimeters(void);
 int32_t get_encoder_avg_millimeters(void);
+void reset_encoder_avg(void);
 
 float get_encoder_left_speed(void);
 float get_encoder_right_speed(void);
