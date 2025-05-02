@@ -1343,7 +1343,7 @@ void move(enum movement movement) {
   }
 }
 
-void move_run_sequence(char *sequence, enum movement *sequence_movements) {
+void move_run_sequence(enum movement *sequence_movements) {
   float distance = 0;
   float end_offset = 0;
   bool running_diagonal = false;
@@ -1450,25 +1450,4 @@ void move_run_sequence(char *sequence, enum movement *sequence_movements) {
         break;
     }
   }
-  delay(1000);
-  // configure_kinematics(SPEED_EXPLORE);
-  // for (int16_t i = strlen(sequence) - 1; i >= 0; i--) {
-  //   switch (sequence[i]) {
-  //     case 'S':
-  //       move(MOVE_START);
-  //       break;
-  //     case 'F':
-  //       move(MOVE_FRONT);
-  //       break;
-  //     case 'R':
-  //       move(MOVE_LEFT);
-  //       break;
-  //     case 'L':
-  //       move(MOVE_RIGHT);
-  //       break;
-  //     case 'B':
-  //       move(MOVE_HOME);
-  //       break;
-  //   }
-  // }
 }

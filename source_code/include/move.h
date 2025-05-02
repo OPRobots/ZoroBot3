@@ -84,6 +84,6 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
 void run_diagonal(int32_t distance,int32_t end_offset, uint16_t cells, int32_t speed, int32_t final_speed);
 
 void move(enum movement movement);
-void move_run_sequence(char *sequence, enum movement *sequence_movements);
+void move_run_sequence(enum movement *sequence_movements);
 
 #endif

@@ -690,7 +690,7 @@ static void loop_explore(void) {
 }
 
 static void loop_run(void) {
-  move_run_sequence(run_sequence, run_sequence_movements);
+  move_run_sequence(run_sequence_movements);
   set_target_linear_speed(0);
   set_ideal_angular_speed(0);
   set_RGB_color_while(255, 0, 0, 20);
