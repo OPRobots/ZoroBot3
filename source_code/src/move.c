@@ -1162,7 +1162,7 @@ void run_straight(int32_t distance, uint16_t cells, bool has_begin, int32_t spee
     }
 
     if (final_speed != speed) {
-      slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed);
+      slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed)+20;
     }
   }
   set_target_linear_speed(final_speed);
@@ -1199,7 +1199,7 @@ void run_diagonal(int32_t distance, uint16_t cells, int32_t speed, int32_t final
     }
 
     if (final_speed != speed) {
-      slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed);
+      slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed) + 20;
     }
   }
   set_target_linear_speed(final_speed);
