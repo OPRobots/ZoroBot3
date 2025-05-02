@@ -62,6 +62,9 @@ struct kinematics {
   struct turn_params *turns;
 };
 
+bool get_cell_change_toggle_state(void);
+bool get_wall_lost_toggle_state(void);
+
 char *get_movement_string(enum movement movement);
 
 enum speed_strategy;
@@ -78,7 +81,7 @@ void move_inplace_turn(enum movement movement);
 void move_inplace_angle(float angle, float rads);
 
 void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed);
-void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed);
+void run_diagonal(int32_t distance,int32_t end_offset, uint16_t cells, int32_t speed, int32_t final_speed);
 
 void move(enum movement movement);
 void move_run_sequence(char *sequence, enum movement *sequence_movements);

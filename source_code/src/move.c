@@ -771,6 +771,9 @@ static int32_t current_cell_start_mm = 0;
 static bool current_cell_wall_lost = false;
 static int32_t current_cell_absolute_start_mm = 0;
 
+static bool wall_lost_toggle_state = false;
+static bool cell_change_toggle_state = false;
+
 static int32_t calc_straight_to_speed_distance(int32_t from_speed, int32_t to_speed) {
   return abs((to_speed * to_speed - from_speed * from_speed) / (2 * kinematics.linear_accel));
 }
@@ -781,12 +784,7 @@ static void enter_next_cell(void) {
   current_cell_wall_lost = false;
   set_RGB_color_while(255, 255, 0, 150);
   toggle_status_led();
-  // if (front_wall_detection()) {
-  //   int16_t distance = get_front_wall_distance() - ((CELL_DIMENSION - WALL_WIDTH / 2) + SENSING_POINT_DISTANCE);
-  //   if(abs(distance)>5){
-  //     current_cell_start_mm -= distance;
-  //   }
-  // }
+  cell_change_toggle_state = !cell_change_toggle_state;
 }
 
 static bool check_wall_loss_correction(struct walls initial_walls) {
@@ -822,6 +820,7 @@ static bool check_wall_loss_correction(struct walls initial_walls) {
   last_check_walls_loss = current_walls; */
   if (wall_lost) {
     current_cell_wall_lost = true;
+    wall_lost_toggle_state = !wall_lost_toggle_state;
   }
   return wall_lost;
 }
@@ -1006,6 +1005,14 @@ static void move_back(enum movement movement) {
   }
 }
 
+bool get_cell_change_toggle_state(void) {
+  return cell_change_toggle_state;
+}
+
+bool get_wall_lost_toggle_state(void) {
+  return wall_lost_toggle_state;
+}
+
 char *get_movement_string(enum movement movement) {
   return movement_string[movement];
 }
@@ -1140,8 +1147,9 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
       distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell - 1) + end_offset;
       current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
       set_RGB_color_while(0, 255, 0, 150);
-      wall_lost = true;
+      wall_lost_toggle_state = !wall_lost_toggle_state;
     }
+
     if (get_encoder_avg_micrometers() - current_distance >= (current_cell_distance_left * MICROMETERS_PER_MILLIMETER) && cells > current_cell + 1) {
       current_distance = get_encoder_avg_micrometers();
       distance = CELL_DIMENSION * (cells - current_cell - 1) + end_offset;
@@ -1150,6 +1158,7 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
       cell_walls = current_walls;
       set_RGB_color_while(255, 255, 0, 150);
       wall_lost = false;
+      cell_change_toggle_state = !cell_change_toggle_state;
     }
 
     if (final_speed != speed) {
@@ -1159,14 +1168,16 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
   set_target_linear_speed(final_speed);
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
   }
+  cell_change_toggle_state = !cell_change_toggle_state;
 }
 
-void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
+void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(true);
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
 
+  uint16_t current_cell = 0;
   int32_t current_distance = get_encoder_avg_micrometers();
   int32_t slow_distance = 0;
   int32_t remaining_distance = 0;
@@ -1180,6 +1191,13 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
       set_RGB_color_while(50, 50, 0, 150);
     }
 
+    if (get_encoder_avg_micrometers() - current_distance >= (CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER) && cells > current_cell + 1) {
+      current_distance = get_encoder_avg_micrometers();
+      distance = CELL_DIAGONAL * (cells - current_cell - 1) + end_offset;
+      current_cell++;
+      cell_change_toggle_state = !cell_change_toggle_state;
+    }
+
     if (final_speed != speed) {
       slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed);
     }
@@ -1192,6 +1210,7 @@ void run_diagonal(int32_t distance, int32_t speed, int32_t final_speed) {
       set_RGB_color_while(50, 50, 0, 150);
     }
   }
+  cell_change_toggle_state = !cell_change_toggle_state;
 }
 
 /**
@@ -1350,7 +1369,7 @@ void move_run_sequence(char *sequence, enum movement *sequence_movements) {
       case MOVE_HOME:
         if (distance > 0) {
           if (running_diagonal) {
-            run_diagonal(distance, kinematics.linear_speed, 500);
+            run_diagonal(distance, 0, straight_cells, kinematics.linear_speed, 500);
           } else {
             run_straight(distance, 0, straight_cells, straight_has_begin, kinematics.linear_speed, 500);
           }
@@ -1383,7 +1402,7 @@ void move_run_sequence(char *sequence, enum movement *sequence_movements) {
             end_offset = kinematics.turns[sequence_movements[i]].start;
           }
           if (running_diagonal) {
-            run_diagonal(distance, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
+            run_diagonal(distance, end_offset, straight_cells, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
           } else {
 
             // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
