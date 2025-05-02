@@ -1147,6 +1147,7 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
       distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell - 1) + end_offset;
       current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
       set_RGB_color_while(0, 255, 0, 150);
+      wall_lost = true;
       wall_lost_toggle_state = !wall_lost_toggle_state;
     }
 
