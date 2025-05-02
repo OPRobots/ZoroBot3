@@ -192,7 +192,7 @@ static struct turn_params turns_normal[] = {
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
-        .start = 27.9719,
+        .start = 47.9719,
         .end = -26.5867,
         .linear_speed = 1000,
         .max_angular_speed = 13.4120,
@@ -201,7 +201,7 @@ static struct turn_params turns_normal[] = {
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
-        .start = 27.9719,
+        .start = 47.9719,
         .end = -26.5867,
         .linear_speed = 1000,
         .max_angular_speed = 13.4120,
@@ -321,7 +321,7 @@ static struct turn_params turns_medium[] = {
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
-        .start = 27.9719,
+        .start = 47.9719,
         .end = -26.5947,
         .linear_speed = 1400,
         .max_angular_speed = 18.7768,
@@ -330,7 +330,7 @@ static struct turn_params turns_medium[] = {
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
-        .start = 27.9719,
+        .start = 47.9719,
         .end = -26.5947,
         .linear_speed = 1400,
         .max_angular_speed = 18.7768,
@@ -450,7 +450,7 @@ static struct turn_params turns_fast[] = {
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
-        .start = 27.9719,
+        .start = 47.9719,
         .end = -26.6007,
         .linear_speed = 1800,
         .max_angular_speed = 24.1416,
@@ -459,7 +459,7 @@ static struct turn_params turns_fast[] = {
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
-        .start = 27.9719,
+        .start = 47.9719,
         .end = -26.6007,
         .linear_speed = 1800,
         .max_angular_speed = 24.1416,
@@ -579,7 +579,7 @@ static struct turn_params turns_super[] = {
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
-        .start = 27.9719,
+        .start = 47.9719,
         .end = -26.5927,
         .linear_speed = 2200,
         .max_angular_speed = 29.5064,
@@ -588,7 +588,7 @@ static struct turn_params turns_super[] = {
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
-        .start = 27.9719,
+        .start = 47.9719,
         .end = -26.5927,
         .linear_speed = 2200,
         .max_angular_speed = 29.5064,
@@ -708,7 +708,7 @@ static struct turn_params turns_haki[] = {
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
-        .start = 27.9719,
+        .start = 47.9719,
         .end = -26.6047,
         .linear_speed = 2600,
         .max_angular_speed = 34.8712,
@@ -717,7 +717,7 @@ static struct turn_params turns_haki[] = {
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
-        .start = 27.9719,
+        .start = 47.9719,
         .end = -26.6047,
         .linear_speed = 2600,
         .max_angular_speed = 34.8712,
@@ -1116,7 +1116,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   }
 }
 
-void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
+void run_straight(int32_t distance, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
@@ -1138,13 +1138,12 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
   struct walls current_walls;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
-  distance += end_offset;
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + (distance - slow_distance) * MICROMETERS_PER_MILLIMETER) {
     current_walls = get_walls();
 
     if (!wall_lost && ((cell_walls.left && !current_walls.left) || (cell_walls.right && !current_walls.right))) {
       current_distance = get_encoder_avg_micrometers();
-      distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell - 1) + end_offset;
+      distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell - 1);
       current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
       set_RGB_color_while(0, 255, 0, 150);
       wall_lost = true;
@@ -1153,7 +1152,7 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
 
     if (get_encoder_avg_micrometers() - current_distance >= (current_cell_distance_left * MICROMETERS_PER_MILLIMETER) && cells > current_cell + 1) {
       current_distance = get_encoder_avg_micrometers();
-      distance = CELL_DIMENSION * (cells - current_cell - 1) + end_offset;
+      distance = CELL_DIMENSION * (cells - current_cell - 1);
       current_cell++;
       current_cell_distance_left = CELL_DIMENSION;
       cell_walls = current_walls;
@@ -1172,7 +1171,7 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
   cell_change_toggle_state = !cell_change_toggle_state;
 }
 
-void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
+void run_diagonal(int32_t distance, uint16_t cells, int32_t speed, int32_t final_speed) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(true);
   set_side_sensors_close_correction(false);
@@ -1194,7 +1193,7 @@ void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t 
 
     if (get_encoder_avg_micrometers() - current_distance >= (CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER) && cells > current_cell + 1) {
       current_distance = get_encoder_avg_micrometers();
-      distance = CELL_DIAGONAL * (cells - current_cell - 1) + end_offset;
+      distance = CELL_DIAGONAL * (cells - current_cell - 1);
       current_cell++;
       cell_change_toggle_state = !cell_change_toggle_state;
     }
@@ -1346,7 +1345,6 @@ void move(enum movement movement) {
 
 void move_run_sequence(enum movement *sequence_movements) {
   float distance = 0;
-  float end_offset = 0;
   bool running_diagonal = false;
   bool straight_has_begin = true;
   uint16_t straight_cells = 0;
@@ -1370,12 +1368,11 @@ void move_run_sequence(enum movement *sequence_movements) {
       case MOVE_HOME:
         if (distance > 0) {
           if (running_diagonal) {
-            run_diagonal(distance, 0, straight_cells, kinematics.linear_speed, 500);
+            run_diagonal(distance, straight_cells, kinematics.linear_speed, 500);
           } else {
-            run_straight(distance, 0, straight_cells, straight_has_begin, kinematics.linear_speed, 500);
+            run_straight(distance, straight_cells, straight_has_begin, kinematics.linear_speed, 500);
           }
           distance = 0;
-          end_offset = 0;
           straight_cells = 0;
           straight_has_begin = false;
           running_diagonal = false;
@@ -1400,10 +1397,10 @@ void move_run_sequence(enum movement *sequence_movements) {
       case MOVE_RIGHT_FROM_45_180:
         if (distance > 0) {
           if (kinematics.turns[sequence_movements[i]].start < 0) {
-            end_offset = kinematics.turns[sequence_movements[i]].start;
+            distance += kinematics.turns[sequence_movements[i]].start;
           }
           if (running_diagonal) {
-            run_diagonal(distance, end_offset, straight_cells, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
+            run_diagonal(distance, straight_cells, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
           } else {
 
             // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
@@ -1411,14 +1408,14 @@ void move_run_sequence(enum movement *sequence_movements) {
               case MOVE_LEFT_180:
               case MOVE_RIGHT_180:
                 if ((i + 1) < (MAZE_CELLS + 3) && sequence_movements[i + 1] != MOVE_FRONT) {
-                  end_offset = 0;
+                  distance -= kinematics.turns[sequence_movements[i]].start;
                 }
                 break;
               default:
                 // Nothing to do
                 break;
             }
-            run_straight(distance, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
+            run_straight(distance, straight_cells, straight_has_begin, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
           }
           if (kinematics.turns[sequence_movements[i]].end < 0) {
             distance = kinematics.turns[sequence_movements[i]].end;
@@ -1439,7 +1436,6 @@ void move_run_sequence(enum movement *sequence_movements) {
               break;
           }
 
-          end_offset = 0;
           straight_cells = 0;
           straight_has_begin = false;
           running_diagonal = false;
