@@ -387,7 +387,7 @@ static void go_to_target(void) {
     }
 
     next_step = get_next_floodfill_step(walls);
-    set_RGB_color_while(255, 255, 0, 20);
+    set_RGB_color_while(255, 255, 0, 33);
     switch (next_step) {
       case FRONT:
         move(MOVE_FRONT);
@@ -671,7 +671,7 @@ static void loop_explore(void) {
       move(MOVE_HOME);
       set_target_linear_speed(0);
       set_ideal_angular_speed(0);
-      set_RGB_color_while(255, 0, 0, 20);
+      set_RGB_color_while(255, 0, 0, 33);
       uint16_t ms = get_clock_ticks();
       while (get_clock_ticks() - ms < 2000) {
         warning_status_led(50);
@@ -693,7 +693,7 @@ static void loop_run(void) {
   move_run_sequence(run_sequence_movements);
   set_target_linear_speed(0);
   set_ideal_angular_speed(0);
-  set_RGB_color_while(255, 0, 0, 20);
+  set_RGB_color_while(255, 0, 0, 33);
   uint16_t ms = get_clock_ticks();
   while (get_clock_ticks() - ms < 1000) {
     warning_status_led(50);

@@ -304,11 +304,11 @@ void control_loop(void) {
   if (front_sensors_diagonal_correction_enabled) {
     front_sensors_diagonal_error = get_front_sensors_diagonal_error();
     sum_front_sensors_diagonal_error += front_sensors_diagonal_error;
-    if (front_sensors_diagonal_error != 0) {
-      set_RGB_color(255, 0, 0);
-    } else {
-      set_RGB_color(0, 255, 0);
-    }
+    // if (front_sensors_diagonal_error != 0) {
+    //   set_RGB_color(255, 0, 0);
+    // } else {
+    //   set_RGB_color(0, 255, 0);
+    // }
   } else {
     front_sensors_diagonal_error = 0;
     sum_front_sensors_diagonal_error = 0;
