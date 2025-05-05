@@ -693,6 +693,7 @@ static void loop_run(void) {
   move_run_sequence(run_sequence_movements);
   set_target_linear_speed(0);
   set_ideal_angular_speed(0);
+  set_target_fan_speed(0, 400);
   set_RGB_color_while(255, 0, 0, 33);
   uint16_t ms = get_clock_ticks();
   while (get_clock_ticks() - ms < 1000) {
