@@ -954,7 +954,7 @@ static void move_side(enum movement movement) {
 
   disable_sensors_correction();
   // reset_control_errors(); //! Esto se había puesto por un problema en la acumulación de error según aumenta el número de giros realizados
-  move_arc_turn(movement);
+  move_arc_turn(kinematics.turns[movement]);
 
   set_front_sensors_correction(false);
   set_side_sensors_close_correction(false);
@@ -1196,6 +1196,94 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
   }
 }
 
+void run_side(enum movement movement, struct turn_params turn) {
+  set_front_sensors_correction(false);
+  set_front_sensors_diagonal_correction(false);
+
+  int32_t end_distance_offset = 0;
+  int32_t start_distance_offset = 0;
+  bool enable_end_distance_offset = true;
+  bool enable_start_distance_offset = true;
+
+  switch (movement) {
+    case MOVE_LEFT_TO_45:
+    case MOVE_RIGHT_TO_45:
+    case MOVE_LEFT_TO_135:
+    case MOVE_RIGHT_TO_135:
+    case MOVE_LEFT_45_TO_45:
+    case MOVE_RIGHT_45_TO_45:
+    case MOVE_LEFT_FROM_45:
+    case MOVE_RIGHT_FROM_45:
+    case MOVE_LEFT_FROM_45_180:
+    case MOVE_RIGHT_FROM_45_180:
+      enable_start_distance_offset = false;
+      enable_end_distance_offset = false;
+      set_side_sensors_close_correction(false);
+      set_side_sensors_far_correction(false);
+      break;
+    default:
+      set_side_sensors_close_correction(false);
+      set_side_sensors_far_correction(false);
+      break;
+  }
+
+  struct walls walls = get_walls();
+  if (enable_end_distance_offset) {
+    if (turn.sign > 0) {
+      if (walls.left) {
+        end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID);
+      }
+    } else {
+      if (walls.right) {
+        end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID);
+      }
+    }
+  }
+
+  if (enable_start_distance_offset) {
+    if (walls.front) {
+      start_distance_offset = get_front_wall_distance() - (CELL_DIMENSION - (WALL_WIDTH / 2));
+    }
+  }
+
+  if (turn.start > 0) {
+    if (abs(start_distance_offset) > turn.start / 2) {
+      start_distance_offset = start_distance_offset > 0 ? turn.start / 2 : -turn.start / 2;
+    }
+    move_straight(turn.start - current_cell_start_mm + start_distance_offset, turn.linear_speed, false, false);
+  }
+
+  disable_sensors_correction();
+  // reset_control_errors(); //! Esto se había puesto por un problema en la acumulación de error según aumenta el número de giros realizados
+  move_arc_turn(turn);
+
+  set_front_sensors_correction(false);
+  set_side_sensors_close_correction(false);
+  set_side_sensors_far_correction(false);
+
+  switch (movement) {
+    case MOVE_LEFT_TO_45:
+    case MOVE_RIGHT_TO_45:
+    case MOVE_LEFT_TO_135:
+    case MOVE_RIGHT_TO_135:
+    case MOVE_LEFT_45_TO_45:
+    case MOVE_RIGHT_45_TO_45:
+      set_front_sensors_diagonal_correction(true);
+      break;
+    default:
+      set_front_sensors_diagonal_correction(false);
+      break;
+  }
+
+  if (turn.end > 0) {
+    if (abs(end_distance_offset) > turn.end / 2) {
+      end_distance_offset = end_distance_offset > 0 ? turn.end / 2 : -turn.end / 2;
+    }
+    move_straight(turn.end + end_distance_offset, turn.linear_speed, false, false);
+  }
+  enter_next_cell();
+}
+
 void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(true);
@@ -1238,9 +1326,7 @@ void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t 
  *
  * @param turn_type
  */
-void move_arc_turn(enum movement turn_type) {
-  struct turn_params turn = kinematics.turns[turn_type];
-
+void move_arc_turn(struct turn_params turn) {
   int32_t start = get_encoder_avg_micrometers();
   int32_t current;
   float travelled;
@@ -1417,53 +1503,55 @@ void move_run_sequence(enum movement *sequence_movements) {
       case MOVE_RIGHT_FROM_45:
       case MOVE_LEFT_FROM_45_180:
       case MOVE_RIGHT_FROM_45_180:
-        if (distance > 0) {
-          if (kinematics.turns[sequence_movements[i]].start < 0) {
-            end_offset = kinematics.turns[sequence_movements[i]].start;
-          }
+
+        if (kinematics.turns[sequence_movements[i]].start < 0) {
+          end_offset = kinematics.turns[sequence_movements[i]].start;
+        }
+        // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
+        switch (sequence_movements[i]) {
+          case MOVE_LEFT_180:
+          case MOVE_RIGHT_180:
+            if ((i + 1) < (MAZE_CELLS + 3) && sequence_movements[i + 1] != MOVE_FRONT) {
+              end_offset = 0;
+            }
+            break;
+          default:
+            // Nothing to do
+            break;
+        }
+
+        if (distance > 0 || end_offset > 0) {
           if (running_diagonal) {
             run_diagonal(distance, end_offset, straight_cells, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
           } else {
-
-            // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
-            switch (sequence_movements[i]) {
-              case MOVE_LEFT_180:
-              case MOVE_RIGHT_180:
-                if ((i + 1) < (MAZE_CELLS + 3) && sequence_movements[i + 1] != MOVE_FRONT) {
-                  end_offset = 0;
-                }
-                break;
-              default:
-                // Nothing to do
-                break;
-            }
             run_straight(distance, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
           }
-          if (kinematics.turns[sequence_movements[i]].end < 0) {
-            distance = kinematics.turns[sequence_movements[i]].end;
-          } else {
-            distance = 0;
-          }
-
-          // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
-          switch (sequence_movements[i]) {
-            case MOVE_LEFT_180:
-            case MOVE_RIGHT_180:
-              if ((i + 1) < (MAZE_CELLS + 3) && sequence_movements[i + 1] != MOVE_FRONT) {
-                distance = 0;
-              }
-              break;
-            default:
-              // Nothing to do
-              break;
-          }
-
           end_offset = 0;
           straight_cells = 0;
           straight_has_begin = false;
           running_diagonal = false;
         }
-        move(sequence_movements[i]);
+        if (kinematics.turns[sequence_movements[i]].end < 0) {
+          distance = kinematics.turns[sequence_movements[i]].end;
+        } else {
+          distance = 0;
+        }
+
+        // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
+        switch (sequence_movements[i]) {
+          case MOVE_LEFT_180:
+          case MOVE_RIGHT_180:
+            if ((i + 1) < (MAZE_CELLS + 3) && sequence_movements[i + 1] != MOVE_FRONT) {
+              distance = 0;
+            }
+            break;
+          default:
+            // Nothing to do
+            break;
+        }
+
+        // TODO: Obtener las kinematics de giro a partir de la velocidad máxima de la recta
+        run_side(sequence_movements[i], kinematics.turns[sequence_movements[i]]);
         break;
       default:
         i = (MAZE_CELLS + 3);

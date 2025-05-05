@@ -83,11 +83,12 @@ int32_t get_current_cell_travelled_distance(void);
 
 void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool stop);
 void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool stop);
-void move_arc_turn(enum movement move);
+void move_arc_turn(struct turn_params turn);
 void move_inplace_turn(enum movement movement);
 void move_inplace_angle(float angle, float rads);
 
 void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed);
+void run_side(enum movement movement, struct turn_params turn);
 void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t speed, int32_t final_speed);
 
 void move(enum movement movement);
