@@ -1190,7 +1190,7 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
     if (final_speed != speed) {
       slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed) + 20;
     }
-    if (slow_distance > 0 && distance < slow_distance) {
+    if (slow_distance > 0 && ((current_distance + distance * MICROMETERS_PER_MILLIMETER) - get_encoder_avg_micrometers()) <= slow_distance * MICROMETERS_PER_MILLIMETER) {
       set_target_linear_speed(final_speed);
     }
   }
@@ -1227,7 +1227,7 @@ void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t 
     if (final_speed != speed) {
       slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed) + 20;
     }
-    if (slow_distance > 0 && distance < slow_distance) {
+    if (slow_distance > 0 && ((current_distance + distance * MICROMETERS_PER_MILLIMETER) - get_encoder_avg_micrometers()) <= slow_distance * MICROMETERS_PER_MILLIMETER) {
       set_target_linear_speed(final_speed);
     }
   }
