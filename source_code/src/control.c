@@ -62,12 +62,16 @@ static int32_t percentage_to_fan_pwm(float percentage) {
  */
 static void update_ideal_linear_speed(void) {
   if (ideal_linear_speed < target_linear_speed) {
-    ideal_linear_speed += get_kinematics().linear_accel / CONTROL_FREQUENCY_HZ;
+    int16_t accel = get_kinematics().linear_accel.accel_soft;
+    if (get_kinematics().linear_accel.speed_hard == 0 || ideal_linear_speed < get_kinematics().linear_accel.speed_hard) {
+      accel = get_kinematics().linear_accel.accel_hard;
+    }
+    ideal_linear_speed += accel / CONTROL_FREQUENCY_HZ;
     if (ideal_linear_speed > target_linear_speed) {
       ideal_linear_speed = target_linear_speed;
     }
   } else if (ideal_linear_speed > target_linear_speed) {
-    ideal_linear_speed -= get_kinematics().linear_accel / CONTROL_FREQUENCY_HZ;
+    ideal_linear_speed -= get_kinematics().linear_accel.break_accel / CONTROL_FREQUENCY_HZ;
     if (ideal_linear_speed < target_linear_speed) {
       ideal_linear_speed = target_linear_speed;
     }

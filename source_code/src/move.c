@@ -730,37 +730,67 @@ static struct turn_params turns_haki[] = {
 static struct kinematics kinematics_settings[] = {
     [SPEED_EXPLORE] = {
         .linear_speed = 650,
-        .linear_accel = 5000,
+        .linear_accel = {
+            .break_accel = 5000,
+            .accel_hard = 5000,
+            .speed_hard = 0,
+            .accel_soft = 0,
+        },
         .fan_speed = 50,
         .turns = turns_explore,
     },
     [SPEED_NORMAL] = {
         .linear_speed = 2000,
-        .linear_accel = 5000,
+        .linear_accel = {
+            .break_accel = 5000,
+            .accel_hard = 5000,
+            .speed_hard = 0,
+            .accel_soft = 0,
+        },
         .fan_speed = 60,
         .turns = turns_normal,
     },
     [SPEED_MEDIUM] = {
         .linear_speed = 3000,
-        .linear_accel = 10000,
+        .linear_accel = {
+            .break_accel = 10000,
+            .accel_hard = 10000,
+            .speed_hard = 0,
+            .accel_soft = 0,
+        },
         .fan_speed = 60,
         .turns = turns_medium,
     },
     [SPEED_FAST] = {
         .linear_speed = 4000,
-        .linear_accel = 15000,
+        .linear_accel = {
+            .break_accel = 15000,
+            .accel_hard = 15000,
+            .speed_hard = 2500,
+            .accel_soft = 10000,
+        },
         .fan_speed = 65,
         .turns = turns_fast,
     },
     [SPEED_SUPER] = {
         .linear_speed = 5000,
-        .linear_accel = 20000,
+        .linear_accel = {
+            .break_accel = 20000,
+            .accel_hard = 20000,
+            .speed_hard = 3500,
+            .accel_soft = 15000,
+        },
         .fan_speed = 70,
         .turns = turns_super,
     },
     [SPEED_HAKI] = {
         .linear_speed = 6000,
-        .linear_accel = 25000,
+        .linear_accel = {
+            .break_accel = 25000,
+            .accel_hard = 25000,
+            .speed_hard = 4000,
+            .accel_soft = 18000,
+        },
         .fan_speed = 75,
         .turns = turns_haki,
     }};
@@ -775,7 +805,7 @@ static bool wall_lost_toggle_state = false;
 static bool cell_change_toggle_state = false;
 
 static int32_t calc_straight_to_speed_distance(int32_t from_speed, int32_t to_speed) {
-  return abs((to_speed * to_speed - from_speed * from_speed) / (2 * kinematics.linear_accel));
+  return abs((to_speed * to_speed - from_speed * from_speed) / (2 * kinematics.linear_accel.break_accel));
 }
 
 static void enter_next_cell(void) {

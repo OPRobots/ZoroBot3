@@ -55,9 +55,16 @@ struct turn_params {
   int8_t sign;
 };
 
+struct linear_accel_params{
+  int16_t break_accel;
+  int16_t accel_hard;
+  int16_t speed_hard;
+  int16_t accel_soft;
+};
+
 struct kinematics {
   int16_t linear_speed;
-  int16_t linear_accel;
+  struct linear_accel_params linear_accel;
   int16_t fan_speed;
   struct turn_params *turns;
 };
