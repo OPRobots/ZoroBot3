@@ -812,7 +812,7 @@ static void enter_next_cell(void) {
   current_cell_start_mm = -SENSING_POINT_DISTANCE;
   current_cell_absolute_start_mm = get_encoder_avg_millimeters();
   current_cell_wall_lost = false;
-  set_RGB_color_while(255, 255, 0, 33);
+  set_RGB_color_while(255, 0, 0, 33);
   toggle_status_led();
   cell_change_toggle_state = !cell_change_toggle_state;
 }
@@ -1184,10 +1184,7 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
       current_cell++;
       current_cell_distance_left = CELL_DIMENSION;
       cell_walls = current_walls;
-      set_RGB_color_while(255, 0, 0, 33);
-      toggle_status_led();
-      current_cell_wall_lost = false;
-      cell_change_toggle_state = !cell_change_toggle_state;
+      enter_next_cell();
     }
 
     if (final_speed != speed) {
@@ -1224,9 +1221,7 @@ void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t 
       current_distance = get_encoder_avg_micrometers();
       distance = CELL_DIAGONAL * (cells - current_cell) + end_offset;
       current_cell++;
-      set_RGB_color_while(255, 0, 0, 33);
-      toggle_status_led();
-      cell_change_toggle_state = !cell_change_toggle_state;
+      enter_next_cell();
     }
 
     if (final_speed != speed) {
