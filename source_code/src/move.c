@@ -1055,6 +1055,18 @@ struct kinematics get_kinematics(void) {
   return kinematics;
 }
 
+uint16_t get_floodfill_linear_speed(void) {
+  return kinematics_settings[SPEED_HAKI].turns[MOVE_LEFT_90].linear_speed;
+}
+
+uint16_t get_floodfill_max_linear_speed(void) {
+  return kinematics_settings[SPEED_HAKI].linear_speed;
+}
+
+uint16_t get_floodfill_accel(void) {
+  return kinematics_settings[SPEED_HAKI].linear_accel.accel_hard;
+}
+
 void set_starting_position(void) {
   current_cell_start_mm = ROBOT_BACK_LENGTH + WALL_WIDTH / 2;
 }

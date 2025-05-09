@@ -77,6 +77,9 @@ char *get_movement_string(enum movement movement);
 enum speed_strategy;
 void configure_kinematics(enum speed_strategy speed);
 struct kinematics get_kinematics(void);
+uint16_t get_floodfill_linear_speed(void);
+uint16_t get_floodfill_max_linear_speed(void);
+uint16_t get_floodfill_accel(void);
 
 void set_starting_position(void);
 int32_t get_current_cell_travelled_distance(void);

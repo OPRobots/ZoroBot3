@@ -3,13 +3,18 @@
 static uint32_t start_ms = 0;
 static uint32_t time_limit = 0;
 
-static uint8_t floodfill[MAZE_CELLS];
+static float floodfill[MAZE_CELLS];
 static int16_t maze[MAZE_CELLS];
 
 static enum compass_direction initial_direction = NORTH;
 
 static uint8_t current_position = 0;
 static enum compass_direction current_direction = NORTH;
+
+static struct cell_weigth straight_weights[15];
+static uint16_t straight_weights_count = 0;
+static struct cell_weigth diagonal_weights[15];
+static uint16_t diagonal_weights_count = 0;
 
 static struct cells_queue cells_queue;
 
@@ -275,55 +280,377 @@ static void reset_floodfill_and_queue(void) {
   cells_queue.tail = 0;
 }
 
-static void queue_push(uint8_t position) {
-  cells_queue.queue[cells_queue.head++] = position;
+static void queue_push(uint8_t position, enum compass_direction direction, enum compass_direction step, uint8_t count) {
+  struct queue_cell queue = {
+      .cell = position,
+      .direction = direction,
+      .last_step = step,
+      .count = count,
+  };
+
+  float value = floodfill[position];
+  int16_t i = cells_queue.head;
+
+  while (i > 0 && floodfill[cells_queue.queue[i - 1].cell] > value) {
+    cells_queue.queue[i] = cells_queue.queue[i - 1];
+    i--;
+  }
+
+  cells_queue.queue[i] = queue;
+  cells_queue.head++;
 }
 
-static uint8_t queue_pop(void) {
+static struct queue_cell queue_pop(void) {
   return cells_queue.queue[cells_queue.tail++];
 }
 
+static float get_next_floodfill_distance(float distance, enum compass_direction from_direction, enum compass_direction to_direction, uint8_t count, uint8_t last_count) {
+  // Floodfill estandar
+  // return distance + 1.0f;
+
+  // Floodfill con prioridad diagonales
+  // switch (to_direction) {
+  //   case EAST:
+  //   case SOUTH:
+  //   case WEST:
+  //   case NORTH:
+  //     return distance + 1.0f;
+  //   default:
+  //     return distance + 0.7f;
+  // }
+
+  // Floodfill con penalizacion por velocidad y frenada
+  bool from_orthogonal = false;
+  bool from_diagonal = false;
+  bool to_orthogonal = false;
+  bool to_diagonal = false;
+  float next_distance = 0.0f;
+  switch (from_direction) {
+    case TARGET:
+    case EAST:
+    case SOUTH:
+    case WEST:
+    case NORTH:
+      from_orthogonal = true;
+      break;
+    case SOUTH_EAST:
+    case SOUTH_WEST:
+    case NORTH_WEST:
+    case NORTH_EAST:
+      from_diagonal = true;
+      break;
+  }
+  switch (to_direction) {
+    case TARGET:
+    case EAST:
+    case SOUTH:
+    case WEST:
+    case NORTH:
+      to_orthogonal = true;
+      break;
+    case SOUTH_EAST:
+    case SOUTH_WEST:
+    case NORTH_WEST:
+    case NORTH_EAST:
+      to_diagonal = true;
+      break;
+  }
+  if (from_orthogonal && to_orthogonal) {
+    if (count < straight_weights_count) {
+      next_distance += (float)(straight_weights[count].time);
+    } else {
+      next_distance += (float)straight_weights[straight_weights_count - 1].time;
+    }
+  } else if (from_diagonal && to_diagonal) {
+    if (from_direction == to_direction) {
+      if (count < diagonal_weights_count) {
+        next_distance += (float)diagonal_weights[count].time;
+      } else {
+        next_distance += (float)diagonal_weights[diagonal_weights_count - 1].time;
+      }
+    } else {
+      next_distance += (float)diagonal_weights[0].time;
+      if (last_count < diagonal_weights_count) {
+        next_distance += (float)diagonal_weights[last_count].penalty;
+      } else {
+        next_distance += (float)diagonal_weights[diagonal_weights_count - 1].penalty;
+      }
+    }
+  } else if (from_orthogonal && to_diagonal) {
+    next_distance += (float)diagonal_weights[0].time;
+    if (last_count < straight_weights_count) {
+      next_distance += (float)straight_weights[last_count].penalty;
+    } else {
+      next_distance += (float)straight_weights[straight_weights_count - 1].penalty;
+    }
+  } else if (from_diagonal && to_orthogonal) {
+    next_distance += (float)straight_weights[0].time;
+    if (last_count < diagonal_weights_count) {
+      next_distance += (float)diagonal_weights[last_count].penalty;
+    } else {
+      next_distance += (float)diagonal_weights[diagonal_weights_count - 1].penalty;
+    }
+  }
+  return distance + next_distance;
+}
+
+static uint8_t get_next_floodfill_count(enum compass_direction from_direction, enum compass_direction to_direction, uint8_t count) {
+  if (from_direction == to_direction /* || from_direction == TARGET */) {
+    return count + 1;
+  } else {
+    return 0;
+  }
+}
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
+static enum compass_direction get_next_floodfill_direction(enum compass_direction from_direction, enum compass_direction from_step, enum compass_direction to_step) {
+  switch (from_direction) {
+    case TARGET:
+      return to_step;
+    case EAST:
+      switch (to_step) {
+        case NORTH:
+          return NORTH_EAST;
+        case SOUTH:
+          return SOUTH_EAST;
+        default:
+          return to_step;
+      }
+      break;
+    case SOUTH_EAST:
+      switch (to_step) {
+        case NORTH:
+          return NORTH_EAST;
+        case SOUTH:
+          switch (from_step) {
+            case SOUTH:
+              return SOUTH;
+            case EAST:
+              return SOUTH_EAST;
+          }
+          break;
+        case EAST:
+          switch (from_step) {
+            case SOUTH:
+              return SOUTH_EAST;
+            case EAST:
+              return EAST;
+          }
+          break;
+        case WEST:
+          return SOUTH_WEST;
+        default:
+          return to_step;
+      }
+      break;
+    case SOUTH:
+      switch (to_step) {
+        case EAST:
+          return SOUTH_EAST;
+        case WEST:
+          return SOUTH_WEST;
+        default:
+          return to_step;
+      }
+      break;
+    case SOUTH_WEST:
+      switch (to_step) {
+        case NORTH:
+          return NORTH_WEST;
+        case SOUTH:
+          switch (from_step) {
+            case SOUTH:
+              return SOUTH;
+            case WEST:
+              return SOUTH_WEST;
+          }
+          break;
+        case EAST:
+          return SOUTH_EAST;
+        case WEST:
+          switch (from_step) {
+            case SOUTH:
+              return SOUTH_WEST;
+            case WEST:
+              return WEST;
+          }
+          break;
+        default:
+          return to_step;
+      }
+      break;
+    case WEST:
+      switch (to_step) {
+        case NORTH:
+          return NORTH_WEST;
+        case SOUTH:
+          return SOUTH_WEST;
+        default:
+          return to_step;
+      }
+      break;
+    case NORTH_WEST:
+      switch (to_step) {
+        case NORTH:
+          switch (from_step) {
+            case NORTH:
+              return NORTH;
+            case WEST:
+              return NORTH_WEST;
+          }
+          break;
+        case EAST:
+          return NORTH_EAST;
+        case SOUTH:
+          return SOUTH_WEST;
+        case WEST:
+          switch (from_step) {
+            case NORTH:
+              return NORTH_WEST;
+            case WEST:
+              return WEST;
+          }
+          break;
+        default:
+          return to_step;
+      }
+      break;
+    case NORTH:
+      switch (to_step) {
+        case EAST:
+          return NORTH_EAST;
+        case WEST:
+          return NORTH_WEST;
+        default:
+          return to_step;
+      }
+      break;
+    case NORTH_EAST:
+      switch (to_step) {
+        case NORTH:
+          switch (from_step) {
+            case NORTH:
+              return NORTH;
+            case EAST:
+              return NORTH_EAST;
+          }
+          break;
+        case SOUTH:
+          return SOUTH_EAST;
+        case WEST:
+          return NORTH_WEST;
+          break;
+        case EAST:
+          switch (from_step) {
+            case NORTH:
+              return NORTH_EAST;
+            case EAST:
+              return EAST;
+          }
+          break;
+        default:
+          return to_step;
+      }
+      break;
+  }
+  return to_step;
+}
+#pragma GCC diagnostic pop
+
 static void update_floodfill(void) {
+  if (straight_weights_count == 0 || diagonal_weights_count == 0) {
+    uint16_t linear_speed = get_floodfill_linear_speed();
+    uint16_t max_linear_speed = get_floodfill_max_linear_speed();
+    uint16_t accel = get_floodfill_accel();
+    straight_weights_count = floodfill_weights_cells_to_max_speed(180.0f, linear_speed, max_linear_speed, accel);
+    floodfill_weights_table(180.0f, linear_speed, max_linear_speed, accel, straight_weights_count, straight_weights);
+    diagonal_weights_count = floodfill_weights_cells_to_max_speed(127.3f, linear_speed, max_linear_speed, accel);
+    floodfill_weights_table(127.3f, linear_speed, max_linear_speed, accel, diagonal_weights_count, diagonal_weights);
+  }
+
   reset_floodfill_and_queue();
 
   for (uint8_t i = 0; i < target_cells.size; i++) {
     floodfill[target_cells.stack[i]] = 0;
-    queue_push(target_cells.stack[i]);
+    queue_push(target_cells.stack[i], TARGET, TARGET, 0);
   }
 
   while (cells_queue.head != cells_queue.tail) {
-    uint8_t current_cell = queue_pop();
-    uint8_t next_distance = floodfill[current_cell] + 1;
-    if (!wall_exists(current_cell, EAST_BIT) && floodfill[current_cell + get_direction_value(EAST)] > next_distance) {
-      floodfill[current_cell + get_direction_value(EAST)] = next_distance;
-      queue_push(current_cell + get_direction_value(EAST));
+    struct queue_cell queue_cell = queue_pop();
+    uint8_t current_cell = queue_cell.cell;
+    enum compass_direction direction = queue_cell.direction;
+    enum compass_direction last_step = queue_cell.last_step;
+    uint8_t count = queue_cell.count;
+
+    float next_distance = 0;
+    uint8_t next_cell = 0;
+    uint8_t next_count = 0;
+    enum compass_direction next_direction = 0;
+    if (!wall_exists(current_cell, EAST_BIT)) {
+      next_cell = current_cell + get_direction_value(EAST);
+      next_direction = get_next_floodfill_direction(direction, last_step, EAST);
+      next_count = get_next_floodfill_count(direction, next_direction, count);
+      next_distance = get_next_floodfill_distance(floodfill[current_cell], direction, next_direction, next_count, count);
+      if (floodfill[next_cell] >= next_distance) {
+        floodfill[next_cell] = next_distance;
+        queue_push(next_cell, next_direction, EAST, next_count);
+      }
     }
-    if (!wall_exists(current_cell, SOUTH_BIT) && floodfill[current_cell + get_direction_value(SOUTH)] > next_distance) {
-      floodfill[current_cell + get_direction_value(SOUTH)] = next_distance;
-      queue_push(current_cell + get_direction_value(SOUTH));
+
+    if (!wall_exists(current_cell, SOUTH_BIT)) {
+      next_cell = current_cell + get_direction_value(SOUTH);
+      next_direction = get_next_floodfill_direction(direction, last_step, SOUTH);
+      next_count = get_next_floodfill_count(direction, next_direction, count);
+      next_distance = get_next_floodfill_distance(floodfill[current_cell], direction, next_direction, next_count, count);
+      if (floodfill[next_cell] >= next_distance) {
+        floodfill[next_cell] = next_distance;
+        queue_push(next_cell, next_direction, SOUTH, next_count);
+        ;
+      }
     }
-    if (!wall_exists(current_cell, WEST_BIT) && floodfill[current_cell + get_direction_value(WEST)] > next_distance) {
-      floodfill[current_cell + get_direction_value(WEST)] = next_distance;
-      queue_push(current_cell + get_direction_value(WEST));
+
+    if (!wall_exists(current_cell, WEST_BIT)) {
+      next_cell = current_cell + get_direction_value(WEST);
+      next_direction = get_next_floodfill_direction(direction, last_step, WEST);
+      next_count = get_next_floodfill_count(direction, next_direction, count);
+      next_distance = get_next_floodfill_distance(floodfill[current_cell], direction, next_direction, next_count, count);
+      if (floodfill[next_cell] >= next_distance) {
+        floodfill[next_cell] = next_distance;
+        queue_push(next_cell, next_direction, WEST, next_count);
+      }
     }
-    if (!wall_exists(current_cell, NORTH_BIT) && floodfill[current_cell + get_direction_value(NORTH)] > next_distance) {
-      floodfill[current_cell + get_direction_value(NORTH)] = next_distance;
-      queue_push(current_cell + get_direction_value(NORTH));
+
+    if (!wall_exists(current_cell, NORTH_BIT)) {
+      next_cell = current_cell + get_direction_value(NORTH);
+      next_direction = get_next_floodfill_direction(direction, last_step, NORTH);
+      next_count = get_next_floodfill_count(direction, next_direction, count);
+      next_distance = get_next_floodfill_distance(floodfill[current_cell], direction, next_direction, next_count, count);
+      if (floodfill[next_cell] >= next_distance) {
+        floodfill[next_cell] = next_distance;
+        queue_push(next_cell, next_direction, NORTH, next_count);
+        ;
+      }
     }
   }
 }
 
 static enum step_direction get_next_floodfill_step(struct walls walls) {
-  if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill[current_position]) {
-    return FRONT;
+  float floodfill_value = floodfill[current_position];
+  enum step_direction next_step = BACK;
+  if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill_value) {
+    floodfill_value = floodfill[get_next_position(RIGHT)];
+    next_step = RIGHT;
   }
-  if (!walls.left && floodfill[get_next_position(LEFT)] < floodfill[current_position]) {
-    return LEFT;
+  if (!walls.left && floodfill[get_next_position(LEFT)] < floodfill_value) {
+    floodfill_value = floodfill[get_next_position(LEFT)];
+    next_step = LEFT;
   }
-  if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill[current_position]) {
-    return RIGHT;
+  if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
+    floodfill_value = floodfill[get_next_position(FRONT)];
+    next_step = FRONT;
   }
-  return BACK;
+  return next_step;
 }
 
 static void save_maze(void) {
@@ -352,8 +679,9 @@ static uint8_t find_unknown_interesting_cell(void) {
 
   enum step_direction next_step;
 
-  set_initial_state();
-  set_goal_as_target();
+  // set_initial_state();
+  // set_goal_as_target();
+  set_target(0);
   update_floodfill();
   while (floodfill[current_position] > 0) {
     next_step = get_next_floodfill_step(get_current_stored_walls());
@@ -439,45 +767,85 @@ static void go_to_target(void) {
 static void build_run_sequence(void) {
   enum step_direction step;
 
-  set_initial_state();
+  // set_initial_state();
 
   set_goals_from_maze();
-  set_goal_as_target();
+  // set_goal_as_target();
+  set_target(0);
   update_floodfill();
+
+  float goal_value = MAZE_MAX_DISTANCE;
+  for (uint8_t i = 0; i < goal_cells.size; i++) {
+    if (floodfill[goal_cells.stack[i]] < goal_value) {
+      goal_value = floodfill[goal_cells.stack[i]];
+      current_position = goal_cells.stack[i];
+    }
+  }
+  printf("Current position: %d - %d\n", (current_position % 6) + 1, (current_position / 6) + 1);
+  float next_distance = MAZE_MAX_DISTANCE;
+  if (!wall_exists(current_position, NORTH_BIT) && floodfill[current_position + get_direction_value(NORTH)] < next_distance) {
+    next_distance = floodfill[current_position + get_direction_value(NORTH)];
+    printf("Next cell: %d - %d\n", ((current_position + get_direction_value(NORTH)) % 6) + 1, ((current_position + get_direction_value(NORTH)) / 6) + 1);
+    current_direction = NORTH;
+  }
+  if (!wall_exists(current_position, EAST_BIT) && floodfill[current_position + get_direction_value(EAST)] < next_distance) {
+    next_distance = floodfill[current_position + get_direction_value(EAST)];
+    printf("Next cell: %d - %d\n", ((current_position + get_direction_value(EAST)) % 6) + 1, ((current_position + get_direction_value(EAST)) / 6) + 1);
+    current_direction = EAST;
+  }
+  if (!wall_exists(current_position, SOUTH_BIT) && floodfill[current_position + get_direction_value(SOUTH)] < next_distance) {
+    next_distance = floodfill[current_position + get_direction_value(SOUTH)];
+    printf("Next cell: %d - %d\n", ((current_position + get_direction_value(SOUTH)) % 6) + 1, ((current_position + get_direction_value(SOUTH)) / 6) + 1);
+    current_direction = SOUTH;
+  }
+  if (!wall_exists(current_position, WEST_BIT) && floodfill[current_position + get_direction_value(WEST)] < next_distance) {
+    next_distance = floodfill[current_position + get_direction_value(WEST)];
+    printf("Next cell: %d - %d\n", ((current_position + get_direction_value(WEST)) % 6) + 1, ((current_position + get_direction_value(WEST)) / 6) + 1);
+    current_direction = WEST;
+  }
+  printf("Current direction: %d\n", current_direction);
+  printf("Next distance: %f\n", next_distance);
 
   for (uint16_t i = 0; i < strlen(run_sequence); i++) {
     run_sequence[i] = '\0';
   }
 
   uint8_t i = 0;
+  char reverse_run_sequence[MAZE_CELLS + 3];
+  reverse_run_sequence[i++] = 'S';
+  // if (goal_cells.size > 1) {
+  //   reverse_run_sequence[i++] = 'F';
+  // }
   while (floodfill[current_position] > 0) {
     step = get_next_floodfill_step(get_current_stored_walls());
     switch (step) {
       case FRONT:
-        run_sequence[i++] = (current_position == 0 ? 'B' : 'F');
+        reverse_run_sequence[i++] = (current_position == 0 ? 'B' : 'F');
         break;
       case LEFT:
-        run_sequence[i++] = 'L';
+        reverse_run_sequence[i++] = 'L';
         break;
       case RIGHT:
-        run_sequence[i++] = 'R';
+        reverse_run_sequence[i++] = 'R';
         break;
       default:
         break;
     }
     update_position(step);
   }
-  // while (true) {
-  //   update_position(FRONT);
-  //   if (floodfill[current_position] != 0) {
-  //     break;
-  //   }
-  //   run_sequence[i++] = 'F';
-  // }
-  if (goal_cells.size > 1) {
-    run_sequence[i++] = 'F';
+  reverse_run_sequence[i++] = 'B';
+
+  i = 0;
+  for (int16_t j = strlen(reverse_run_sequence) - 1; j >= 0; j--) {
+    if (reverse_run_sequence[j] == 'L') {
+      run_sequence[i++] = 'R';
+    } else if (reverse_run_sequence[j] == 'R') {
+      run_sequence[i++] = 'L';
+    } else {
+      run_sequence[i++] = reverse_run_sequence[j];
+    }
   }
-  run_sequence[i++] = 'S';
+
   run_sequence[i] = '\0';
 
   printf("Run sequence: %s\n", run_sequence);
@@ -712,6 +1080,7 @@ void floodfill_load_maze(void) {
 
 void floodfill_maze_print(void) {
   initialize_directions_values();
+  configure_kinematics(menu_run_get_speed());
   build_run_sequence();
   smooth_run_sequence(menu_run_get_speed());
   for (int16_t r = maze_get_cells() - maze_get_columns(); r >= 0; r = r - maze_get_columns()) {
@@ -720,9 +1089,9 @@ void floodfill_maze_print(void) {
       printf("·");
       for (uint16_t i = maze_get_cells() - maze_get_columns(); i < maze_get_cells(); i++) {
         if (maze[i] & NORTH_BIT) {
-          printf("═══·");
+          printf("═══════·");
         } else {
-          printf("   ·");
+          printf("       ·");
         }
       }
     }
@@ -737,10 +1106,10 @@ void floodfill_maze_print(void) {
       }
       if (maze[c] & VISITED_BIT) {
         // printf(" V ");
-        printf("%3d", floodfill[c]);
+        printf("%7.4f", floodfill[c]);
       } else {
         // printf("   ");
-        printf("%3d", floodfill[c]);
+        printf("%7.4f", floodfill[c]);
       }
       //   if ((c + 1 % maze_get_columns()) == 0) {
       //     printf("|");
@@ -756,9 +1125,9 @@ void floodfill_maze_print(void) {
     printf("·");
     for (int16_t c = r; c < r + maze_get_columns(); c++) {
       if (maze[c] & SOUTH_BIT /* || c / maze_get_columns() == 0 */) {
-        printf("═══·");
+        printf("═══════·");
       } else {
-        printf("   ·");
+        printf("       ·");
       }
     }
   }
@@ -770,9 +1139,9 @@ void floodfill_maze_print(void) {
       printf("·");
       for (uint16_t i = maze_get_cells() - maze_get_columns(); i < maze_get_cells(); i++) {
         if (maze[i] & NORTH_BIT) {
-          printf("═══·");
+          printf("═══════·");
         } else {
-          printf("   ·");
+          printf("       ·");
         }
       }
     }
@@ -786,11 +1155,11 @@ void floodfill_maze_print(void) {
         printf(" ");
       }
       if (maze[c] & VISITED_BIT) {
-        printf(" V ");
-        // printf("%3d", floodfill[c]);
+        printf("   V   ");
+        // printf("%5.2f", floodfill[c]);
       } else {
-        printf("   ");
-        // printf("%3d", floodfill[c]);
+        printf("       ");
+        // printf("%5.2f", floodfill[c]);
       }
       //   if ((c + 1 % maze_get_columns()) == 0) {
       //     printf("|");
@@ -806,9 +1175,9 @@ void floodfill_maze_print(void) {
     printf("·");
     for (int16_t c = r; c < r + maze_get_columns(); c++) {
       if (maze[c] & SOUTH_BIT /* || c / maze_get_columns() == 0 */) {
-        printf("═══·");
+        printf("═══════·");
       } else {
-        printf("   ·");
+        printf("       ·");
       }
     }
   }
