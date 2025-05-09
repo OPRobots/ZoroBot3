@@ -64,10 +64,10 @@ void hardcode_loop(void) {
   if (use_left_hand) {
     hardcode_sector(50, MOVE_RIGHT);
     hardcode_sector(502, TURN_LEFT);
-    hardcode_sector(50, TURN_RIGHT);
-    hardcode_sector(0, TURN_LEFT_180);
-    hardcode_sector(180, TURN_RIGHT);
-    hardcode_sector(70, TURN_LEFT);
+    hardcode_sector(35, TURN_RIGHT);
+    hardcode_sector(130, TURN_LEFT_180);
+    hardcode_sector(200, TURN_RIGHT);
+    hardcode_sector(50, TURN_LEFT);
     hardcode_sector(260, TURN_RIGHT_180);
     hardcode_sector(350, TURN_LEFT);
     hardcode_sector(50, TURN_RIGHT);
@@ -76,8 +76,8 @@ void hardcode_loop(void) {
   } else {
     hardcode_sector(50, MOVE_RIGHT);
     hardcode_sector(502, TURN_LEFT);
-    hardcode_sector(50, TURN_RIGHT);
-    hardcode_sector(0, TURN_LEFT_180);
+    hardcode_sector(30, TURN_RIGHT);
+    hardcode_sector(130, TURN_LEFT_180);
     hardcode_sector(180, TURN_RIGHT_180);
     hardcode_sector(180, TURN_LEFT_180);
     hardcode_sector(280, TURN_RIGHT);
