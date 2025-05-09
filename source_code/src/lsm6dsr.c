@@ -150,7 +150,11 @@ void lsm6dsr_update(void) {
   if (mpu_updating) {
     float new_gyro_z_raw = lsm6dsr_read_gyro_z_raw();
     // gyro_z_raw = 0.5 * new_gyro_z_raw + (1 - 0.5) * gyro_z_raw;
+#ifdef ZOROBOT3_C
+    gyro_z_raw = new_gyro_z_raw - 4.2290f;
+#else
     gyro_z_raw = new_gyro_z_raw - offset_z;
+#endif
     deg_integ = deg_integ - lsm6dsr_get_gyro_z_dps() / SYSTICK_FREQUENCY_HZ;
   }
 }
