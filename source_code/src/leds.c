@@ -211,8 +211,7 @@ void set_leds_blink(int ms) {
 }
 
 void set_leds_battery_level(float battery_level) {
-  float percent_battery_level = map(battery_level, BATTERY_LOW_LIMIT_VOLTAGE, BATTERY_HIGH_LIMIT_VOLTAGE, 0.0f, 100.0f);
-  if (percent_battery_level <= 10) {
+  if (battery_level <= 10) {
     gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO9 | GPIO8);
     gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO14 | GPIO13);
     if (get_clock_ticks() > lastTicksWarningBateria + 50) {
@@ -223,34 +222,34 @@ void set_leds_battery_level(float battery_level) {
       lastTicksWarningBateria = get_clock_ticks();
     }
 
-  } else if (percent_battery_level <= 26) {
+  } else if (battery_level <= 26) {
     gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO9 | GPIO8);
     gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO14 | GPIO13);
 
     gpio_set(GPIOB, GPIO2);
     gpio_set(GPIOC, GPIO15);
 
-  } else if (percent_battery_level <= 42) {
+  } else if (battery_level <= 42) {
     gpio_clear(GPIOB, GPIO0 | GPIO9 | GPIO8);
     gpio_clear(GPIOC, GPIO4 | GPIO5 | GPIO13);
 
     gpio_set(GPIOB, GPIO1 | GPIO2);
     gpio_set(GPIOC, GPIO15 | GPIO14);
 
-  } else if (percent_battery_level <= 58) {
+  } else if (battery_level <= 58) {
     gpio_clear(GPIOB, GPIO9 | GPIO8);
     gpio_clear(GPIOC, GPIO4 | GPIO5);
 
     gpio_set(GPIOB, GPIO1 | GPIO2 | GPIO0);
     gpio_set(GPIOC, GPIO15 | GPIO14 | GPIO13);
 
-  } else if (percent_battery_level <= 74) {
+  } else if (battery_level <= 74) {
     gpio_clear(GPIOB, GPIO8);
     gpio_clear(GPIOC, GPIO4);
 
     gpio_set(GPIOB, GPIO1 | GPIO2 | GPIO0 | GPIO9);
     gpio_set(GPIOC, GPIO15 | GPIO14 | GPIO13 | GPIO5);
-  } else if (percent_battery_level <= 90) {
+  } else if (battery_level <= 90) {
     gpio_set(GPIOB, GPIO1 | GPIO2 | GPIO0 | GPIO9 | GPIO8);
     gpio_set(GPIOC, GPIO15 | GPIO14 | GPIO13 | GPIO5 | GPIO4);
   } else {

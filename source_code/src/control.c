@@ -53,7 +53,7 @@ static int32_t voltage_to_motor_pwm(float voltage) {
 }
 
 static int32_t percentage_to_fan_pwm(float percentage) {
-  return percentage > 0 ? (int32_t)constrain((BATTERY_HIGH_LIMIT_VOLTAGE / get_battery_voltage()) * percentage, percentage, 100.0f) : 0;
+  return percentage > 0 ? (int32_t)constrain((get_battery_high_limit_voltage() / get_battery_voltage()) * percentage, percentage, 100.0f) : 0;
 }
 
 /**

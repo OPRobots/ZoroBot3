@@ -15,6 +15,7 @@
 
 void update_battery_voltage(void);
 float get_battery_voltage(void);
+float get_battery_high_limit_voltage(void);
 void show_battery_level(void);
 
 #endif /* __BATTERY_H */
