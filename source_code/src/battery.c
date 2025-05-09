@@ -27,7 +27,7 @@ void show_battery_level(void) {
   if (voltage >= BATTERY_3S_LOW_LIMIT_VOLTAGE && voltage <= BATTERY_3S_HIGH_LIMIT_VOLTAGE) {
     battery_full_voltage = BATTERY_3S_HIGH_LIMIT_VOLTAGE;
     battery_level = map(voltage, BATTERY_3S_LOW_LIMIT_VOLTAGE, BATTERY_3S_HIGH_LIMIT_VOLTAGE, 0.0f, 100.0f);
-  } else if (voltage >= BATTERY_2S_LOW_LIMIT_VOLTAGE && voltage <= BATTERY_2S_HIGH_LIMIT_VOLTAGE) {
+  } else if (voltage >= BATTERY_2S_LOW_LIMIT_VOLTAGE/*  && voltage <= BATTERY_2S_HIGH_LIMIT_VOLTAGE */) {
     battery_full_voltage = BATTERY_2S_HIGH_LIMIT_VOLTAGE;
     battery_level = map(voltage, BATTERY_2S_LOW_LIMIT_VOLTAGE, BATTERY_2S_HIGH_LIMIT_VOLTAGE, 0.0f, 100.0f);
   }
