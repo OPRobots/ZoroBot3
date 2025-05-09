@@ -79,24 +79,24 @@ struct sensors_distance_calibration sensors_distance_calibrations[] = {
 #ifdef ZOROBOT3_C
 struct sensors_distance_calibration sensors_distance_calibrations[] = {
     [SENSOR_FRONT_LEFT_WALL_ID] = {
-        .a = 0,
-        .b = 0,
-        .c = 0,
+        .a = 2.717,
+        .b = 0.321,
+        .c = 34.784,
     },
     [SENSOR_FRONT_RIGHT_WALL_ID] = {
-        .a = 0,
-        .b = 0,
-        .c = 0,
+        .a = 2.992,
+        .b = 0.355,
+        .c = 37.060,
     },
     [SENSOR_SIDE_LEFT_WALL_ID] = {
-        .a = 0,
-        .b = 0,
-        .c = 0,
+        .a = 1.900,
+        .b = 0.247,
+        .c = -0.844,
     },
     [SENSOR_SIDE_RIGHT_WALL_ID] = {
-        .a = 0,
-        .b = 0,
-        .c = 0,
+        .a = 2.300,
+        .b = 0.295,
+        .c = 35.468,
     },
 };
 #endif
@@ -511,7 +511,7 @@ int16_t get_side_sensors_far_error(void) {
 int16_t get_side_sensors_error(void) {
   int16_t left_error = sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
   int16_t right_error = sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
-  
+
   if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 90 && sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 90) {
     return right_error - left_error;
   } else if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 90) {
