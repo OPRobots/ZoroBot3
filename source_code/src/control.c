@@ -374,35 +374,35 @@ void control_loop(void) {
     //     (int16_t)pwm_right,
     //     (int16_t)(get_battery_voltage() * 100.0));
 
-    static char *labels[] = {
-        "target_linear_speed",
-        "ideal_linear_speed",
-        "measured_linear_speed",
-        "ideal_angular_speed",
-        "measured_angular_speed",
-        "front_left_distance",
-        "front_right_distance",
-        "diagonal_error",
-        "encoder_avg_millimeters",
-        "wall_lost_toggle_state",
-        "cell_change_toggle_state"};
-    macroarray_store(
-        2,
-        0b00011000000,
-        labels,
-        11,
-        (int16_t)target_linear_speed,
-        (int16_t)ideal_linear_speed,
-        (int16_t)(get_measured_linear_speed()),
-        (int16_t)(ideal_angular_speed * 100.0),
-        (int16_t)(get_measured_angular_speed() * 100),
-        (int16_t)get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID),
-        (int16_t)get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID),
-        (int16_t)front_sensors_diagonal_error,
-        (int16_t)get_encoder_avg_millimeters(),
-        (int16_t)get_wall_lost_toggle_state() ? 1 : 0,
-        (int16_t)get_cell_change_toggle_state() ? 1 : 0
-        );
+    // static char *labels[] = {
+    //     "target_linear_speed",
+    //     "ideal_linear_speed",
+    //     "measured_linear_speed",
+    //     "ideal_angular_speed",
+    //     "measured_angular_speed",
+    //     "front_left_distance",
+    //     "front_right_distance",
+    //     "diagonal_error",
+    //     "encoder_avg_millimeters",
+    //     "wall_lost_toggle_state",
+    //     "cell_change_toggle_state"};
+    // macroarray_store(
+    //     2,
+    //     0b00011000000,
+    //     labels,
+    //     11,
+    //     (int16_t)target_linear_speed,
+    //     (int16_t)ideal_linear_speed,
+    //     (int16_t)(get_measured_linear_speed()),
+    //     (int16_t)(ideal_angular_speed * 100.0),
+    //     (int16_t)(get_measured_angular_speed() * 100),
+    //     (int16_t)get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID),
+    //     (int16_t)get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID),
+    //     (int16_t)front_sensors_diagonal_error,
+    //     (int16_t)get_encoder_avg_millimeters(),
+    //     (int16_t)get_wall_lost_toggle_state() ? 1 : 0,
+    //     (int16_t)get_cell_change_toggle_state() ? 1 : 0
+    //     );
 
     // static char *labels[] = {
     //     "sl",

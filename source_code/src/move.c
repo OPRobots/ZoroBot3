@@ -1158,7 +1158,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   }
 }
 
-void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
+void run_straight(int32_t distance, int32_t start_offset, int32_t end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
@@ -1172,7 +1172,7 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
   if (has_begin) {
     current_cell_distance_left = CELL_DIMENSION - (ROBOT_BACK_LENGTH + WALL_WIDTH / 2);
   } else {
-    current_cell_distance_left = CELL_DIMENSION;
+    current_cell_distance_left = CELL_DIMENSION + start_offset;
   }
 
   struct walls cell_walls = get_walls();
@@ -1183,10 +1183,32 @@ void run_straight(int32_t distance, int32_t end_offset, uint16_t cells, bool has
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     current_walls = get_walls();
 
+    // static char *labels[] = {
+    //     "distance",
+    //     "cells",
+    //     "current_cell",
+    //     "end_offset",
+    //     "micrometers",
+    // };
+    // macroarray_store(
+    //     2,
+    //     0b00010,
+    //     labels,
+    //     5,
+    //     (int16_t)(distance),
+    //     (int16_t)cells,
+    //     (int16_t)current_cell,
+    //     (int16_t)(end_offset * 100),
+    //     (int16_t)(get_encoder_avg_millimeters()));
+
     if (check_wall_loss_correction(cell_walls)) {
       current_distance = get_encoder_avg_micrometers();
       distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell) + end_offset;
-      current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
+      if (cells - current_cell == 0) {
+        current_cell_distance_left = distance;
+      } else {
+        current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
+      }
       set_RGB_color_while(0, 255, 0, 33);
     }
 
@@ -1463,6 +1485,7 @@ void move(enum movement movement) {
 
 void move_run_sequence(enum movement *sequence_movements) {
   float distance = 0;
+  float start_offset = 0;
   float end_offset = 0;
   bool running_diagonal = false;
   bool straight_has_begin = true;
@@ -1489,9 +1512,10 @@ void move_run_sequence(enum movement *sequence_movements) {
           if (running_diagonal) {
             run_diagonal(distance, 0, straight_cells, kinematics.linear_speed, 500);
           } else {
-            run_straight(distance, 0, straight_cells, straight_has_begin, kinematics.linear_speed, 500);
+            run_straight(distance, 0, 0, straight_cells, straight_has_begin, kinematics.linear_speed, 500);
           }
           distance = 0;
+          start_offset = 0;
           end_offset = 0;
           straight_cells = 0;
           straight_has_begin = false;
@@ -1536,15 +1560,17 @@ void move_run_sequence(enum movement *sequence_movements) {
           if (running_diagonal) {
             run_diagonal(distance, end_offset, straight_cells, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
           } else {
-            run_straight(distance, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
+            run_straight(distance, start_offset, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
           }
           end_offset = 0;
+          start_offset = 0;
           straight_cells = 0;
           straight_has_begin = false;
           running_diagonal = false;
         }
         if (kinematics.turns[sequence_movements[i]].end < 0) {
           distance = kinematics.turns[sequence_movements[i]].end;
+          start_offset = kinematics.turns[sequence_movements[i]].end;
         } else {
           distance = 0;
         }
