@@ -17,9 +17,10 @@ static void debug_macroarray(void) {
  */
 static void debug_sensors_raw(void) {
   if (get_clock_ticks() > last_print_debug + 50) {
-    for (int8_t sensor = 0; sensor < get_sensors_num(); sensor++) {
-      printf("%d\t", get_sensor_raw(sensor, 1));
-    }
+    printf("SL: %4d - %4d = %4d ", get_sensor_raw(SENSOR_SIDE_LEFT_WALL_ID, 1), get_sensor_raw(SENSOR_SIDE_LEFT_WALL_ID, 0), get_sensor_raw_filter(SENSOR_SIDE_LEFT_WALL_ID));
+    printf("FL: %4d - %4d = %4d ", get_sensor_raw(SENSOR_FRONT_LEFT_WALL_ID, 1), get_sensor_raw(SENSOR_FRONT_LEFT_WALL_ID, 0), get_sensor_raw_filter(SENSOR_FRONT_LEFT_WALL_ID));
+    printf("FR: %4d - %4d = %4d ", get_sensor_raw(SENSOR_FRONT_RIGHT_WALL_ID, 1), get_sensor_raw(SENSOR_FRONT_RIGHT_WALL_ID, 0), get_sensor_raw_filter(SENSOR_FRONT_RIGHT_WALL_ID));
+    printf("SR: %4d - %4d = %4d ", get_sensor_raw(SENSOR_SIDE_RIGHT_WALL_ID, 1), get_sensor_raw(SENSOR_SIDE_RIGHT_WALL_ID, 0), get_sensor_raw_filter(SENSOR_SIDE_RIGHT_WALL_ID));
     printf("\n");
     last_print_debug = get_clock_ticks();
   }
