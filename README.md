@@ -1,8 +1,7 @@
 # ZoroBot3
 Tercera versión de nuestro primer robot. Un robot micromouse de alto rendimiento con STM32F4, encoders magneticos de alta resolución, succión y muchos leds molones.
 
-![ZoroBot3](./images/ZoroBot3_rev2_finish_1.jpg "ZoroBot3")
-![ZoroBot3](./images/ZoroBot3_rev2_finish_2.jpg "ZoroBot3")
+![ZoroBot3](./images/ZoroBot3_rev2_finish_3.jpg "ZoroBot3")
 
 ## Hardware
 - **Microcontrolador**: STM32F405RGT6 @168MHz
@@ -39,4 +38,7 @@ Tercera versión de nuestro primer robot. Un robot micromouse de alto rendimient
 - El bucle principal de control, del que constan los PID de velocidad lineal, velocidad angular, control frontal y control lateral se ejecuta cada 1ms.
 - Se realiza un reseteo de posición por périda de pared lateral para mejorar la navegación.
 - Las curvas se realizan mediante perfiles de giro con **aceleración senoidal** para mayor suavidad.
-- Dispone de programas para seguimiento de pared derecha/izquierda, exploración y resolución mediante floodfill y hardcodeo de movimientos.
+- Dispone de programas para seguimiento de pared derecha/izquierda, exploración y resolución mediante floodfill basado en pesos (más información en [TimeBased FloodFill Simulator](https://github.com/OPRobots/TimeBased-FloodFill-Simulator)) y hardcodeo de movimientos.
+
+## Victoria de ZoroBot3 en la OSHWDem2024
+https://github.com/user-attachments/assets/b749b48b-d331-48f7-bc95-2def68d67b7c
