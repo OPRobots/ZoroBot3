@@ -4,8 +4,8 @@
 #include <buttons.h>
 #include <stdio.h>
 
-// #define ZOROBOT3_A 1
-#define ZOROBOT3_B 2
+#define ZOROBOT3_A 1
+// #define ZOROBOT3_B 2
 // #define ZOROBOT3_C 3
 
 /** Laberinto */

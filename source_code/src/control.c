@@ -226,8 +226,12 @@ void set_ideal_angular_speed(float angular_speed) {
   ideal_angular_speed = angular_speed;
 }
 
+float get_ideal_angular_speed(void) {
+  return ideal_angular_speed;
+}
+
 void set_target_fan_speed(int32_t fan_speed, int32_t ms) {
-  target_fan_speed = percentage_to_fan_pwm(fan_speed);
+  target_fan_speed = fan_speed; // percentage_to_fan_pwm(fan_speed);
   fan_speed_accel = (fan_speed - ideal_fan_speed) * CONTROL_FREQUENCY_HZ / ms;
 }
 
@@ -350,29 +354,25 @@ void control_loop(void) {
     //     "ideal_linear_speed",
     //     "measured_linear_speed",
     //     "ideal_angular_speed",
+    //     "measured_angular_speed",
     //     "side_sensors_error",
     //     "last_side_sensors_error",
-    //     "measured_angular_speed",
     //     "encoder_avg_millimeters",
-    //     "pwm_left",
-    //     "pwm_right",
     //     "battery_voltage"};
     // macroarray_store(
-    //     2,
-    //     0b00010010001,
+    //     0,
+    //     0b000110001,
     //     labels,
-    //     11,
+    //     9,
     //     (int16_t)target_linear_speed,
     //     (int16_t)ideal_linear_speed,
     //     (int16_t)(get_measured_linear_speed()),
-    //     (int16_t)(ideal_angular_speed * 100.0),
+    //     (int16_t)(ideal_angular_speed * 100),
+    //     (int16_t)(get_measured_angular_speed() * 100),
     //     (int16_t)side_sensors_error,
     //     (int16_t)last_side_sensors_error,
-    //     (int16_t)(get_measured_angular_speed() * 100),
-    //     (int16_t)is_status_led_on() ? 1 : 0,
-    //     (int16_t)pwm_left,
-    //     (int16_t)pwm_right,
-    //     (int16_t)(get_battery_voltage() * 100.0));
+    //     (int16_t)get_encoder_avg_millimeters(),
+    //     (int16_t)(get_battery_voltage() * 100));
 
     // static char *labels[] = {
     //     "target_linear_speed",

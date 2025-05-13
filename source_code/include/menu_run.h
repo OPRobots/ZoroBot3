@@ -29,6 +29,7 @@ enum solve_strategy {
 enum explore_algorithm {
   EXPLORE_HANDWALL = 0,
   EXPLORE_FLOODFILL = 1,
+  EXPLORE_TIME_TRIAL = 2,
 };
 
 bool menu_run_handler(void);

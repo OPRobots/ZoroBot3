@@ -5,6 +5,7 @@
 #include <encoders.h>
 #include <floodfill.h>
 #include <handwall.h>
+#include <timetrial.h>
 #include <leds.h>
 #include <lsm6dsr.h>
 #include <macroarray.h>
@@ -69,6 +70,9 @@ int main(void) {
                   break;
               }
               break;
+            case EXPLORE_TIME_TRIAL:
+              timetrial_start();
+              break;
             default:
               set_race_started(false);
               break;
@@ -82,6 +86,9 @@ int main(void) {
           break;
         case EXPLORE_FLOODFILL:
           floodfill_loop();
+          break;
+        case EXPLORE_TIME_TRIAL:
+          timetrial_loop();
           break;
         default:
           set_race_started(false);

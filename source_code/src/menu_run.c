@@ -10,7 +10,7 @@ uint8_t modeRun = MODE_SPEED;
 #define MODE_SPEED_VALUES 6
 #define MODE_RACE_VALUES 2
 #define MODE_MAZE_TYPE_VALUES 2
-#define MODE_EXPLORE_ALGORITHM_VALUES 2
+#define MODE_EXPLORE_ALGORITHM_VALUES 3
 #define MODE_SOLVE_STRATEGY_VALUES 2
 
 int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 0, 1};
@@ -90,10 +90,19 @@ static void handle_menu_run_values(void) {
   }
 
   if (modeRun == MODE_EXPLORE_ALGORITHM) {
-    if (valueRun[modeRun] == 1) {
-      set_RGB_color(0, 50, 0);
-    } else {
-      set_RGB_color(0, 0, 0);
+    switch (valueRun[modeRun]) {
+      case EXPLORE_HANDWALL:
+        set_RGB_color(0, 50, 0);
+        break;
+      case EXPLORE_FLOODFILL:
+        set_RGB_color(0, 0, 50);
+        break;
+      case EXPLORE_TIME_TRIAL:
+        set_RGB_color(50, 0, 50);
+        break;
+      default:
+        set_RGB_color(0, 0, 0);
+        break;
     }
     set_info_led(9, blinkState);
   } else {
