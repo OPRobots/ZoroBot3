@@ -1514,6 +1514,7 @@ void move_run_sequence(enum movement *sequence_movements) {
   bool running_diagonal = false;
   bool straight_has_begin = true;
   uint16_t straight_cells = 0;
+  struct turn_params turn_params;
 
   for (uint16_t i = 0; i < (MAZE_CELLS + 3); i++) {
     switch (sequence_movements[i]) {
@@ -1564,9 +1565,23 @@ void move_run_sequence(enum movement *sequence_movements) {
       case MOVE_LEFT_FROM_45_180:
       case MOVE_RIGHT_FROM_45_180:
 
-        if (kinematics.turns[sequence_movements[i]].start < 0) {
-          end_offset = kinematics.turns[sequence_movements[i]].start;
+        turn_params = kinematics.turns[sequence_movements[i]];
+        if (turn_params.start < 0) {
+          end_offset = turn_params.start;
         }
+
+        enum speed_strategy speed_strategy = menu_run_get_speed();
+        while (distance + end_offset < calc_straight_to_speed_distance(get_ideal_linear_speed(), turn_params.linear_speed)) {
+          if (speed_strategy <= SPEED_NORMAL) {
+            turn_params = kinematics_settings[SPEED_NORMAL].turns[sequence_movements[i]];
+            break;
+          }
+          turn_params = kinematics_settings[--speed_strategy].turns[sequence_movements[i]];
+          if (turn_params.start < 0) {
+            end_offset = turn_params.start;
+          }
+        }
+
         // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
         switch (sequence_movements[i]) {
           case MOVE_LEFT_180:
@@ -1582,9 +1597,9 @@ void move_run_sequence(enum movement *sequence_movements) {
 
         if (distance > 0 || end_offset > 0) {
           if (running_diagonal) {
-            run_diagonal(distance, end_offset, straight_cells, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
+            run_diagonal(distance, end_offset, straight_cells, kinematics.linear_speed, turn_params.linear_speed);
           } else {
-            run_straight(distance, start_offset, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
+            run_straight(distance, start_offset, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, turn_params.linear_speed);
           }
           end_offset = 0;
           start_offset = 0;
@@ -1592,9 +1607,9 @@ void move_run_sequence(enum movement *sequence_movements) {
           straight_has_begin = false;
           running_diagonal = false;
         }
-        if (kinematics.turns[sequence_movements[i]].end < 0) {
-          distance = kinematics.turns[sequence_movements[i]].end;
-          start_offset = kinematics.turns[sequence_movements[i]].end;
+        if (turn_params.end < 0) {
+          distance = turn_params.end;
+          start_offset = turn_params.end;
         } else {
           distance = 0;
         }
@@ -1613,7 +1628,7 @@ void move_run_sequence(enum movement *sequence_movements) {
         }
 
         // TODO: Obtener las kinematics de giro a partir de la velocidad máxima de la recta
-        run_side(sequence_movements[i], kinematics.turns[sequence_movements[i]]);
+        run_side(sequence_movements[i], turn_params);
         break;
       default:
         i = (MAZE_CELLS + 3);
