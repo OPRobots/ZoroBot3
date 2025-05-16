@@ -759,8 +759,6 @@ static void go_to_target(void) {
 
     move(MOVE_BACK_STOP);
     save_maze();
-    move(MOVE_START);
-    update_position(BACK);
   }
 }
 
@@ -1035,23 +1033,33 @@ static void loop_explore(void) {
   while (is_race_started()) {
     go_to_target();
 
-    if (current_position == 0) {
-      move(MOVE_HOME);
+    uint8_t interesting_cell = find_unknown_interesting_cell();
+    if (current_position == 0 || (interesting_cell == 0 && current_cell_is_goal())) {
+      if (current_position == 0) {
+        move(MOVE_HOME);
+      }
       set_target_linear_speed(0);
       set_ideal_angular_speed(0);
-      set_RGB_color_while(255, 0, 0, 33);
+      set_target_fan_speed(0, 400);
       uint16_t ms = get_clock_ticks();
       while (get_clock_ticks() - ms < 2000) {
         warning_status_led(50);
+        set_RGB_rainbow();
       }
+      set_RGB_color(255, 255, 0);
       set_status_led(false);
       set_race_started(false);
       set_goal_as_target();
       update_floodfill();
       save_maze();
+      set_RGB_color(0, 255, 0);
+      delay(500);
       return;
+    } else if (current_cell_is_goal() && get_ideal_linear_speed() == 0) {
+      move(MOVE_START);
+      update_position(BACK);
     }
-    set_target(find_unknown_interesting_cell());
+    set_target(interesting_cell);
 
     check_time_limit();
   }
