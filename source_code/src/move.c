@@ -804,7 +804,7 @@ static int32_t current_cell_absolute_start_mm = 0;
 static bool wall_lost_toggle_state = false;
 static bool cell_change_toggle_state = false;
 
-static int32_t calc_straight_to_speed_distance(int32_t from_speed, int32_t to_speed) {
+static float calc_straight_to_speed_distance(int32_t from_speed, int32_t to_speed) {
   return abs((to_speed * to_speed - from_speed * from_speed) / (2 * kinematics.linear_accel.break_accel));
 }
 
@@ -1084,7 +1084,7 @@ int32_t get_current_cell_travelled_distance(void) {
  */
 void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool stop) {
   int32_t current_distance = get_encoder_avg_micrometers();
-  int32_t stop_distance = 0;
+  float stop_distance = 0;
   struct walls initial_walls = get_walls();
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
@@ -1129,7 +1129,7 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
  * @param stop
  */
 void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool stop) {
-  int32_t stop_distance = 0;
+  float stop_distance = 0;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   // while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
@@ -1158,14 +1158,14 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   }
 }
 
-void run_straight(int32_t distance, int32_t start_offset, int32_t end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
+void run_straight(float distance, float start_offset, float end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
 
   int32_t current_distance = get_encoder_avg_micrometers();
-  int32_t slow_distance = 0;
+  float slow_distance = 0;
 
   uint16_t current_cell = 1;
   int32_t current_cell_distance_left;
@@ -1322,7 +1322,7 @@ void run_side(enum movement movement, struct turn_params turn) {
   enter_next_cell();
 }
 
-void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
+void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(true);
   set_side_sensors_close_correction(false);
@@ -1330,15 +1330,15 @@ void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t 
 
   uint16_t current_cell = 1;
   int32_t current_distance = get_encoder_avg_micrometers();
-  int32_t slow_distance = 0;
-  int32_t remaining_distance = 0;
+  float slow_distance = 0;
+  float remaining_distance = 0;
 
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   distance += end_offset;
   while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER * 0.5) {
+    if (remaining_distance < CELL_DIAGONAL * 0.5f * MICROMETERS_PER_MILLIMETER) {
       set_front_sensors_diagonal_correction(false);
       set_RGB_color_while(0, 255, 0, 33);
     }
