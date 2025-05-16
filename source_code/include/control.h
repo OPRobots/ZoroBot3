@@ -37,4 +37,6 @@ void set_target_fan_speed(int32_t fan_speed, int32_t ms);
 
 void control_loop(void);
 
+void keep_z_angle(void);
+
 #endif

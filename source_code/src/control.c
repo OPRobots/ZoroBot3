@@ -421,3 +421,22 @@ void control_loop(void) {
     //     (int16_t)get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
   }
 }
+
+void keep_z_angle(void) {
+  float linear_voltage = 0;
+  float angular_voltage = 0;
+  last_linear_error = linear_error;
+  linear_error += ideal_linear_speed - get_measured_linear_speed();
+
+  last_angular_error = angular_error;
+  angular_error += ideal_angular_speed - get_measured_angular_speed();
+
+  angular_voltage = KP_ANGULAR * angular_error + KD_ANGULAR * (angular_error - last_angular_error);
+  linear_voltage = KP_LINEAR * linear_error + KD_LINEAR * (linear_error - last_linear_error);
+  voltage_left = linear_voltage + angular_voltage;
+  voltage_right = linear_voltage - angular_voltage;
+  pwm_left = voltage_to_motor_pwm(voltage_left);
+  pwm_right = voltage_to_motor_pwm(voltage_right);
+  gpio_set(GPIOB, GPIO15);
+  set_motors_pwm(pwm_left, pwm_right);
+}
