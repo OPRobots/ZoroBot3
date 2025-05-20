@@ -24,7 +24,5 @@ float lsm6dsr_get_gyro_z_radps(void);
 float lsm6dsr_get_gyro_z_dps(void);
 float lsm6dsr_get_gyro_z_degrees(void);
 void lsm6dsr_set_gyro_z_degrees(float deg);
-void lsm6dsr_set_z_angle(float angle);
-void lsm6dsr_keep_z_angle(void);
 
 #endif // LSM6DSR_H
