@@ -742,8 +742,8 @@ static struct kinematics kinematics_settings[] = {
     [SPEED_NORMAL] = {
         .linear_speed = 2000,
         .linear_accel = {
-            .break_accel = 5000,
-            .accel_hard = 5000,
+            .break_accel = 12000,
+            .accel_hard = 12000,
             .speed_hard = 0,
             .accel_soft = 0,
         },
@@ -753,8 +753,8 @@ static struct kinematics kinematics_settings[] = {
     [SPEED_MEDIUM] = {
         .linear_speed = 3000,
         .linear_accel = {
-            .break_accel = 10000,
-            .accel_hard = 10000,
+            .break_accel = 12500,
+            .accel_hard = 12500,
             .speed_hard = 0,
             .accel_soft = 0,
         },
