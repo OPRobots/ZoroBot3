@@ -1089,7 +1089,7 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   if (speed >= 0) {
-    while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
+    while (is_race_started()&& !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
       if (check_wall_loss && check_wall_loss_correction(initial_walls) /* && distance_left < 90 */) { // TODO: resetear distancia solo cuando el error es pequeño.
         // int32_t left_distance = (distance * MICROMETERS_PER_MILLIMETER) - (get_encoder_avg_micrometers() - current_distance);
         // while (true) {
@@ -1107,7 +1107,7 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
       }
     }
   } else {
-    while (is_race_started() && get_encoder_avg_micrometers() >= current_distance - (distance + stop_distance) * MICROMETERS_PER_MILLIMETER) {
+    while (is_race_started()&& !is_motor_saturated() && get_encoder_avg_micrometers() >= current_distance - (distance + stop_distance) * MICROMETERS_PER_MILLIMETER) {
       if (stop) {
         stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
       }
@@ -1116,7 +1116,7 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
   if (stop) {
     set_target_linear_speed(0);
     set_ideal_angular_speed(0.0);
-    while (is_race_started() && get_ideal_linear_speed() != 0) {
+    while (is_race_started()&& !is_motor_saturated() && get_ideal_linear_speed() != 0) {
     }
   }
 }
@@ -1133,7 +1133,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   // while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
-  while (is_race_started() && get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) > (distance + stop_distance)) {
+  while (is_race_started()&& !is_motor_saturated() && get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) > (distance + stop_distance)) {
     if (stop) {
       stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
     }
@@ -1142,7 +1142,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   set_RGB_color(0, 0, 0);
   if (stop) {
     set_target_linear_speed(0);
-    while (is_race_started() && (get_ideal_linear_speed() != 0 || (is_front_sensors_correction_enabled() && get_front_sensors_angle_error() != 0))) {
+    while (is_race_started()&& !is_motor_saturated() && (get_ideal_linear_speed() != 0 || (is_front_sensors_correction_enabled() && get_front_sensors_angle_error() != 0))) {
     }
     if (is_front_sensors_correction_enabled()) {
       uint32_t timeout = get_clock_ticks() + 1000;
@@ -1180,7 +1180,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   distance += end_offset;
-  while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
+  while (is_race_started()&& !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     current_walls = get_walls();
 
     static char *labels[] = {
@@ -1336,7 +1336,7 @@ void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t spee
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   distance += end_offset;
-  while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
+  while (is_race_started()&& !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
     if (remaining_distance < CELL_DIAGONAL * 0.5f * MICROMETERS_PER_MILLIMETER) {
       set_front_sensors_diagonal_correction(false);
@@ -1370,7 +1370,7 @@ void move_arc_turn(struct turn_params turn) {
   float travelled;
   float angular_speed;
   float factor;
-  while (true && is_race_started()) {
+  while (true && is_race_started() && !is_motor_saturated()) {
     current = get_encoder_avg_micrometers();
     travelled = (float)(current - start) / MICROMETERS_PER_MILLIMETER;
     if (travelled >= 2 * turn.transition + turn.arc) {
@@ -1456,11 +1456,11 @@ void move_inplace_angle(float angle, float rads) {
   set_target_linear_speed(0.0);
   if (angle >= 0) {
     set_ideal_angular_speed(rads);
-    while (is_race_started() && lsm6dsr_get_gyro_z_degrees() <= target_angle) {
+    while (is_race_started() && !is_motor_saturated() && lsm6dsr_get_gyro_z_degrees() <= target_angle) {
     }
   } else {
     set_ideal_angular_speed(-rads);
-    while (is_race_started() && lsm6dsr_get_gyro_z_degrees() >= target_angle) {
+    while (is_race_started()&& !is_motor_saturated() && lsm6dsr_get_gyro_z_degrees() >= target_angle) {
     }
   }
   set_ideal_angular_speed(0.0);

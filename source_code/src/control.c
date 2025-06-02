@@ -248,11 +248,11 @@ void control_loop(void) {
   if (is_debug_enabled()) {
     return;
   }
-  if (is_motor_saturated() && is_race_started()) {
+  if ((is_motor_pwm_saturated() || is_motor_angle_saturated()) && is_race_started()) {
     set_motors_speed(0, 0);
     set_fan_speed(0);
     if (get_clock_ticks() - get_motors_saturated_ms() < 3000) {
-      blink_RGB_color(512, 0, 0, 50);
+      blink_RGB_color(is_motor_pwm_saturated() ? 255 : 0, 0, is_motor_angle_saturated() ? 255 : 0, 50);
     } else {
       set_RGB_color(0, 0, 0);
       set_race_started(false);

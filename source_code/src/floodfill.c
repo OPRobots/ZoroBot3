@@ -1070,13 +1070,15 @@ static void loop_run(void) {
   set_target_linear_speed(0);
   set_ideal_angular_speed(0);
   set_target_fan_speed(0, 400);
-  set_RGB_color_while(255, 0, 0, 33);
-  uint16_t ms = get_clock_ticks();
-  while (get_clock_ticks() - ms < 1000) {
-    warning_status_led(50);
+  if (!is_motor_saturated()) {
+    set_RGB_color_while(255, 0, 0, 33);
+    uint16_t ms = get_clock_ticks();
+    while (get_clock_ticks() - ms < 1000) {
+      warning_status_led(50);
+    }
+    set_race_started(false);
   }
   set_status_led(false);
-  set_race_started(false);
 }
 
 void floodfill_load_maze(void) {
