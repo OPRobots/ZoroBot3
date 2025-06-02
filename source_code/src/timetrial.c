@@ -17,7 +17,7 @@ void timetrial_loop(void) {
                get_kinematics().linear_speed,
                get_kinematics().turns[MOVE_RIGHT_90].linear_speed);
 
-  run_side(MOVE_RIGHT_90, get_kinematics().turns[MOVE_RIGHT_90]);
+  run_side(MOVE_RIGHT_90, get_kinematics().turns[MOVE_RIGHT_90], get_kinematics().turns[MOVE_RIGHT_90]);
 
   run_straight(CELL_DIMENSION * (maze_get_columns() - 2),
                get_kinematics().turns[MOVE_RIGHT_90].end,
@@ -27,7 +27,7 @@ void timetrial_loop(void) {
                get_kinematics().linear_speed,
                get_kinematics().turns[MOVE_RIGHT_90].linear_speed);
 
-  run_side(MOVE_RIGHT_90, get_kinematics().turns[MOVE_RIGHT_90]);
+  run_side(MOVE_RIGHT_90, get_kinematics().turns[MOVE_RIGHT_90], get_kinematics().turns[MOVE_RIGHT_90]);
 
   run_straight(CELL_DIMENSION * (maze_get_rows() - 2),
                get_kinematics().turns[MOVE_RIGHT_90].end,
@@ -37,7 +37,7 @@ void timetrial_loop(void) {
                get_kinematics().linear_speed,
                get_kinematics().turns[MOVE_RIGHT_90].linear_speed);
 
-  run_side(MOVE_RIGHT_90, get_kinematics().turns[MOVE_RIGHT_90]);
+  run_side(MOVE_RIGHT_90, get_kinematics().turns[MOVE_RIGHT_90], get_kinematics().turns[MOVE_RIGHT_90]);
 
   run_straight(CELL_DIMENSION * (maze_get_columns() - 2),
                get_kinematics().turns[MOVE_RIGHT_90].end,
@@ -47,7 +47,7 @@ void timetrial_loop(void) {
                get_kinematics().linear_speed,
                get_kinematics().turns[MOVE_RIGHT_90].linear_speed);
 
-  run_side(MOVE_RIGHT_90, get_kinematics().turns[MOVE_RIGHT_90]);
+  run_side(MOVE_RIGHT_90, get_kinematics().turns[MOVE_RIGHT_90], get_kinematics().turns[MOVE_RIGHT_90]);
 
   move(MOVE_BACK_STOP);
   set_race_started(false);
