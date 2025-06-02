@@ -1324,7 +1324,11 @@ void run_side(enum movement movement, struct turn_params turn) {
 
 void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
   set_front_sensors_correction(false);
-  set_front_sensors_diagonal_correction(true);
+  if (cells > 1) {
+    set_front_sensors_diagonal_correction(true);
+  } else {
+    set_front_sensors_diagonal_correction(false);
+  }
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
 
@@ -1356,6 +1360,9 @@ void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t spee
     if (slow_distance > 0 && ((current_distance + distance * MICROMETERS_PER_MILLIMETER) - get_encoder_avg_micrometers()) <= slow_distance * MICROMETERS_PER_MILLIMETER) {
       set_target_linear_speed(final_speed);
     }
+  }
+  if (current_cell < cells && remaining_distance < 10) {
+    enter_next_cell();
   }
 }
 
