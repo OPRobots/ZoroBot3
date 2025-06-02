@@ -1515,6 +1515,7 @@ void move_run_sequence(enum movement *sequence_movements) {
   bool straight_has_begin = true;
   uint16_t straight_cells = 0;
   struct turn_params turn_params;
+  struct turn_params next_turn_params;
 
   for (uint16_t i = 0; i < (MAZE_CELLS + 3); i++) {
     switch (sequence_movements[i]) {
@@ -1581,6 +1582,21 @@ void move_run_sequence(enum movement *sequence_movements) {
             end_offset = turn_params.start;
           }
         }
+        if ((i + 1) < (MAZE_CELLS + 3)) {
+          switch (sequence_movements[i + 1]) {
+            case MOVE_START:
+            case MOVE_FRONT:
+            case MOVE_DIAGONAL:
+            case MOVE_HOME:
+              next_turn_params = turn_params;
+              break;
+            default:
+              next_turn_params = kinematics.turns[sequence_movements[i + 1]];
+              break;
+          }
+        } else {
+          next_turn_params = turn_params;
+        }
 
         // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
         switch (sequence_movements[i]) {
@@ -1628,7 +1644,7 @@ void move_run_sequence(enum movement *sequence_movements) {
         }
 
         // TODO: Obtener las kinematics de giro a partir de la velocidad máxima de la recta
-        run_side(sequence_movements[i], turn_params);
+        run_side(sequence_movements[i], turn_params, next_turn_params);
         break;
       default:
         i = (MAZE_CELLS + 3);
