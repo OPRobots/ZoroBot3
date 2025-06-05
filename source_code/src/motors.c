@@ -124,7 +124,7 @@ void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
     angular_speed_saturation_count = 0;
   }
 
-  check_motors_saturated();
+  // check_motors_saturated();
   // printf("%d - %d\n", abs(pwm_left), abs(pwm_right));
 }
 

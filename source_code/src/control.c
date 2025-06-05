@@ -1,6 +1,7 @@
 #include <control.h>
 
 static volatile bool race_started = false;
+static volatile uint32_t race_start_ms = 0;
 static volatile uint32_t race_finish_ms = 0;
 static volatile uint32_t sensor_front_left_start_ms = 0;
 static volatile uint32_t sensor_front_right_start_ms = 0;
@@ -122,6 +123,8 @@ void set_race_started(bool state) {
   if (!state) {
     menu_reset();
     race_finish_ms = get_clock_ticks();
+  } else {
+    race_start_ms = get_clock_ticks();
   }
 }
 
@@ -327,7 +330,7 @@ void control_loop(void) {
     last_front_sensors_diagonal_error = 0;
   }
 
-  linear_voltage = KP_LINEAR * linear_error + KD_LINEAR * (linear_error - last_linear_error);
+  linear_voltage = 0; // KP_LINEAR * linear_error + KI_LINEAR + KD_LINEAR * (linear_error - last_linear_error);
 
   angular_voltage =
       KP_ANGULAR * angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
@@ -344,34 +347,98 @@ void control_loop(void) {
 
   voltage_left = linear_voltage + angular_voltage;
   voltage_right = linear_voltage - angular_voltage;
-  pwm_left = voltage_to_motor_pwm(voltage_left);
-  pwm_right = voltage_to_motor_pwm(voltage_right);
-  set_motors_pwm(pwm_left, pwm_right);
+  // pwm_left = voltage_to_motor_pwm(voltage_left);
+  // pwm_right = voltage_to_motor_pwm(voltage_right);
+  // if (get_clock_ticks()-race_start_ms > 500) {
+  //   pwm_left += 512;
+  //   pwm_right += 512;
+  // }
+  uint32_t race_time_ms = get_clock_ticks() - race_start_ms;
+  if (race_time_ms > 500 && race_time_ms < 1500) {
+    pwm_left = 256;
+    pwm_right = 256;
+    set_motors_pwm(pwm_left, pwm_right);
+  } else if (race_time_ms >= 1500 && race_time_ms < 2000) {
+    pwm_left = 0;
+    pwm_right = 0;
+    set_motors_pwm(pwm_left, pwm_right);
+  } else if (race_time_ms >= 2000 && race_time_ms < 3000) {
+    pwm_left = 512;
+    pwm_right = 512;
+    set_motors_pwm(pwm_left, pwm_right);
+  } else if (race_time_ms >= 3000 && race_time_ms < 3500) {
+    pwm_left = 0;
+    pwm_right = 0;
+    set_motors_pwm(pwm_left, pwm_right);
+  } else if (race_time_ms >= 3500 && race_time_ms < 4500) {
+    pwm_left = 768;
+    pwm_right = 768;
+    set_motors_pwm(pwm_left, pwm_right);
+  } else if (race_time_ms >= 4500) {
+    set_race_started(false);
+  }
+  if (pwm_left > 0) {
+    static char *labels[] = {
+        "measured_linear_speed",
+        // "ideal_angular_speed",
+        // "measured_angular_speed",
+        "encoder_avg_millimeters",
+        "pwm_left",
+        // "pwm_right",
+        "ms"
+        // "battery_voltage"
+    };
+    macroarray_store(
+        0,
+        0b0000,
+        labels,
+        4,
+        (int16_t)(get_measured_linear_speed()),
+        // (int16_t)(ideal_angular_speed * 100),
+        // (int16_t)(get_measured_angular_speed() * 100),
+        (int16_t)get_encoder_avg_millimeters(),
+        (int16_t)pwm_left,
+        // (int16_t)pwm_right,
+        (int16_t)(get_clock_ticks() - race_start_ms)
+        // (int16_t)(get_battery_voltage() * 100)
+    );
+
+    // if (get_encoder_avg_millimeters() > CELL_DIMENSION * 4) {
+    //   set_race_started(false);
+    // }
+  }
 
   if (ideal_linear_speed != 0 || ideal_angular_speed != 0) {
+
     // static char *labels[] = {
     //     "target_linear_speed",
     //     "ideal_linear_speed",
     //     "measured_linear_speed",
     //     "ideal_angular_speed",
     //     "measured_angular_speed",
-    //     "side_sensors_error",
-    //     "last_side_sensors_error",
+    //     "encoder_angular_speed",
+    //     // "side_sensors_error",
+    //     // "last_side_sensors_error",
     //     "encoder_avg_millimeters",
+    //     "pwm_left",
+    //     "pwm_right",
     //     "battery_voltage"};
     // macroarray_store(
     //     0,
-    //     0b000110001,
+    //     0b0001110001,
     //     labels,
-    //     9,
+    //     10,
     //     (int16_t)target_linear_speed,
     //     (int16_t)ideal_linear_speed,
     //     (int16_t)(get_measured_linear_speed()),
     //     (int16_t)(ideal_angular_speed * 100),
     //     (int16_t)(get_measured_angular_speed() * 100),
-    //     (int16_t)side_sensors_error,
-    //     (int16_t)last_side_sensors_error,
+    //     (int16_t)(get_encoder_angular_speed() * 100),
+    //     // (int16_t)side_sensors_error,
+    //     // (int16_t)last_side_sensors_error,
     //     (int16_t)get_encoder_avg_millimeters(),
+    //     (int16_t)pwm_left,
+    //     (int16_t)pwm_right,
     //     (int16_t)(get_battery_voltage() * 100));
 
     // static char *labels[] = {

@@ -47,53 +47,54 @@ int main(void) {
       if (menu_run_can_start()) {
         int8_t sensor_started = check_start_run();
         if (is_race_started()) {
-          switch (menu_run_get_explore_algorithm()) {
-            case EXPLORE_HANDWALL:
-              switch (sensor_started) {
-                case SENSOR_FRONT_LEFT_WALL_ID:
-                  handwall_use_left_hand();
-                  handwall_start();
-                  break;
-                case SENSOR_FRONT_RIGHT_WALL_ID:
-                  handwall_use_right_hand();
-                  handwall_start();
-                  break;
-              }
-              break;
-            case EXPLORE_FLOODFILL:
-              switch (sensor_started) {
-                case SENSOR_FRONT_LEFT_WALL_ID:
-                  floodfill_start_run();
-                  break;
-                case SENSOR_FRONT_RIGHT_WALL_ID:
-                  floodfill_start_explore();
-                  break;
-              }
-              break;
-            case EXPLORE_TIME_TRIAL:
-              timetrial_start();
-              break;
-            default:
-              set_race_started(false);
-              break;
-          }
+          // set_target_fan_speed(50, 400);
+          // switch (menu_run_get_explore_algorithm()) {
+          //   case EXPLORE_HANDWALL:
+          //     switch (sensor_started) {
+          //       case SENSOR_FRONT_LEFT_WALL_ID:
+          //         handwall_use_left_hand();
+          //         handwall_start();
+          //         break;
+          //       case SENSOR_FRONT_RIGHT_WALL_ID:
+          //         handwall_use_right_hand();
+          //         handwall_start();
+          //         break;
+          //     }
+          //     break;
+          //   case EXPLORE_FLOODFILL:
+          //     switch (sensor_started) {
+          //       case SENSOR_FRONT_LEFT_WALL_ID:
+          //         floodfill_start_run();
+          //         break;
+          //       case SENSOR_FRONT_RIGHT_WALL_ID:
+          //         floodfill_start_explore();
+          //         break;
+          //     }
+          //     break;
+          //   case EXPLORE_TIME_TRIAL:
+          //     timetrial_start();
+          //     break;
+          //   default:
+          //     set_race_started(false);
+          //     break;
+          // }
         }
       }
     } else {
-      switch (menu_run_get_explore_algorithm()) {
-        case EXPLORE_HANDWALL:
-          handwall_loop();
-          break;
-        case EXPLORE_FLOODFILL:
-          floodfill_loop();
-          break;
-        case EXPLORE_TIME_TRIAL:
-          timetrial_loop();
-          break;
-        default:
-          set_race_started(false);
-          break;
-      }
+      // switch (menu_run_get_explore_algorithm()) {
+      //   case EXPLORE_HANDWALL:
+      //     handwall_loop();
+      //     break;
+      //   case EXPLORE_FLOODFILL:
+      //     floodfill_loop();
+      //     break;
+      //   case EXPLORE_TIME_TRIAL:
+      //     timetrial_loop();
+      //     break;
+      //   default:
+      //     set_race_started(false);
+      //     break;
+      // }
     }
   }
 
