@@ -812,7 +812,6 @@ static void enter_next_cell(void) {
   current_cell_start_mm = -SENSING_POINT_DISTANCE;
   current_cell_absolute_start_mm = get_encoder_avg_millimeters();
   current_cell_wall_lost = false;
-  set_RGB_color_while(255, 0, 0, 33);
   toggle_status_led();
   cell_change_toggle_state = !cell_change_toggle_state;
 }
@@ -891,7 +890,6 @@ static void move_front(void) {
     set_side_sensors_far_correction(false);
   }
   move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
-  set_RGB_color_while(255, 0, 0, 33);
   enter_next_cell();
 }
 
@@ -949,7 +947,9 @@ static void move_side(enum movement movement) {
     if (abs(start_distance_offset) > kinematics.turns[movement].start / 2) {
       start_distance_offset = start_distance_offset > 0 ? kinematics.turns[movement].start / 2 : -kinematics.turns[movement].start / 2;
     }
+    set_RGB_color(0, 0, 255);
     move_straight(kinematics.turns[movement].start - current_cell_start_mm + start_distance_offset, kinematics.turns[movement].linear_speed, false, false);
+    set_RGB_color(0, 0, 0);
   }
 
   disable_sensors_correction();
@@ -978,7 +978,9 @@ static void move_side(enum movement movement) {
     if (abs(end_distance_offset) > kinematics.turns[movement].end / 2) {
       end_distance_offset = end_distance_offset > 0 ? kinematics.turns[movement].end / 2 : -kinematics.turns[movement].end / 2;
     }
+    set_RGB_color(0, 0, 255);
     move_straight(kinematics.turns[movement].end + end_distance_offset, kinematics.turns[movement].linear_speed, false, false);
+    set_RGB_color(0, 0, 0);
   }
   enter_next_cell();
 }
@@ -1099,7 +1101,6 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
         // }
         current_distance = get_encoder_avg_micrometers();
         distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
-        set_RGB_color_while(0, 255, 0, 33);
       }
 
       if (stop) {
@@ -1137,9 +1138,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
     if (stop) {
       stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
     }
-    set_RGB_color(255, 0, 0);
   }
-  set_RGB_color(0, 0, 0);
   if (stop) {
     set_target_linear_speed(0);
     while (is_race_started()&& !is_motor_saturated() && (get_ideal_linear_speed() != 0 || (is_front_sensors_correction_enabled() && get_front_sensors_angle_error() != 0))) {
@@ -1183,26 +1182,6 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
   while (is_race_started()&& !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     current_walls = get_walls();
 
-    static char *labels[] = {
-        "distance",
-        "cells",
-        "current_cell",
-        "end_offset",
-        "angular_speed",
-        "millimeters",
-    };
-    macroarray_store(
-        2,
-        0b000110,
-        labels,
-        6,
-        (int16_t)(distance),
-        (int16_t)cells,
-        (int16_t)current_cell,
-        (int16_t)(end_offset * 100),
-        (int16_t)(get_ideal_angular_speed() * 100),
-        (int16_t)(get_encoder_avg_millimeters()));
-
     if (!(has_begin && current_cell == 1) && check_wall_loss_correction(cell_walls)) {
       current_distance = get_encoder_avg_micrometers();
       distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell) + end_offset;
@@ -1230,15 +1209,17 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
       set_target_linear_speed(final_speed);
     }
   }
+  if (current_cell < cells && end_offset == 0) {
+    enter_next_cell();
+  }
 }
 
-void run_side(enum movement movement, struct turn_params turn) {
-  set_RGB_color(0, 0, 255);
+void run_side(enum movement movement, struct turn_params turn, struct turn_params next_turn) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
 
-  int32_t end_distance_offset = 0;
-  int32_t start_distance_offset = 0;
+  float end_distance_offset = 0.0f;
+  float start_distance_offset = 0.0f;
   bool enable_end_distance_offset = true;
   bool enable_start_distance_offset = true;
 
@@ -1294,7 +1275,6 @@ void run_side(enum movement movement, struct turn_params turn) {
   // reset_control_errors(); //! Esto se había puesto por un problema en la acumulación de error según aumenta el número de giros realizados
   move_arc_turn(turn);
 
-  set_RGB_color(0, 0, 255);
   set_front_sensors_correction(false);
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
@@ -1317,7 +1297,7 @@ void run_side(enum movement movement, struct turn_params turn) {
     if (abs(end_distance_offset) > turn.end / 2) {
       end_distance_offset = end_distance_offset > 0 ? turn.end / 2 : -turn.end / 2;
     }
-    move_straight(turn.end + end_distance_offset, turn.linear_speed, false, false);
+    move_straight(turn.end + end_distance_offset, next_turn.linear_speed, false, false);
   }
   enter_next_cell();
 }
@@ -1344,7 +1324,6 @@ void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t spee
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
     if (remaining_distance < CELL_DIAGONAL * 0.5f * MICROMETERS_PER_MILLIMETER) {
       set_front_sensors_diagonal_correction(false);
-      set_RGB_color_while(0, 255, 0, 33);
     }
 
     if (get_encoder_avg_micrometers() - current_distance >= (CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER)) {
@@ -1378,43 +1357,21 @@ void move_arc_turn(struct turn_params turn) {
   float angular_speed;
   float factor;
   while (true && is_race_started() && !is_motor_saturated()) {
+    set_RGB_color(255, 0, 0);
     current = get_encoder_avg_micrometers();
     travelled = (float)(current - start) / MICROMETERS_PER_MILLIMETER;
     if (travelled >= 2 * turn.transition + turn.arc) {
       break;
     }
     angular_speed = turn.sign * turn.max_angular_speed;
-    set_RGB_color(255, 0, 0);
     if (travelled < turn.transition) {
       factor = travelled / turn.transition;
       angular_speed *= sin(factor * PI / 2);
-      set_RGB_color(255, 255, 0);
     } else if (travelled >= turn.transition + turn.arc) {
       factor = (travelled - turn.arc) / turn.transition;
       angular_speed *= sin(factor * PI / 2);
-      set_RGB_color(255, 255, 0);
     }
     set_ideal_angular_speed(angular_speed);
-
-    static char *labels[] = {
-        "distance",
-        "cells",
-        "current_cell",
-        "end_offset",
-        "angular_speed",
-        "millimeters",
-    };
-    macroarray_store(
-        2,
-        0b000110,
-        labels,
-        6,
-        (int16_t)(travelled),
-        (int16_t)1,
-        (int16_t)1,
-        (int16_t)(0 * 100),
-        (int16_t)(get_ideal_angular_speed() * 100),
-        (int16_t)(get_encoder_avg_millimeters()));
   }
   set_ideal_angular_speed(0);
   set_RGB_color(0, 0, 0);
