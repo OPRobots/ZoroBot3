@@ -35,12 +35,13 @@
 /** Movimiento */
 #define MAX_MOTOR_SATURATION_COUNT 20
 #define MAX_MOTOR_ANGULAR_SATURATION_COUNT 60
-#define KP_LINEAR 0.009
-#define KI_LINEAR 0.0004
+#define KP_LINEAR 0.010
+#define KI_LINEAR 0.0005
 #define KD_LINEAR 0
 
-#define KP_ANGULAR 0.01
-#define KD_ANGULAR 0.4
+#define KP_ANGULAR 0.6
+#define KI_ANGULAR 0.015
+#define KD_ANGULAR 0.0
 
 #define KP_SIDE_SENSORS 0.08
 #define KI_SIDE_SENSORS 0.00 // 0.002

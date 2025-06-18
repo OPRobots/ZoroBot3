@@ -20,6 +20,7 @@ static volatile float sum_linear_error;
 static volatile float last_linear_error;
 
 static volatile float angular_error;
+static volatile float sum_angular_error;
 static volatile float last_angular_error;
 
 static volatile bool side_sensors_close_correction_enabled = false;
@@ -194,6 +195,7 @@ void reset_control_errors(void) {
   sum_front_sensors_diagonal_error = 0;
   linear_error = 0;
   angular_error = 0;
+  sum_angular_error = 0;
   sum_linear_error = 0;
   last_linear_error = 0;
   last_angular_error = 0;
@@ -286,7 +288,8 @@ void control_loop(void) {
   sum_linear_error += linear_error;
 
   last_angular_error = angular_error;
-  angular_error += ideal_angular_speed - get_measured_angular_speed();
+  angular_error = ideal_angular_speed - get_measured_angular_speed();
+  sum_angular_error += angular_error;
 
   // side_sensors_error = 0;
   // if (side_sensors_close_correction_enabled) {
@@ -333,7 +336,7 @@ void control_loop(void) {
   linear_voltage = KP_LINEAR * linear_error + KI_LINEAR * sum_linear_error + KD_LINEAR * (linear_error - last_linear_error);
 
   angular_voltage =
-      KP_ANGULAR * angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
+      KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
       KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
       KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error +
       KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KI_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error + KD_FRONT_DIAGONAL_SENSORS * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
@@ -362,11 +365,12 @@ void control_loop(void) {
         "measured_angular_speed",
         "pwm_left",
         "pwm_right",
-        "encoder_avg_millimeters",
+        // "encoder_avg_millimeters",
+        "side_sensors_error",
         "battery_voltage"};
     macroarray_store(
         2,
-        0b00000110001,
+        0b00000110011,
         labels,
         11,
         (int16_t)target_linear_speed,
@@ -378,7 +382,8 @@ void control_loop(void) {
         (int16_t)(get_measured_angular_speed() * 100),
         (int16_t)pwm_left,
         (int16_t)pwm_right,
-        (int16_t)get_encoder_avg_millimeters(),
+        // (int16_t)get_encoder_avg_millimeters(),
+        (int16_t)(side_sensors_error*100),
         (int16_t)(get_battery_voltage() * 100));
 
     // static char *labels[] = {
