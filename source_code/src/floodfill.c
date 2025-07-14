@@ -686,7 +686,7 @@ static uint8_t find_unknown_interesting_cell(void) {
   while (floodfill[current_position] > 0) {
     next_step = get_next_floodfill_step(get_current_stored_walls());
     update_position(next_step);
-    if (!current_cell_is_visited()) {
+    if (!current_cell_is_visited() && !current_cell_is_goal()) {
       cell = current_position;
       break;
     }
@@ -716,6 +716,34 @@ static void go_to_target(void) {
 
     next_step = get_next_floodfill_step(walls);
     set_RGB_color_while(255, 255, 0, 33);
+
+    // static char *labels[] = {
+    //     "x",
+    //     "y",
+    //     "current_direction",
+    //     "current_floodfill",
+    //     "wall_front",
+    //     "wall_left",
+    //     "wall_right",
+    //     "next_step",
+    //     "next_direction",
+    //     "next_floodfill"};
+    // macroarray_store(
+    //     0,
+    //     0b0001000001,
+    //     labels,
+    //     10,
+    //     current_position % maze_get_columns() + 1,
+    //     current_position / maze_get_columns() + 1,
+    //     current_direction,
+    //     (int16_t)(floodfill[current_position] * 100),
+    //     walls.front ? 1 : 0,
+    //     walls.left ? 1 : 0,
+    //     walls.right ? 1 : 0,
+    //     next_step,
+    //     get_next_direction(next_step),
+    //     (int16_t)(floodfill[get_next_position(next_step)] * 100));
+
     switch (next_step) {
       case FRONT:
         move(MOVE_FRONT);
@@ -756,8 +784,8 @@ static void go_to_target(void) {
       walls = get_walls();
       update_walls(walls);
     }
-
     move(MOVE_BACK_STOP);
+    current_direction = get_next_direction(BACK);
     save_maze();
   }
 }
