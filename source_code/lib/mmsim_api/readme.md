@@ -14,5 +14,5 @@ Esta es la configuración de esta API:
 
   - **Name**: ZoroBot3.
   - **Directory**: La ruta en la que tengas el API. Ej.:  `F:\ZoroBot3\source_code\lib\mmsim_api`.
-  - **Build command**: `gcc -I../../lib/mmsim_api -I../../include mmsim_api.c ../../src/control.c ../../src/floodfill.c ../../src/maze.c ../../src/move.c ../../src/floodfill_weigths.c ../../src/sensors.c ../../src/menu_run.c mmsim.c   -o mmsim.exe -D MMSIM_ENABLED`.
+  - **Build command**: Se usa el comando `make` para compilar usando el fichero Makefile. (Es necesario tener instalado el componente *make* en tu sistema operativo).
   - **Run Command**: La ruta en la que tengas el compilado del API. Ej.: `F:\ZoroBot3\source_code\lib\mmsim_api\mmsim.exe`.
