@@ -30,6 +30,13 @@ struct walls {
   bool right;
 };
 
+struct virtual_walls {
+  bool front;
+  bool left;
+  bool right;
+  bool back;
+};
+
 struct sensors_distance_calibration {
   float a;
   float b;

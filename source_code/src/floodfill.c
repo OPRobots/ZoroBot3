@@ -11,6 +11,9 @@ static enum compass_direction initial_direction = NORTH;
 static uint8_t current_position = 0;
 static enum compass_direction current_direction = NORTH;
 
+static uint8_t maze_goal_position = 0;
+static enum compass_direction maze_goal_direction = NORTH;
+
 static struct cell_weigth straight_weights[15];
 static uint16_t straight_weights_count = 0;
 static struct cell_weigth diagonal_weights[15];
@@ -202,6 +205,41 @@ static struct walls get_current_stored_walls(void) {
       walls.left = (bool)(cell & WEST_BIT);
       walls.front = (bool)(cell & NORTH_BIT);
       walls.right = (bool)(cell & EAST_BIT);
+      break;
+    default:
+      break;
+  }
+
+  return walls;
+}
+
+static struct virtual_walls get_current_stored_virtual_walls(void) {
+  struct virtual_walls walls;
+  uint8_t cell = maze[current_position];
+  switch (current_direction) {
+    case EAST:
+      walls.left = (bool)(cell & NORTH_BIT);
+      walls.front = (bool)(cell & EAST_BIT);
+      walls.right = (bool)(cell & SOUTH_BIT);
+      walls.back = (bool)(cell & WEST_BIT);
+      break;
+    case SOUTH:
+      walls.left = (bool)(cell & EAST_BIT);
+      walls.front = (bool)(cell & SOUTH_BIT);
+      walls.right = (bool)(cell & WEST_BIT);
+      walls.back = (bool)(cell & NORTH_BIT);
+      break;
+    case WEST:
+      walls.left = (bool)(cell & SOUTH_BIT);
+      walls.front = (bool)(cell & WEST_BIT);
+      walls.right = (bool)(cell & NORTH_BIT);
+      walls.back = (bool)(cell & EAST_BIT);
+      break;
+    case NORTH:
+      walls.left = (bool)(cell & WEST_BIT);
+      walls.front = (bool)(cell & NORTH_BIT);
+      walls.right = (bool)(cell & EAST_BIT);
+      walls.back = (bool)(cell & SOUTH_BIT);
       break;
     default:
       break;
@@ -653,6 +691,28 @@ static enum step_direction get_next_floodfill_step(struct walls walls) {
   return next_step;
 }
 
+static enum step_direction get_next_floodfill_virtual_step(struct virtual_walls walls) {
+  float floodfill_value = floodfill[current_position];
+  enum step_direction next_step = NONE;
+  if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill_value) {
+    floodfill_value = floodfill[get_next_position(RIGHT)];
+    next_step = RIGHT;
+  }
+  if (!walls.left && floodfill[get_next_position(LEFT)] < floodfill_value) {
+    floodfill_value = floodfill[get_next_position(LEFT)];
+    next_step = LEFT;
+  }
+  if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
+    floodfill_value = floodfill[get_next_position(FRONT)];
+    next_step = FRONT;
+  }
+  if (!walls.back && floodfill[get_next_position(BACK)] < floodfill_value) {
+    floodfill_value = floodfill[get_next_position(BACK)];
+    next_step = BACK;
+  }
+  return next_step;
+}
+
 static void save_maze(void) {
   eeprom_set_data(DATA_INDEX_MAZE, maze, MAZE_CELLS);
   eeprom_save();
@@ -679,12 +739,21 @@ static uint8_t find_unknown_interesting_cell(void) {
 
   enum step_direction next_step;
 
-  // set_initial_state();
-  // set_goal_as_target();
+  if (maze_goal_position != 0) {
+    current_position = maze_goal_position;
+    current_direction = maze_goal_direction;
+  } else {
+    current_position = goal_cells.stack[0];
+    current_direction = NORTH;
+  }
+
   set_target(0);
   update_floodfill();
   while (floodfill[current_position] > 0) {
-    next_step = get_next_floodfill_step(get_current_stored_walls());
+    next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls());
+    if(next_step == NONE) {
+      break;
+    }
     update_position(next_step);
     if (!current_cell_is_visited() && !current_cell_is_goal()) {
       cell = current_position;
@@ -694,6 +763,26 @@ static uint8_t find_unknown_interesting_cell(void) {
 
   current_position = _position;
   current_direction = _direction;
+  
+  // DEBUG DE EXPLORACIÓN
+  // static char *labels[] = {
+  //     "goal_x",
+  //     "goal_y",
+  //     "goal_direction",
+  //     "target_x",
+  //     "target_y",
+  // };
+  // macroarray_store(
+  //     0,
+  //     0b0,
+  //     labels,
+  //     5,
+  //     maze_goal_position % maze_get_columns() + 1,
+  //     maze_goal_position / maze_get_columns() + 1,
+  //     maze_goal_direction,
+  //     cell % maze_get_columns() + 1,
+  //     cell / maze_get_columns() + 1);
+
   return cell;
 }
 
@@ -785,7 +874,10 @@ static void go_to_target(void) {
       update_walls(walls);
     }
     move(MOVE_BACK_STOP);
-    current_direction = get_next_direction(BACK);
+    if (maze_goal_position == 0) {
+      maze_goal_position = current_position;
+      maze_goal_direction = current_direction;
+    }
     save_maze();
   }
 }
@@ -1230,6 +1322,7 @@ void floodfill_start_explore(void) {
   configure_kinematics(SPEED_EXPLORE);
 
   race_mode = false;
+  maze_goal_position = 0;
   clear_info_leds();
   set_RGB_color(0, 0, 0);
   set_target_fan_speed(get_kinematics().fan_speed, 400);
