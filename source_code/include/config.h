@@ -1,8 +1,11 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#ifndef MMSIM_ENABLED
 #include <buttons.h>
+#endif
 #include <stdio.h>
+#include <stdint.h>
 
 #define ZOROBOT3_A 1
 // #define ZOROBOT3_B 2

@@ -138,6 +138,7 @@ uint16_t get_aux_raw(uint8_t pos) {
  *
  * @param[in] emitter Emitter type.
  */
+  #ifndef MMSIM_ENABLED
 static void set_emitter_on(uint8_t emitter) {
   switch (emitter) {
     case SENSOR_FRONT_LEFT_WALL_ID:
@@ -156,12 +157,14 @@ static void set_emitter_on(uint8_t emitter) {
       break;
   }
 }
+  #endif
 
 /**
  * @brief Set an specific emitter OFF.
  *
  * @param[in] emitter Emitter type.
  */
+  #ifndef MMSIM_ENABLED
 static void set_emitter_off(uint8_t emitter) {
   switch (emitter) {
     case SENSOR_FRONT_LEFT_WALL_ID:
@@ -180,6 +183,7 @@ static void set_emitter_off(uint8_t emitter) {
       break;
   }
 }
+  #endif
 
 void set_sensors_enabled(bool enabled) {
   if (!sensors_enabled && enabled) {
@@ -213,6 +217,7 @@ uint8_t get_sensors_num(void) {
  *
  */
 void sm_emitter_adc(void) {
+  #ifndef MMSIM_ENABLED
   if (!sensors_enabled) {
     gpio_clear(GPIOA, GPIO0);
     gpio_clear(GPIOA, GPIO3);
@@ -247,6 +252,7 @@ void sm_emitter_adc(void) {
     default:
       break;
   }
+  #endif
 }
 
 uint16_t get_sensor_raw(uint8_t pos, bool on) {
@@ -270,6 +276,7 @@ uint16_t get_sensor_raw_filter(uint8_t pos) {
 }
 
 void front_sensors_calibration(void) {
+  #ifndef MMSIM_ENABLED
   int32_t left_temp = 0;
   int16_t left_offset = 0;
   int32_t right_temp = 0;
@@ -296,9 +303,11 @@ void front_sensors_calibration(void) {
   delay(500);
   clear_info_leds();
   eeprom_set_data(DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset, NUM_SENSORES);
+  #endif
 }
 
 void side_sensors_calibration(void) {
+  #ifndef MMSIM_ENABLED
   int32_t left_temp = 0;
   int16_t left_offset = 0;
   int32_t right_temp = 0;
@@ -325,13 +334,16 @@ void side_sensors_calibration(void) {
   delay(500);
   clear_info_leds();
   eeprom_set_data(DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset, NUM_SENSORES);
+  #endif
 }
 
 void sensors_load_eeprom(void) {
+  #ifndef MMSIM_ENABLED
   int16_t *data = eeprom_get_data();
   for (uint16_t i = DATA_INDEX_SENSORS_OFFSETS; i < (DATA_INDEX_SENSORS_OFFSETS + NUM_SENSORES); i++) {
     sensors_distance_offset[i - DATA_INDEX_SENSORS_OFFSETS] = data[i];
   }
+  #endif
 }
 
 bool left_wall_detection(void) {
@@ -387,6 +399,7 @@ void update_sensors_magics(void) {
 }
 
 void update_side_sensors_leds(void) {
+  #ifndef MMSIM_ENABLED
   int16_t side_error_leds = get_side_sensors_close_error();
   if (abs(side_error_leds) < 2) {
     clear_info_leds();
@@ -463,6 +476,7 @@ void update_side_sensors_leds(void) {
     set_info_led(6, false);
     set_info_led(7, false);
   }
+  #endif
 }
 
 uint16_t get_sensor_distance(uint8_t pos) {
@@ -475,6 +489,14 @@ uint16_t get_front_wall_distance(void) {
 
 struct walls get_walls(void) {
   struct walls walls;
+
+#ifdef MMSIM_ENABLED
+  walls.front = API_wallFront();
+  walls.left = API_wallLeft();
+  walls.right = API_wallRight();
+  return walls;
+#endif
+
   walls.front = front_wall_detection();
   walls.left = left_wall_detection();
   walls.right = right_wall_detection();

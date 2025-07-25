@@ -1,12 +1,19 @@
 #ifndef FLOODFILL_H
 #define FLOODFILL_H
 
-#include <config.h>
-#include <constants.h>
+#include "config.h"
+#include "constants.h"
+#include "floodfill_weigths.h"
+#include "maze.h"
+#include "move.h"
+#include "sensors.h"
+
+#ifndef MMSIM_ENABLED
 #include <usart.h>
-#include <move.h>
-#include <maze.h>
-#include <floodfill_weigths.h>
+#else
+#include "mmsim_api.h"
+#include "menu_run.h"
+#endif
 
 #define VISITED_BIT 1
 #define EAST_BIT 2
@@ -28,7 +35,7 @@ enum compass_direction {
   NORTH_EAST = 1 + MAZE_COLUMNS,
 };
 
-struct compass_direction_values{
+struct compass_direction_values {
   int8_t EAST;
   int8_t SOUTH;
   int8_t WEST;

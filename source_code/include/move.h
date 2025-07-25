@@ -2,10 +2,18 @@
 #define MOVE_H
 
 #include "control.h"
-#include "menu.h"
 #include "menu_run.h"
+#ifndef MMSIM_ENABLED
+#include "menu.h"
 #include "motors.h"
 #include <string.h>
+#else
+#include "mmsim_api.h"
+#include "sensors.h"
+#include "constants.h"
+#include <stdbool.h>
+#include <stdint.h>
+#endif
 
 enum movement {
   MOVE_NONE,
