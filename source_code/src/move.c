@@ -1042,7 +1042,7 @@ static void move_back(enum movement movement) {
   if (initial_walls.front) {
     move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
   } else {
-    move_straight((CELL_DIMENSION / 2) - current_cell_start_mm - calc_straight_to_speed_distance(300, 0), 300, false, true);
+    move_straight(MIDDLE_MAZE_DISTANCE - current_cell_start_mm - calc_straight_to_speed_distance(300, 0), 300, false, true);
   }
 
   disable_sensors_correction();
@@ -1058,8 +1058,8 @@ static void move_back(enum movement movement) {
       set_starting_position();
       break;
     case MOVE_BACK:
-      move_straight(((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2, -100, false, true);
-      current_cell_start_mm = ((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2;
+      move_straight((MIDDLE_MAZE_DISTANCE) - ROBOT_BACK_LENGTH, -100, false, true);
+      current_cell_start_mm = (MIDDLE_MAZE_DISTANCE - ROBOT_BACK_LENGTH) / 2;
       break;
     default:
       break;
@@ -1180,8 +1180,8 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   float stop_distance = 0;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
-  // while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
-  while (is_race_started() && !is_motor_saturated() && get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) > (distance + stop_distance)) {
+  while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
+    // while (is_race_started() && !is_motor_saturated() && get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) > (distance + stop_distance)) {
     if (stop) {
       stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
     }
