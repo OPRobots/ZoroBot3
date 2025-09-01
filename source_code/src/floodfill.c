@@ -812,15 +812,24 @@ static void update_floodfill(void) {
   }
 
 #ifdef MMSIM_ENABLED
+
+  if(!is_race_started()) {
+    current_position = 0;
+    current_direction = initial_direction;
+  }
+  
   uint8_t _position = current_position;
   enum compass_direction _direction = current_direction;
 
+
   enum step_direction next_step = NONE;
 
-  API_setColor(
-      current_position % maze_get_columns(),
-      current_position / maze_get_columns(),
-      'B');
+  if (current_position == 0) {
+    API_setColor(
+        current_position % maze_get_columns(),
+        current_position / maze_get_columns(),
+        'B');
+  }
 
   while (floodfill[current_position] > 0) {
     next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls());
