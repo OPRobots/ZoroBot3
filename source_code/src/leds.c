@@ -255,8 +255,8 @@ void set_leds_battery_level(float battery_level) {
   } else {
     if (get_clock_ticks() > lastTicksWarningBateria + 50) {
 
-    gpio_toggle(GPIOB, GPIO1 | GPIO2 | GPIO0 | GPIO9 | GPIO8);
-    gpio_toggle(GPIOC, GPIO15 | GPIO14 | GPIO13 | GPIO5 | GPIO4);
+      gpio_toggle(GPIOB, GPIO1 | GPIO2 | GPIO0 | GPIO9 | GPIO8);
+      gpio_toggle(GPIOC, GPIO15 | GPIO14 | GPIO13 | GPIO5 | GPIO4);
 
       lastTicksWarningBateria = get_clock_ticks();
     }
@@ -353,6 +353,37 @@ void set_info_leds(void) {
   gpio_set(GPIOB, GPIO0 | GPIO1 | GPIO2);
   gpio_set(GPIOC, GPIO15 | GPIO14 | GPIO13);
   gpio_set(GPIOB, GPIO9 | GPIO8);
+}
+
+void show_robot_version(uint16_t version) {
+  clear_info_leds();
+  switch (version) {
+    case ZOROBOT3_A:
+      printf("ZoroBot3 A inited...\n");
+      set_info_led(INFO_LED_A, true);
+      delay(1000);
+      break;
+    case ZOROBOT3_B:
+      printf("ZoroBot3 B inited...\n");
+      set_info_led(INFO_LED_B, true);
+      delay(1000);
+      break;
+    case ZOROBOT3_C:
+      printf("ZoroBot3 C inited...\n");
+      set_info_led(INFO_LED_C, true);
+      delay(1000);
+      break;
+    default:
+      printf("Robot version: Unknown\n");
+      uint32_t ms = get_clock_ticks();
+      while (get_clock_ticks() - ms < 1000) {
+        set_leds_wave(100);
+        warning_status_led(100);
+      }
+      break;
+  }
+  all_leds_clear();
+  delay(250);
 }
 
 void clear_info_leds(void) {

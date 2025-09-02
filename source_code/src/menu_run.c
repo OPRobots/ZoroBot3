@@ -28,11 +28,11 @@ static void handle_menu_run_values(void) {
     set_RGB_color(0, 0, 0);
 
     if (valueRun[MODE_SPEED] == MODE_SPEED_VALUES - 1) {
-      set_info_led(0, blinkState);
-      set_info_led(1, blinkState);
-      set_info_led(2, blinkState);
-      set_info_led(3, blinkState);
-      set_info_led(4, blinkState);
+      set_info_led(INFO_LED_1, blinkState);
+      set_info_led(INFO_LED_2, blinkState);
+      set_info_led(INFO_LED_3, blinkState);
+      set_info_led(INFO_LED_4, blinkState);
+      set_info_led(INFO_LED_5, blinkState);
     } else {
       for (uint8_t i = 0; i < MODE_SPEED_VALUES - 1; i++) {
         if ((valueRun[MODE_SPEED] == i && blinkState)) {
@@ -44,11 +44,11 @@ static void handle_menu_run_values(void) {
     }
   } else {
     if (valueRun[MODE_SPEED] == MODE_SPEED_VALUES - 1) {
-      set_info_led(0, true);
-      set_info_led(1, true);
-      set_info_led(2, true);
-      set_info_led(3, true);
-      set_info_led(4, true);
+      set_info_led(INFO_LED_1, true);
+      set_info_led(INFO_LED_2, true);
+      set_info_led(INFO_LED_3, true);
+      set_info_led(INFO_LED_4, true);
+      set_info_led(INFO_LED_5, true);
     } else {
       for (uint8_t i = 0; i < MODE_SPEED_VALUES - 1; i++) {
         set_info_led(i, i == valueRun[MODE_SPEED]);
@@ -74,9 +74,9 @@ static void handle_menu_run_values(void) {
     } else {
       set_RGB_color(0, 0, 0);
     }
-    set_info_led(7, blinkState);
+    set_info_led(INFO_LED_C, blinkState);
   } else {
-    set_info_led(7, valueRun[MODE_MAZE_TYPE] == 1);
+    set_info_led(INFO_LED_C, valueRun[MODE_MAZE_TYPE] == 1);
   }
 
   if (modeRun == MODE_SOLVE_STRATEGY) {
@@ -85,9 +85,9 @@ static void handle_menu_run_values(void) {
     } else {
       set_RGB_color(0, 0, 0);
     }
-    set_info_led(8, blinkState);
+    set_info_led(INFO_LED_D, blinkState);
   } else {
-    set_info_led(8, valueRun[MODE_SOLVE_STRATEGY] == 1);
+    set_info_led(INFO_LED_D, valueRun[MODE_SOLVE_STRATEGY] == 1);
   }
 
   if (modeRun == MODE_EXPLORE_ALGORITHM) {
@@ -105,9 +105,9 @@ static void handle_menu_run_values(void) {
         set_RGB_color(0, 0, 0);
         break;
     }
-    set_info_led(9, blinkState);
+    set_info_led(INFO_LED_E, blinkState);
   } else {
-    set_info_led(9, valueRun[MODE_EXPLORE_ALGORITHM] == 1);
+    set_info_led(INFO_LED_E, valueRun[MODE_EXPLORE_ALGORITHM] == 1);
   }
 }
 

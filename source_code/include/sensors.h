@@ -61,6 +61,8 @@ struct sensors_distance_calibration {
   float c;
 };
 
+void set_sensors_robot_calibration(uint16_t version);
+
 void set_sensors_enabled(bool enabled);
 bool get_sensors_enabled(void);
 
