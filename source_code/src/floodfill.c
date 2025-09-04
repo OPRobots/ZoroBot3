@@ -261,6 +261,10 @@ static void set_visited(void) {
   maze[current_position] |= VISITED_BIT;
 }
 
+static bool is_visited(uint8_t position) {
+  return maze[position] & VISITED_BIT;
+}
+
 static bool current_cell_is_visited(void) {
   return maze[current_position] & VISITED_BIT;
 }
@@ -813,14 +817,13 @@ static void update_floodfill(void) {
 
 #ifdef MMSIM_ENABLED
 
-  if(!is_race_started()) {
+  if (!is_race_started()) {
     current_position = 0;
     current_direction = initial_direction;
   }
-  
+
   uint8_t _position = current_position;
   enum compass_direction _direction = current_direction;
-
 
   enum step_direction next_step = NONE;
 
@@ -938,6 +941,48 @@ static uint8_t find_unknown_interesting_cell(void) {
   return cell;
 }
 
+static bool floodfill_run(enum step_direction next_step) {
+  uint8_t _current_position = current_position;
+
+  uint16_t count_same_direction = 0;
+
+  enum compass_direction next_direction = TARGET;
+  do {
+    float next_distance = floodfill[_current_position];
+    if (!wall_exists(_current_position, NORTH_BIT) && floodfill[_current_position + get_direction_value(NORTH)] < next_distance) {
+      next_distance = floodfill[_current_position + get_direction_value(NORTH)];
+      next_direction = NORTH;
+    }
+    if (!wall_exists(_current_position, EAST_BIT) && floodfill[_current_position + get_direction_value(EAST)] < next_distance) {
+      next_distance = floodfill[_current_position + get_direction_value(EAST)];
+      next_direction = EAST;
+    }
+    if (!wall_exists(_current_position, SOUTH_BIT) && floodfill[_current_position + get_direction_value(SOUTH)] < next_distance) {
+      next_distance = floodfill[_current_position + get_direction_value(SOUTH)];
+      next_direction = SOUTH;
+    }
+    if (!wall_exists(_current_position, WEST_BIT) && floodfill[_current_position + get_direction_value(WEST)] < next_distance) {
+      next_distance = floodfill[_current_position + get_direction_value(WEST)];
+      next_direction = WEST;
+    }
+
+    if (next_direction == current_direction && is_visited(_current_position + get_direction_value(next_direction))) {
+      count_same_direction++;
+      _current_position += get_direction_value(next_direction);
+    } else {
+      break;
+    }
+
+  } while (next_direction == current_direction);
+
+  if (count_same_direction > 0) {
+    run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, 2000, get_kinematics().linear_speed);
+    current_position = _current_position;
+    return true;
+  }
+  return false;
+}
+
 static void go_to_target(void) {
   struct walls walls;
   enum step_direction next_step;
@@ -961,62 +1006,36 @@ static void go_to_target(void) {
     set_RGB_color_while(255, 255, 0, 33);
 #endif
 
-    // static char *labels[] = {
-    //     "x",
-    //     "y",
-    //     "current_direction",
-    //     "current_floodfill",
-    //     "wall_front",
-    //     "wall_left",
-    //     "wall_right",
-    //     "next_step",
-    //     "next_direction",
-    //     "next_floodfill"};
-    // macroarray_store(
-    //     0,
-    //     0b0001000001,
-    //     labels,
-    //     10,
-    //     current_position % maze_get_columns() + 1,
-    //     current_position / maze_get_columns() + 1,
-    //     current_direction,
-    //     (int16_t)(floodfill[current_position] * 100),
-    //     walls.front ? 1 : 0,
-    //     walls.left ? 1 : 0,
-    //     walls.right ? 1 : 0,
-    //     next_step,
-    //     get_next_direction(next_step),
-    //     (int16_t)(floodfill[get_next_position(next_step)] * 100));
-
-    switch (next_step) {
-      case FRONT:
-        move(MOVE_FRONT);
-        break;
-      case LEFT:
-        move(MOVE_LEFT);
-        break;
-      case RIGHT:
-        move(MOVE_RIGHT);
-        break;
-      case BACK:
-        if (walls.front) {
-          move(MOVE_BACK_WALL);
-        } else {
-          move(MOVE_BACK);
-        }
-        break;
-      default:
-        while (true) {
+    if (menu_run_get_accel_explore() == ACCEL_EXPLORE_DISABLED || !(next_step != BACK && is_visited(get_next_position(next_step)) && floodfill_run(next_step))) {
+      switch (next_step) {
+        case FRONT:
+          move(MOVE_FRONT);
+          break;
+        case LEFT:
+          move(MOVE_LEFT);
+          break;
+        case RIGHT:
+          move(MOVE_RIGHT);
+          break;
+        case BACK:
+          if (walls.front) {
+            move(MOVE_BACK_WALL);
+          } else {
+            move(MOVE_BACK);
+          }
+          break;
+        default:
+          while (true) {
 #ifndef MMSIM_ENABLED
-          set_target_linear_speed(0);
-          set_ideal_angular_speed(0);
-          warning_status_led(50);
+            set_target_linear_speed(0);
+            set_ideal_angular_speed(0);
+            warning_status_led(50);
 #endif
-        }
-        break;
+          }
+          break;
+      }
+      update_position(next_step);
     }
-
-    update_position(next_step);
 
   } while (floodfill[current_position] > 0);
   if (!current_cell_is_visited()) {

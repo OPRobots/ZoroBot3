@@ -2,18 +2,20 @@
 
 #define MODE_SPEED 0
 #define MODE_RACE 1
-#define MODE_MAZE_TYPE 2
-#define MODE_SOLVE_STRATEGY 3
-#define MODE_EXPLORE_ALGORITHM 4
+#define MODE_ACCEL_EXPLORE 2
+#define MODE_MAZE_TYPE 3
+#define MODE_SOLVE_STRATEGY 4
+#define MODE_EXPLORE_ALGORITHM 5
 uint8_t modeRun = MODE_SPEED;
 
 #define MODE_SPEED_VALUES 6
+#define MODE_ACCEL_EXPLORE_VALUES 2
 #define MODE_RACE_VALUES 2
 #define MODE_MAZE_TYPE_VALUES 2
 #define MODE_EXPLORE_ALGORITHM_VALUES 3
 #define MODE_SOLVE_STRATEGY_VALUES 2
 
-int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 0, 1};
+int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 0, 0, 1};
 
 uint32_t lastBlinkMs = 0;
 bool blinkState = false;
@@ -68,6 +70,17 @@ static void handle_menu_run_values(void) {
     }
   }
 
+  if (modeRun == MODE_ACCEL_EXPLORE) {
+    if (valueRun[modeRun] == 1) {
+      set_RGB_color(0, 50, 0);
+    } else {
+      set_RGB_color(0, 0, 0);
+    }
+    set_info_led(INFO_LED_A, blinkState);
+  } else {
+    set_info_led(INFO_LED_A, valueRun[MODE_ACCEL_EXPLORE] == 1);
+  }
+
   if (modeRun == MODE_MAZE_TYPE) {
     if (valueRun[modeRun] == 1) {
       set_RGB_color(0, 50, 0);
@@ -93,10 +106,10 @@ static void handle_menu_run_values(void) {
   if (modeRun == MODE_EXPLORE_ALGORITHM) {
     switch (valueRun[modeRun]) {
       case EXPLORE_HANDWALL:
-        set_RGB_color(0, 50, 0);
+        set_RGB_color(0, 0, 50);
         break;
       case EXPLORE_FLOODFILL:
-        set_RGB_color(0, 0, 50);
+        set_RGB_color(0, 50, 0);
         break;
       case EXPLORE_TIME_TRIAL:
         set_RGB_color(50, 0, 50);
@@ -176,14 +189,17 @@ void menu_run_up() {
     case MODE_SPEED:
       mode_values = MODE_SPEED_VALUES;
       break;
+    case MODE_RACE:
+      mode_values = MODE_RACE_VALUES;
+      break;
+    case MODE_ACCEL_EXPLORE:
+      mode_values = MODE_ACCEL_EXPLORE_VALUES;
+      break;
     case MODE_MAZE_TYPE:
       mode_values = MODE_MAZE_TYPE_VALUES;
       break;
     case MODE_EXPLORE_ALGORITHM:
       mode_values = MODE_EXPLORE_ALGORITHM_VALUES;
-      break;
-    case MODE_RACE:
-      mode_values = MODE_RACE_VALUES;
       break;
     case MODE_SOLVE_STRATEGY:
       mode_values = MODE_SOLVE_STRATEGY_VALUES;
@@ -217,6 +233,14 @@ enum speed_strategy menu_run_get_speed(void) {
   return valueRun[MODE_SPEED];
 #else
   return SPEED_HAKI;
+#endif
+}
+
+enum accel_explore menu_run_get_accel_explore(void) {
+#ifndef MMSIM_ENABLED
+  return valueRun[MODE_ACCEL_EXPLORE];
+#else
+  return true;
 #endif
 }
 

@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #endif
 
-#define MENU_RUN_NUM_MODES 5
+#define MENU_RUN_NUM_MODES 6
 
 enum speed_strategy {
   SPEED_EXPLORE = 0,
@@ -20,6 +20,11 @@ enum speed_strategy {
   SPEED_FAST = 3,
   SPEED_SUPER = 4,
   SPEED_HAKI = 5,
+};
+
+enum accel_explore {
+  ACCEL_EXPLORE_DISABLED = 0,
+  ACCEL_EXPLORE_ENABLED = 1,
 };
 
 enum maze_type {
@@ -51,6 +56,7 @@ void menu_run_down(void);
 
 int16_t *get_menu_run_values(void);
 enum speed_strategy menu_run_get_speed(void);
+enum accel_explore menu_run_get_accel_explore(void);
 enum maze_type menu_run_get_maze_type(void);
 enum solve_strategy menu_run_get_solve_strategy(void);
 enum explore_algorithm menu_run_get_explore_algorithm(void);
