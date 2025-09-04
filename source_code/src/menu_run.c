@@ -2,22 +2,25 @@
 
 #define MODE_SPEED 0
 #define MODE_RACE 1
-#define MODE_MAZE_TYPE 2
-#define MODE_SOLVE_STRATEGY 3
-#define MODE_EXPLORE_ALGORITHM 4
+#define MODE_ACCEL_EXPLORE 2
+#define MODE_MAZE_TYPE 3
+#define MODE_SOLVE_STRATEGY 4
+#define MODE_EXPLORE_ALGORITHM 5
 uint8_t modeRun = MODE_SPEED;
 
 #define MODE_SPEED_VALUES 6
+#define MODE_ACCEL_EXPLORE_VALUES 2
 #define MODE_RACE_VALUES 2
 #define MODE_MAZE_TYPE_VALUES 2
 #define MODE_EXPLORE_ALGORITHM_VALUES 3
 #define MODE_SOLVE_STRATEGY_VALUES 2
 
-int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 0, 1};
+int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 0, 0, 1};
 
 uint32_t lastBlinkMs = 0;
 bool blinkState = false;
 
+#ifndef MMSIM_ENABLED
 static void handle_menu_run_values(void) {
   if (get_clock_ticks() - lastBlinkMs >= 125) {
     lastBlinkMs = get_clock_ticks();
@@ -27,11 +30,11 @@ static void handle_menu_run_values(void) {
     set_RGB_color(0, 0, 0);
 
     if (valueRun[MODE_SPEED] == MODE_SPEED_VALUES - 1) {
-      set_info_led(0, blinkState);
-      set_info_led(1, blinkState);
-      set_info_led(2, blinkState);
-      set_info_led(3, blinkState);
-      set_info_led(4, blinkState);
+      set_info_led(INFO_LED_1, blinkState);
+      set_info_led(INFO_LED_2, blinkState);
+      set_info_led(INFO_LED_3, blinkState);
+      set_info_led(INFO_LED_4, blinkState);
+      set_info_led(INFO_LED_5, blinkState);
     } else {
       for (uint8_t i = 0; i < MODE_SPEED_VALUES - 1; i++) {
         if ((valueRun[MODE_SPEED] == i && blinkState)) {
@@ -43,11 +46,11 @@ static void handle_menu_run_values(void) {
     }
   } else {
     if (valueRun[MODE_SPEED] == MODE_SPEED_VALUES - 1) {
-      set_info_led(0, true);
-      set_info_led(1, true);
-      set_info_led(2, true);
-      set_info_led(3, true);
-      set_info_led(4, true);
+      set_info_led(INFO_LED_1, true);
+      set_info_led(INFO_LED_2, true);
+      set_info_led(INFO_LED_3, true);
+      set_info_led(INFO_LED_4, true);
+      set_info_led(INFO_LED_5, true);
     } else {
       for (uint8_t i = 0; i < MODE_SPEED_VALUES - 1; i++) {
         set_info_led(i, i == valueRun[MODE_SPEED]);
@@ -67,15 +70,26 @@ static void handle_menu_run_values(void) {
     }
   }
 
+  if (modeRun == MODE_ACCEL_EXPLORE) {
+    if (valueRun[modeRun] == 1) {
+      set_RGB_color(0, 50, 0);
+    } else {
+      set_RGB_color(0, 0, 0);
+    }
+    set_info_led(INFO_LED_A, blinkState);
+  } else {
+    set_info_led(INFO_LED_A, valueRun[MODE_ACCEL_EXPLORE] == 1);
+  }
+
   if (modeRun == MODE_MAZE_TYPE) {
     if (valueRun[modeRun] == 1) {
       set_RGB_color(0, 50, 0);
     } else {
       set_RGB_color(0, 0, 0);
     }
-    set_info_led(7, blinkState);
+    set_info_led(INFO_LED_C, blinkState);
   } else {
-    set_info_led(7, valueRun[MODE_MAZE_TYPE] == 1);
+    set_info_led(INFO_LED_C, valueRun[MODE_MAZE_TYPE] == 1);
   }
 
   if (modeRun == MODE_SOLVE_STRATEGY) {
@@ -84,18 +98,18 @@ static void handle_menu_run_values(void) {
     } else {
       set_RGB_color(0, 0, 0);
     }
-    set_info_led(8, blinkState);
+    set_info_led(INFO_LED_D, blinkState);
   } else {
-    set_info_led(8, valueRun[MODE_SOLVE_STRATEGY] == 1);
+    set_info_led(INFO_LED_D, valueRun[MODE_SOLVE_STRATEGY] == 1);
   }
 
   if (modeRun == MODE_EXPLORE_ALGORITHM) {
     switch (valueRun[modeRun]) {
       case EXPLORE_HANDWALL:
-        set_RGB_color(0, 50, 0);
+        set_RGB_color(0, 0, 50);
         break;
       case EXPLORE_FLOODFILL:
-        set_RGB_color(0, 0, 50);
+        set_RGB_color(0, 50, 0);
         break;
       case EXPLORE_TIME_TRIAL:
         set_RGB_color(50, 0, 50);
@@ -104,9 +118,9 @@ static void handle_menu_run_values(void) {
         set_RGB_color(0, 0, 0);
         break;
     }
-    set_info_led(9, blinkState);
+    set_info_led(INFO_LED_E, blinkState);
   } else {
-    set_info_led(9, valueRun[MODE_EXPLORE_ALGORITHM] == 1);
+    set_info_led(INFO_LED_E, valueRun[MODE_EXPLORE_ALGORITHM] == 1);
   }
 }
 
@@ -125,8 +139,10 @@ static void handle_menu_run_btn(void) {
     menu_run_down();
   }
 }
+#endif
 
 bool menu_run_handler(void) {
+#ifndef MMSIM_ENABLED
   set_status_led(false);
   if (get_menu_mode_btn()) {
     uint32_t ms = get_clock_ticks();
@@ -143,6 +159,7 @@ bool menu_run_handler(void) {
   }
   handle_menu_run_btn();
   handle_menu_run_values();
+#endif
   return false;
 }
 
@@ -152,11 +169,13 @@ void menu_run_reset(void) {
 }
 
 void menu_run_load_values(void) {
+#ifndef MMSIM_ENABLED
   int16_t *data = eeprom_get_data();
   for (uint16_t i = DATA_INDEX_MENU_RUN; i < (DATA_INDEX_MENU_RUN + MENU_RUN_NUM_MODES); i++) {
     valueRun[i - DATA_INDEX_MENU_RUN] = data[i];
   }
   valueRun[MODE_RACE] = 0;
+#endif
 }
 
 void menu_run_mode_change() {
@@ -164,19 +183,23 @@ void menu_run_mode_change() {
 }
 
 void menu_run_up() {
+#ifndef MMSIM_ENABLED
   uint8_t mode_values = 0;
   switch (modeRun) {
     case MODE_SPEED:
       mode_values = MODE_SPEED_VALUES;
+      break;
+    case MODE_RACE:
+      mode_values = MODE_RACE_VALUES;
+      break;
+    case MODE_ACCEL_EXPLORE:
+      mode_values = MODE_ACCEL_EXPLORE_VALUES;
       break;
     case MODE_MAZE_TYPE:
       mode_values = MODE_MAZE_TYPE_VALUES;
       break;
     case MODE_EXPLORE_ALGORITHM:
       mode_values = MODE_EXPLORE_ALGORITHM_VALUES;
-      break;
-    case MODE_RACE:
-      mode_values = MODE_RACE_VALUES;
       break;
     case MODE_SOLVE_STRATEGY:
       mode_values = MODE_SOLVE_STRATEGY_VALUES;
@@ -188,6 +211,7 @@ void menu_run_up() {
     eeprom_set_data(DATA_INDEX_MENU_RUN, valueRun, MENU_RUN_NUM_MODES);
     eeprom_save();
   }
+#endif
 }
 
 void menu_run_down() {
@@ -205,17 +229,41 @@ int16_t *get_menu_run_values(void) {
 }
 
 enum speed_strategy menu_run_get_speed(void) {
+#ifndef MMSIM_ENABLED
   return valueRun[MODE_SPEED];
+#else
+  return SPEED_HAKI;
+#endif
+}
+
+enum accel_explore menu_run_get_accel_explore(void) {
+#ifndef MMSIM_ENABLED
+  return valueRun[MODE_ACCEL_EXPLORE];
+#else
+  return true;
+#endif
 }
 
 enum maze_type menu_run_get_maze_type(void) {
+#ifndef MMSIM_ENABLED
   return valueRun[MODE_MAZE_TYPE];
+#else
+  return MAZE_COMPETITION;
+#endif
 }
 
 enum solve_strategy menu_run_get_solve_strategy(void) {
+#ifndef MMSIM_ENABLED
   return valueRun[MODE_SOLVE_STRATEGY];
+#else
+  return SOLVE_DIAGONALS;
+#endif
 }
 
 enum explore_algorithm menu_run_get_explore_algorithm(void) {
+#ifndef MMSIM_ENABLED
   return valueRun[MODE_EXPLORE_ALGORITHM];
+#else
+  return EXPLORE_FLOODFILL;
+#endif
 }

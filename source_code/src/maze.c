@@ -13,6 +13,10 @@ static void add_goal(uint8_t x, uint8_t y) {
 }
 
 uint16_t maze_get_rows() {
+#ifdef MMSIM_ENABLED
+  return API_mazeHeight();
+#endif
+
   switch (menu_run_get_maze_type()) {
     case MAZE_HOME:
       return MAZE_ROWS_HOME;
@@ -25,6 +29,10 @@ uint16_t maze_get_rows() {
 }
 
 uint16_t maze_get_columns() {
+#ifdef MMSIM_ENABLED
+  return API_mazeWidth();
+#endif
+
   switch (menu_run_get_maze_type()) {
     case MAZE_HOME:
       return MAZE_COLUMNS_HOME;
@@ -42,6 +50,15 @@ uint16_t maze_get_cells() {
 
 struct cells_stack *maze_get_goals(void) {
   goals.size = 0;
+
+#ifdef MMSIM_ENABLED
+  add_goal(8, 8);
+  add_goal(8, 9);
+  add_goal(9, 8);
+  add_goal(9, 9);
+  return &goals;
+#endif
+
   switch (menu_run_get_maze_type()) {
     case MAZE_HOME:
       add_goal(6, 6);

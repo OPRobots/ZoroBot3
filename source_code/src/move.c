@@ -812,6 +812,7 @@ static float calc_straight_to_speed_distance(int32_t from_speed, int32_t to_spee
   return abs((to_speed * to_speed - from_speed * from_speed) / (2 * kinematics.linear_accel.break_accel));
 }
 
+#ifndef MMSIM_ENABLED
 static void enter_next_cell(void) {
   current_cell_start_mm = -SENSING_POINT_DISTANCE;
   current_cell_absolute_start_mm = get_encoder_avg_millimeters();
@@ -819,6 +820,7 @@ static void enter_next_cell(void) {
   toggle_status_led();
   cell_change_toggle_state = !cell_change_toggle_state;
 }
+#endif
 
 static bool check_wall_loss_correction(struct walls initial_walls) {
   if (current_cell_wall_lost) {
@@ -859,6 +861,13 @@ static bool check_wall_loss_correction(struct walls initial_walls) {
 }
 
 static void move_home(void) {
+#ifdef MMSIM_ENABLED
+  API_moveForward();
+  API_turnRight();
+  API_turnRight();
+  return;
+#endif
+
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
@@ -883,6 +892,10 @@ static void move_home(void) {
  *
  */
 static void move_front(void) {
+#ifdef MMSIM_ENABLED
+  API_moveForward();
+#else
+
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   struct walls initial_walls = get_walls();
@@ -895,9 +908,23 @@ static void move_front(void) {
   }
   move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
   enter_next_cell();
+#endif
 }
 
 static void move_side(enum movement movement) {
+#ifdef MMSIM_ENABLED
+  switch (movement) {
+    case MOVE_LEFT:
+      API_turnLeft();
+      API_moveForward();
+      break;
+    case MOVE_RIGHT:
+      API_turnRight();
+      API_moveForward();
+      break;
+  }
+#else
+
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
 
@@ -987,9 +1014,17 @@ static void move_side(enum movement movement) {
     set_RGB_color(0, 0, 0);
   }
   enter_next_cell();
+#endif
 }
 
 static void move_back(enum movement movement) {
+#ifdef MMSIM_ENABLED
+  API_turnRight();
+  API_turnRight();
+  if (movement != MOVE_BACK_STOP) {
+    API_moveForward();
+  }
+#else
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
@@ -1007,7 +1042,7 @@ static void move_back(enum movement movement) {
   if (initial_walls.front) {
     move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
   } else {
-    move_straight((CELL_DIMENSION / 2) - current_cell_start_mm - calc_straight_to_speed_distance(300, 0), 300, false, true);
+    move_straight(MIDDLE_MAZE_DISTANCE - current_cell_start_mm - calc_straight_to_speed_distance(300, 0), 300, false, true);
   }
 
   disable_sensors_correction();
@@ -1023,8 +1058,8 @@ static void move_back(enum movement movement) {
       set_starting_position();
       break;
     case MOVE_BACK:
-      move_straight(((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2, -100, false, true);
-      current_cell_start_mm = ((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2;
+      move_straight((MIDDLE_MAZE_DISTANCE) - ROBOT_BACK_LENGTH, -100, false, true);
+      current_cell_start_mm = (MIDDLE_MAZE_DISTANCE - ROBOT_BACK_LENGTH) / 2;
       break;
     default:
       break;
@@ -1039,6 +1074,7 @@ static void move_back(enum movement movement) {
     move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
     enter_next_cell();
   }
+#endif
 }
 
 bool get_cell_change_toggle_state(void) {
@@ -1078,7 +1114,11 @@ void set_starting_position(void) {
 }
 
 int32_t get_current_cell_travelled_distance(void) {
+#ifndef MMSIM_ENABLED
   return get_encoder_avg_millimeters() - current_cell_absolute_start_mm;
+#else
+  return 0;
+#endif
 }
 
 /**
@@ -1089,6 +1129,7 @@ int32_t get_current_cell_travelled_distance(void) {
  * @param stop
  */
 void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool stop) {
+#ifndef MMSIM_ENABLED
   int32_t current_distance = get_encoder_avg_micrometers();
   float stop_distance = 0;
   struct walls initial_walls = get_walls();
@@ -1124,6 +1165,7 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
     while (is_race_started() && !is_motor_saturated() && get_ideal_linear_speed() != 0) {
     }
   }
+#endif
 }
 
 /**
@@ -1134,11 +1176,12 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
  * @param stop
  */
 void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool stop) {
+#ifndef MMSIM_ENABLED
   float stop_distance = 0;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
-  // while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
-  while (is_race_started() && !is_motor_saturated() && get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) > (distance + stop_distance)) {
+  while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
+    // while (is_race_started() && !is_motor_saturated() && get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) > (distance + stop_distance)) {
     if (stop) {
       stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
     }
@@ -1159,9 +1202,11 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
       }
     }
   }
+#endif
 }
 
 void run_straight(float distance, float start_offset, float end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
+#ifndef MMSIM_ENABLED
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
@@ -1216,9 +1261,11 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
   if (current_cell < cells && end_offset == 0) {
     enter_next_cell();
   }
+#endif
 }
 
 void run_side(enum movement movement, struct turn_params turn, struct turn_params next_turn) {
+#ifndef MMSIM_ENABLED
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
 
@@ -1304,9 +1351,11 @@ void run_side(enum movement movement, struct turn_params turn, struct turn_param
     move_straight(turn.end + end_distance_offset, next_turn.linear_speed, false, false);
   }
   enter_next_cell();
+#endif
 }
 
 void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
+#ifndef MMSIM_ENABLED
   set_front_sensors_correction(false);
   if (cells > 1) {
     set_front_sensors_diagonal_correction(true);
@@ -1347,6 +1396,7 @@ void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t spee
   if (current_cell < cells && remaining_distance < 10) {
     enter_next_cell();
   }
+#endif
 }
 
 /**
@@ -1355,6 +1405,7 @@ void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t spee
  * @param turn_type
  */
 void move_arc_turn(struct turn_params turn) {
+#ifndef MMSIM_ENABLED
   int32_t start = get_encoder_avg_micrometers();
   int32_t current;
   float travelled;
@@ -1379,9 +1430,11 @@ void move_arc_turn(struct turn_params turn) {
   }
   set_ideal_angular_speed(0);
   set_RGB_color(0, 0, 0);
+#endif
 }
 
 void move_inplace_turn(enum movement movement) {
+#ifndef MMSIM_ENABLED
   struct inplace_params turn = turns_inplace[movement];
   set_target_linear_speed(turn.linear_speed);
 
@@ -1404,6 +1457,7 @@ void move_inplace_turn(enum movement movement) {
     set_ideal_angular_speed(angular_speed * sign);
   }
   set_ideal_angular_speed(0);
+#endif
 }
 
 /**
@@ -1413,6 +1467,7 @@ void move_inplace_turn(enum movement movement) {
  * @param rads
  */
 void move_inplace_angle(float angle, float rads) {
+#ifndef MMSIM_ENABLED
   lsm6dsr_set_gyro_z_degrees(0);
   float current_angle = lsm6dsr_get_gyro_z_degrees();
   float target_angle = current_angle + angle;
@@ -1432,10 +1487,13 @@ void move_inplace_angle(float angle, float rads) {
     }
   }
   set_ideal_angular_speed(0.0);
+#endif
 }
 
 void move(enum movement movement) {
+#ifndef MMSIM_ENABLED
   set_check_motors_saturated_enabled(true);
+#endif
   switch (movement) {
     case MOVE_HOME:
       move_home();

@@ -1,4 +1,4 @@
-#include <control.h>
+#include "control.h"
 
 static volatile bool race_started = false;
 static volatile uint32_t race_finish_ms = 0;
@@ -50,18 +50,23 @@ static volatile int32_t pwm_right;
  * @param voltage
  * @return int32_t PWM a aplicar al motor
  */
+#ifndef MMSIM_ENABLED
 static int32_t voltage_to_motor_pwm(float voltage) {
   return voltage / /* 8.0  */ get_battery_voltage() * MOTORES_MAX_PWM;
 }
+#endif
 
+#ifndef MMSIM_ENABLED
 static int32_t percentage_to_fan_pwm(float percentage) {
   return percentage > 0 ? (int32_t)constrain((get_battery_high_limit_voltage() / get_battery_voltage()) * percentage, percentage, 100.0f) : 0;
 }
+#endif
 
 /**
  * @brief Actualiza la velocidad lineal ideal en función de la velocidad lineal objetivo y la aceleración
  *
  */
+#ifndef MMSIM_ENABLED
 static void update_ideal_linear_speed(void) {
   if (ideal_linear_speed < target_linear_speed) {
     int16_t accel = get_kinematics().linear_accel.accel_soft;
@@ -101,6 +106,7 @@ static float get_measured_linear_speed(void) {
 static float get_measured_angular_speed(void) {
   return -lsm6dsr_get_gyro_z_radps();
 }
+#endif
 
 /**
  * @brief Comprueba si el robot está en funcionamiento
@@ -119,18 +125,22 @@ bool is_race_started(void) {
  */
 
 void set_race_started(bool state) {
-  reset_control_all();
   race_started = state;
+
+#ifndef MMSIM_ENABLED
+  reset_control_all();
   if (!state) {
     menu_reset();
     race_finish_ms = get_clock_ticks();
   }
+#endif
 }
 
 void set_control_debug(bool state) {
   control_debug = state;
 }
 
+#ifndef MMSIM_ENABLED
 int8_t check_start_run(void) {
   if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= SENSOR_FRONT_DETECTION_START) {
     if (sensor_front_left_start_ms == 0 && sensor_front_right_start_ms == 0) {
@@ -160,6 +170,7 @@ int8_t check_start_run(void) {
   }
   return -1;
 }
+#endif
 
 void set_side_sensors_close_correction(bool enabled) {
   side_sensors_close_correction_enabled = enabled;
@@ -214,8 +225,10 @@ void reset_control_speed(void) {
 void reset_control_all(void) {
   reset_control_errors();
   reset_control_speed();
+#ifndef MMSIM_ENABLED
   reset_motors_saturated();
   reset_encoder_avg();
+#endif
 }
 
 void set_target_linear_speed(int32_t linear_speed) {
@@ -234,16 +247,20 @@ float get_ideal_angular_speed(void) {
   return ideal_angular_speed;
 }
 
+#ifndef MMSIM_ENABLED
 void set_target_fan_speed(int32_t fan_speed, int32_t ms) {
   target_fan_speed = fan_speed; // percentage_to_fan_pwm(fan_speed);
   fan_speed_accel = (fan_speed - ideal_fan_speed) * CONTROL_FREQUENCY_HZ / ms;
 }
+#endif
 
 /**
  * @brief Función de control general del robot
  * · Gestiona velocidades, aceleraciones, correcciones, ...
  *
  */
+
+#ifndef MMSIM_ENABLED
 void control_loop(void) {
   // gpio_set(GPIOB, GPIO13);
   // delay_us(100);
@@ -383,7 +400,7 @@ void control_loop(void) {
         (int16_t)pwm_left,
         (int16_t)pwm_right,
         // (int16_t)get_encoder_avg_millimeters(),
-        (int16_t)(side_sensors_error*100),
+        (int16_t)(side_sensors_error * 100),
         (int16_t)(get_battery_voltage() * 100));
 
     // static char *labels[] = {
@@ -433,7 +450,9 @@ void control_loop(void) {
     //     (int16_t)get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
   }
 }
+#endif
 
+#ifndef MMSIM_ENABLED
 void keep_z_angle(void) {
   float linear_voltage = 0;
   float angular_voltage = 0;
@@ -452,3 +471,4 @@ void keep_z_angle(void) {
   gpio_set(GPIOB, GPIO15);
   set_motors_pwm(pwm_left, pwm_right);
 }
+#endif

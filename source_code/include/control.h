@@ -1,17 +1,24 @@
 #ifndef __CONTROL_H
 #define __CONTROL_H
 
-#include <battery.h>
-#include <config.h>
-#include <constants.h>
-#include <debug.h>
-#include <macroarray.h>
-#include <menu.h>
-#include <move.h>
+#ifndef MMSIM_ENABLED
+#include "battery.h"
+#include "config.h"
+#include "constants.h"
+#include "debug.h"
+#include "macroarray.h"
+#include "menu.h"
+#endif
+#include "move.h"
 
+#ifndef MMSIM_ENABLED
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
 #include <math.h>
+#else
+#include <stdbool.h>
+#include <stdint.h>
+#endif
 
 bool is_race_started(void);
 void set_race_started(bool state);
