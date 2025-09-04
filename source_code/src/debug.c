@@ -64,24 +64,32 @@ static void debug_motors_current(void) {
 }
 
 static void debug_gyro_demo(void) {
-  // if (get_clock_ticks() >= last_keep_z_angle + 1) {
-  lsm6dsr_set_gyro_z_degrees(0);
+  reset_control_all();
   delay(1000);
   do {
-    lsm6dsr_keep_z_angle();
-    check_debug_active();
-  } while (debug_enabled);
-  // last_keep_z_angle = get_clock_ticks();
-  // }
-}
-
-static void debug_fan_demo(void) {
-  delay(1000);
-  do {
-    set_fan_speed(75);
+    if (get_clock_ticks() >= last_keep_z_angle + 1) {
+      keep_z_angle();
+      last_keep_z_angle = get_clock_ticks();
+    }
     check_debug_active();
   } while (debug_enabled);
   set_fan_speed(0);
+  reset_control_all();
+}
+
+static void debug_fan_demo(void) {
+  reset_control_all();
+  delay(1000);
+  set_fan_speed(50);
+  do {
+    if (get_clock_ticks() >= last_keep_z_angle + 1) {
+      keep_z_angle();
+      last_keep_z_angle = get_clock_ticks();
+    }
+    check_debug_active();
+  } while (debug_enabled);
+  set_fan_speed(0);
+  reset_control_all();
 }
 
 bool is_debug_enabled(void) {

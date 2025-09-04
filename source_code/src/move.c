@@ -28,6 +28,10 @@ static char *movement_string[] = {
     "MOVE_BACK_STOP",
 };
 
+//! EL COLAB CALCULA MAL LOS SIGUIENTES GIROS:
+//! MOVE_****_180 -> El .end tiene que ser igual que el .start
+//! MOVE_****_TO_135 -> El .end tiene que ser el .start y el .start tiene que ser el .end del MOVE_****_FROM_45_180
+
 static struct inplace_params turns_inplace[] = {
     [MOVE_BACK] = {
         .start = 0,
@@ -84,279 +88,279 @@ static struct turn_params turns_explore[] = {
 
 static struct turn_params turns_normal[] = {
     [MOVE_LEFT_90] = {
-        .start = -24.1966,
-        .end = -24.2030,
-        .linear_speed = 1000,
-        .max_angular_speed = 11.1111,
-        .transition = 63.3450,
-        .arc = 60.7300,
+        .start = -68.8257,
+        .end = -68.8336,
+        .linear_speed = 1696,
+        .max_angular_speed = 12.5630,
+        .transition = 63.3541,
+        .arc = 131.4061,
         .sign = -1,
     },
     [MOVE_RIGHT_90] = {
-        .start = -24.1966,
-        .end = -24.2030,
-        .linear_speed = 1000,
-        .max_angular_speed = 11.1111,
-        .transition = 63.3450,
-        .arc = 60.7300,
+        .start = -68.8257,
+        .end = -68.8336,
+        .linear_speed = 1696,
+        .max_angular_speed = 12.5630,
+        .transition = 63.3541,
+        .arc = 131.4061,
         .sign = 1,
     },
     [MOVE_LEFT_180] = {
-        .start = -44.9900,
-        .end = -44.9900,
-        .linear_speed = 1000,
-        .max_angular_speed = 11.1111,
-        .transition = 63.3450,
-        .arc = 202.1000,
+        .start = -44.9865,
+        .end = -44.9865,
+        .linear_speed = 1350,
+        .max_angular_speed = 15.0000,
+        .transition = 63.3488,
+        .arc = 202.0950,
         .sign = -1,
     },
     [MOVE_RIGHT_180] = {
-        .start = -44.9900,
-        .end = -44.9900,
-        .linear_speed = 1000,
-        .max_angular_speed = 11.1111,
-        .transition = 63.3450,
-        .arc = 202.1000,
+        .start = -44.9865,
+        .end = -44.9865,
+        .linear_speed = 1350,
+        .max_angular_speed = 15.0000,
+        .transition = 63.3488,
+        .arc = 202.0950,
         .sign = 1,
     },
     [MOVE_LEFT_TO_45] = {
         .start = -73.0659,
-        .end = 54.2130,
-        .linear_speed = 1000,
-        .max_angular_speed = 8.3333,
-        .transition = 63.3400,
-        .arc = 13.6100,
+        .end = 54.2105,
+        .linear_speed = 1644,
+        .max_angular_speed = 13.7000,
+        .transition = 63.3433,
+        .arc = 13.6123,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_45] = {
         .start = -73.0659,
-        .end = 54.2130,
-        .linear_speed = 1000,
-        .max_angular_speed = 8.3333,
-        .transition = 63.3400,
-        .arc = 13.6100,
+        .end = 54.2105,
+        .linear_speed = 1644,
+        .max_angular_speed = 13.7000,
+        .transition = 63.3433,
+        .arc = 13.6123,
         .sign = 1,
     },
     [MOVE_LEFT_TO_135] = {
-        .start = -26.5865,
+        .start = -26.5873,
         .end = 47.9719,
-        .linear_speed = 1000,
-        .max_angular_speed = 13.4120,
-        .transition = 63.3400,
-        .arc = 95.0400,
+        .linear_speed = 1118,
+        .max_angular_speed = 14.9946,
+        .transition = 63.3459,
+        .arc = 95.0300,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_135] = {
-        .start = -26.5865,
+        .start = -26.5873,
         .end = 47.9719,
-        .linear_speed = 1000,
-        .max_angular_speed = 13.4120,
-        .transition = 63.3400,
-        .arc = 95.0400,
+        .linear_speed = 1118,
+        .max_angular_speed = 14.9946,
+        .transition = 63.3459,
+        .arc = 95.0300,
         .sign = 1,
     },
     [MOVE_LEFT_45_TO_45] = {
         .start = 39.0156,
-        .end = 39.0130,
-        .linear_speed = 1000,
-        .max_angular_speed = 15.7134,
-        .transition = 63.3450,
-        .arc = 19.3200,
+        .end = 39.0126,
+        .linear_speed = 955,
+        .max_angular_speed = 15.0063,
+        .transition = 63.3452,
+        .arc = 19.3196,
         .sign = -1,
     },
     [MOVE_RIGHT_45_TO_45] = {
         .start = 39.0156,
-        .end = 39.0130,
-        .linear_speed = 1000,
-        .max_angular_speed = 15.7134,
-        .transition = 63.3450,
-        .arc = 19.3200,
+        .end = 39.0126,
+        .linear_speed = 955,
+        .max_angular_speed = 15.0063,
+        .transition = 63.3452,
+        .arc = 19.3196,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45] = {
         .start = 54.2133,
-        .end = -73.0662,
-        .linear_speed = 1000,
-        .max_angular_speed = 8.3333,
-        .transition = 63.3400,
-        .arc = 13.6100,
+        .end = -73.0687,
+        .linear_speed = 1644,
+        .max_angular_speed = 13.7000,
+        .transition = 63.3433,
+        .arc = 13.6123,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45] = {
         .start = 54.2133,
-        .end = -73.0662,
-        .linear_speed = 1000,
-        .max_angular_speed = 8.3333,
-        .transition = 63.3400,
-        .arc = 13.6100,
+        .end = -73.0687,
+        .linear_speed = 1644,
+        .max_angular_speed = 13.7000,
+        .transition = 63.3433,
+        .arc = 13.6123,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
         .start = 47.9719,
-        .end = -26.5867,
-        .linear_speed = 1000,
-        .max_angular_speed = 13.4120,
-        .transition = 63.3400,
-        .arc = 95.0400,
+        .end = -26.5873,
+        .linear_speed = 1118,
+        .max_angular_speed = 14.9946,
+        .transition = 63.3459,
+        .arc = 95.0300,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
         .start = 47.9719,
-        .end = -26.5867,
-        .linear_speed = 1000,
-        .max_angular_speed = 13.4120,
-        .transition = 63.3400,
-        .arc = 95.0400,
+        .end = -26.5873,
+        .linear_speed = 1118,
+        .max_angular_speed = 14.9946,
+        .transition = 63.3459,
+        .arc = 95.0300,
         .sign = 1,
     },
 };
 
 static struct turn_params turns_medium[] = {
     [MOVE_LEFT_90] = {
-        .start = -24.1966,
-        .end = -24.1970,
-        .linear_speed = 1400,
-        .max_angular_speed = 15.5556,
-        .transition = 63.3500,
-        .arc = 60.7180,
+        .start = -68.8257,
+        .end = -68.8322,
+        .linear_speed = 1932,
+        .max_angular_speed = 14.3111,
+        .transition = 63.3503,
+        .arc = 131.4146,
         .sign = -1,
     },
     [MOVE_RIGHT_90] = {
-        .start = -24.1966,
-        .end = -24.1970,
-        .linear_speed = 1400,
-        .max_angular_speed = 15.5556,
-        .transition = 63.3500,
-        .arc = 60.7180,
+        .start = -68.8257,
+        .end = -68.8322,
+        .linear_speed = 1932,
+        .max_angular_speed = 14.3111,
+        .transition = 63.3503,
+        .arc = 131.4146,
         .sign = 1,
     },
     [MOVE_LEFT_180] = {
-        .start = -44.9860,
-        .end = -44.9860,
-        .linear_speed = 1400,
-        .max_angular_speed = 15.5556,
-        .transition = 63.3500,
-        .arc = 202.0900,
+        .start = -44.9842,
+        .end = -44.9842,
+        .linear_speed = 1575,
+        .max_angular_speed = 17.5000,
+        .transition = 63.3465,
+        .arc = 202.1040,
         .sign = -1,
     },
     [MOVE_RIGHT_180] = {
-        .start = -44.9860,
-        .end = -44.9860,
-        .linear_speed = 1400,
-        .max_angular_speed = 15.5556,
-        .transition = 63.3500,
-        .arc = 202.0900,
+        .start = -44.9842,
+        .end = -44.9842,
+        .linear_speed = 1575,
+        .max_angular_speed = 17.5000,
+        .transition = 63.3465,
+        .arc = 202.1040,
         .sign = 1,
     },
     [MOVE_LEFT_TO_45] = {
         .start = -73.0659,
-        .end = 54.2130,
-        .linear_speed = 1400,
-        .max_angular_speed = 11.6667,
-        .transition = 63.3500,
-        .arc = 13.5940,
+        .end = 54.2077,
+        .linear_speed = 1865,
+        .max_angular_speed = 15.5417,
+        .transition = 63.3541,
+        .arc = 13.5959,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_45] = {
         .start = -73.0659,
-        .end = 54.2130,
-        .linear_speed = 1400,
-        .max_angular_speed = 11.6667,
-        .transition = 63.3500,
-        .arc = 13.5940,
+        .end = 54.2077,
+        .linear_speed = 1865,
+        .max_angular_speed = 15.5417,
+        .transition = 63.3541,
+        .arc = 13.5959,
         .sign = 1,
     },
     [MOVE_LEFT_TO_135] = {
-        .start = -26.5865,
+        .start = -26.5962,
         .end = 47.9719,
-        .linear_speed = 1400,
-        .max_angular_speed = 18.7768,
-        .transition = 63.3500,
-        .arc = 95.0320,
+        .linear_speed = 1305,
+        .max_angular_speed = 17.5027,
+        .transition = 63.3512,
+        .arc = 95.0301,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_135] = {
-        .start = -26.5865,
+        .start = -26.5962,
         .end = 47.9719,
-        .linear_speed = 1400,
-        .max_angular_speed = 18.7768,
-        .transition = 63.3500,
-        .arc = 95.0320,
+        .linear_speed = 1305,
+        .max_angular_speed = 17.5027,
+        .transition = 63.3512,
+        .arc = 95.0301,
         .sign = 1,
     },
     [MOVE_LEFT_45_TO_45] = {
         .start = 39.0156,
-        .end = 39.0070,
-        .linear_speed = 1400,
-        .max_angular_speed = 21.9987,
-        .transition = 63.3500,
-        .arc = 19.3200,
+        .end = 39.0122,
+        .linear_speed = 1114,
+        .max_angular_speed = 17.5047,
+        .transition = 63.3420,
+        .arc = 19.3279,
         .sign = -1,
     },
     [MOVE_RIGHT_45_TO_45] = {
         .start = 39.0156,
-        .end = 39.0070,
-        .linear_speed = 1400,
-        .max_angular_speed = 21.9987,
-        .transition = 63.3500,
-        .arc = 19.3200,
+        .end = 39.0122,
+        .linear_speed = 1114,
+        .max_angular_speed = 17.5047,
+        .transition = 63.3420,
+        .arc = 19.3279,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45] = {
         .start = 54.2133,
-        .end = -73.0662,
-        .linear_speed = 1400,
-        .max_angular_speed = 11.6667,
-        .transition = 63.3500,
-        .arc = 13.5940,
+        .end = -73.0715,
+        .linear_speed = 1865,
+        .max_angular_speed = 15.5417,
+        .transition = 63.3541,
+        .arc = 13.5959,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45] = {
         .start = 54.2133,
-        .end = -73.0662,
-        .linear_speed = 1400,
-        .max_angular_speed = 11.6667,
-        .transition = 63.3500,
-        .arc = 13.5940,
+        .end = -73.0715,
+        .linear_speed = 1865,
+        .max_angular_speed = 15.5417,
+        .transition = 63.3541,
+        .arc = 13.5959,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
         .start = 47.9719,
-        .end = -26.5947,
-        .linear_speed = 1400,
-        .max_angular_speed = 18.7768,
-        .transition = 63.3500,
-        .arc = 95.0320,
+        .end = -26.5962,
+        .linear_speed = 1305,
+        .max_angular_speed = 17.5027,
+        .transition = 63.3512,
+        .arc = 95.0301,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
         .start = 47.9719,
-        .end = -26.5947,
-        .linear_speed = 1400,
-        .max_angular_speed = 18.7768,
-        .transition = 63.3500,
-        .arc = 95.0320,
+        .end = -26.5962,
+        .linear_speed = 1305,
+        .max_angular_speed = 17.5027,
+        .transition = 63.3512,
+        .arc = 95.0301,
         .sign = 1,
     },
 };
 
 static struct turn_params turns_fast[] = {
     [MOVE_LEFT_90] = {
-        .start = -24.1966,
-        .end = -24.2090,
-        .linear_speed = 1800,
-        .max_angular_speed = 20.0000,
-        .transition = 63.3510,
-        .arc = 60.7320,
+        .start = -68.8257,
+        .end = -68.8335,
+        .linear_speed = 2220,
+        .max_angular_speed = 16.4444,
+        .transition = 63.3588,
+        .arc = 131.4018,
         .sign = -1,
     },
     [MOVE_RIGHT_90] = {
-        .start = -24.1966,
-        .end = -24.2090,
-        .linear_speed = 1800,
-        .max_angular_speed = 20.0000,
-        .transition = 63.3510,
-        .arc = 60.7320,
+        .start = -68.8257,
+        .end = -68.8335,
+        .linear_speed = 2220,
+        .max_angular_speed = 16.4444,
+        .transition = 63.3588,
+        .arc = 131.4018,
         .sign = 1,
     },
     [MOVE_LEFT_180] = {
@@ -379,350 +383,350 @@ static struct turn_params turns_fast[] = {
     },
     [MOVE_LEFT_TO_45] = {
         .start = -73.0659,
-        .end = 54.2010,
-        .linear_speed = 1800,
-        .max_angular_speed = 15.0000,
-        .transition = 63.3510,
-        .arc = 13.6080,
+        .end = 54.2090,
+        .linear_speed = 2146,
+        .max_angular_speed = 17.8833,
+        .transition = 63.3499,
+        .arc = 13.6056,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_45] = {
         .start = -73.0659,
-        .end = 54.2010,
-        .linear_speed = 1800,
-        .max_angular_speed = 15.0000,
-        .transition = 63.3510,
-        .arc = 13.6080,
+        .end = 54.2090,
+        .linear_speed = 2146,
+        .max_angular_speed = 17.8833,
+        .transition = 63.3499,
+        .arc = 13.6056,
         .sign = 1,
     },
     [MOVE_LEFT_TO_135] = {
-        .start = -26.5865,
+        .start = -26.5884,
         .end = 47.9719,
-        .linear_speed = 1800,
-        .max_angular_speed = 24.1416,
-        .transition = 63.3510,
-        .arc = 95.0400,
+        .linear_speed = 1491,
+        .max_angular_speed = 19.9973,
+        .transition = 63.3526,
+        .arc = 95.0214,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_135] = {
-        .start = -26.5865,
+        .start = -26.5884,
         .end = 47.9719,
-        .linear_speed = 1800,
-        .max_angular_speed = 24.1416,
-        .transition = 63.3510,
-        .arc = 95.0400,
+        .linear_speed = 1491,
+        .max_angular_speed = 19.9973,
+        .transition = 63.3526,
+        .arc = 95.0214,
         .sign = 1,
     },
     [MOVE_LEFT_45_TO_45] = {
         .start = 39.0156,
-        .end = 39.0150,
-        .linear_speed = 1800,
-        .max_angular_speed = 28.2841,
-        .transition = 63.3420,
-        .arc = 19.3320,
+        .end = 39.0126,
+        .linear_speed = 1273,
+        .max_angular_speed = 20.0031,
+        .transition = 63.3445,
+        .arc = 19.3241,
         .sign = -1,
     },
     [MOVE_RIGHT_45_TO_45] = {
         .start = 39.0156,
-        .end = 39.0150,
-        .linear_speed = 1800,
-        .max_angular_speed = 28.2841,
-        .transition = 63.3420,
-        .arc = 19.3320,
+        .end = 39.0126,
+        .linear_speed = 1273,
+        .max_angular_speed = 20.0031,
+        .transition = 63.3445,
+        .arc = 19.3241,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45] = {
         .start = 54.2133,
-        .end = -73.0782,
-        .linear_speed = 1800,
-        .max_angular_speed = 15.0000,
-        .transition = 63.3510,
-        .arc = 13.6080,
+        .end = -73.0702,
+        .linear_speed = 2146,
+        .max_angular_speed = 17.8833,
+        .transition = 63.3499,
+        .arc = 13.6056,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45] = {
         .start = 54.2133,
-        .end = -73.0782,
-        .linear_speed = 1800,
-        .max_angular_speed = 15.0000,
-        .transition = 63.3510,
-        .arc = 13.6080,
+        .end = -73.0702,
+        .linear_speed = 2146,
+        .max_angular_speed = 17.8833,
+        .transition = 63.3499,
+        .arc = 13.6056,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
         .start = 47.9719,
-        .end = -26.6007,
-        .linear_speed = 1800,
-        .max_angular_speed = 24.1416,
-        .transition = 63.3510,
-        .arc = 95.0400,
+        .end = -26.5884,
+        .linear_speed = 1491,
+        .max_angular_speed = 19.9973,
+        .transition = 63.3526,
+        .arc = 95.0214,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
         .start = 47.9719,
-        .end = -26.6007,
-        .linear_speed = 1800,
-        .max_angular_speed = 24.1416,
-        .transition = 63.3510,
-        .arc = 95.0400,
+        .end = -26.5884,
+        .linear_speed = 1491,
+        .max_angular_speed = 19.9973,
+        .transition = 63.3526,
+        .arc = 95.0214,
         .sign = 1,
     },
 };
 
 static struct turn_params turns_super[] = {
     [MOVE_LEFT_90] = {
-        .start = -24.1966,
-        .end = -24.2110,
-        .linear_speed = 2200,
-        .max_angular_speed = 24.4444,
-        .transition = 63.3600,
-        .arc = 60.7200,
+        .start = -68.8257,
+        .end = -68.8497,
+        .linear_speed = 2490,
+        .max_angular_speed = 18.4444,
+        .transition = 63.3581,
+        .arc = 131.4222,
         .sign = -1,
     },
     [MOVE_RIGHT_90] = {
-        .start = -24.1966,
-        .end = -24.2110,
-        .linear_speed = 2200,
-        .max_angular_speed = 24.4444,
-        .transition = 63.3600,
-        .arc = 60.7200,
+        .start = -68.8257,
+        .end = -68.8497,
+        .linear_speed = 2490,
+        .max_angular_speed = 18.4444,
+        .transition = 63.3581,
+        .arc = 131.4222,
         .sign = 1,
     },
     [MOVE_LEFT_180] = {
-        .start = -44.9780,
-        .end = -44.9780,
-        .linear_speed = 2200,
-        .max_angular_speed = 24.4444,
-        .transition = 63.3600,
-        .arc = 202.0920,
+        .start = -44.9797,
+        .end = -44.9797,
+        .linear_speed = 2025,
+        .max_angular_speed = 22.5000,
+        .transition = 63.3521,
+        .arc = 202.0950,
         .sign = -1,
     },
     [MOVE_RIGHT_180] = {
-        .start = -44.9780,
-        .end = -44.9780,
-        .linear_speed = 2200,
-        .max_angular_speed = 24.4444,
-        .transition = 63.3600,
-        .arc = 202.0920,
+        .start = -44.9797,
+        .end = -44.9797,
+        .linear_speed = 2025,
+        .max_angular_speed = 22.5000,
+        .transition = 63.3521,
+        .arc = 202.0950,
         .sign = 1,
     },
     [MOVE_LEFT_TO_45] = {
         .start = -73.0659,
-        .end = 54.1990,
-        .linear_speed = 2200,
-        .max_angular_speed = 18.3333,
-        .transition = 63.3600,
-        .arc = 13.5960,
+        .end = 54.1956,
+        .linear_speed = 2404,
+        .max_angular_speed = 20.0333,
+        .transition = 63.3574,
+        .arc = 13.6066,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_45] = {
         .start = -73.0659,
-        .end = 54.1990,
-        .linear_speed = 2200,
-        .max_angular_speed = 18.3333,
-        .transition = 63.3600,
-        .arc = 13.5960,
+        .end = 54.1956,
+        .linear_speed = 2404,
+        .max_angular_speed = 20.0333,
+        .transition = 63.3574,
+        .arc = 13.6066,
         .sign = 1,
     },
     [MOVE_LEFT_TO_135] = {
-        .start = -26.5865,
+        .start = -26.5908,
         .end = 47.9719,
-        .linear_speed = 2200,
-        .max_angular_speed = 29.5064,
-        .transition = 63.3600,
-        .arc = 95.0180,
+        .linear_speed = 1678,
+        .max_angular_speed = 22.5054,
+        .transition = 63.3445,
+        .arc = 95.0419,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_135] = {
-        .start = -26.5865,
+        .start = -26.5908,
         .end = 47.9719,
-        .linear_speed = 2200,
-        .max_angular_speed = 29.5064,
-        .transition = 63.3600,
-        .arc = 95.0180,
+        .linear_speed = 1678,
+        .max_angular_speed = 22.5054,
+        .transition = 63.3445,
+        .arc = 95.0419,
         .sign = 1,
     },
     [MOVE_LEFT_45_TO_45] = {
         .start = 39.0156,
-        .end = 38.9990,
-        .linear_speed = 2200,
-        .max_angular_speed = 34.5695,
-        .transition = 63.3600,
-        .arc = 19.3160,
+        .end = 39.0063,
+        .linear_speed = 1432,
+        .max_angular_speed = 22.5016,
+        .transition = 63.3517,
+        .arc = 19.3177,
         .sign = -1,
     },
     [MOVE_RIGHT_45_TO_45] = {
         .start = 39.0156,
-        .end = 38.9990,
-        .linear_speed = 2200,
-        .max_angular_speed = 34.5695,
-        .transition = 63.3600,
-        .arc = 19.3160,
+        .end = 39.0063,
+        .linear_speed = 1432,
+        .max_angular_speed = 22.5016,
+        .transition = 63.3517,
+        .arc = 19.3177,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45] = {
         .start = 54.2133,
-        .end = -73.0802,
-        .linear_speed = 2200,
-        .max_angular_speed = 18.3333,
-        .transition = 63.3600,
-        .arc = 13.5960,
+        .end = -73.0836,
+        .linear_speed = 2404,
+        .max_angular_speed = 20.0333,
+        .transition = 63.3574,
+        .arc = 13.6066,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45] = {
         .start = 54.2133,
-        .end = -73.0802,
-        .linear_speed = 2200,
-        .max_angular_speed = 18.3333,
-        .transition = 63.3600,
-        .arc = 13.5960,
+        .end = -73.0836,
+        .linear_speed = 2404,
+        .max_angular_speed = 20.0333,
+        .transition = 63.3574,
+        .arc = 13.6066,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
         .start = 47.9719,
-        .end = -26.5927,
-        .linear_speed = 2200,
-        .max_angular_speed = 29.5064,
-        .transition = 63.3600,
-        .arc = 95.0180,
+        .end = -26.5908,
+        .linear_speed = 1678,
+        .max_angular_speed = 22.5054,
+        .transition = 63.3445,
+        .arc = 95.0419,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
         .start = 47.9719,
-        .end = -26.5927,
-        .linear_speed = 2200,
-        .max_angular_speed = 29.5064,
-        .transition = 63.3600,
-        .arc = 95.0180,
+        .end = -26.5908,
+        .linear_speed = 1678,
+        .max_angular_speed = 22.5054,
+        .transition = 63.3445,
+        .arc = 95.0419,
         .sign = 1,
     },
 };
 
 static struct turn_params turns_haki[] = {
     [MOVE_LEFT_90] = {
-        .start = -24.1966,
-        .end = -24.2010,
-        .linear_speed = 2600,
-        .max_angular_speed = 28.8889,
-        .transition = 63.3620,
-        .arc = 60.7100,
+        .start = -68.8257,
+        .end = -68.8486,
+        .linear_speed = 2745,
+        .max_angular_speed = 20.3333,
+        .transition = 63.3683,
+        .arc = 131.4032,
         .sign = -1,
     },
     [MOVE_RIGHT_90] = {
-        .start = -24.1966,
-        .end = -24.2010,
-        .linear_speed = 2600,
-        .max_angular_speed = 28.8889,
-        .transition = 63.3620,
-        .arc = 60.7100,
+        .start = -68.8257,
+        .end = -68.8486,
+        .linear_speed = 2745,
+        .max_angular_speed = 20.3333,
+        .transition = 63.3683,
+        .arc = 131.4032,
         .sign = 1,
     },
     [MOVE_LEFT_180] = {
-        .start = -44.9740,
-        .end = -44.9740,
-        .linear_speed = 2600,
-        .max_angular_speed = 28.8889,
-        .transition = 63.3620,
-        .arc = 202.0980,
+        .start = -44.9775,
+        .end = -44.9775,
+        .linear_speed = 2250,
+        .max_angular_speed = 25.0000,
+        .transition = 63.3600,
+        .arc = 202.0950,
         .sign = -1,
     },
     [MOVE_RIGHT_180] = {
-        .start = -44.9740,
-        .end = -44.9740,
-        .linear_speed = 2600,
-        .max_angular_speed = 28.8889,
-        .transition = 63.3620,
-        .arc = 202.0980,
+        .start = -44.9775,
+        .end = -44.9775,
+        .linear_speed = 2250,
+        .max_angular_speed = 25.0000,
+        .transition = 63.3600,
+        .arc = 202.0950,
         .sign = 1,
     },
     [MOVE_LEFT_TO_45] = {
         .start = -73.0659,
-        .end = 54.1970,
-        .linear_speed = 2600,
-        .max_angular_speed = 21.6667,
-        .transition = 63.3620,
-        .arc = 13.5980,
+        .end = 54.2020,
+        .linear_speed = 2647,
+        .max_angular_speed = 22.0583,
+        .transition = 63.3559,
+        .arc = 13.6056,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_45] = {
         .start = -73.0659,
-        .end = 54.1970,
-        .linear_speed = 2600,
-        .max_angular_speed = 21.6667,
-        .transition = 63.3620,
-        .arc = 13.5980,
+        .end = 54.2020,
+        .linear_speed = 2647,
+        .max_angular_speed = 22.0583,
+        .transition = 63.3559,
+        .arc = 13.6056,
         .sign = 1,
     },
     [MOVE_LEFT_TO_135] = {
-        .start = -26.5865,
+        .start = -26.5995,
         .end = 47.9719,
-        .linear_speed = 2600,
-        .max_angular_speed = 34.8712,
-        .transition = 63.3620,
-        .arc = 95.0300,
+        .linear_speed = 1864,
+        .max_angular_speed = 25.0000,
+        .transition = 63.3480,
+        .arc = 95.0454,
         .sign = -1,
     },
     [MOVE_RIGHT_TO_135] = {
-        .start = -26.5865,
+        .start = -26.5995,
         .end = 47.9719,
-        .linear_speed = 2600,
-        .max_angular_speed = 34.8712,
-        .transition = 63.3620,
-        .arc = 95.0300,
+        .linear_speed = 1864,
+        .max_angular_speed = 25.0000,
+        .transition = 63.3480,
+        .arc = 95.0454,
         .sign = 1,
     },
     [MOVE_LEFT_45_TO_45] = {
-        .start = 38.2276,
-        .end = 38.2122,
-        .linear_speed = 2600,
-        .max_angular_speed = 40.8548,
-        .transition = 62.0360,
-        .arc = 23.1400,
+        .start = 39.0156,
+        .end = 39.0069,
+        .linear_speed = 1591,
+        .max_angular_speed = 25.0000,
+        .transition = 63.3536,
+        .arc = 19.3147,
         .sign = -1,
     },
     [MOVE_RIGHT_45_TO_45] = {
-        .start = 38.2276,
-        .end = 38.2122,
-        .linear_speed = 2600,
-        .max_angular_speed = 40.8548,
-        .transition = 62.0360,
-        .arc = 23.1400,
+        .start = 39.0156,
+        .end = 39.0069,
+        .linear_speed = 1591,
+        .max_angular_speed = 25.0000,
+        .transition = 63.3536,
+        .arc = 19.3147,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45] = {
         .start = 54.2133,
-        .end = -73.0822,
-        .linear_speed = 2600,
-        .max_angular_speed = 21.6667,
-        .transition = 63.3620,
-        .arc = 13.5980,
+        .end = -73.0772,
+        .linear_speed = 2647,
+        .max_angular_speed = 22.0583,
+        .transition = 63.3559,
+        .arc = 13.6056,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45] = {
         .start = 54.2133,
-        .end = -73.0822,
-        .linear_speed = 2600,
-        .max_angular_speed = 21.6667,
-        .transition = 63.3620,
-        .arc = 13.5980,
+        .end = -73.0772,
+        .linear_speed = 2647,
+        .max_angular_speed = 22.0583,
+        .transition = 63.3559,
+        .arc = 13.6056,
         .sign = 1,
     },
     [MOVE_LEFT_FROM_45_180] = {
         .start = 47.9719,
-        .end = -26.6047,
-        .linear_speed = 2600,
-        .max_angular_speed = 34.8712,
-        .transition = 63.3620,
-        .arc = 95.0300,
+        .end = -26.5995,
+        .linear_speed = 1864,
+        .max_angular_speed = 25.0000,
+        .transition = 63.3480,
+        .arc = 95.0454,
         .sign = -1,
     },
     [MOVE_RIGHT_FROM_45_180] = {
         .start = 47.9719,
-        .end = -26.6047,
-        .linear_speed = 2600,
-        .max_angular_speed = 34.8712,
-        .transition = 63.3620,
-        .arc = 95.0300,
+        .end = -26.5995,
+        .linear_speed = 1864,
+        .max_angular_speed = 25.0000,
+        .transition = 63.3480,
+        .arc = 95.0454,
         .sign = 1,
     },
 };
@@ -740,10 +744,10 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_explore,
     },
     [SPEED_NORMAL] = {
-        .linear_speed = 2000,
+        .linear_speed = 3000,
         .linear_accel = {
-            .break_accel = 5000,
-            .accel_hard = 5000,
+            .break_accel = 12000,
+            .accel_hard = 12000,
             .speed_hard = 0,
             .accel_soft = 0,
         },
@@ -751,10 +755,10 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_normal,
     },
     [SPEED_MEDIUM] = {
-        .linear_speed = 3000,
+        .linear_speed = 5000,
         .linear_accel = {
-            .break_accel = 10000,
-            .accel_hard = 10000,
+            .break_accel = 15000,
+            .accel_hard = 15000,
             .speed_hard = 0,
             .accel_soft = 0,
         },
@@ -762,34 +766,34 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_medium,
     },
     [SPEED_FAST] = {
-        .linear_speed = 4000,
-        .linear_accel = {
-            .break_accel = 15000,
-            .accel_hard = 15000,
-            .speed_hard = 2500,
-            .accel_soft = 10000,
-        },
-        .fan_speed = 75,
-        .turns = turns_fast,
-    },
-    [SPEED_SUPER] = {
-        .linear_speed = 5000,
+        .linear_speed = 5500,
         .linear_accel = {
             .break_accel = 20000,
             .accel_hard = 20000,
             .speed_hard = 3500,
             .accel_soft = 15000,
         },
-        .fan_speed = 85,
-        .turns = turns_super,
+        .fan_speed = 75,
+        .turns = turns_fast,
     },
-    [SPEED_HAKI] = {
+    [SPEED_SUPER] = {
         .linear_speed = 6000,
         .linear_accel = {
             .break_accel = 25000,
             .accel_hard = 25000,
             .speed_hard = 4000,
-            .accel_soft = 18000,
+            .accel_soft = 20000,
+        },
+        .fan_speed = 85,
+        .turns = turns_super,
+    },
+    [SPEED_HAKI] = {
+        .linear_speed = 6500,
+        .linear_accel = {
+            .break_accel = 30000,
+            .accel_hard = 30000,
+            .speed_hard = 4500,
+            .accel_soft = 25000,
         },
         .fan_speed = 90,
         .turns = turns_haki,
@@ -804,18 +808,19 @@ static int32_t current_cell_absolute_start_mm = 0;
 static bool wall_lost_toggle_state = false;
 static bool cell_change_toggle_state = false;
 
-static int32_t calc_straight_to_speed_distance(int32_t from_speed, int32_t to_speed) {
+static float calc_straight_to_speed_distance(int32_t from_speed, int32_t to_speed) {
   return abs((to_speed * to_speed - from_speed * from_speed) / (2 * kinematics.linear_accel.break_accel));
 }
 
+#ifndef MMSIM_ENABLED
 static void enter_next_cell(void) {
   current_cell_start_mm = -SENSING_POINT_DISTANCE;
   current_cell_absolute_start_mm = get_encoder_avg_millimeters();
   current_cell_wall_lost = false;
-  set_RGB_color_while(255, 0, 0, 33);
   toggle_status_led();
   cell_change_toggle_state = !cell_change_toggle_state;
 }
+#endif
 
 static bool check_wall_loss_correction(struct walls initial_walls) {
   if (current_cell_wall_lost) {
@@ -856,6 +861,13 @@ static bool check_wall_loss_correction(struct walls initial_walls) {
 }
 
 static void move_home(void) {
+#ifdef MMSIM_ENABLED
+  API_moveForward();
+  API_turnRight();
+  API_turnRight();
+  return;
+#endif
+
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
@@ -880,6 +892,10 @@ static void move_home(void) {
  *
  */
 static void move_front(void) {
+#ifdef MMSIM_ENABLED
+  API_moveForward();
+#else
+
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   struct walls initial_walls = get_walls();
@@ -891,11 +907,24 @@ static void move_front(void) {
     set_side_sensors_far_correction(false);
   }
   move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
-  set_RGB_color_while(255, 0, 0, 33);
   enter_next_cell();
+#endif
 }
 
 static void move_side(enum movement movement) {
+#ifdef MMSIM_ENABLED
+  switch (movement) {
+    case MOVE_LEFT:
+      API_turnLeft();
+      API_moveForward();
+      break;
+    case MOVE_RIGHT:
+      API_turnRight();
+      API_moveForward();
+      break;
+  }
+#else
+
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
 
@@ -949,7 +978,9 @@ static void move_side(enum movement movement) {
     if (abs(start_distance_offset) > kinematics.turns[movement].start / 2) {
       start_distance_offset = start_distance_offset > 0 ? kinematics.turns[movement].start / 2 : -kinematics.turns[movement].start / 2;
     }
+    set_RGB_color(0, 0, 255);
     move_straight(kinematics.turns[movement].start - current_cell_start_mm + start_distance_offset, kinematics.turns[movement].linear_speed, false, false);
+    set_RGB_color(0, 0, 0);
   }
 
   disable_sensors_correction();
@@ -978,12 +1009,22 @@ static void move_side(enum movement movement) {
     if (abs(end_distance_offset) > kinematics.turns[movement].end / 2) {
       end_distance_offset = end_distance_offset > 0 ? kinematics.turns[movement].end / 2 : -kinematics.turns[movement].end / 2;
     }
+    set_RGB_color(0, 0, 255);
     move_straight(kinematics.turns[movement].end + end_distance_offset, kinematics.turns[movement].linear_speed, false, false);
+    set_RGB_color(0, 0, 0);
   }
   enter_next_cell();
+#endif
 }
 
 static void move_back(enum movement movement) {
+#ifdef MMSIM_ENABLED
+  API_turnRight();
+  API_turnRight();
+  if (movement != MOVE_BACK_STOP) {
+    API_moveForward();
+  }
+#else
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
@@ -1001,7 +1042,7 @@ static void move_back(enum movement movement) {
   if (initial_walls.front) {
     move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
   } else {
-    move_straight((CELL_DIMENSION / 2) - current_cell_start_mm - calc_straight_to_speed_distance(300, 0), 300, false, true);
+    move_straight(MIDDLE_MAZE_DISTANCE - current_cell_start_mm - calc_straight_to_speed_distance(300, 0), 300, false, true);
   }
 
   disable_sensors_correction();
@@ -1017,8 +1058,8 @@ static void move_back(enum movement movement) {
       set_starting_position();
       break;
     case MOVE_BACK:
-      move_straight(((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2, -100, false, true);
-      current_cell_start_mm = ((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH) / 2;
+      move_straight((MIDDLE_MAZE_DISTANCE) - ROBOT_BACK_LENGTH, -100, false, true);
+      current_cell_start_mm = (MIDDLE_MAZE_DISTANCE - ROBOT_BACK_LENGTH) / 2;
       break;
     default:
       break;
@@ -1033,6 +1074,7 @@ static void move_back(enum movement movement) {
     move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
     enter_next_cell();
   }
+#endif
 }
 
 bool get_cell_change_toggle_state(void) {
@@ -1072,7 +1114,11 @@ void set_starting_position(void) {
 }
 
 int32_t get_current_cell_travelled_distance(void) {
+#ifndef MMSIM_ENABLED
   return get_encoder_avg_millimeters() - current_cell_absolute_start_mm;
+#else
+  return 0;
+#endif
 }
 
 /**
@@ -1083,13 +1129,14 @@ int32_t get_current_cell_travelled_distance(void) {
  * @param stop
  */
 void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool stop) {
+#ifndef MMSIM_ENABLED
   int32_t current_distance = get_encoder_avg_micrometers();
-  int32_t stop_distance = 0;
+  float stop_distance = 0;
   struct walls initial_walls = get_walls();
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   if (speed >= 0) {
-    while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
+    while (is_race_started() && !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + (distance - stop_distance) * MICROMETERS_PER_MILLIMETER) {
       if (check_wall_loss && check_wall_loss_correction(initial_walls) /* && distance_left < 90 */) { // TODO: resetear distancia solo cuando el error es pequeño.
         // int32_t left_distance = (distance * MICROMETERS_PER_MILLIMETER) - (get_encoder_avg_micrometers() - current_distance);
         // while (true) {
@@ -1099,7 +1146,6 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
         // }
         current_distance = get_encoder_avg_micrometers();
         distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
-        set_RGB_color_while(0, 255, 0, 33);
       }
 
       if (stop) {
@@ -1107,7 +1153,7 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
       }
     }
   } else {
-    while (is_race_started() && get_encoder_avg_micrometers() >= current_distance - (distance + stop_distance) * MICROMETERS_PER_MILLIMETER) {
+    while (is_race_started() && !is_motor_saturated() && get_encoder_avg_micrometers() >= current_distance - (distance + stop_distance) * MICROMETERS_PER_MILLIMETER) {
       if (stop) {
         stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
       }
@@ -1116,9 +1162,10 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
   if (stop) {
     set_target_linear_speed(0);
     set_ideal_angular_speed(0.0);
-    while (is_race_started() && get_ideal_linear_speed() != 0) {
+    while (is_race_started() && !is_motor_saturated() && get_ideal_linear_speed() != 0) {
     }
   }
+#endif
 }
 
 /**
@@ -1129,20 +1176,19 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
  * @param stop
  */
 void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool stop) {
-  int32_t stop_distance = 0;
+#ifndef MMSIM_ENABLED
+  float stop_distance = 0;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
-  // while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
-  while (is_race_started() && get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) > (distance + stop_distance)) {
+  while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
+    // while (is_race_started() && !is_motor_saturated() && get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) > (distance + stop_distance)) {
     if (stop) {
       stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
     }
-    set_RGB_color(255, 0, 0);
   }
-  set_RGB_color(0, 0, 0);
   if (stop) {
     set_target_linear_speed(0);
-    while (is_race_started() && (get_ideal_linear_speed() != 0 || (is_front_sensors_correction_enabled() && get_front_sensors_angle_error() != 0))) {
+    while (is_race_started() && !is_motor_saturated() && (get_ideal_linear_speed() != 0 || (is_front_sensors_correction_enabled() && get_front_sensors_angle_error() != 0))) {
     }
     if (is_front_sensors_correction_enabled()) {
       uint32_t timeout = get_clock_ticks() + 1000;
@@ -1156,16 +1202,18 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
       }
     }
   }
+#endif
 }
 
-void run_straight(int32_t distance, int32_t start_offset, int32_t end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
+void run_straight(float distance, float start_offset, float end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
+#ifndef MMSIM_ENABLED
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_close_correction(true);
   set_side_sensors_far_correction(true);
 
   int32_t current_distance = get_encoder_avg_micrometers();
-  int32_t slow_distance = 0;
+  float slow_distance = 0;
 
   uint16_t current_cell = 1;
   int32_t current_cell_distance_left;
@@ -1180,28 +1228,8 @@ void run_straight(int32_t distance, int32_t start_offset, int32_t end_offset, ui
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   distance += end_offset;
-  while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
+  while (is_race_started() && !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     current_walls = get_walls();
-
-    static char *labels[] = {
-        "distance",
-        "cells",
-        "current_cell",
-        "end_offset",
-        "angular_speed",
-        "millimeters",
-    };
-    macroarray_store(
-        2,
-        0b000110,
-        labels,
-        6,
-        (int16_t)(distance),
-        (int16_t)cells,
-        (int16_t)current_cell,
-        (int16_t)(end_offset * 100),
-        (int16_t)(get_ideal_angular_speed() * 100),
-        (int16_t)(get_encoder_avg_millimeters()));
 
     if (!(has_begin && current_cell == 1) && check_wall_loss_correction(cell_walls)) {
       current_distance = get_encoder_avg_micrometers();
@@ -1230,15 +1258,19 @@ void run_straight(int32_t distance, int32_t start_offset, int32_t end_offset, ui
       set_target_linear_speed(final_speed);
     }
   }
+  if (current_cell < cells && end_offset == 0) {
+    enter_next_cell();
+  }
+#endif
 }
 
-void run_side(enum movement movement, struct turn_params turn) {
-  set_RGB_color(0, 0, 255);
+void run_side(enum movement movement, struct turn_params turn, struct turn_params next_turn) {
+#ifndef MMSIM_ENABLED
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
 
-  int32_t end_distance_offset = 0;
-  int32_t start_distance_offset = 0;
+  float end_distance_offset = 0.0f;
+  float start_distance_offset = 0.0f;
   bool enable_end_distance_offset = true;
   bool enable_start_distance_offset = true;
 
@@ -1294,7 +1326,6 @@ void run_side(enum movement movement, struct turn_params turn) {
   // reset_control_errors(); //! Esto se había puesto por un problema en la acumulación de error según aumenta el número de giros realizados
   move_arc_turn(turn);
 
-  set_RGB_color(0, 0, 255);
   set_front_sensors_correction(false);
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
@@ -1317,30 +1348,35 @@ void run_side(enum movement movement, struct turn_params turn) {
     if (abs(end_distance_offset) > turn.end / 2) {
       end_distance_offset = end_distance_offset > 0 ? turn.end / 2 : -turn.end / 2;
     }
-    move_straight(turn.end + end_distance_offset, turn.linear_speed, false, false);
+    move_straight(turn.end + end_distance_offset, next_turn.linear_speed, false, false);
   }
   enter_next_cell();
+#endif
 }
 
-void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
+void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
+#ifndef MMSIM_ENABLED
   set_front_sensors_correction(false);
-  set_front_sensors_diagonal_correction(true);
+  if (cells > 1) {
+    set_front_sensors_diagonal_correction(true);
+  } else {
+    set_front_sensors_diagonal_correction(false);
+  }
   set_side_sensors_close_correction(false);
   set_side_sensors_far_correction(false);
 
   uint16_t current_cell = 1;
   int32_t current_distance = get_encoder_avg_micrometers();
-  int32_t slow_distance = 0;
-  int32_t remaining_distance = 0;
+  float slow_distance = 0;
+  float remaining_distance = 0;
 
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   distance += end_offset;
-  while (is_race_started() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
+  while (is_race_started() && !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER * 0.5) {
+    if (remaining_distance < CELL_DIAGONAL * 0.5f * MICROMETERS_PER_MILLIMETER) {
       set_front_sensors_diagonal_correction(false);
-      set_RGB_color_while(0, 255, 0, 33);
     }
 
     if (get_encoder_avg_micrometers() - current_distance >= (CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER)) {
@@ -1357,6 +1393,10 @@ void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t 
       set_target_linear_speed(final_speed);
     }
   }
+  if (current_cell < cells && remaining_distance < 10) {
+    enter_next_cell();
+  }
+#endif
 }
 
 /**
@@ -1365,55 +1405,36 @@ void run_diagonal(int32_t distance, int32_t end_offset, uint16_t cells, int32_t 
  * @param turn_type
  */
 void move_arc_turn(struct turn_params turn) {
+#ifndef MMSIM_ENABLED
   int32_t start = get_encoder_avg_micrometers();
   int32_t current;
   float travelled;
   float angular_speed;
   float factor;
-  while (true && is_race_started()) {
+  while (true && is_race_started() && !is_motor_saturated()) {
+    set_RGB_color(255, 0, 0);
     current = get_encoder_avg_micrometers();
     travelled = (float)(current - start) / MICROMETERS_PER_MILLIMETER;
     if (travelled >= 2 * turn.transition + turn.arc) {
       break;
     }
     angular_speed = turn.sign * turn.max_angular_speed;
-    set_RGB_color(255, 0, 0);
     if (travelled < turn.transition) {
       factor = travelled / turn.transition;
       angular_speed *= sin(factor * PI / 2);
-      set_RGB_color(255, 255, 0);
     } else if (travelled >= turn.transition + turn.arc) {
       factor = (travelled - turn.arc) / turn.transition;
       angular_speed *= sin(factor * PI / 2);
-      set_RGB_color(255, 255, 0);
     }
     set_ideal_angular_speed(angular_speed);
-
-    static char *labels[] = {
-        "distance",
-        "cells",
-        "current_cell",
-        "end_offset",
-        "angular_speed",
-        "millimeters",
-    };
-    macroarray_store(
-        2,
-        0b000110,
-        labels,
-        6,
-        (int16_t)(travelled),
-        (int16_t)1,
-        (int16_t)1,
-        (int16_t)(0 * 100),
-        (int16_t)(get_ideal_angular_speed() * 100),
-        (int16_t)(get_encoder_avg_millimeters()));
   }
   set_ideal_angular_speed(0);
   set_RGB_color(0, 0, 0);
+#endif
 }
 
 void move_inplace_turn(enum movement movement) {
+#ifndef MMSIM_ENABLED
   struct inplace_params turn = turns_inplace[movement];
   set_target_linear_speed(turn.linear_speed);
 
@@ -1436,6 +1457,7 @@ void move_inplace_turn(enum movement movement) {
     set_ideal_angular_speed(angular_speed * sign);
   }
   set_ideal_angular_speed(0);
+#endif
 }
 
 /**
@@ -1445,6 +1467,7 @@ void move_inplace_turn(enum movement movement) {
  * @param rads
  */
 void move_inplace_angle(float angle, float rads) {
+#ifndef MMSIM_ENABLED
   lsm6dsr_set_gyro_z_degrees(0);
   float current_angle = lsm6dsr_get_gyro_z_degrees();
   float target_angle = current_angle + angle;
@@ -1456,18 +1479,21 @@ void move_inplace_angle(float angle, float rads) {
   set_target_linear_speed(0.0);
   if (angle >= 0) {
     set_ideal_angular_speed(rads);
-    while (is_race_started() && lsm6dsr_get_gyro_z_degrees() <= target_angle) {
+    while (is_race_started() && !is_motor_saturated() && lsm6dsr_get_gyro_z_degrees() <= target_angle) {
     }
   } else {
     set_ideal_angular_speed(-rads);
-    while (is_race_started() && lsm6dsr_get_gyro_z_degrees() >= target_angle) {
+    while (is_race_started() && !is_motor_saturated() && lsm6dsr_get_gyro_z_degrees() >= target_angle) {
     }
   }
   set_ideal_angular_speed(0.0);
+#endif
 }
 
 void move(enum movement movement) {
+#ifndef MMSIM_ENABLED
   set_check_motors_saturated_enabled(true);
+#endif
   switch (movement) {
     case MOVE_HOME:
       move_home();
@@ -1514,6 +1540,8 @@ void move_run_sequence(enum movement *sequence_movements) {
   bool running_diagonal = false;
   bool straight_has_begin = true;
   uint16_t straight_cells = 0;
+  struct turn_params turn_params;
+  struct turn_params next_turn_params;
 
   for (uint16_t i = 0; i < (MAZE_CELLS + 3); i++) {
     switch (sequence_movements[i]) {
@@ -1564,9 +1592,38 @@ void move_run_sequence(enum movement *sequence_movements) {
       case MOVE_LEFT_FROM_45_180:
       case MOVE_RIGHT_FROM_45_180:
 
-        if (kinematics.turns[sequence_movements[i]].start < 0) {
-          end_offset = kinematics.turns[sequence_movements[i]].start;
+        turn_params = kinematics.turns[sequence_movements[i]];
+        if (turn_params.start < 0) {
+          end_offset = turn_params.start;
         }
+
+        enum speed_strategy speed_strategy = menu_run_get_speed();
+        while (distance + end_offset < calc_straight_to_speed_distance(get_ideal_linear_speed(), turn_params.linear_speed)) {
+          if (speed_strategy <= SPEED_NORMAL) {
+            turn_params = kinematics_settings[SPEED_NORMAL].turns[sequence_movements[i]];
+            break;
+          }
+          turn_params = kinematics_settings[--speed_strategy].turns[sequence_movements[i]];
+          if (turn_params.start < 0) {
+            end_offset = turn_params.start;
+          }
+        }
+        if ((i + 1) < (MAZE_CELLS + 3)) {
+          switch (sequence_movements[i + 1]) {
+            case MOVE_START:
+            case MOVE_FRONT:
+            case MOVE_DIAGONAL:
+            case MOVE_HOME:
+              next_turn_params = turn_params;
+              break;
+            default:
+              next_turn_params = kinematics.turns[sequence_movements[i + 1]];
+              break;
+          }
+        } else {
+          next_turn_params = turn_params;
+        }
+
         // Resetea el offset para evitar desplazamientos en otras celdas al realizar un giro de 180º no seguido de una recta
         switch (sequence_movements[i]) {
           case MOVE_LEFT_180:
@@ -1582,9 +1639,9 @@ void move_run_sequence(enum movement *sequence_movements) {
 
         if (distance > 0 || end_offset > 0) {
           if (running_diagonal) {
-            run_diagonal(distance, end_offset, straight_cells, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
+            run_diagonal(distance, end_offset, straight_cells, kinematics.linear_speed, turn_params.linear_speed);
           } else {
-            run_straight(distance, start_offset, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, kinematics.turns[sequence_movements[i]].linear_speed);
+            run_straight(distance, start_offset, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, turn_params.linear_speed);
           }
           end_offset = 0;
           start_offset = 0;
@@ -1592,9 +1649,9 @@ void move_run_sequence(enum movement *sequence_movements) {
           straight_has_begin = false;
           running_diagonal = false;
         }
-        if (kinematics.turns[sequence_movements[i]].end < 0) {
-          distance = kinematics.turns[sequence_movements[i]].end;
-          start_offset = kinematics.turns[sequence_movements[i]].end;
+        if (turn_params.end < 0) {
+          distance = turn_params.end;
+          start_offset = turn_params.end;
         } else {
           distance = 0;
         }
@@ -1613,7 +1670,7 @@ void move_run_sequence(enum movement *sequence_movements) {
         }
 
         // TODO: Obtener las kinematics de giro a partir de la velocidad máxima de la recta
-        run_side(sequence_movements[i], kinematics.turns[sequence_movements[i]]);
+        run_side(sequence_movements[i], turn_params, next_turn_params);
         break;
       default:
         i = (MAZE_CELLS + 3);

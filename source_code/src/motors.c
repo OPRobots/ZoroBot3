@@ -1,6 +1,7 @@
 #include <motors.h>
 
-static bool motors_saturated = false;
+static bool motors_pwm_saturated = false;
+static bool motors_angle_saturated = false;
 static uint32_t motors_saturated_ms = 0;
 static uint16_t left_motor_saturation_count = 0;
 static uint16_t right_motor_saturation_count = 0;
@@ -9,13 +10,27 @@ static uint16_t angular_speed_saturation_count = 0;
 static bool check_motors_saturated_enabled = true;
 
 static void check_motors_saturated(void) {
-  if (check_motors_saturated_enabled && (left_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || right_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || angular_speed_saturation_count > MAX_MOTOR_ANGULAR_SATURATION_COUNT)) {
-    if (!motors_saturated) {
-      motors_saturated_ms = get_clock_ticks();
+  if (check_motors_saturated_enabled) {
+    if (left_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT || right_motor_saturation_count > MAX_MOTOR_SATURATION_COUNT) {
+      if (!motors_pwm_saturated) {
+        motors_saturated_ms = get_clock_ticks();
+      }
+      motors_pwm_saturated = true;
+    } else {
+      motors_pwm_saturated = false;
     }
-    motors_saturated = true;
+
+    if (angular_speed_saturation_count > MAX_MOTOR_ANGULAR_SATURATION_COUNT) {
+      if (!motors_angle_saturated) {
+        motors_saturated_ms = get_clock_ticks();
+      }
+      motors_angle_saturated = true;
+    } else {
+      motors_angle_saturated = false;
+    }
   } else {
-    motors_saturated = false;
+    motors_pwm_saturated = false;
+    motors_angle_saturated = false;
   }
 }
 
@@ -35,23 +50,23 @@ void set_motors_speed(float velI, float velD) {
   float ocI = 0;
   float ocD = 0;
 
-    ocI = map(abs(velI), 0, 1000, 0, MOTORES_MAX_PWM);
-    if (velI > 0) {
-      timer_set_oc_value(TIM8, TIM_OC4, MOTORES_MAX_PWM - (uint32_t)ocI);
-      timer_set_oc_value(TIM8, TIM_OC3, MOTORES_MAX_PWM);
-    } else {
-      timer_set_oc_value(TIM8, TIM_OC3, MOTORES_MAX_PWM - (uint32_t)ocI);
-      timer_set_oc_value(TIM8, TIM_OC4, MOTORES_MAX_PWM);
-    }
+  ocI = map(abs(velI), 0, 1000, 0, MOTORES_MAX_PWM);
+  if (velI > 0) {
+    timer_set_oc_value(TIM8, TIM_OC4, MOTORES_MAX_PWM - (uint32_t)ocI);
+    timer_set_oc_value(TIM8, TIM_OC3, MOTORES_MAX_PWM);
+  } else {
+    timer_set_oc_value(TIM8, TIM_OC3, MOTORES_MAX_PWM - (uint32_t)ocI);
+    timer_set_oc_value(TIM8, TIM_OC4, MOTORES_MAX_PWM);
+  }
 
-    ocD = map(abs(velD), 0, 1000, 0, MOTORES_MAX_PWM);
-    if (velD > 0) {
-      timer_set_oc_value(TIM8, TIM_OC2, MOTORES_MAX_PWM - (uint32_t)ocD);
-      timer_set_oc_value(TIM8, TIM_OC1, MOTORES_MAX_PWM);
-    } else {
-      timer_set_oc_value(TIM8, TIM_OC1, MOTORES_MAX_PWM - (uint32_t)ocD);
-      timer_set_oc_value(TIM8, TIM_OC2, MOTORES_MAX_PWM);
-    }
+  ocD = map(abs(velD), 0, 1000, 0, MOTORES_MAX_PWM);
+  if (velD > 0) {
+    timer_set_oc_value(TIM8, TIM_OC2, MOTORES_MAX_PWM - (uint32_t)ocD);
+    timer_set_oc_value(TIM8, TIM_OC1, MOTORES_MAX_PWM);
+  } else {
+    timer_set_oc_value(TIM8, TIM_OC1, MOTORES_MAX_PWM - (uint32_t)ocD);
+    timer_set_oc_value(TIM8, TIM_OC2, MOTORES_MAX_PWM);
+  }
   // printf("%ld - %ld\n", (uint32_t)ocI, (uint32_t)ocD);
 }
 
@@ -103,7 +118,7 @@ void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
     timer_set_oc_value(TIM8, TIM_OC2, MOTORES_MAX_PWM);
   }
 
-  if(abs(get_encoder_angular_speed()) >= MOTORES_SATURATION_ANGULAR_SPEED) {
+  if (abs(get_encoder_angular_speed()) >= MOTORES_SATURATION_ANGULAR_SPEED) {
     angular_speed_saturation_count++;
   } else {
     angular_speed_saturation_count = 0;
@@ -123,15 +138,25 @@ void set_fan_speed(uint8_t vel) {
 }
 
 void reset_motors_saturated(void) {
-  motors_saturated = false;
+  motors_pwm_saturated = false;
+  motors_angle_saturated = false;
   motors_saturated_ms = 0;
   left_motor_saturation_count = 0;
   right_motor_saturation_count = 0;
+  angular_speed_saturation_count = 0;
   check_motors_saturated_enabled = true;
 }
 
 bool is_motor_saturated(void) {
-  return motors_saturated;
+  return motors_pwm_saturated || motors_angle_saturated;
+}
+
+bool is_motor_pwm_saturated(void) {
+  return motors_pwm_saturated;
+}
+
+bool is_motor_angle_saturated(void) {
+  return motors_angle_saturated;
 }
 
 uint32_t get_motors_saturated_ms(void) {

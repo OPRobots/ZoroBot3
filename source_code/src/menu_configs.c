@@ -87,12 +87,12 @@ bool menu_config_handler(void) {
     valueConfig[modeConfig]++;
     switch (modeConfig) {
       case MODE_CALIBRATION:
-        if (valueConfig[modeConfig] >= NUM_VALUES_CALIBRATION) {
+        if (valueConfig[modeConfig] > NUM_VALUES_CALIBRATION) {
           valueConfig[modeConfig] = 0;
         }
         break;
       case MODE_DEBUG:
-        if (valueConfig[modeConfig] >= NUM_VALUES_DEBUG) {
+        if (valueConfig[modeConfig] > NUM_VALUES_DEBUG) {
           valueConfig[modeConfig] = 0;
         }
         break;

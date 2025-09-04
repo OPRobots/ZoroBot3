@@ -1,12 +1,26 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#include <buttons.h>
+#ifndef MMSIM_ENABLED
+#include "buttons.h"
+#endif
+#include <stdint.h>
 #include <stdio.h>
 
-#define ZOROBOT3_A 1
-// #define ZOROBOT3_B 2
-// #define ZOROBOT3_C 3
+#include "leds.h"
+#include "sensors.h"
+
+#define STM32_UID_BASE (0x1FFF7A10U)
+#define UID_WORD0 MMIO32(STM32_UID_BASE + 0x0)
+#define UID_WORD1 MMIO32(STM32_UID_BASE + 0x4)
+#define UID_WORD2 MMIO32(STM32_UID_BASE + 0x8)
+
+enum ROBOT_VERSION {
+  ZOROBOT3_UNKNOWN = 0,
+  ZOROBOT3_A = 1,
+  ZOROBOT3_B = 2,
+  ZOROBOT3_C = 3
+};
 
 /** Laberinto */
 #define CELL_DIMENSION 180
@@ -17,15 +31,7 @@
 #define WALL_LOSS_TO_SENSING_POINT_DISTANCE 106
 
 /** Características Físicas */
-#ifdef ZOROBOT3_A
 #define MICROMETERS_PER_TICK 10.494055
-#endif
-#ifdef ZOROBOT3_B
-#define MICROMETERS_PER_TICK 10.494055
-#endif
-#ifdef ZOROBOT3_C
-#define MICROMETERS_PER_TICK 10.494055
-#endif
 #define ROBOT_FRONT_LENGTH 48.121
 #define ROBOT_BACK_LENGTH 40.706
 #define ROBOT_WIDTH 70.2
@@ -33,13 +39,15 @@
 #define ROBOT_MIDDLE_WIDTH ((ROBOT_WIDTH / 2.0))
 
 /** Movimiento */
-#define MAX_MOTOR_SATURATION_COUNT 20
+#define MAX_MOTOR_SATURATION_COUNT 30
 #define MAX_MOTOR_ANGULAR_SATURATION_COUNT 60
-#define KP_LINEAR 0.0003
-#define KD_LINEAR 0.0005
+#define KP_LINEAR 0.010
+#define KI_LINEAR 0.0005
+#define KD_LINEAR 0
 
-#define KP_ANGULAR 0.01
-#define KD_ANGULAR 0.4
+#define KP_ANGULAR 0.6
+#define KI_ANGULAR 0.015
+#define KD_ANGULAR 0.0
 
 #define KP_SIDE_SENSORS 0.08
 #define KI_SIDE_SENSORS 0.00 // 0.002
@@ -53,8 +61,8 @@
 // #define KD_FRONT_DIAGONAL_SENSORS 0.002
 
 #define KP_FRONT_DIAGONAL_SENSORS 0.040
-#define KI_FRONT_DIAGONAL_SENSORS 0.001//0010
-#define KD_FRONT_DIAGONAL_SENSORS 0.040//0010
+#define KI_FRONT_DIAGONAL_SENSORS 0.001 // 0010
+#define KD_FRONT_DIAGONAL_SENSORS 0.040 // 0010
 
 /** Sensores */
 #define SENSOR_LOW_PASS_FILTER_ALPHA 0.1
@@ -62,7 +70,7 @@
 #define SENSOR_FRONT_CALIBRATION_READINGS 20
 #define SENSOR_SIDE_CALIBRATION_READINGS 100
 #define SENSOR_FRONT_DETECTION ((CELL_DIMENSION * 1.22))
-#define SENSOR_SIDE_DETECTION ((CELL_DIMENSION * 0.7))
+#define SENSOR_SIDE_DETECTION 115//((CELL_DIMENSION * 0.7))
 
 /** Control de inicio de competición */
 #define SENSOR_FRONT_DETECTION_START 100
@@ -83,6 +91,7 @@
 #define CONFIG_RUN_RACE 1
 #define CONFIG_RUN_DEBUG 0
 
+void handle_robot_version(void);
 void set_all_configs(void);
 uint16_t get_config_run(void);
 

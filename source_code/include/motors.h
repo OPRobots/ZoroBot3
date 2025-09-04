@@ -21,6 +21,8 @@ void set_fan_speed(uint8_t vel);
 
 void reset_motors_saturated(void);
 bool is_motor_saturated(void);
+bool is_motor_pwm_saturated(void);
+bool is_motor_angle_saturated(void);
 uint32_t get_motors_saturated_ms(void);
 void set_check_motors_saturated_enabled(bool enabled);
 

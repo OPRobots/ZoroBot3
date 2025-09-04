@@ -1,4 +1,4 @@
-#include <control.h>
+#include "control.h"
 
 static volatile bool race_started = false;
 static volatile uint32_t race_finish_ms = 0;
@@ -16,9 +16,11 @@ static volatile float ideal_fan_speed = 0;
 static volatile float fan_speed_accel = 0;
 
 static volatile float linear_error;
+static volatile float sum_linear_error;
 static volatile float last_linear_error;
 
 static volatile float angular_error;
+static volatile float sum_angular_error;
 static volatile float last_angular_error;
 
 static volatile bool side_sensors_close_correction_enabled = false;
@@ -48,18 +50,23 @@ static volatile int32_t pwm_right;
  * @param voltage
  * @return int32_t PWM a aplicar al motor
  */
+#ifndef MMSIM_ENABLED
 static int32_t voltage_to_motor_pwm(float voltage) {
   return voltage / /* 8.0  */ get_battery_voltage() * MOTORES_MAX_PWM;
 }
+#endif
 
+#ifndef MMSIM_ENABLED
 static int32_t percentage_to_fan_pwm(float percentage) {
   return percentage > 0 ? (int32_t)constrain((get_battery_high_limit_voltage() / get_battery_voltage()) * percentage, percentage, 100.0f) : 0;
 }
+#endif
 
 /**
  * @brief Actualiza la velocidad lineal ideal en función de la velocidad lineal objetivo y la aceleración
  *
  */
+#ifndef MMSIM_ENABLED
 static void update_ideal_linear_speed(void) {
   if (ideal_linear_speed < target_linear_speed) {
     int16_t accel = get_kinematics().linear_accel.accel_soft;
@@ -99,6 +106,7 @@ static float get_measured_linear_speed(void) {
 static float get_measured_angular_speed(void) {
   return -lsm6dsr_get_gyro_z_radps();
 }
+#endif
 
 /**
  * @brief Comprueba si el robot está en funcionamiento
@@ -117,18 +125,22 @@ bool is_race_started(void) {
  */
 
 void set_race_started(bool state) {
-  reset_control_all();
   race_started = state;
+
+#ifndef MMSIM_ENABLED
+  reset_control_all();
   if (!state) {
     menu_reset();
     race_finish_ms = get_clock_ticks();
   }
+#endif
 }
 
 void set_control_debug(bool state) {
   control_debug = state;
 }
 
+#ifndef MMSIM_ENABLED
 int8_t check_start_run(void) {
   if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= SENSOR_FRONT_DETECTION_START) {
     if (sensor_front_left_start_ms == 0 && sensor_front_right_start_ms == 0) {
@@ -158,6 +170,7 @@ int8_t check_start_run(void) {
   }
   return -1;
 }
+#endif
 
 void set_side_sensors_close_correction(bool enabled) {
   side_sensors_close_correction_enabled = enabled;
@@ -193,6 +206,8 @@ void reset_control_errors(void) {
   sum_front_sensors_diagonal_error = 0;
   linear_error = 0;
   angular_error = 0;
+  sum_angular_error = 0;
+  sum_linear_error = 0;
   last_linear_error = 0;
   last_angular_error = 0;
 }
@@ -210,8 +225,10 @@ void reset_control_speed(void) {
 void reset_control_all(void) {
   reset_control_errors();
   reset_control_speed();
+#ifndef MMSIM_ENABLED
   reset_motors_saturated();
   reset_encoder_avg();
+#endif
 }
 
 void set_target_linear_speed(int32_t linear_speed) {
@@ -230,16 +247,20 @@ float get_ideal_angular_speed(void) {
   return ideal_angular_speed;
 }
 
+#ifndef MMSIM_ENABLED
 void set_target_fan_speed(int32_t fan_speed, int32_t ms) {
   target_fan_speed = fan_speed; // percentage_to_fan_pwm(fan_speed);
   fan_speed_accel = (fan_speed - ideal_fan_speed) * CONTROL_FREQUENCY_HZ / ms;
 }
+#endif
 
 /**
  * @brief Función de control general del robot
  * · Gestiona velocidades, aceleraciones, correcciones, ...
  *
  */
+
+#ifndef MMSIM_ENABLED
 void control_loop(void) {
   // gpio_set(GPIOB, GPIO13);
   // delay_us(100);
@@ -248,11 +269,11 @@ void control_loop(void) {
   if (is_debug_enabled()) {
     return;
   }
-  if (is_motor_saturated() && is_race_started()) {
+  if ((is_motor_pwm_saturated() || is_motor_angle_saturated()) && is_race_started()) {
     set_motors_speed(0, 0);
     set_fan_speed(0);
     if (get_clock_ticks() - get_motors_saturated_ms() < 3000) {
-      blink_RGB_color(512, 0, 0, 50);
+      blink_RGB_color(is_motor_pwm_saturated() ? 255 : 0, 0, is_motor_angle_saturated() ? 255 : 0, 50);
     } else {
       set_RGB_color(0, 0, 0);
       set_race_started(false);
@@ -280,10 +301,12 @@ void control_loop(void) {
   float angular_voltage = 0;
 
   last_linear_error = linear_error;
-  linear_error += ideal_linear_speed - get_measured_linear_speed();
+  linear_error = ideal_linear_speed - get_measured_linear_speed();
+  sum_linear_error += linear_error;
 
   last_angular_error = angular_error;
-  angular_error += ideal_angular_speed - get_measured_angular_speed();
+  angular_error = ideal_angular_speed - get_measured_angular_speed();
+  sum_angular_error += angular_error;
 
   // side_sensors_error = 0;
   // if (side_sensors_close_correction_enabled) {
@@ -327,10 +350,10 @@ void control_loop(void) {
     last_front_sensors_diagonal_error = 0;
   }
 
-  linear_voltage = KP_LINEAR * linear_error + KD_LINEAR * (linear_error - last_linear_error);
+  linear_voltage = KP_LINEAR * linear_error + KI_LINEAR * sum_linear_error + KD_LINEAR * (linear_error - last_linear_error);
 
   angular_voltage =
-      KP_ANGULAR * angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
+      KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
       KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
       KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error +
       KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KI_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error + KD_FRONT_DIAGONAL_SENSORS * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
@@ -349,30 +372,36 @@ void control_loop(void) {
   set_motors_pwm(pwm_left, pwm_right);
 
   if (ideal_linear_speed != 0 || ideal_angular_speed != 0) {
-    // static char *labels[] = {
-    //     "target_linear_speed",
-    //     "ideal_linear_speed",
-    //     "measured_linear_speed",
-    //     "ideal_angular_speed",
-    //     "measured_angular_speed",
-    //     "side_sensors_error",
-    //     "last_side_sensors_error",
-    //     "encoder_avg_millimeters",
-    //     "battery_voltage"};
-    // macroarray_store(
-    //     0,
-    //     0b000110001,
-    //     labels,
-    //     9,
-    //     (int16_t)target_linear_speed,
-    //     (int16_t)ideal_linear_speed,
-    //     (int16_t)(get_measured_linear_speed()),
-    //     (int16_t)(ideal_angular_speed * 100),
-    //     (int16_t)(get_measured_angular_speed() * 100),
-    //     (int16_t)side_sensors_error,
-    //     (int16_t)last_side_sensors_error,
-    //     (int16_t)get_encoder_avg_millimeters(),
-    //     (int16_t)(get_battery_voltage() * 100));
+    static char *labels[] = {
+        "target_linear_speed",
+        "ideal_linear_speed",
+        "measured_linear_speed",
+        "measured_left_speed",
+        "measured_right_speed",
+        "ideal_angular_speed",
+        "measured_angular_speed",
+        "pwm_left",
+        "pwm_right",
+        // "encoder_avg_millimeters",
+        "side_sensors_error",
+        "battery_voltage"};
+    macroarray_store(
+        2,
+        0b00000110011,
+        labels,
+        11,
+        (int16_t)target_linear_speed,
+        (int16_t)ideal_linear_speed,
+        (int16_t)(get_measured_linear_speed()),
+        (int16_t)(get_encoder_left_speed()),
+        (int16_t)(get_encoder_right_speed()),
+        (int16_t)(ideal_angular_speed * 100),
+        (int16_t)(get_measured_angular_speed() * 100),
+        (int16_t)pwm_left,
+        (int16_t)pwm_right,
+        // (int16_t)get_encoder_avg_millimeters(),
+        (int16_t)(side_sensors_error * 100),
+        (int16_t)(get_battery_voltage() * 100));
 
     // static char *labels[] = {
     //     "target_linear_speed",
@@ -421,3 +450,25 @@ void control_loop(void) {
     //     (int16_t)get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
   }
 }
+#endif
+
+#ifndef MMSIM_ENABLED
+void keep_z_angle(void) {
+  float linear_voltage = 0;
+  float angular_voltage = 0;
+  last_linear_error = linear_error;
+  linear_error += ideal_linear_speed - get_measured_linear_speed();
+
+  last_angular_error = angular_error;
+  angular_error += ideal_angular_speed - get_measured_angular_speed();
+
+  angular_voltage = KP_ANGULAR * angular_error + KD_ANGULAR * (angular_error - last_angular_error);
+  linear_voltage = KP_LINEAR * linear_error + KD_LINEAR * (linear_error - last_linear_error);
+  voltage_left = linear_voltage + angular_voltage;
+  voltage_right = linear_voltage - angular_voltage;
+  pwm_left = voltage_to_motor_pwm(voltage_left);
+  pwm_right = voltage_to_motor_pwm(voltage_right);
+  gpio_set(GPIOB, GPIO15);
+  set_motors_pwm(pwm_left, pwm_right);
+}
+#endif

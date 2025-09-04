@@ -5,13 +5,14 @@
 #include <encoders.h>
 #include <floodfill.h>
 #include <handwall.h>
-#include <timetrial.h>
 #include <leds.h>
 #include <lsm6dsr.h>
 #include <macroarray.h>
 #include <menu.h>
 #include <motors.h>
 #include <move.h>
+#include <timetrial.h>
+
 // #include <mpu6500.h>
 #include <rc5.h>
 #include <sensors.h>
@@ -32,6 +33,7 @@ int main(void) {
   setup();
   eeprom_load();
   show_battery_level();
+  handle_robot_version();
 
   printf("BA: %4d CI: %4d CD: %4d BO: %4d\n", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
 
