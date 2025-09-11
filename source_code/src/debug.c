@@ -103,7 +103,6 @@ void debug_from_config(uint8_t type) {
     debug_enabled = false;
   }
   if (debug_enabled) {
-    set_sensors_enabled(true);
     set_RGB_color(0, 50, 0);
     switch (type) {
       case DEBUG_MACROARRAY:
