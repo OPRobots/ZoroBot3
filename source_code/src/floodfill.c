@@ -978,6 +978,11 @@ static bool floodfill_run(enum step_direction next_step) {
   if (count_same_direction > 0) {
     run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, 2000, get_kinematics().linear_speed);
     current_position = _current_position;
+#ifdef MMSIM_ENABLED
+    for (uint16_t i = 0; i < count_same_direction; i++) {
+      API_moveForward();
+    }
+#endif
     return true;
   }
   return false;
