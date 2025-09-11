@@ -44,7 +44,7 @@ int main(void) {
         set_sensors_enabled(menu_run_can_start());
         delay(200);
       } else {
-        set_sensors_enabled(menu_run_can_start());
+        set_sensors_enabled(menu_run_can_start() || is_debug_enabled());
       }
       if (menu_run_can_start()) {
         int8_t sensor_started = check_start_run();

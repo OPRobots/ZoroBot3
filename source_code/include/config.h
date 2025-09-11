@@ -7,8 +7,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#ifndef MMSIM_ENABLED
 #include "leds.h"
 #include "sensors.h"
+#endif
 
 #define STM32_UID_BASE (0x1FFF7A10U)
 #define UID_WORD0 MMIO32(STM32_UID_BASE + 0x0)
