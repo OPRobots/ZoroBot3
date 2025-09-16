@@ -906,8 +906,10 @@ static uint8_t find_unknown_interesting_cell(void) {
     }
   }
 
+#ifdef MMSIM_ENABLED
   fprintf(stderr, "Interesting cell: %d - %d\n", cell % maze_get_columns() + 1, cell / maze_get_columns() + 1);
   fflush(stderr);
+#endif
 
   // #ifdef MMSIM_ENABLED
   // API_turnLeft();
@@ -941,7 +943,7 @@ static uint8_t find_unknown_interesting_cell(void) {
   return cell;
 }
 
-static bool floodfill_run(enum step_direction next_step) {
+static bool floodfill_run(void) {
   uint8_t _current_position = current_position;
 
   uint16_t count_same_direction = 0;
@@ -978,11 +980,6 @@ static bool floodfill_run(enum step_direction next_step) {
   if (count_same_direction > 0) {
     run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, 2000, get_kinematics().linear_speed);
     current_position = _current_position;
-#ifdef MMSIM_ENABLED
-    for (uint16_t i = 0; i < count_same_direction; i++) {
-      API_moveForward();
-    }
-#endif
     return true;
   }
   return false;
@@ -990,6 +987,7 @@ static bool floodfill_run(enum step_direction next_step) {
 
 static void go_to_target(void) {
   struct walls walls;
+  enum step_direction next_step_before_update_walls;
   enum step_direction next_step;
 
   update_floodfill();
@@ -997,21 +995,35 @@ static void go_to_target(void) {
     if (!is_race_started()) {
       return;
     }
+
     if (!current_cell_is_visited()) {
+      next_step_before_update_walls = get_next_floodfill_step(get_current_stored_walls());
       walls = get_walls();
       update_walls(walls);
       update_floodfill();
+      next_step = get_next_floodfill_step(walls);
+      // Es el target aun interesante?
+      if (target_cells.size == 1 && target_cells.stack[0] != 0 && maze_goal_position != 0 && next_step_before_update_walls != next_step) {
+        uint8_t interesting_cell = find_unknown_interesting_cell();
+        if (interesting_cell == 0) {
+          return;
+        }
+        if (interesting_cell != target_cells.stack[0]) {
+          set_target(interesting_cell);
+          update_floodfill();
+          next_step = get_next_floodfill_step(walls);
+        }
+      }
     } else {
       walls = get_current_stored_walls();
+      next_step = get_next_floodfill_step(walls);
     }
-
-    next_step = get_next_floodfill_step(walls);
 
 #ifndef MMSIM_ENABLED
     set_RGB_color_while(255, 255, 0, 33);
 #endif
 
-    if (menu_run_get_accel_explore() == ACCEL_EXPLORE_DISABLED || !(next_step != BACK && is_visited(get_next_position(next_step)) && floodfill_run(next_step))) {
+    if (menu_run_get_accel_explore() == ACCEL_EXPLORE_DISABLED || !(next_step != BACK && is_visited(get_next_position(next_step)) && floodfill_run())) {
       switch (next_step) {
         case FRONT:
           move(MOVE_FRONT);
@@ -1338,9 +1350,13 @@ static void loop_explore(void) {
     go_to_target();
 
     uint8_t interesting_cell = find_unknown_interesting_cell();
-    if (current_position == 0 || (interesting_cell == 0 && current_cell_is_goal())) {
-      if (current_position == 0) {
-        move(MOVE_HOME);
+    if (current_position == 0 || (interesting_cell == 0 /*  && current_cell_is_goal() */)) {
+      if (!current_cell_is_goal()) {
+        if (get_current_stored_walls().front) {
+          move(MOVE_HOME);
+        } else {
+          move(MOVE_END);
+        }
       }
 
 #ifndef MMSIM_ENABLED

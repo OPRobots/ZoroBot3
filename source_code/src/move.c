@@ -887,6 +887,32 @@ static void move_home(void) {
   set_starting_position();
 }
 
+static void move_end(void) {
+#ifdef MMSIM_ENABLED
+  API_moveForward();
+  API_turnRight();
+  API_turnRight();
+  return;
+#endif
+
+  set_front_sensors_correction(false);
+  set_front_sensors_diagonal_correction(false);
+  set_side_sensors_close_correction(true);
+  set_side_sensors_far_correction(false);
+
+  struct walls initial_walls = get_walls();
+  if (initial_walls.front && (!initial_walls.left || !initial_walls.right)) {
+    set_side_sensors_close_correction(false);
+  }
+
+  move_straight(MIDDLE_MAZE_DISTANCE, 300, false, true);
+
+  disable_sensors_correction();
+  move_inplace_turn(MOVE_BACK);
+  reset_control_errors();
+  move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
+}
+
 /**
  * @brief Movimiento frontal relativo a la celda actual; avanza a la siguiente celda
  *
@@ -1042,7 +1068,7 @@ static void move_back(enum movement movement) {
   if (initial_walls.front) {
     move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
   } else {
-    move_straight(MIDDLE_MAZE_DISTANCE - current_cell_start_mm - calc_straight_to_speed_distance(300, 0), 300, false, true);
+    move_straight(MIDDLE_MAZE_DISTANCE*1.75f - current_cell_start_mm, 300, false, true);
   }
 
   disable_sensors_correction();
@@ -1058,7 +1084,7 @@ static void move_back(enum movement movement) {
       set_starting_position();
       break;
     case MOVE_BACK:
-      move_straight((MIDDLE_MAZE_DISTANCE) - ROBOT_BACK_LENGTH, -100, false, true);
+      move_straight((MIDDLE_MAZE_DISTANCE)-ROBOT_BACK_LENGTH, -100, false, true);
       current_cell_start_mm = (MIDDLE_MAZE_DISTANCE - ROBOT_BACK_LENGTH) / 2;
       break;
     default:
@@ -1206,6 +1232,12 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
 }
 
 void run_straight(float distance, float start_offset, float end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
+#ifdef MMSIM_ENABLED
+  for (uint16_t i = 0; i < cells; i++) {
+    API_moveForward();
+  }
+  return;
+#endif
 #ifndef MMSIM_ENABLED
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
@@ -1501,6 +1533,9 @@ void move(enum movement movement) {
     case MOVE_START:
       set_starting_position();
       move_front();
+      break;
+    case MOVE_END:
+      move_end();
       break;
     case MOVE_FRONT:
       move_front();
