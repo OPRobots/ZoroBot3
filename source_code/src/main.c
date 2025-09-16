@@ -32,8 +32,8 @@ void sys_tick_handler(void) {
 int main(void) {
   setup();
   eeprom_load();
-  show_battery_level();
   handle_robot_version();
+  show_battery_level();
 
   printf("BA: %4d CI: %4d CD: %4d BO: %4d\n", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
 

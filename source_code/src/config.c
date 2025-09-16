@@ -23,8 +23,9 @@ void handle_robot_version(void) {
 
   printf("UID: %08X %08X %08X\n", (unsigned int)UID_WORD0, (unsigned int)UID_WORD1, (unsigned int)UID_WORD2);
 
-  show_robot_version(robot_version);
+  set_battery_volt_div_factor(robot_version);
   set_sensors_robot_calibration(robot_version);
+  show_robot_version(robot_version);
 }
 
 /**
