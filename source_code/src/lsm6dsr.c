@@ -129,17 +129,18 @@ void lsm6dsr_gyro_z_calibration(void) {
   offset_z = sum_z / 1000.0f;
   printf("Offset Z: %.4f\n", offset_z);
 
-  int16_t eeprom_data[2] = {offset_z >= 0 ? 1 : 0, (int16_t)(abs(offset_z * 10000))};
+  int16_t eeprom_data[2] = {offset_z >= 0 ? 1 : 0, (int16_t)(abs(offset_z * 5000))};
   eeprom_set_data(DATA_INDEX_GYRO_Z, eeprom_data, 2);
 
+  
   delay(100);
   mpu_updating = true;
 }
 
 void lsm6dsr_load_eeprom(void) {
   int16_t *eeprom_data = eeprom_get_data();
-  offset_z = eeprom_data[1] / 10000.0f;
-  if (eeprom_data[0] == 0) {
+  offset_z = eeprom_data[DATA_INDEX_GYRO_Z + 1] / 5000.0f;
+  if (eeprom_data[DATA_INDEX_GYRO_Z] == 0) {
     offset_z = -offset_z;
   }
   printf("Offset Z: %.4f\n", offset_z);
@@ -149,13 +150,8 @@ void lsm6dsr_load_eeprom(void) {
 void lsm6dsr_update(void) {
   if (mpu_updating) {
     float new_gyro_z_raw = lsm6dsr_read_gyro_z_raw();
-#ifdef ZOROBOT3_C
-    new_gyro_z_raw -= 4.2290f;
-#else
     new_gyro_z_raw -= offset_z;
-#endif
-     gyro_z_raw = 0.4 * new_gyro_z_raw + (1 - 0.4) * gyro_z_raw;
-    //gyro_z_raw = new_gyro_z_raw;
+    gyro_z_raw = 0.4 * new_gyro_z_raw + (1 - 0.4) * gyro_z_raw;
     deg_integ = deg_integ - lsm6dsr_get_gyro_z_dps() / SYSTICK_FREQUENCY_HZ;
   }
 }
