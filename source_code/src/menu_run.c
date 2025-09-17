@@ -3,19 +3,21 @@
 #define MODE_SPEED 0
 #define MODE_RACE 1
 #define MODE_ACCEL_EXPLORE 2
-#define MODE_MAZE_TYPE 3
-#define MODE_SOLVE_STRATEGY 4
-#define MODE_EXPLORE_ALGORITHM 5
+#define MODE_FLOODFILL_TYPE 3
+#define MODE_MAZE_TYPE 4
+#define MODE_SOLVE_STRATEGY 5
+#define MODE_EXPLORE_ALGORITHM 6
 uint8_t modeRun = MODE_SPEED;
 
 #define MODE_SPEED_VALUES 6
 #define MODE_ACCEL_EXPLORE_VALUES 2
+#define MODE_FLOODFILL_TYPE_VALUES 3
 #define MODE_RACE_VALUES 2
 #define MODE_MAZE_TYPE_VALUES 2
 #define MODE_EXPLORE_ALGORITHM_VALUES 3
 #define MODE_SOLVE_STRATEGY_VALUES 2
 
-int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 0, 0, 1};
+int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 0, 0, 0, 1};
 
 uint32_t lastBlinkMs = 0;
 bool blinkState = false;
@@ -79,6 +81,23 @@ static void handle_menu_run_values(void) {
     set_info_led(INFO_LED_A, blinkState);
   } else {
     set_info_led(INFO_LED_A, valueRun[MODE_ACCEL_EXPLORE] == 1);
+  }
+
+  if (modeRun == MODE_FLOODFILL_TYPE) {
+    switch (valueRun[modeRun]) {
+      case FLOODFILL_TYPE_BASIC:
+        set_RGB_color(50, 0, 0);
+        break;
+      case FLOODFILL_TYPE_DIAGONAL:
+        set_RGB_color(0, 50, 0);
+        break;
+      case FLOODFILL_TYPE_TIME:
+        set_RGB_color(50, 0, 50);
+        break;
+    }
+    set_info_led(INFO_LED_B, blinkState);
+  } else {
+    set_info_led(INFO_LED_B, valueRun[MODE_FLOODFILL_TYPE] != FLOODFILL_TYPE_BASIC);
   }
 
   if (modeRun == MODE_MAZE_TYPE) {
@@ -195,6 +214,9 @@ void menu_run_up() {
     case MODE_ACCEL_EXPLORE:
       mode_values = MODE_ACCEL_EXPLORE_VALUES;
       break;
+    case MODE_FLOODFILL_TYPE:
+      mode_values = MODE_FLOODFILL_TYPE_VALUES;
+      break;
     case MODE_MAZE_TYPE:
       mode_values = MODE_MAZE_TYPE_VALUES;
       break;
@@ -241,6 +263,20 @@ enum accel_explore menu_run_get_accel_explore(void) {
   return valueRun[MODE_ACCEL_EXPLORE];
 #else
   return true;
+#endif
+}
+
+enum floodfill_type menu_run_get_floodfill_type(void) {
+#ifndef MMSIM_ENABLED
+  return valueRun[MODE_FLOODFILL_TYPE];
+#else
+  extern int MMSIM_FLOODFILL_TYPE;
+  return MMSIM_FLOODFILL_TYPE;
+#ifdef MMSIM_FLOODFILL_TYPE
+  return MMSIM_FLOODFILL_TYPE;
+#else
+  return FLOODFILL_TYPE_TIME;
+#endif
 #endif
 }
 

@@ -372,6 +372,12 @@ static struct queue_cell queue_pop(void) {
 static enum step_direction get_next_floodfill_step(struct walls walls) {
   float floodfill_value = floodfill[current_position];
   enum step_direction next_step = BACK;
+  if (menu_run_get_floodfill_type() == FLOODFILL_TYPE_BASIC) {
+    if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(FRONT)];
+      next_step = FRONT;
+    }
+  }
   if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill_value) {
     floodfill_value = floodfill[get_next_position(RIGHT)];
     next_step = RIGHT;
@@ -380,9 +386,11 @@ static enum step_direction get_next_floodfill_step(struct walls walls) {
     floodfill_value = floodfill[get_next_position(LEFT)];
     next_step = LEFT;
   }
-  if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
-    floodfill_value = floodfill[get_next_position(FRONT)];
-    next_step = FRONT;
+  if (menu_run_get_floodfill_type() != FLOODFILL_TYPE_BASIC) {
+    if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(FRONT)];
+      next_step = FRONT;
+    }
   }
   return next_step;
 }
@@ -390,6 +398,13 @@ static enum step_direction get_next_floodfill_step(struct walls walls) {
 static enum step_direction get_next_floodfill_virtual_step(struct virtual_walls walls) {
   float floodfill_value = floodfill[current_position];
   enum step_direction next_step = NONE;
+
+  if (menu_run_get_floodfill_type() == FLOODFILL_TYPE_BASIC) {
+    if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(FRONT)];
+      next_step = FRONT;
+    }
+  }
   if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill_value) {
     floodfill_value = floodfill[get_next_position(RIGHT)];
     next_step = RIGHT;
@@ -398,9 +413,11 @@ static enum step_direction get_next_floodfill_virtual_step(struct virtual_walls 
     floodfill_value = floodfill[get_next_position(LEFT)];
     next_step = LEFT;
   }
-  if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
-    floodfill_value = floodfill[get_next_position(FRONT)];
-    next_step = FRONT;
+  if (menu_run_get_floodfill_type() != FLOODFILL_TYPE_BASIC) {
+    if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(FRONT)];
+      next_step = FRONT;
+    }
   }
   if (!walls.back && floodfill[get_next_position(BACK)] < floodfill_value && next_step == NONE) {
     floodfill_value = floodfill[get_next_position(BACK)];
@@ -410,93 +427,96 @@ static enum step_direction get_next_floodfill_virtual_step(struct virtual_walls 
 }
 
 static float get_next_floodfill_distance(float distance, enum compass_direction from_direction, enum compass_direction to_direction, uint8_t count, uint8_t last_count) {
-  // Floodfill estandar
-  // return distance + 1.0f;
-
-  // Floodfill con prioridad diagonales
-  // switch (to_direction) {
-  //   case EAST:
-  //   case SOUTH:
-  //   case WEST:
-  //   case NORTH:
-  //     return distance + 1.0f;
-  //   default:
-  //     return distance + 0.7f;
-  // }
-
-  // Floodfill con penalizacion por velocidad y frenada
-  bool from_orthogonal = false;
-  bool from_diagonal = false;
-  bool to_orthogonal = false;
-  bool to_diagonal = false;
-  float next_distance = 0.0f;
-  switch (from_direction) {
-    case TARGET:
-    case EAST:
-    case SOUTH:
-    case WEST:
-    case NORTH:
-      from_orthogonal = true;
-      break;
-    case SOUTH_EAST:
-    case SOUTH_WEST:
-    case NORTH_WEST:
-    case NORTH_EAST:
-      from_diagonal = true;
-      break;
-  }
-  switch (to_direction) {
-    case TARGET:
-    case EAST:
-    case SOUTH:
-    case WEST:
-    case NORTH:
-      to_orthogonal = true;
-      break;
-    case SOUTH_EAST:
-    case SOUTH_WEST:
-    case NORTH_WEST:
-    case NORTH_EAST:
-      to_diagonal = true;
-      break;
-  }
-  if (from_orthogonal && to_orthogonal) {
-    if (count < straight_weights_count) {
-      next_distance += (float)(straight_weights[count].time);
-    } else {
-      next_distance += (float)straight_weights[straight_weights_count - 1].time;
-    }
-  } else if (from_diagonal && to_diagonal) {
-    if (from_direction == to_direction) {
-      if (count < diagonal_weights_count) {
-        next_distance += (float)diagonal_weights[count].time;
-      } else {
-        next_distance += (float)diagonal_weights[diagonal_weights_count - 1].time;
+  switch (menu_run_get_floodfill_type()) {
+    case FLOODFILL_TYPE_BASIC:
+      return distance + 1.0f;
+    case FLOODFILL_TYPE_DIAGONAL:
+      switch (to_direction) {
+        case EAST:
+        case SOUTH:
+        case WEST:
+        case NORTH:
+          return distance + 1.0f;
+        default:
+          return distance + 0.7f;
       }
-    } else {
-      next_distance += (float)diagonal_weights[0].time;
-      if (last_count < diagonal_weights_count) {
-        next_distance += (float)diagonal_weights[last_count].penalty;
-      } else {
-        next_distance += (float)diagonal_weights[diagonal_weights_count - 1].penalty;
+    case FLOODFILL_TYPE_TIME: {
+      bool from_orthogonal = false;
+      bool from_diagonal = false;
+      bool to_orthogonal = false;
+      bool to_diagonal = false;
+      float next_distance = 0.0f;
+      switch (from_direction) {
+        case TARGET:
+        case EAST:
+        case SOUTH:
+        case WEST:
+        case NORTH:
+          from_orthogonal = true;
+          break;
+        case SOUTH_EAST:
+        case SOUTH_WEST:
+        case NORTH_WEST:
+        case NORTH_EAST:
+          from_diagonal = true;
+          break;
       }
+      switch (to_direction) {
+        case TARGET:
+        case EAST:
+        case SOUTH:
+        case WEST:
+        case NORTH:
+          to_orthogonal = true;
+          break;
+        case SOUTH_EAST:
+        case SOUTH_WEST:
+        case NORTH_WEST:
+        case NORTH_EAST:
+          to_diagonal = true;
+          break;
+      }
+      if (from_orthogonal && to_orthogonal) {
+        if (count < straight_weights_count) {
+          next_distance += (float)(straight_weights[count].time);
+        } else {
+          next_distance += (float)straight_weights[straight_weights_count - 1].time;
+        }
+      } else if (from_diagonal && to_diagonal) {
+        if (from_direction == to_direction) {
+          if (count < diagonal_weights_count) {
+            next_distance += (float)diagonal_weights[count].time;
+          } else {
+            next_distance += (float)diagonal_weights[diagonal_weights_count - 1].time;
+          }
+        } else {
+          next_distance += (float)diagonal_weights[0].time;
+          if (last_count < diagonal_weights_count) {
+            next_distance += (float)diagonal_weights[last_count].penalty;
+          } else {
+            next_distance += (float)diagonal_weights[diagonal_weights_count - 1].penalty;
+          }
+        }
+      } else if (from_orthogonal && to_diagonal) {
+        next_distance += (float)diagonal_weights[0].time;
+        if (last_count < straight_weights_count) {
+          next_distance += (float)straight_weights[last_count].penalty;
+        } else {
+          next_distance += (float)straight_weights[straight_weights_count - 1].penalty;
+        }
+      } else if (from_diagonal && to_orthogonal) {
+        next_distance += (float)straight_weights[0].time;
+        if (last_count < diagonal_weights_count) {
+          next_distance += (float)diagonal_weights[last_count].penalty;
+        } else {
+          next_distance += (float)diagonal_weights[diagonal_weights_count - 1].penalty;
+        }
+      }
+      return distance + next_distance;
     }
-  } else if (from_orthogonal && to_diagonal) {
-    next_distance += (float)diagonal_weights[0].time;
-    if (last_count < straight_weights_count) {
-      next_distance += (float)straight_weights[last_count].penalty;
-    } else {
-      next_distance += (float)straight_weights[straight_weights_count - 1].penalty;
-    }
-  } else if (from_diagonal && to_orthogonal) {
-    next_distance += (float)straight_weights[0].time;
-    if (last_count < diagonal_weights_count) {
-      next_distance += (float)diagonal_weights[last_count].penalty;
-    } else {
-      next_distance += (float)diagonal_weights[diagonal_weights_count - 1].penalty;
-    }
+    default:
+      return distance + 1.0f;
   }
-  return distance + next_distance;
 }
 
 static uint8_t get_next_floodfill_count(enum compass_direction from_direction, enum compass_direction to_direction, uint8_t count) {
@@ -707,7 +727,8 @@ static void update_floodfill(void) {
       next_direction = get_next_floodfill_direction(direction, last_step, EAST);
       next_count = get_next_floodfill_count(direction, next_direction, count);
       next_distance = get_next_floodfill_distance(floodfill[current_cell], direction, next_direction, next_count, count);
-      if (floodfill[next_cell] >= next_distance) {
+      if ((menu_run_get_floodfill_type() == FLOODFILL_TYPE_BASIC && floodfill[next_cell] > next_distance) ||
+          (menu_run_get_floodfill_type() != FLOODFILL_TYPE_BASIC && floodfill[next_cell] >= next_distance)) {
         floodfill[next_cell] = next_distance;
         queue_push(next_cell, next_direction, EAST, next_count);
 
@@ -735,7 +756,8 @@ static void update_floodfill(void) {
       next_direction = get_next_floodfill_direction(direction, last_step, SOUTH);
       next_count = get_next_floodfill_count(direction, next_direction, count);
       next_distance = get_next_floodfill_distance(floodfill[current_cell], direction, next_direction, next_count, count);
-      if (floodfill[next_cell] >= next_distance) {
+      if ((menu_run_get_floodfill_type() == FLOODFILL_TYPE_BASIC && floodfill[next_cell] > next_distance) ||
+          (menu_run_get_floodfill_type() != FLOODFILL_TYPE_BASIC && floodfill[next_cell] >= next_distance)) {
         floodfill[next_cell] = next_distance;
         queue_push(next_cell, next_direction, SOUTH, next_count);
 
@@ -763,7 +785,8 @@ static void update_floodfill(void) {
       next_direction = get_next_floodfill_direction(direction, last_step, WEST);
       next_count = get_next_floodfill_count(direction, next_direction, count);
       next_distance = get_next_floodfill_distance(floodfill[current_cell], direction, next_direction, next_count, count);
-      if (floodfill[next_cell] >= next_distance) {
+      if ((menu_run_get_floodfill_type() == FLOODFILL_TYPE_BASIC && floodfill[next_cell] > next_distance) ||
+          (menu_run_get_floodfill_type() != FLOODFILL_TYPE_BASIC && floodfill[next_cell] >= next_distance)) {
         floodfill[next_cell] = next_distance;
         queue_push(next_cell, next_direction, WEST, next_count);
 
@@ -791,7 +814,8 @@ static void update_floodfill(void) {
       next_direction = get_next_floodfill_direction(direction, last_step, NORTH);
       next_count = get_next_floodfill_count(direction, next_direction, count);
       next_distance = get_next_floodfill_distance(floodfill[current_cell], direction, next_direction, next_count, count);
-      if (floodfill[next_cell] >= next_distance) {
+      if ((menu_run_get_floodfill_type() == FLOODFILL_TYPE_BASIC && floodfill[next_cell] > next_distance) ||
+          (menu_run_get_floodfill_type() != FLOODFILL_TYPE_BASIC && floodfill[next_cell] >= next_distance)) {
         floodfill[next_cell] = next_distance;
         queue_push(next_cell, next_direction, NORTH, next_count);
 
