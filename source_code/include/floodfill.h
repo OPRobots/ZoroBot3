@@ -69,6 +69,8 @@ struct cells_stack {
 };
 
 void floodfill_set_time_limit(uint32_t ms);
+void floodfill_set_reset_maze_on_start_explore(bool reset);
+bool floodfill_is_reset_maze_on_start_explore(void);
 void floodfill_maze_print(void);
 void floodfill_load_maze(void);
 void floodfill_start_explore(void);

@@ -70,6 +70,9 @@ static void handle_menu_run_values(void) {
         set_RGB_color(0, 0, 0);
       }
     }
+    set_status_led(floodfill_is_reset_maze_on_start_explore());
+  } else {
+    set_status_led(false);
   }
 
   if (modeRun == MODE_ACCEL_EXPLORE) {
@@ -172,8 +175,13 @@ bool menu_run_handler(void) {
     }
     if (get_clock_ticks() - ms >= 200) {
       return true;
-    } else {
+    } else if (modeRun != MODE_RACE || !valueRun[MODE_RACE]) {
       menu_run_mode_change();
+    } else if (modeRun == MODE_RACE) {
+      floodfill_set_reset_maze_on_start_explore(!floodfill_is_reset_maze_on_start_explore());
+      set_status_led(floodfill_is_reset_maze_on_start_explore());
+    } else {
+      set_status_led(false);
     }
   }
   handle_menu_run_btn();
