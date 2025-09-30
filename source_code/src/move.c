@@ -1068,7 +1068,7 @@ static void move_back(enum movement movement) {
   if (initial_walls.front) {
     move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
   } else {
-    move_straight(MIDDLE_MAZE_DISTANCE*1.75f - current_cell_start_mm, 300, false, true);
+    move_straight(MIDDLE_MAZE_DISTANCE * 1.75f - current_cell_start_mm, 300, false, true);
   }
 
   disable_sensors_correction();
@@ -1231,7 +1231,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
 #endif
 }
 
-void run_straight(float distance, float start_offset, float end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed) {
+void run_straight(float distance, float start_offset, float end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed, int8_t next_turn_sign) {
 #ifdef MMSIM_ENABLED
   for (uint16_t i = 0; i < cells; i++) {
     API_moveForward();
@@ -1260,7 +1260,8 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   distance += end_offset;
-  while (is_race_started() && !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
+  bool last_cell_wall_lost = (has_begin && cells <= 2) || cells <= 1;
+  while (is_race_started() && !is_motor_saturated() && (get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER || !last_cell_wall_lost)) {
     current_walls = get_walls();
 
     if (!(has_begin && current_cell == 1) && check_wall_loss_correction(cell_walls)) {
@@ -1268,10 +1269,12 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
       distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell) + end_offset;
       if (cells - current_cell == 0) {
         current_cell_distance_left = distance;
+        last_cell_wall_lost = true;
+        set_RGB_color_while(255, 0, 0, 33);
       } else {
         current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
+        set_RGB_color_while(0, 255, 0, 33);
       }
-      set_RGB_color_while(0, 255, 0, 33);
     }
 
     if (get_encoder_avg_micrometers() - current_distance >= (current_cell_distance_left * MICROMETERS_PER_MILLIMETER)) {
@@ -1280,6 +1283,13 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
       current_cell++;
       current_cell_distance_left = CELL_DIMENSION;
       cell_walls = current_walls;
+      if (next_turn_sign == 1 && !cell_walls.right) {
+        last_cell_wall_lost = true;
+      } else if (next_turn_sign == -1 && !cell_walls.left) {
+        last_cell_wall_lost = true;
+      } else if (next_turn_sign == 0) {
+        last_cell_wall_lost = true;
+      }
       enter_next_cell();
     }
 
@@ -1599,7 +1609,7 @@ void move_run_sequence(enum movement *sequence_movements) {
           if (running_diagonal) {
             run_diagonal(distance, 0, straight_cells, kinematics.linear_speed, 500);
           } else {
-            run_straight(distance, 0, 0, straight_cells, straight_has_begin, kinematics.linear_speed, 500);
+            run_straight(distance, 0, 0, straight_cells, straight_has_begin, kinematics.linear_speed, 500, 0);
           }
           distance = 0;
           start_offset = 0;
@@ -1676,7 +1686,7 @@ void move_run_sequence(enum movement *sequence_movements) {
           if (running_diagonal) {
             run_diagonal(distance, end_offset, straight_cells, kinematics.linear_speed, turn_params.linear_speed);
           } else {
-            run_straight(distance, start_offset, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, turn_params.linear_speed);
+            run_straight(distance, start_offset, end_offset, straight_cells, straight_has_begin, kinematics.linear_speed, turn_params.linear_speed, turn_params.sign);
           }
           end_offset = 0;
           start_offset = 0;

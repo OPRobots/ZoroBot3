@@ -1001,8 +1001,27 @@ static bool floodfill_run(void) {
 
   } while (next_direction == current_direction);
 
+  int8_t next_turn_sign = 0;
+  if(current_direction == EAST && next_direction == SOUTH) {
+    next_turn_sign = 1;
+  } else if(current_direction == EAST && next_direction == NORTH) {
+    next_turn_sign = -1;
+  } else if(current_direction == SOUTH && next_direction == WEST) {
+    next_turn_sign = 1;
+  } else if(current_direction == SOUTH && next_direction == EAST) {
+    next_turn_sign = -1;
+  } else if(current_direction == WEST && next_direction == NORTH) {
+    next_turn_sign = 1;
+  } else if(current_direction == WEST && next_direction == SOUTH) {
+    next_turn_sign = -1;
+  } else if(current_direction == NORTH && next_direction == EAST) {
+    next_turn_sign = 1;
+  } else if(current_direction == NORTH && next_direction == WEST) {
+    next_turn_sign = -1;
+  }
+
   if (count_same_direction > 0) {
-    run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, 2000, get_kinematics().linear_speed);
+    run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, 2000, get_kinematics().linear_speed, next_turn_sign);
     current_position = _current_position;
     return true;
   }

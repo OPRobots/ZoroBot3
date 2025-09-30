@@ -8,11 +8,12 @@
 #include "motors.h"
 #include <string.h>
 #else
+#include "constants.h"
 #include "mmsim_api.h"
 #include "sensors.h"
-#include "constants.h"
 #include <stdbool.h>
 #include <stdint.h>
+
 #endif
 
 enum movement {
@@ -98,7 +99,7 @@ void move_arc_turn(struct turn_params turn);
 void move_inplace_turn(enum movement movement);
 void move_inplace_angle(float angle, float rads);
 
-void run_straight(float distance, float start_offset, float end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed);
+void run_straight(float distance, float start_offset, float end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed, int8_t next_turn_sign);
 void run_side(enum movement movement, struct turn_params turn, struct turn_params next_turn);
 void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t speed, int32_t final_speed);
 

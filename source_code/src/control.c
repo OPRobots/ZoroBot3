@@ -386,7 +386,7 @@ void control_loop(void) {
         "side_sensors_error",
         "battery_voltage"};
     macroarray_store(
-        2,
+        5,
         0b00000110011,
         labels,
         11,

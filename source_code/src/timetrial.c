@@ -17,7 +17,8 @@ void timetrial_loop(void) {
                maze_get_rows() - 1,
                true,
                get_kinematics().linear_speed,
-               get_kinematics().turns[MOVE_RIGHT_90].linear_speed);
+               get_kinematics().turns[MOVE_RIGHT_90].linear_speed,
+               get_kinematics().turns[MOVE_RIGHT_90].sign);
 
   run_side(MOVE_RIGHT_90, get_kinematics().turns[MOVE_RIGHT_90], get_kinematics().turns[MOVE_RIGHT_90]);
 
@@ -28,7 +29,8 @@ void timetrial_loop(void) {
                  maze_get_columns() - 2,
                  false,
                  get_kinematics().linear_speed,
-                 get_kinematics().turns[MOVE_RIGHT_90].linear_speed);
+                 get_kinematics().turns[MOVE_RIGHT_90].linear_speed,
+                 get_kinematics().turns[MOVE_RIGHT_90].sign);
 
     run_side(MOVE_RIGHT_90,
              get_kinematics().turns[MOVE_RIGHT_90],
