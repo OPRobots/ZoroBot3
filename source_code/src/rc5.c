@@ -80,9 +80,10 @@ static void rc5_manage_command(uint16_t message) {
       break;
     case ADDRESS_COMP:
       if (command == rc5_stored_data[DATA_START]) {
-        if(menu_run_can_start()){
-        // set_competicion_iniciando(true);
-        }else{
+        if (menu_run_can_start() && menu_run_get_explore_algorithm() == EXPLORE_HARDCODE) {
+          // set_competicion_iniciando(true);
+          set_race_started(true);
+        } else {
           set_debug_btn(true);
         }
       } else if (command == rc5_stored_data[DATA_STOP]) {

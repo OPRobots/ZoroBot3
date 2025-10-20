@@ -36,7 +36,7 @@ int main(void) {
   show_battery_level();
 
   printf("BA: %4d CI: %4d CD: %4d BO: %4d\n", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
-// floodfill_maze_print();
+  // floodfill_maze_print();
   while (1) {
     if (!is_race_started()) {
       menu_handler();
@@ -48,7 +48,7 @@ int main(void) {
       }
       if (menu_run_can_start()) {
         int8_t sensor_started = check_start_run();
-        if (is_race_started()) {
+        if (is_race_started() || (!is_race_started() && menu_run_get_explore_algorithm() == EXPLORE_HARDCODE)) {
           switch (menu_run_get_explore_algorithm()) {
             case EXPLORE_HANDWALL:
               switch (sensor_started) {
@@ -75,6 +75,19 @@ int main(void) {
             case EXPLORE_TIME_TRIAL:
               timetrial_start();
               break;
+            case EXPLORE_HARDCODE:
+              switch (sensor_started) {
+                case SENSOR_FRONT_LEFT_WALL_ID:
+                  hardcode_use_left_hand();
+                  break;
+                case SENSOR_FRONT_RIGHT_WALL_ID:
+                  hardcode_use_right_hand();
+                  break;
+              }
+              if (is_race_started()) {
+                hardcode_start();
+              }
+              break;
             default:
               set_race_started(false);
               break;
@@ -91,6 +104,9 @@ int main(void) {
           break;
         case EXPLORE_TIME_TRIAL:
           timetrial_loop();
+          break;
+        case EXPLORE_HARDCODE:
+          hardcode_loop();
           break;
         default:
           set_race_started(false);

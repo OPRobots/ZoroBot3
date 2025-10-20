@@ -36,6 +36,7 @@ void reset_control_speed(void);
 void reset_control_all(void);
 
 void set_target_linear_speed(int32_t linear_speed);
+void force_target_linear_speed(int32_t linear_speed);
 int32_t get_ideal_linear_speed(void);
 void set_ideal_angular_speed(float angular_speed);
 float get_ideal_angular_speed(void);

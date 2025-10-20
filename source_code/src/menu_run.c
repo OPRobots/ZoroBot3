@@ -14,7 +14,7 @@ uint8_t modeRun = MODE_SPEED;
 #define MODE_FLOODFILL_TYPE_VALUES 3
 #define MODE_RACE_VALUES 2
 #define MODE_MAZE_TYPE_VALUES 2
-#define MODE_EXPLORE_ALGORITHM_VALUES 3
+#define MODE_EXPLORE_ALGORITHM_VALUES 4
 #define MODE_SOLVE_STRATEGY_VALUES 2
 
 int16_t valueRun[MENU_RUN_NUM_MODES] = {0, 0, 0, 0, 0, 0, 1};
@@ -136,6 +136,9 @@ static void handle_menu_run_values(void) {
       case EXPLORE_TIME_TRIAL:
         set_RGB_color(50, 0, 50);
         break;
+      case EXPLORE_HARDCODE:
+        set_RGB_color(50, 50, 0);
+        break;
       default:
         set_RGB_color(0, 0, 0);
         break;
@@ -178,8 +181,12 @@ bool menu_run_handler(void) {
     } else if (modeRun != MODE_RACE || !valueRun[MODE_RACE]) {
       menu_run_mode_change();
     } else if (modeRun == MODE_RACE) {
-      floodfill_set_reset_maze_on_start_explore(!floodfill_is_reset_maze_on_start_explore());
-      set_status_led(floodfill_is_reset_maze_on_start_explore());
+      if (menu_run_can_start() && menu_run_get_explore_algorithm() == EXPLORE_HARDCODE) {
+        hardcore_toggle_hand();
+      } else {
+        floodfill_set_reset_maze_on_start_explore(!floodfill_is_reset_maze_on_start_explore());
+        set_status_led(floodfill_is_reset_maze_on_start_explore());
+      }
     } else {
       set_status_led(false);
     }

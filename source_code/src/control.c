@@ -158,14 +158,16 @@ int8_t check_start_run(void) {
   }
 
   if (sensor_front_left_start_ms >= SENSOR_START_MIN_MS || sensor_front_right_start_ms >= SENSOR_START_MIN_MS) {
-    set_RGB_color(0, 50, 0);
-    delay(1000);
-    set_RGB_color(0, 0, 0);
-    set_race_started(true);
+    if (menu_run_get_explore_algorithm() != EXPLORE_HARDCODE) {
+      set_RGB_color(0, 50, 0);
+      delay(1000);
+      set_RGB_color(0, 0, 0);
+      set_race_started(true);
+      menu_run_reset();
+    }
     uint8_t sensor = sensor_front_left_start_ms >= SENSOR_START_MIN_MS ? SENSOR_FRONT_LEFT_WALL_ID : SENSOR_FRONT_RIGHT_WALL_ID;
     sensor_front_left_start_ms = 0;
     sensor_front_right_start_ms = 0;
-    menu_run_reset();
     return sensor;
   }
   return -1;
@@ -233,6 +235,11 @@ void reset_control_all(void) {
 
 void set_target_linear_speed(int32_t linear_speed) {
   target_linear_speed = linear_speed;
+}
+
+void force_target_linear_speed(int32_t linear_speed) {
+  target_linear_speed = linear_speed;
+  ideal_linear_speed = linear_speed;
 }
 
 int32_t get_ideal_linear_speed(void) {

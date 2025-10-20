@@ -9,6 +9,7 @@
 #include <menu_run.h>
 #include <stdint.h>
 #include <usart.h>
+#include <hardcode.h>
 // #include <eeprom.h>
 
 enum RC5_TRIGGER {
