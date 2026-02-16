@@ -58,7 +58,15 @@ static void debug_motors_current(void) {
   if (get_clock_ticks() > last_print_debug + 50) {
     set_motors_enable(true);
     set_motors_speed(150, 150);
-    printf("BA: %4d CI: %4d CD: %4d BO: %4d\n", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
+    // printf("BA: %4d CI: %4d CD: %4d BO: %4d\n", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
+    printf("ENC_D: %4ld\tENC_I: %4ld\n", get_encoder_right_millimeters(), get_encoder_left_millimeters());
+    last_print_debug = get_clock_ticks();
+  }
+}
+
+static void debug_gyro(void) {
+  if (get_clock_ticks() > last_print_debug + 50) {
+    printf("raw: %.2f\tangle: %.2f\tangular_speed: %.2f\n", lsm6dsr_get_gyro_z_raw(), lsm6dsr_get_gyro_z_degrees(), lsm6dsr_get_gyro_z_radps());
     last_print_debug = get_clock_ticks();
   }
 }
@@ -66,6 +74,7 @@ static void debug_motors_current(void) {
 static void debug_gyro_demo(void) {
   reset_control_all();
   delay(1000);
+  set_fan_speed(35);
   do {
     if (get_clock_ticks() >= last_keep_z_angle + 1) {
       keep_z_angle();
@@ -80,12 +89,9 @@ static void debug_gyro_demo(void) {
 static void debug_fan_demo(void) {
   reset_control_all();
   delay(1000);
-  set_fan_speed(50);
+  set_fan_speed(35);
+  uint32_t start_time = get_clock_ticks();
   do {
-    if (get_clock_ticks() >= last_keep_z_angle + 1) {
-      keep_z_angle();
-      last_keep_z_angle = get_clock_ticks();
-    }
     check_debug_active();
   } while (debug_enabled);
   set_fan_speed(0);
@@ -119,6 +125,9 @@ void debug_from_config(uint8_t type) {
         break;
       case DEBUG_MOTORS_CURRENT:
         debug_motors_current();
+        break;
+      case DEBUG_GYRO:
+        debug_gyro();
         break;
       case DEBUG_GYRO_DEMO:
         debug_gyro_demo();
