@@ -325,6 +325,7 @@ void sensors_load_eeprom(void) {
   int16_t *data = eeprom_get_data();
   for (uint16_t i = DATA_INDEX_SENSORS_OFFSETS; i < (DATA_INDEX_SENSORS_OFFSETS + NUM_SENSORES); i++) {
     sensors_distance_offset[i - DATA_INDEX_SENSORS_OFFSETS] = data[i];
+    printf("Sensor %d offset: %d\n", i - DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset[i - DATA_INDEX_SENSORS_OFFSETS]);
   }
 #endif
 }
