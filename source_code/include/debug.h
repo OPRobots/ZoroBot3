@@ -21,11 +21,13 @@
 #define DEBUG_TYPE_SENSORS_DISTANCES 3
 #define DEBUG_FLOODFILL_MAZE 4
 #define DEBUG_MOTORS_CURRENT 5
-#define DEBUG_GYRO 6
+#define DEBUG_ENCODERS 6
+#define DEBUG_GYRO 7
 #define DEBUG_GYRO_DEMO 9
 #define DEBUG_FAN_DEMO 10
 
 bool is_debug_enabled(void);
+void set_debug_enabled(bool enabled);
 void debug_from_config(uint8_t type);
 void debug_from_main(uint8_t type);
 

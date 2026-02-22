@@ -32,6 +32,12 @@ static void debug_sensors_distances(void) {
     printf("FL: %4d ", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
     printf("FR: %4d ", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
     printf("SR: %4d ", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
+    printf("LW: %d ", left_wall_detection()?1:0);
+    printf("FW: %d ", front_wall_detection()?1:0);
+    printf("RW: %d ", right_wall_detection()?1:0);
+    printf("side_error: %4d ", get_side_sensors_error());
+    printf("diagonal_error: %4d ", get_front_sensors_diagonal_error());
+    printf("front_angle_error: %4d ", get_front_sensors_angle_error());
     printf("\n");
     last_print_debug = get_clock_ticks();
   }
@@ -59,6 +65,13 @@ static void debug_motors_current(void) {
     set_motors_enable(true);
     set_motors_speed(150, 150);
     // printf("BA: %4d CI: %4d CD: %4d BO: %4d\n", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
+    printf("ENC_D: %4ld\tENC_I: %4ld\n", get_encoder_right_millimeters(), get_encoder_left_millimeters());
+    last_print_debug = get_clock_ticks();
+  }
+}
+
+static void debug_encoders(void) {
+  if (get_clock_ticks() > last_print_debug + 50) {
     printf("ENC_D: %4ld\tENC_I: %4ld\n", get_encoder_right_millimeters(), get_encoder_left_millimeters());
     last_print_debug = get_clock_ticks();
   }
@@ -102,6 +115,10 @@ bool is_debug_enabled(void) {
   return debug_enabled;
 }
 
+void set_debug_enabled(bool enabled) {
+  debug_enabled = enabled;
+}
+
 void debug_from_config(uint8_t type) {
   if (type != DEBUG_NONE) {
     check_debug_active();
@@ -125,6 +142,9 @@ void debug_from_config(uint8_t type) {
         break;
       case DEBUG_MOTORS_CURRENT:
         debug_motors_current();
+        break;
+      case DEBUG_ENCODERS:
+        debug_encoders();
         break;
       case DEBUG_GYRO:
         debug_gyro();
