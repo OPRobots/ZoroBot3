@@ -1622,7 +1622,7 @@ void floodfill_start_explore(void) {
   set_RGB_color(0, 0, 0);
   set_target_fan_speed(get_kinematics().fan_speed, 400);
   start_ms = get_clock_ticks();
-  delay(500);
+  delay(800);
 #endif
 
   initialize_directions_values();
@@ -1659,7 +1659,7 @@ void floodfill_start_run(void) {
   clear_info_leds();
   set_RGB_color(0, 0, 0);
   set_target_fan_speed(get_kinematics().fan_speed, 400);
-  delay(500);
+  delay(800);
 #endif
 
   initialize_directions_values();
