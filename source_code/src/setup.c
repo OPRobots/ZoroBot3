@@ -446,6 +446,7 @@ void setup_spi_low_speed(void) {
  *
  */
 void setup(void) {
+  setup_kinematics();
   setup_clock();
   setup_timer_priorities();
   setup_gpio();

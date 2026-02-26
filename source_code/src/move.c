@@ -1115,8 +1115,13 @@ char *get_movement_string(enum movement movement) {
   return movement_string[movement];
 }
 
+void setup_kinematics(void) {
+  kinematics = kinematics_settings[SPEED_EXPLORE];
+}
+
 void configure_kinematics(enum speed_strategy speed) {
   kinematics = kinematics_settings[speed];
+  lsm6dsr_reload_config();
 }
 
 struct kinematics get_kinematics(void) {

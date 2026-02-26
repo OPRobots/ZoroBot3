@@ -9,8 +9,10 @@
 #include <string.h>
 #else
 #include "constants.h"
+#include "lsm6dsr.h"
 #include "mmsim_api.h"
 #include "sensors.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -83,6 +85,7 @@ bool get_wall_lost_toggle_state(void);
 
 char *get_movement_string(enum movement movement);
 
+void setup_kinematics(void);
 enum speed_strategy;
 void configure_kinematics(enum speed_strategy speed);
 struct kinematics get_kinematics(void);
