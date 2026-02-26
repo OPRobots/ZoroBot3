@@ -180,10 +180,11 @@ void update_encoder_readings(void) {
 
   float new_left_speed = left_diff_ticks * (MICROMETERS_PER_TICK / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
   float new_right_speed = right_diff_ticks * (MICROMETERS_PER_TICK / MICROMETERS_PER_MILLIMETER) * SYSTICK_FREQUENCY_HZ;
-  left_speed = 0.2f * new_left_speed + (1 - 0.2f) * left_speed;
-  right_speed = 0.2f * new_right_speed + (1 - 0.2f) * right_speed;
-  
-  angular_speed = (float)((left_speed-right_speed) / MILLIMETERS_PER_METER) / ((float)WHEELS_SEPARATION / (float)MILLIMETERS_PER_METER);
+
+  left_speed = 0.8f * left_speed + (1 - 0.8f) * new_left_speed;
+  right_speed = 0.8f * right_speed + (1 - 0.8f) * new_right_speed;
+
+  angular_speed = (float)((left_speed - right_speed) / MILLIMETERS_PER_METER) / ((float)WHEELS_SEPARATION / (float)MILLIMETERS_PER_METER);
 
   last_left_ticks = left_ticks;
   last_right_ticks = right_ticks;
