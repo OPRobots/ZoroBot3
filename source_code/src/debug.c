@@ -35,7 +35,7 @@ static void debug_sensors_distances(void) {
     printf("LW: %d ", left_wall_detection()?1:0);
     printf("FW: %d ", front_wall_detection()?1:0);
     printf("RW: %d ", right_wall_detection()?1:0);
-    printf("side_error: %4d ", get_side_sensors_error());
+    printf("side_error: %4.2f ", get_side_sensors_error());
     printf("diagonal_error: %4d ", get_front_sensors_diagonal_error());
     printf("front_angle_error: %4d ", get_front_sensors_angle_error());
     printf("\n");
@@ -103,7 +103,6 @@ static void debug_fan_demo(void) {
   reset_control_all();
   delay(1000);
   set_fan_speed(35);
-  uint32_t start_time = get_clock_ticks();
   do {
     check_debug_active();
   } while (debug_enabled);

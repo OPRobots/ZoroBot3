@@ -77,7 +77,7 @@ void get_sensors_raw(uint16_t *on, uint16_t *off);
 void sm_emitter_adc(void);
 
 void front_sensors_calibration(void);
-void side_sensors_calibration(void);
+void side_sensors_calibration(bool keep_sensors_on);
 void sensors_load_eeprom(void);
 
 uint16_t get_sensor_raw(uint8_t pos, bool on);
@@ -97,7 +97,7 @@ uint16_t get_front_wall_distance(void);
 
 int16_t get_side_sensors_close_error(void);
 int16_t get_side_sensors_far_error(void);
-int16_t get_side_sensors_error(void);
+float get_side_sensors_error(void);
 int16_t get_diagonal_sensors_error(void);
 int16_t get_front_sensors_angle_error(void);
 int16_t get_front_sensors_diagonal_error(void);

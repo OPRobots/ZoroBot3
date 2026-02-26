@@ -18,6 +18,25 @@
 
 #endif
 
+enum kpi_controls {
+  KPI_LINEAR,
+  KPI_ANGULAR,
+  KPI_SIDE_SENSORS,
+  KPI_FRONT_SENSORS,
+  KPI_FRONT_DIAGONAL_SENSORS,
+};
+
+struct kpi_params {
+  double kp;
+  double ki;
+  double kd;
+};
+struct mpu_params {
+  double sensitivity_dps;
+  uint8_t full_scale_dps;
+  double low_pass_filter_alpha;
+};
+
 enum movement {
   MOVE_NONE,
   MOVE_HOME,
@@ -47,13 +66,9 @@ enum movement {
 };
 
 struct inplace_params {
-  int16_t start;
-  int16_t end;
-  int16_t linear_speed;
+  float radians;
   float angular_accel;
   float max_angular_speed;
-  uint16_t t_accel;
-  uint16_t t_max;
   int8_t sign;
 };
 struct turn_params {
@@ -78,6 +93,8 @@ struct kinematics {
   struct linear_accel_params linear_accel;
   int16_t fan_speed;
   struct turn_params *turns;
+  struct kpi_params *kpi;
+  struct mpu_params mpu;
 };
 
 bool get_cell_change_toggle_state(void);

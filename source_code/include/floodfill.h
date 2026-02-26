@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "constants.h"
+#include "calibrations.h"
 #include "floodfill_weigths.h"
 #include "maze.h"
 #include "move.h"

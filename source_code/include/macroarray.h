@@ -4,8 +4,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-
 #include "delay.h"
+#include "lsm6dsr.h"
 
 #define MACROARRAY_LENGTH 30000
 #define MACROARRAY_SEPARATOR "\t"

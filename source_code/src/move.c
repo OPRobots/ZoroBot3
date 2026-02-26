@@ -28,39 +28,83 @@ static char *movement_string[] = {
     "MOVE_BACK_STOP",
 };
 
+static struct kpi_params kpi_explore[] = {
+    [KPI_LINEAR] = {
+        .kp = 0.004,
+        .ki = 0.0007,
+        .kd = 0.00,
+    },
+    [KPI_ANGULAR] = {
+        .kp = 0.27,
+        .ki = 0.014,
+        .kd = 0.0,
+    },
+    [KPI_SIDE_SENSORS] = {
+        .kp = 0.03,
+        .ki = 0.002,
+        .kd = 0.0,
+    },
+    [KPI_FRONT_SENSORS] = {
+        .kp = 0.02,
+        .ki = 0.00035,
+        .kd = 0,
+    },
+    [KPI_FRONT_DIAGONAL_SENSORS] = {
+        .kd = 0.040,
+        .kp = 0.001,
+        .ki = 0.040,
+    },
+};
+
+static struct kpi_params kpi_run[] = {
+    [KPI_LINEAR] = {
+        .kp = 0.004,
+        .ki = 0.0007,
+        .kd = 0.00,
+    },
+    [KPI_ANGULAR] = {
+        .kp = 0.25,
+        .ki = 0.014,
+        .kd = 0.0,
+    },
+    [KPI_SIDE_SENSORS] = {
+        .kp = 0.03,
+        .ki = 0.002,
+        .kd = 0.0,
+    },
+    [KPI_FRONT_SENSORS] = {
+        .kp = 0.02,
+        .ki = 0.00035,
+        .kd = 0,
+    },
+    [KPI_FRONT_DIAGONAL_SENSORS] = {
+        .kd = 0.040,
+        .kp = 0.001,
+        .ki = 0.040,
+    },
+};
+
 //! EL COLAB CALCULA MAL LOS SIGUIENTES GIROS:
 //! MOVE_****_180 -> El .end tiene que ser igual que el .start
 //! MOVE_****_TO_135 -> El .end tiene que ser el .start y el .start tiene que ser el .end del MOVE_****_FROM_45_180
 
 static struct inplace_params turns_inplace[] = {
     [MOVE_BACK] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 0,
-        .angular_accel = 612.5,
-        .max_angular_speed = 13.460,
-        .t_accel = 22,
-        .t_max = 209,
+        .radians = PI,
+        .angular_accel = 1400,
+        .max_angular_speed = 15,
         .sign = -1,
     },
     [MOVE_BACK_WALL] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 0,
-        .angular_accel = 612.5,
-        .max_angular_speed = 13.460,
-        .t_accel = 22,
-        .t_max = 209,
+        .radians = PI,
+        .angular_accel = 1400,
+        .max_angular_speed = 15,
         .sign = -1,
     },
     [MOVE_BACK_STOP] = {
-        .start = 0,
-        .end = 0,
-        .linear_speed = 0,
-        .angular_accel = 612.5,
-        .max_angular_speed = 13.460,
-        .t_accel = 22,
-        .t_max = 209,
+        .radians = PI,
+        .angular_accel = 1400,
+        .max_angular_speed = 15,
         .sign = -1,
     },
 };
@@ -742,6 +786,12 @@ static struct kinematics kinematics_settings[] = {
         },
         .fan_speed = 30,
         .turns = turns_explore,
+        .kpi = kpi_explore,
+        .mpu = {
+            .sensitivity_dps = GYRO_SENSITIVITY_1000DPS,
+            .full_scale_dps = LSM6DSR_1000dps,
+            .low_pass_filter_alpha = 0.27f,
+        },
     },
     [SPEED_NORMAL] = {
         .linear_speed = 3000,
@@ -753,6 +803,12 @@ static struct kinematics kinematics_settings[] = {
         },
         .fan_speed = 60,
         .turns = turns_normal,
+        .kpi = kpi_run,
+        .mpu = {
+            .sensitivity_dps = GYRO_SENSITIVITY_4000DPS,
+            .full_scale_dps = LSM6DSR_4000dps,
+            .low_pass_filter_alpha = 0.50f,
+        },
     },
     [SPEED_MEDIUM] = {
         .linear_speed = 5000,
@@ -764,6 +820,12 @@ static struct kinematics kinematics_settings[] = {
         },
         .fan_speed = 65,
         .turns = turns_medium,
+        .kpi = kpi_run,
+        .mpu = {
+            .sensitivity_dps = GYRO_SENSITIVITY_4000DPS,
+            .full_scale_dps = LSM6DSR_4000dps,
+            .low_pass_filter_alpha = 0.50f,
+        },
     },
     [SPEED_FAST] = {
         .linear_speed = 5500,
@@ -773,8 +835,14 @@ static struct kinematics kinematics_settings[] = {
             .speed_hard = 3500,
             .accel_soft = 15000,
         },
-        .fan_speed = 75,
+        .fan_speed = 70,
         .turns = turns_fast,
+        .kpi = kpi_run,
+        .mpu = {
+            .sensitivity_dps = GYRO_SENSITIVITY_4000DPS,
+            .full_scale_dps = LSM6DSR_4000dps,
+            .low_pass_filter_alpha = 0.50f,
+        },
     },
     [SPEED_SUPER] = {
         .linear_speed = 6000,
@@ -786,6 +854,12 @@ static struct kinematics kinematics_settings[] = {
         },
         .fan_speed = 85,
         .turns = turns_super,
+        .kpi = kpi_run,
+        .mpu = {
+            .sensitivity_dps = GYRO_SENSITIVITY_4000DPS,
+            .full_scale_dps = LSM6DSR_4000dps,
+            .low_pass_filter_alpha = 0.50f,
+        },
     },
     [SPEED_HAKI] = {
         .linear_speed = 6500,
@@ -797,6 +871,12 @@ static struct kinematics kinematics_settings[] = {
         },
         .fan_speed = 90,
         .turns = turns_haki,
+        .kpi = kpi_run,
+        .mpu = {
+            .sensitivity_dps = GYRO_SENSITIVITY_4000DPS,
+            .full_scale_dps = LSM6DSR_4000dps,
+            .low_pass_filter_alpha = 0.50f,
+        },
     }};
 
 static struct kinematics kinematics;
@@ -1175,6 +1255,7 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
         //   set_target_linear_speed(0);
         //   printf("%ld\n", left_distance);
         // }
+        set_RGB_color_while(0, 255, 0, 33);
         current_distance = get_encoder_avg_micrometers();
         distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
       }
@@ -1265,8 +1346,8 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   distance += end_offset;
-  bool last_cell_wall_lost = (has_begin && cells <= 2) || cells <= 1;
-  while (is_race_started() && !is_motor_saturated() && (get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER || !last_cell_wall_lost)) {
+  // bool last_cell_wall_lost = (has_begin && cells <= 2) || cells <= 1;
+  while (is_race_started() && !is_motor_saturated() && (get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER /* || !last_cell_wall_lost */)) {
     current_walls = get_walls();
 
     if (!(has_begin && current_cell == 1) && check_wall_loss_correction(cell_walls)) {
@@ -1274,7 +1355,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
       distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell) + end_offset;
       if (cells - current_cell == 0) {
         current_cell_distance_left = distance;
-        last_cell_wall_lost = true;
+        // last_cell_wall_lost = true;
         set_RGB_color_while(255, 0, 0, 33);
       } else {
         current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
@@ -1289,11 +1370,11 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
       current_cell_distance_left = CELL_DIMENSION;
       cell_walls = current_walls;
       if (next_turn_sign == 1 && !cell_walls.right) {
-        last_cell_wall_lost = true;
+        // last_cell_wall_lost = true;
       } else if (next_turn_sign == -1 && !cell_walls.left) {
-        last_cell_wall_lost = true;
+        // last_cell_wall_lost = true;
       } else if (next_turn_sign == 0) {
-        last_cell_wall_lost = true;
+        // last_cell_wall_lost = true;
       }
       enter_next_cell();
     }
@@ -1305,6 +1386,17 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
       set_target_linear_speed(final_speed);
     }
   }
+  // while (!last_cell_wall_lost) {
+  //   current_walls = get_walls();
+  //   if (next_turn_sign == 1 && !current_walls.right) {
+  //     last_cell_wall_lost = true;
+  //   } else if (next_turn_sign == -1 && !current_walls.left) {
+  //     last_cell_wall_lost = true;
+  //   } else if (next_turn_sign == 0) {
+  //     last_cell_wall_lost = true;
+  //   }
+  // }
+
   if (current_cell < cells && end_offset == 0) {
     enter_next_cell();
   }
@@ -1318,8 +1410,8 @@ void run_side(enum movement movement, struct turn_params turn, struct turn_param
 
   float end_distance_offset = 0.0f;
   float start_distance_offset = 0.0f;
-  bool enable_end_distance_offset = true;
-  bool enable_start_distance_offset = true;
+  // bool enable_end_distance_offset = true;
+  // bool enable_start_distance_offset = true;
 
   switch (movement) {
     case MOVE_LEFT_TO_45:
@@ -1332,8 +1424,8 @@ void run_side(enum movement movement, struct turn_params turn, struct turn_param
     case MOVE_RIGHT_FROM_45:
     case MOVE_LEFT_FROM_45_180:
     case MOVE_RIGHT_FROM_45_180:
-      enable_start_distance_offset = false;
-      enable_end_distance_offset = false;
+      // enable_start_distance_offset = false;
+      // enable_end_distance_offset = false;
       set_side_sensors_close_correction(false);
       set_side_sensors_far_correction(false);
       break;
@@ -1343,7 +1435,7 @@ void run_side(enum movement movement, struct turn_params turn, struct turn_param
       break;
   }
 
-  struct walls walls = get_walls();
+  // struct walls walls = get_walls();
   // if (enable_end_distance_offset) {
   //   if (turn.sign > 0) {
   //     if (walls.left) {
@@ -1482,28 +1574,40 @@ void move_arc_turn(struct turn_params turn) {
 
 void move_inplace_turn(enum movement movement) {
 #ifndef MMSIM_ENABLED
-  struct inplace_params turn = turns_inplace[movement];
-  set_target_linear_speed(turn.linear_speed);
+  set_target_linear_speed(0);
 
-  uint32_t ms_start = get_clock_ticks();
-  uint32_t ms_current = ms_start;
-  float angular_speed = 0;
-  int8_t sign = turn.sign == 0 ? ((int8_t)(rand() % 2) * 2 - 1) : turn.sign;
-  while (true) {
-    ms_current = get_clock_ticks();
-    if (ms_current - ms_start <= turn.t_accel) {
-      angular_speed = turn.angular_accel * (ms_current - ms_start) / 1000;
-    } else if (ms_current - ms_start <= (turn.t_accel + turn.t_max)) {
-      angular_speed = turn.max_angular_speed;
-    } else if (ms_current - ms_start <= (uint32_t)(turn.t_accel + turn.t_max + turn.t_accel)) {
-      angular_speed = turn.max_angular_speed - (turn.angular_accel * (ms_current - ms_start - turn.t_accel - turn.t_max) / 1000);
-    } else {
-      set_ideal_angular_speed(0);
+  struct inplace_params turn = turns_inplace[movement];
+  // int8_t sign = turn.sign == 0 ? ((int8_t)(rand() % 2) * 2 - 1) : turn.sign;
+
+  float duration = turn.max_angular_speed / turn.angular_accel * PI;
+  float transition_angle = duration * turn.max_angular_speed / PI;
+  float arc_ms = (turn.radians - 2 * transition_angle) / turn.max_angular_speed * 1000;
+  float transition_ms = duration / 2 * 1000;
+
+  uint32_t start_ms = get_clock_ticks();
+  uint32_t current_ms;
+  float elapsed_ms;
+  float angular_speed;
+  float factor;
+  while (true && is_race_started() && !is_motor_saturated()) {
+    current_ms = get_clock_ticks();
+    elapsed_ms = current_ms - start_ms;
+
+    if (elapsed_ms >= 2 * transition_ms + arc_ms) {
       break;
     }
-    set_ideal_angular_speed(angular_speed * sign);
+    angular_speed = turn.sign * turn.max_angular_speed;
+    if (elapsed_ms < transition_ms) {
+      factor = elapsed_ms / transition_ms;
+      angular_speed *= sin(factor * PI / 2);
+    } else if (elapsed_ms >= transition_ms + arc_ms) {
+      factor = (elapsed_ms - arc_ms) / transition_ms;
+      angular_speed *= sin(factor * PI / 2);
+    }
+    set_ideal_angular_speed(angular_speed);
   }
   set_ideal_angular_speed(0);
+
 #endif
 }
 

@@ -33,6 +33,7 @@ static volatile float last_side_sensors_error;
 static volatile float sum_side_sensors_error;
 
 static volatile float front_sensors_error;
+static volatile float last_front_sensors_error;
 static volatile float sum_front_sensors_error;
 
 static volatile float front_sensors_diagonal_error;
@@ -56,11 +57,11 @@ static int32_t voltage_to_motor_pwm(float voltage) {
 }
 #endif
 
-#ifndef MMSIM_ENABLED
-static int32_t percentage_to_fan_pwm(float percentage) {
-  return percentage > 0 ? (int32_t)constrain((get_battery_high_limit_voltage() / get_battery_voltage()) * percentage, percentage, 100.0f) : 0;
-}
-#endif
+// #ifndef MMSIM_ENABLED
+// static int32_t percentage_to_fan_pwm(float percentage) {
+//   return percentage > 0 ? (int32_t)constrain((get_battery_high_limit_voltage() / get_battery_voltage()) * percentage, percentage, 100.0f) : 0;
+// }
+// #endif
 
 /**
  * @brief Actualiza la velocidad lineal ideal en función de la velocidad lineal objetivo y la aceleración
@@ -202,6 +203,7 @@ void disable_sensors_correction(void) {
 void reset_control_errors(void) {
   sum_side_sensors_error = 0;
   last_side_sensors_error = 0;
+  last_front_sensors_error = 0;
   sum_front_sensors_error = 0;
   sum_front_sensors_diagonal_error = 0;
   linear_error = 0;
@@ -350,20 +352,31 @@ void control_loop(void) {
     last_front_sensors_diagonal_error = 0;
   }
 
-  linear_voltage = KP_LINEAR * linear_error + KI_LINEAR * sum_linear_error + KD_LINEAR * (linear_error - last_linear_error);
+  linear_voltage =
+      get_kinematics().kpi[KPI_LINEAR].kp * linear_error +
+      get_kinematics().kpi[KPI_LINEAR].ki * sum_linear_error +
+      get_kinematics().kpi[KPI_LINEAR].kd * (linear_error - last_linear_error);
 
   angular_voltage =
-      KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error) +
-      KP_SIDE_SENSORS * side_sensors_error + KI_SIDE_SENSORS * sum_side_sensors_error + KD_SIDE_SENSORS * (side_sensors_error - last_side_sensors_error) +
-      KP_FRONT_SENSORS * front_sensors_error + KI_FRONT_SENSORS * sum_front_sensors_error +
-      KP_FRONT_DIAGONAL_SENSORS * front_sensors_diagonal_error + KI_FRONT_DIAGONAL_SENSORS * sum_front_sensors_diagonal_error + KD_FRONT_DIAGONAL_SENSORS * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
+      get_kinematics().kpi[KPI_ANGULAR].kp * angular_error +
+      get_kinematics().kpi[KPI_ANGULAR].ki * sum_angular_error +
+      get_kinematics().kpi[KPI_ANGULAR].kd * (angular_error - last_angular_error); /*  +
+
+       get_kinematics().kpi[KPI_SIDE_SENSORS].kp * side_sensors_error +
+       get_kinematics().kpi[KPI_SIDE_SENSORS].ki * sum_side_sensors_error +
+       get_kinematics().kpi[KPI_SIDE_SENSORS].kd * (side_sensors_error - last_side_sensors_error) +
+
+       get_kinematics().kpi[KPI_FRONT_SENSORS].kp * front_sensors_error +
+       get_kinematics().kpi[KPI_FRONT_SENSORS].ki * sum_front_sensors_error +
+       get_kinematics().kpi[KPI_FRONT_SENSORS].kd * (front_sensors_error - last_front_sensors_error) +
+
+       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].kp * front_sensors_diagonal_error +
+       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].ki * sum_front_sensors_diagonal_error +
+       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].kd * (front_sensors_diagonal_error - last_front_sensors_diagonal_error); */
 
   last_side_sensors_error = side_sensors_error;
+  last_front_sensors_error = front_sensors_error;
   last_front_sensors_diagonal_error = front_sensors_diagonal_error;
-
-  // if (get_ideal_linear_speed() > 0) {
-  //   angular_voltage *= get_ideal_linear_speed() / 500.0f; // TODO: definear 500 as explore speed
-  // }
 
   voltage_left = linear_voltage + angular_voltage;
   voltage_right = linear_voltage - angular_voltage;
@@ -376,31 +389,35 @@ void control_loop(void) {
         "target_linear_speed",
         "ideal_linear_speed",
         "measured_linear_speed",
-        "measured_left_speed",
-        "measured_right_speed",
+        // "measured_left_speed",
+        // "measured_right_speed",
         "ideal_angular_speed",
         "measured_angular_speed",
+        "raw_angular_speed",
         "pwm_left",
         "pwm_right",
         // "encoder_avg_millimeters",
-        "side_sensors_error",
+        // "side_sensors_error",
+        // "angular_voltage",
         "battery_voltage"};
     macroarray_store(
-        5,
-        0b00000110011,
+        1,
+        0b000111001,
         labels,
-        11,
+        9,
         (int16_t)target_linear_speed,
         (int16_t)ideal_linear_speed,
         (int16_t)(get_measured_linear_speed()),
-        (int16_t)(get_encoder_left_speed()),
-        (int16_t)(get_encoder_right_speed()),
+        // (int16_t)(get_encoder_left_speed()),
+        // (int16_t)(get_encoder_right_speed()),
         (int16_t)(ideal_angular_speed * 100),
         (int16_t)(get_measured_angular_speed() * 100),
+        (int16_t)(lsm6dsr_get_gyro_z_raw() * 100),
         (int16_t)pwm_left,
         (int16_t)pwm_right,
         // (int16_t)get_encoder_avg_millimeters(),
-        (int16_t)(side_sensors_error * 100),
+        // (int16_t)(side_sensors_error * 100),
+        // (int16_t)(angular_voltage * 100),
         (int16_t)(get_battery_voltage() * 100));
 
     // static char *labels[] = {
@@ -464,8 +481,16 @@ void keep_z_angle(void) {
   angular_error = ideal_angular_speed - get_measured_angular_speed();
   sum_angular_error += angular_error;
 
-  angular_voltage = KP_ANGULAR * angular_error + KI_ANGULAR * sum_angular_error + KD_ANGULAR * (angular_error - last_angular_error);
-  linear_voltage =  KP_LINEAR * linear_error + KI_LINEAR * sum_linear_error + KD_LINEAR * (linear_error - last_linear_error);
+  angular_voltage =
+      get_kinematics().kpi[KPI_ANGULAR].kp * angular_error +
+      get_kinematics().kpi[KPI_ANGULAR].ki * sum_angular_error +
+      get_kinematics().kpi[KPI_ANGULAR].kd * (angular_error - last_angular_error);
+
+  linear_voltage =
+      get_kinematics().kpi[KPI_LINEAR].kp * linear_error +
+      get_kinematics().kpi[KPI_LINEAR].ki * sum_linear_error +
+      get_kinematics().kpi[KPI_LINEAR].kd * (linear_error - last_linear_error);
+
   voltage_left = linear_voltage + angular_voltage;
   voltage_right = linear_voltage - angular_voltage;
   pwm_left = voltage_to_motor_pwm(voltage_left);

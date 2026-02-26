@@ -42,6 +42,9 @@ void macroarray_print(void) {
   if (macroarray_size == 0) {
     return;
   }
+
+  printf("Offset Z: %.4f Current full-scale DPS: %d\n", get_offset_z(), get_current_full_scale_dps());
+
   uint16_t i = macroarray_start;
   uint8_t col = 1;
   do {

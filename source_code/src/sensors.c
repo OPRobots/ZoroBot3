@@ -289,7 +289,7 @@ void front_sensors_calibration(void) {
 #endif
 }
 
-void side_sensors_calibration(void) {
+void side_sensors_calibration(bool keep_sensors_on) {
 #ifndef MMSIM_ENABLED
   int32_t left_temp = 0;
   int16_t left_offset = 0;
@@ -313,7 +313,9 @@ void side_sensors_calibration(void) {
   sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] = left_offset;
   sensors_distance_offset[SENSOR_SIDE_RIGHT_WALL_ID] = right_offset;
 
-  set_sensors_enabled(false);
+  if (!keep_sensors_on) {
+    set_sensors_enabled(false);
+  }
   delay(500);
   clear_info_leds();
   eeprom_set_data(DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset, NUM_SENSORES);
@@ -514,19 +516,23 @@ int16_t get_side_sensors_far_error(void) {
   return 0;
 }
 
-int16_t get_side_sensors_error(void) {
+float side_sensors_error = 0;
+
+float get_side_sensors_error(void) {
   int16_t left_error = sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
   int16_t right_error = sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
 
+  int16_t new_side_sensors_error = 0;
+
   if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 90 && sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 90) {
-    return right_error - left_error;
+    new_side_sensors_error = right_error - left_error;
   } else if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 90) {
-    return -2 * left_error;
+    new_side_sensors_error = -2 * left_error;
   } else if (sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 90) {
-    return 2 * right_error;
-  } else {
-    return 0;
+    new_side_sensors_error = 2 * right_error;
   }
+  side_sensors_error = 0.8f * side_sensors_error + (1 - 0.8f) * new_side_sensors_error;
+  return side_sensors_error;
 }
 
 int16_t get_diagonal_sensors_error(void) {

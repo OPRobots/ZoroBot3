@@ -1002,26 +1002,26 @@ static bool floodfill_run(void) {
   } while (next_direction == current_direction);
 
   int8_t next_turn_sign = 0;
-  if(current_direction == EAST && next_direction == SOUTH) {
+  if (current_direction == EAST && next_direction == SOUTH) {
     next_turn_sign = 1;
-  } else if(current_direction == EAST && next_direction == NORTH) {
+  } else if (current_direction == EAST && next_direction == NORTH) {
     next_turn_sign = -1;
-  } else if(current_direction == SOUTH && next_direction == WEST) {
+  } else if (current_direction == SOUTH && next_direction == WEST) {
     next_turn_sign = 1;
-  } else if(current_direction == SOUTH && next_direction == EAST) {
+  } else if (current_direction == SOUTH && next_direction == EAST) {
     next_turn_sign = -1;
-  } else if(current_direction == WEST && next_direction == NORTH) {
+  } else if (current_direction == WEST && next_direction == NORTH) {
     next_turn_sign = 1;
-  } else if(current_direction == WEST && next_direction == SOUTH) {
+  } else if (current_direction == WEST && next_direction == SOUTH) {
     next_turn_sign = -1;
-  } else if(current_direction == NORTH && next_direction == EAST) {
+  } else if (current_direction == NORTH && next_direction == EAST) {
     next_turn_sign = 1;
-  } else if(current_direction == NORTH && next_direction == WEST) {
+  } else if (current_direction == NORTH && next_direction == WEST) {
     next_turn_sign = -1;
   }
 
   if (count_same_direction > 0) {
-    run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, 2000, get_kinematics().linear_speed, next_turn_sign);
+    run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, 3000, get_kinematics().linear_speed, next_turn_sign);
     current_position = _current_position;
     return true;
   }
@@ -1423,7 +1423,8 @@ static void loop_explore(void) {
     go_to_target();
 
     uint8_t interesting_cell = find_unknown_interesting_cell();
-    if (current_position == 0 || (interesting_cell == 0 /*  && current_cell_is_goal() */)) {
+    if (current_position == 0) {
+      // if (current_position == 0 || (interesting_cell == 0 /*  && current_cell_is_goal() */)) {
       if (!current_cell_is_goal()) {
         if (get_current_stored_walls().front) {
           move(MOVE_HOME);
@@ -1620,6 +1621,11 @@ void floodfill_start_explore(void) {
 #ifndef MMSIM_ENABLED
   clear_info_leds();
   set_RGB_color(0, 0, 0);
+  delay(125);
+  side_sensors_calibration(true);
+  delay(125);
+  lsm6dsr_gyro_z_calibration();
+  delay(125);
   set_target_fan_speed(get_kinematics().fan_speed, 400);
   start_ms = get_clock_ticks();
   delay(800);
@@ -1650,6 +1656,10 @@ void floodfill_start_explore(void) {
 
   move(MOVE_START);
   update_position(FRONT);
+
+  // move_inplace_turn(MOVE_BACK);
+  // delay(200);
+  // set_race_started(false);
 }
 
 void floodfill_start_run(void) {
@@ -1658,8 +1668,13 @@ void floodfill_start_run(void) {
 #ifndef MMSIM_ENABLED
   clear_info_leds();
   set_RGB_color(0, 0, 0);
-  set_target_fan_speed(get_kinematics().fan_speed, 400);
-  delay(800);
+  delay(125);
+  side_sensors_calibration(true);
+  delay(125);
+  lsm6dsr_gyro_z_calibration();
+  delay(125);
+  set_target_fan_speed(get_kinematics().fan_speed, 1000);
+  delay(1500);
 #endif
 
   initialize_directions_values();

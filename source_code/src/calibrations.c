@@ -25,7 +25,7 @@ void calibrate_from_config(uint8_t type) {
         lsm6dsr_gyro_z_calibration();
         break;
       case CALIBRATE_SIDE_SENSORS_OFFSET:
-        side_sensors_calibration();
+        side_sensors_calibration(false);
         break;
       case CALIBRATE_FRONT_SENSORS:
         front_sensors_calibration();
