@@ -1176,12 +1176,12 @@ static void build_run_sequence(void) {
   printf("Current direction: %d\n", current_direction);
   printf("Next distance: %f\n", next_distance);
 
-  for (uint16_t i = 0; i < strlen(run_sequence); i++) {
-    run_sequence[i] = '\0';
-  }
+  char reverse_run_sequence[MAZE_CELLS + 3];
+  
+  memset(reverse_run_sequence, 0, sizeof(reverse_run_sequence));
+  memset(run_sequence, 0, sizeof(run_sequence));
 
   uint8_t i = 0;
-  char reverse_run_sequence[MAZE_CELLS + 3];
   reverse_run_sequence[i++] = 'S';
   // if (goal_cells.size > 1) {
   //   reverse_run_sequence[i++] = 'F';
@@ -1615,21 +1615,19 @@ bool floodfill_is_reset_maze_on_start_explore(void) {
 void floodfill_start_explore(void) {
   configure_kinematics(SPEED_EXPLORE);
 
-  race_mode = false;
-  maze_goal_position = 0;
-
 #ifndef MMSIM_ENABLED
   clear_info_leds();
   set_RGB_color(0, 0, 0);
   delay(125);
   side_sensors_calibration(true);
   delay(125);
-  lsm6dsr_gyro_z_calibration();
-  delay(125);
   set_target_fan_speed(get_kinematics().fan_speed, 400);
   start_ms = get_clock_ticks();
   delay(800);
 #endif
+
+  race_mode = false;
+  maze_goal_position = 0;
 
   initialize_directions_values();
   if (reset_maze_on_start_explore) {
@@ -1670,8 +1668,6 @@ void floodfill_start_run(void) {
   set_RGB_color(0, 0, 0);
   delay(125);
   side_sensors_calibration(true);
-  delay(125);
-  lsm6dsr_gyro_z_calibration();
   delay(125);
   set_target_fan_speed(get_kinematics().fan_speed, 1000);
   delay(1500);
