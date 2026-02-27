@@ -788,8 +788,7 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_explore,
         .kpi = kpi_explore,
         .mpu = {
-            .sensitivity_dps = GYRO_SENSITIVITY_1000DPS,
-            .full_scale_dps = LSM6DSR_1000dps,
+            .full_scale_dps = MPU_FULL_SCALE_1000DPS,
             .low_pass_filter_alpha = 0.27f,
         },
     },
@@ -805,9 +804,8 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_normal,
         .kpi = kpi_run,
         .mpu = {
-            .sensitivity_dps = GYRO_SENSITIVITY_4000DPS,
-            .full_scale_dps = LSM6DSR_4000dps,
-            .low_pass_filter_alpha = 0.50f,
+            .full_scale_dps = MPU_FULL_SCALE_2000DPS,
+            .low_pass_filter_alpha = 0.27f,
         },
     },
     [SPEED_MEDIUM] = {
@@ -822,9 +820,8 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_medium,
         .kpi = kpi_run,
         .mpu = {
-            .sensitivity_dps = GYRO_SENSITIVITY_4000DPS,
-            .full_scale_dps = LSM6DSR_4000dps,
-            .low_pass_filter_alpha = 0.50f,
+            .full_scale_dps = MPU_FULL_SCALE_2000DPS,
+            .low_pass_filter_alpha = 0.27f,
         },
     },
     [SPEED_FAST] = {
@@ -839,9 +836,8 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_fast,
         .kpi = kpi_run,
         .mpu = {
-            .sensitivity_dps = GYRO_SENSITIVITY_4000DPS,
-            .full_scale_dps = LSM6DSR_4000dps,
-            .low_pass_filter_alpha = 0.50f,
+            .full_scale_dps = MPU_FULL_SCALE_2000DPS,
+            .low_pass_filter_alpha = 0.27f,
         },
     },
     [SPEED_SUPER] = {
@@ -856,9 +852,8 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_super,
         .kpi = kpi_run,
         .mpu = {
-            .sensitivity_dps = GYRO_SENSITIVITY_4000DPS,
-            .full_scale_dps = LSM6DSR_4000dps,
-            .low_pass_filter_alpha = 0.50f,
+            .full_scale_dps = MPU_FULL_SCALE_2000DPS,
+            .low_pass_filter_alpha = 0.27f,
         },
     },
     [SPEED_HAKI] = {
@@ -873,9 +868,8 @@ static struct kinematics kinematics_settings[] = {
         .turns = turns_haki,
         .kpi = kpi_run,
         .mpu = {
-            .sensitivity_dps = GYRO_SENSITIVITY_4000DPS,
-            .full_scale_dps = LSM6DSR_4000dps,
-            .low_pass_filter_alpha = 0.50f,
+            .full_scale_dps = MPU_FULL_SCALE_2000DPS,
+            .low_pass_filter_alpha = 0.27f,
         },
     }};
 

@@ -18,12 +18,15 @@
 
 static stmdev_ctx_t dev_ctx;
 
+static uint8_t full_scale_dps[] = {MPU_FULL_SCALE_1000DPS, MPU_FULL_SCALE_2000DPS, MPU_FULL_SCALE_4000DPS};
+static uint8_t sensitivity_dps[] = {MPU_SENSITIVITY_1000DPS, MPU_SENSITIVITY_2000DPS, MPU_SENSITIVITY_4000DPS};
+
 static uint8_t current_full_scale_dps;
 
 static volatile float deg_integ;
 static volatile float gyro_z_raw;
 static bool mpu_updating = false;
-static float offset_z = 0;
+static float offset_z[MPU_FULL_SCALE_COUNT];
 
 static uint8_t lsm6dsr_read_register(uint8_t address) {
   uint8_t reading;
@@ -71,6 +74,18 @@ static int16_t lsm6dsr_read_gyro_z_raw(void) {
   uint8_t zl = lsm6dsr_read_register(OUTZ_L_G);
   uint8_t zh = lsm6dsr_read_register(OUTZ_H_G);
   return ((zh << 8) | zl);
+}
+
+static int get_sensitivity_dps(void) {
+  switch (current_full_scale_dps) {
+    case MPU_FULL_SCALE_1000DPS:
+      return sensitivity_dps[0];
+    case MPU_FULL_SCALE_2000DPS:
+      return sensitivity_dps[1];
+    case MPU_FULL_SCALE_4000DPS:
+      return sensitivity_dps[2];
+  }
+  return 0;
 }
 
 void lsm6dsr_init(void) {
@@ -129,19 +144,10 @@ void lsm6dsr_init(void) {
 }
 
 void lsm6dsr_reload_config(void) {
-  // if (current_full_scale_dps != get_kinematics().mpu.full_scale_dps) {
-  mpu_updating = false;
-  reset_control_all();
-  gyro_z_raw = 0;
-  deg_integ = 0;
-  delay(100);
   lsm6dsr_gy_full_scale_set(&dev_ctx, get_kinematics().mpu.full_scale_dps);
-  delay(500);
-  reset_control_all();
-  mpu_updating = true;
-  delay(50);
   current_full_scale_dps = get_kinematics().mpu.full_scale_dps;
-  // }
+  delay(50);
+  reset_control_all();
 }
 
 uint8_t lsm6dsr_who_am_i(void) {
@@ -153,40 +159,45 @@ uint8_t lsm6dsr_who_am_i(void) {
 
 void lsm6dsr_gyro_z_calibration(void) {
   mpu_updating = false;
-  int32_t sum_z = 0;
+  int16_t eeprom_data[MPU_FULL_SCALE_COUNT];
 
-  offset_z = 0;
-  for (int i = 0; i < 200; i++) {
-    sum_z += lsm6dsr_read_gyro_z_raw();
-    delay(5);
-    set_info_leds();
+  for (uint8_t i = 0; i < MPU_FULL_SCALE_COUNT; i++) {
+    lsm6dsr_gy_full_scale_set(&dev_ctx, full_scale_dps[i]);
+    delay(50);
+    int32_t sum_z = 0;
+    offset_z[i] = 0;
+    for (int s = 0; s < 200; s++) {
+      sum_z += lsm6dsr_read_gyro_z_raw();
+      delay(5);
+      set_info_leds();
+    }
+    clear_info_leds();
+
+    offset_z[i] = sum_z / 200.0f;
+    printf("Offset Z for full-scale %d dps: %.4f\n", full_scale_dps[i], offset_z[i]);
+    eeprom_data[i] = offset_z[i] * 1000;
   }
-  clear_info_leds();
 
-  offset_z = sum_z / 200.0f;
-  printf("Offset Z: %.4f Current full-scale DPS: %d\n", offset_z, current_full_scale_dps);
+  eeprom_set_data(DATA_INDEX_GYRO_Z, eeprom_data, MPU_DATA_LENGTH);
 
-  int16_t eeprom_data[2] = {offset_z >= 0 ? 1 : 0, (int16_t)(abs(offset_z * 1000))};
-  eeprom_set_data(DATA_INDEX_GYRO_Z, eeprom_data, 2);
-
+  lsm6dsr_gy_full_scale_set(&dev_ctx, current_full_scale_dps);
   delay(100);
   mpu_updating = true;
 }
 
 void lsm6dsr_load_eeprom(void) {
   int16_t *eeprom_data = eeprom_get_data();
-  offset_z = eeprom_data[DATA_INDEX_GYRO_Z + 1] / 1000.0f;
-  if (eeprom_data[DATA_INDEX_GYRO_Z] == 0) {
-    offset_z = -offset_z;
+  for (uint8_t i = 0; i < MPU_FULL_SCALE_COUNT; i++) {
+    offset_z[i] = eeprom_data[DATA_INDEX_GYRO_Z + i] / 1000.0f;
+    printf("Offset Z for full-scale %d dps: %.4f\n", full_scale_dps[i], offset_z[i]);
   }
-  printf("Offset Z: %.4f\n", offset_z);
   mpu_updating = true;
 }
 
 void lsm6dsr_update(void) {
   if (mpu_updating) {
     float new_gyro_z_raw = lsm6dsr_read_gyro_z_raw();
-    new_gyro_z_raw -= offset_z;
+    new_gyro_z_raw -= get_offset_z();
 
     gyro_z_raw =
         get_kinematics().mpu.low_pass_filter_alpha * gyro_z_raw +
@@ -201,11 +212,11 @@ float lsm6dsr_get_gyro_z_raw(void) {
 }
 
 float lsm6dsr_get_gyro_z_radps(void) {
-  return (gyro_z_raw * get_kinematics().mpu.sensitivity_dps / 1000 * MPU_DPS_TO_RADPS);
+  return (gyro_z_raw * get_sensitivity_dps() / 1000 * MPU_DPS_TO_RADPS);
 }
 
 float lsm6dsr_get_gyro_z_dps(void) {
-  return (gyro_z_raw * get_kinematics().mpu.sensitivity_dps) / 1000;
+  return (gyro_z_raw * get_sensitivity_dps()) / 1000;
 }
 
 float lsm6dsr_get_gyro_z_degrees(void) {
@@ -216,7 +227,15 @@ void lsm6dsr_set_gyro_z_degrees(float deg) {
 }
 
 float get_offset_z(void) {
-  return offset_z;
+  switch (current_full_scale_dps) {
+    case MPU_FULL_SCALE_1000DPS:
+      return offset_z[0];
+    case MPU_FULL_SCALE_2000DPS:
+      return offset_z[1];
+    case MPU_FULL_SCALE_4000DPS:
+      return offset_z[2];
+  }
+  return 0;
 }
 
 uint8_t get_current_full_scale_dps(void) {

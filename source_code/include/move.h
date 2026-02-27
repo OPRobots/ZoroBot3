@@ -32,7 +32,6 @@ struct kpi_params {
   double kd;
 };
 struct mpu_params {
-  double sensitivity_dps;
   uint8_t full_scale_dps;
   double low_pass_filter_alpha;
 };
