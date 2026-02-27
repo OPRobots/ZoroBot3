@@ -30,13 +30,13 @@ static char *movement_string[] = {
 
 static struct kpi_params kpi_explore[] = {
     [KPI_LINEAR] = {
-        .kp = 0.004,
-        .ki = 0.0007,
+        .kp = 0.008,
+        .ki = 0.0005,
         .kd = 0.00,
     },
     [KPI_ANGULAR] = {
-        .kp = 0.27,
-        .ki = 0.014,
+        .kp = 0.5,
+        .ki = 0.015,
         .kd = 0.0,
     },
     [KPI_SIDE_SENSORS] = {
@@ -58,13 +58,13 @@ static struct kpi_params kpi_explore[] = {
 
 static struct kpi_params kpi_run[] = {
     [KPI_LINEAR] = {
-        .kp = 0.004,
-        .ki = 0.0007,
+        .kp = 0.008,
+        .ki = 0.0005,
         .kd = 0.00,
     },
     [KPI_ANGULAR] = {
-        .kp = 0.25,
-        .ki = 0.014,
+        .kp = 0.5,
+        .ki = 0.015,
         .kd = 0.0,
     },
     [KPI_SIDE_SENSORS] = {
@@ -91,20 +91,20 @@ static struct kpi_params kpi_run[] = {
 static struct inplace_params turns_inplace[] = {
     [MOVE_BACK] = {
         .radians = PI,
-        .angular_accel = 1400,
-        .max_angular_speed = 15,
+        .angular_accel = 350,
+        .max_angular_speed = 10,
         .sign = -1,
     },
     [MOVE_BACK_WALL] = {
         .radians = PI,
-        .angular_accel = 1400,
-        .max_angular_speed = 15,
+        .angular_accel = 350,
+        .max_angular_speed = 10,
         .sign = -1,
     },
     [MOVE_BACK_STOP] = {
         .radians = PI,
-        .angular_accel = 1400,
-        .max_angular_speed = 15,
+        .angular_accel = 350,
+        .max_angular_speed = 10,
         .sign = -1,
     },
 };
