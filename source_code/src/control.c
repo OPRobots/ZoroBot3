@@ -360,19 +360,19 @@ void control_loop(void) {
   angular_voltage =
       get_kinematics().kpi[KPI_ANGULAR].kp * angular_error +
       get_kinematics().kpi[KPI_ANGULAR].ki * sum_angular_error +
-      get_kinematics().kpi[KPI_ANGULAR].kd * (angular_error - last_angular_error); /*  +
+      get_kinematics().kpi[KPI_ANGULAR].kd * (angular_error - last_angular_error) +
 
-       get_kinematics().kpi[KPI_SIDE_SENSORS].kp * side_sensors_error +
-       get_kinematics().kpi[KPI_SIDE_SENSORS].ki * sum_side_sensors_error +
-       get_kinematics().kpi[KPI_SIDE_SENSORS].kd * (side_sensors_error - last_side_sensors_error) +
+      get_kinematics().kpi[KPI_SIDE_SENSORS].kp * side_sensors_error +
+      get_kinematics().kpi[KPI_SIDE_SENSORS].ki * sum_side_sensors_error +
+      get_kinematics().kpi[KPI_SIDE_SENSORS].kd * (side_sensors_error - last_side_sensors_error) +
 
-       get_kinematics().kpi[KPI_FRONT_SENSORS].kp * front_sensors_error +
-       get_kinematics().kpi[KPI_FRONT_SENSORS].ki * sum_front_sensors_error +
-       get_kinematics().kpi[KPI_FRONT_SENSORS].kd * (front_sensors_error - last_front_sensors_error) +
+      get_kinematics().kpi[KPI_FRONT_SENSORS].kp * front_sensors_error +
+      get_kinematics().kpi[KPI_FRONT_SENSORS].ki * sum_front_sensors_error +
+      get_kinematics().kpi[KPI_FRONT_SENSORS].kd * (front_sensors_error - last_front_sensors_error) +
 
-       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].kp * front_sensors_diagonal_error +
-       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].ki * sum_front_sensors_diagonal_error +
-       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].kd * (front_sensors_diagonal_error - last_front_sensors_diagonal_error); */
+      get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].kp * front_sensors_diagonal_error +
+      get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].ki * sum_front_sensors_diagonal_error +
+      get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].kd * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
 
   last_side_sensors_error = side_sensors_error;
   last_front_sensors_error = front_sensors_error;
@@ -385,40 +385,40 @@ void control_loop(void) {
   set_motors_pwm(pwm_left, pwm_right);
 
   if (ideal_linear_speed != 0 || ideal_angular_speed != 0) {
-    static char *labels[] = {
-        "target_linear_speed",
-        "ideal_linear_speed",
-        "measured_linear_speed",
-        // "measured_left_speed",
-        // "measured_right_speed",
-        "ideal_angular_speed",
-        "measured_angular_speed",
-        "raw_angular_speed",
-        "pwm_left",
-        "pwm_right",
-        // "encoder_avg_millimeters",
-        // "side_sensors_error",
-        // "angular_voltage",
-        "battery_voltage"};
-    macroarray_store(
-        1,
-        0b000111001,
-        labels,
-        9,
-        (int16_t)target_linear_speed,
-        (int16_t)ideal_linear_speed,
-        (int16_t)(get_measured_linear_speed()),
-        // (int16_t)(get_encoder_left_speed()),
-        // (int16_t)(get_encoder_right_speed()),
-        (int16_t)(ideal_angular_speed * 100),
-        (int16_t)(get_measured_angular_speed() * 100),
-        (int16_t)(lsm6dsr_get_gyro_z_raw() * 100),
-        (int16_t)pwm_left,
-        (int16_t)pwm_right,
-        // (int16_t)get_encoder_avg_millimeters(),
-        // (int16_t)(side_sensors_error * 100),
-        // (int16_t)(angular_voltage * 100),
-        (int16_t)(get_battery_voltage() * 100));
+    // static char *labels[] = {
+    //     "target_linear_speed",
+    //     "ideal_linear_speed",
+    //     "measured_linear_speed",
+    //     // "measured_left_speed",
+    //     // "measured_right_speed",
+    //     "ideal_angular_speed",
+    //     "measured_angular_speed",
+    //     "raw_angular_speed",
+    //     "pwm_left",
+    //     "pwm_right",
+    //     // "encoder_avg_millimeters",
+    //     // "side_sensors_error",
+    //     // "angular_voltage",
+    //     "battery_voltage"};
+    // macroarray_store(
+    //     1,
+    //     0b000111001,
+    //     labels,
+    //     9,
+    //     (int16_t)target_linear_speed,
+    //     (int16_t)ideal_linear_speed,
+    //     (int16_t)(get_measured_linear_speed()),
+    //     // (int16_t)(get_encoder_left_speed()),
+    //     // (int16_t)(get_encoder_right_speed()),
+    //     (int16_t)(ideal_angular_speed * 100),
+    //     (int16_t)(get_measured_angular_speed() * 100),
+    //     (int16_t)(lsm6dsr_get_gyro_z_raw() * 100),
+    //     (int16_t)pwm_left,
+    //     (int16_t)pwm_right,
+    //     // (int16_t)get_encoder_avg_millimeters(),
+    //     // (int16_t)(side_sensors_error * 100),
+    //     // (int16_t)(angular_voltage * 100),
+    //     (int16_t)(get_battery_voltage() * 100));
 
     // static char *labels[] = {
     //     "target_linear_speed",

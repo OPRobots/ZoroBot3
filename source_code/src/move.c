@@ -1336,64 +1336,112 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
   }
 
   struct walls cell_walls = get_walls();
-  struct walls current_walls;
+  struct walls current_walls = get_walls();
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
   distance += end_offset;
-  // bool last_cell_wall_lost = (has_begin && cells <= 2) || cells <= 1;
-  while (is_race_started() && !is_motor_saturated() && (get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER /* || !last_cell_wall_lost */)) {
-    current_walls = get_walls();
+  bool last_cell_wall_lost = (has_begin && cells <= 2) || cells <= 1;
+  while (is_race_started() && !is_motor_saturated() && (get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER || !last_cell_wall_lost)) {
 
-    if (!(has_begin && current_cell == 1) && check_wall_loss_correction(cell_walls)) {
+    // Comprobar cambio de celda
+    int32_t cell_travelled = (get_encoder_avg_micrometers() - current_distance) / MICROMETERS_PER_MILLIMETER;
+    int16_t total_distance = distance;
+    static char *labels[] = {
+        "distance",
+        "current_dist_left",
+        "cell_travelled",
+        "current_wall_lost",
+        "last_wall_lost",
+        "cell_walls",
+        "current_walls",
+        "current_cell",
+        "cells",
+    };
+    macroarray_store(
+        1,
+        0b000000000,
+        labels,
+        9,
+        (int16_t)(total_distance),
+        (int16_t)(current_cell_distance_left),
+        (int16_t)(cell_travelled),
+        (int16_t)(current_cell_wall_lost ? 1 : 0),
+        (int16_t)(last_cell_wall_lost ? 1 : 0),
+        (int16_t)(cell_walls.right ? 1 : 0),
+        (int16_t)(current_walls.right ? 1 : 0),
+        (int16_t)(current_cell),
+        (int16_t)(cells));
+
+    if (cell_travelled >= current_cell_distance_left && current_cell < cells) {
+      // if (!current_cell_wall_lost) {
+      // current_distance = get_encoder_avg_micrometers();
+      // distance = CELL_DIMENSION * (cells - current_cell) + end_offset;
+      // }
+      // if (current_cell < cells) {
+
+      distance = CELL_DIMENSION * (cells - current_cell) + end_offset;
+      current_distance = get_encoder_avg_micrometers();
+      current_cell++;
+      if (current_cell == cells) {
+        current_cell_distance_left = CELL_DIMENSION + end_offset;
+      } else {
+        current_cell_distance_left = CELL_DIMENSION;
+      }
+      enter_next_cell();
+
+      cell_travelled = 0;
+      // }
+    } else if (cell_travelled <= 15) {
+      cell_walls = get_walls();
+    }
+
+    // Comprobar pérdida de pared durante la celda actual
+    if (!(has_begin && current_cell == 1) && cell_travelled >= 15 && check_wall_loss_correction(cell_walls)) {
       current_distance = get_encoder_avg_micrometers();
       distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell) + end_offset;
-      if (cells - current_cell == 0) {
+      if (current_cell == cells) {
         current_cell_distance_left = distance;
-        // last_cell_wall_lost = true;
-        set_RGB_color_while(255, 0, 0, 33);
+        last_cell_wall_lost = true; //??
+        set_RGB_color_while(0, 255, 0, 33);
       } else {
         current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
         set_RGB_color_while(0, 255, 0, 33);
       }
     }
 
-    if (get_encoder_avg_micrometers() - current_distance >= (current_cell_distance_left * MICROMETERS_PER_MILLIMETER)) {
-      current_distance = get_encoder_avg_micrometers();
-      distance = CELL_DIMENSION * (cells - current_cell) + end_offset;
-      current_cell++;
-      current_cell_distance_left = CELL_DIMENSION;
-      cell_walls = current_walls;
-      if (next_turn_sign == 1 && !cell_walls.right) {
-        // last_cell_wall_lost = true;
-      } else if (next_turn_sign == -1 && !cell_walls.left) {
-        // last_cell_wall_lost = true;
-      } else if (next_turn_sign == 0) {
-        // last_cell_wall_lost = true;
-      }
-      enter_next_cell();
-    }
-
+    // Comprueba la distancia necesaria para adecuar la velocidad al siguiente giro
     if (final_speed != speed) {
       slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed) + 20;
     }
+
+    // Reducir la velocidad al acercarse al final del movimiento
     if (slow_distance > 0 && ((current_distance + distance * MICROMETERS_PER_MILLIMETER) - get_encoder_avg_micrometers()) <= slow_distance * MICROMETERS_PER_MILLIMETER) {
       set_target_linear_speed(final_speed);
     }
-  }
-  // while (!last_cell_wall_lost) {
-  //   current_walls = get_walls();
-  //   if (next_turn_sign == 1 && !current_walls.right) {
-  //     last_cell_wall_lost = true;
-  //   } else if (next_turn_sign == -1 && !current_walls.left) {
-  //     last_cell_wall_lost = true;
-  //   } else if (next_turn_sign == 0) {
-  //     last_cell_wall_lost = true;
-  //   }
-  // }
 
-  if (current_cell < cells && end_offset == 0) {
-    enter_next_cell();
+    // Comprobar pérdida de pared al final del movimiento en la última celda
+    if (current_cell == cells && !last_cell_wall_lost) {
+      if (cell_travelled >= 15) {
+        current_walls = get_walls();
+        if (next_turn_sign == 1 /* && cell_walls.right */ && !current_walls.right) {
+          last_cell_wall_lost = true;
+        } else if (next_turn_sign == -1 /* && cell_walls.left */ && !current_walls.left) {
+          last_cell_wall_lost = true;
+        } else if (next_turn_sign == 0) {
+          last_cell_wall_lost = true;
+        }
+        if (cell_travelled >= CELL_DIMENSION / 2) {
+          last_cell_wall_lost = true;
+        }
+      } else {
+        cell_walls = get_walls();
+      }
+    }
   }
+
+  // if (current_cell < cells && end_offset == 0) {
+  //   enter_next_cell();
+  // }
 #endif
 }
 
