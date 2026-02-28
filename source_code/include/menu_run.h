@@ -31,6 +31,7 @@ enum floodfill_type {
   FLOODFILL_TYPE_BASIC = 0,
   FLOODFILL_TYPE_DIAGONAL = 1,
   FLOODFILL_TYPE_TIME = 2,
+  FLOODFILL_TYPE_TIMEv2 = 3,
 };
 
 enum maze_type {

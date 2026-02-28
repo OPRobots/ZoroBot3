@@ -27,6 +27,9 @@ int main(int argc, char *argv[]) {
           case FLOODFILL_TYPE_TIME:
             MMSIM_FLOODFILL_TYPE = FLOODFILL_TYPE_TIME;
             break;
+          case FLOODFILL_TYPE_TIMEv2:
+            MMSIM_FLOODFILL_TYPE = FLOODFILL_TYPE_TIMEv2;
+            break;
           default:
             fprintf(stderr, "Invalid floodfill type: %s\n", val);
             fflush(stderr);

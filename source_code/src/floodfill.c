@@ -441,7 +441,8 @@ static float get_next_floodfill_distance(float distance, enum compass_direction 
         default:
           return distance + 0.7f;
       }
-    case FLOODFILL_TYPE_TIME: {
+    case FLOODFILL_TYPE_TIME:
+    case FLOODFILL_TYPE_TIMEv2: {
       bool from_orthogonal = false;
       bool from_diagonal = false;
       bool to_orthogonal = false;
@@ -898,7 +899,7 @@ static void check_time_limit(void) {
 }
 #endif
 
-static uint8_t find_unknown_interesting_cell(void) {
+static uint8_t find_standard_unknown_interesting_cell(void) {
   uint8_t cell = 0;
 
   uint8_t _position = current_position;
@@ -952,6 +953,111 @@ static uint8_t find_unknown_interesting_cell(void) {
   //     cell / maze_get_columns() + 1);
 
   return cell;
+}
+
+static uint8_t find_closest_unknown_interesting_cell(void) {
+  uint8_t cell = 0;
+
+  bool looking_for_from_start = true;
+  bool looking_for_from_position = false;
+
+  uint8_t cell_from_start = 0;
+  uint16_t cell_from_start_count_to_position = 0;
+
+  uint8_t cell_from_position = 0;
+  uint16_t cell_from_position_count_to_position = 0;
+
+  uint8_t _position = current_position;
+  enum compass_direction _direction = current_direction;
+
+  enum step_direction next_step;
+
+  current_position = 0;
+  current_direction = initial_direction;
+
+  // set_target(0);
+  set_goal_as_target();
+  update_floodfill();
+  while (floodfill[current_position] > 0) {
+    next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls());
+    if (next_step == NONE) {
+      break;
+    }
+    update_position(next_step);
+    if (!current_cell_is_visited() && !current_cell_is_goal()) {
+      if (looking_for_from_start) {
+        cell_from_start = current_position;
+        cell_from_start_count_to_position = 0;
+      }
+      if (looking_for_from_position) {
+        cell_from_position = current_position;
+        looking_for_from_position = false;
+      }
+      // cell = current_position;
+      // break;
+      // continue;
+    }
+    if (looking_for_from_start) {
+      cell_from_start_count_to_position++;
+    }
+    if (looking_for_from_position) {
+      cell_from_position_count_to_position++;
+    }
+    if (current_position == _position) {
+      looking_for_from_start = false;
+      looking_for_from_position = true;
+    }
+  }
+
+  if (cell_from_start != 0 && cell_from_position != 0) {
+    if (cell_from_start_count_to_position <= cell_from_position_count_to_position) {
+      cell = cell_from_start;
+    } else {
+      cell = cell_from_position;
+    }
+  } else if (cell_from_start != 0) {
+    cell = cell_from_start;
+  } else if (cell_from_position != 0) {
+    cell = cell_from_position;
+  }
+
+#ifdef MMSIM_ENABLED
+  fprintf(stderr, "Interesting cell: %d - %d\n", cell % maze_get_columns() + 1, cell / maze_get_columns() + 1);
+  fflush(stderr);
+#endif
+
+  current_position = _position;
+  current_direction = _direction;
+
+  // DEBUG DE EXPLORACIÓN
+  // static char *labels[] = {
+  //     "goal_x",
+  //     "goal_y",
+  //     "goal_direction",
+  //     "target_x",
+  //     "target_y",
+  // };
+  // macroarray_store(
+  //     0,
+  //     0b0,
+  //     labels,
+  //     5,
+  //     maze_goal_position % maze_get_columns() + 1,
+  //     maze_goal_position / maze_get_columns() + 1,
+  //     maze_goal_direction,
+  //     cell % maze_get_columns() + 1,
+  //     cell / maze_get_columns() + 1);
+
+  return cell;
+}
+
+static uint8_t find_unknown_interesting_cell(void) {
+  switch (menu_run_get_floodfill_type()) {
+    case FLOODFILL_TYPE_TIMEv2:
+      return find_closest_unknown_interesting_cell();
+    default:
+      return find_standard_unknown_interesting_cell();
+  }
 }
 
 static bool floodfill_run(void) {
