@@ -906,13 +906,6 @@ static uint8_t find_unknown_interesting_cell(void) {
 
   enum step_direction next_step;
 
-  // if (maze_goal_position != 0) {
-  //   current_position = maze_goal_position;
-  //   current_direction = maze_goal_direction;
-  // } else {
-  //   current_position = goal_cells.stack[0];
-  //   current_direction = NORTH;
-  // }
   current_position = 0;
   current_direction = initial_direction;
 
@@ -935,12 +928,6 @@ static uint8_t find_unknown_interesting_cell(void) {
   fprintf(stderr, "Interesting cell: %d - %d\n", cell % maze_get_columns() + 1, cell / maze_get_columns() + 1);
   fflush(stderr);
 #endif
-  // #ifdef MMSIM_ENABLED
-  // API_turnLeft();
-  // API_turnLeft();
-  // API_turnLeft();
-  // API_turnLeft();
-  // #endif
 
   current_position = _position;
   current_direction = _direction;
@@ -999,7 +986,7 @@ static bool floodfill_run(void) {
       break;
     }
 
-  } while (next_direction == current_direction);
+  } while (next_direction == current_direction && _current_position != 0);
 
   int8_t next_turn_sign = 0;
   if (current_direction == EAST && next_direction == SOUTH) {
