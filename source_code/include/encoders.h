@@ -1,10 +1,10 @@
 #ifndef __ENCODERS_H
 #define __ENCODERS_H
 
-#include <libopencm3/stm32/timer.h>
-
 #include <math.h>
 #include <stdint.h>
+
+#include <libopencm3/stm32/timer.h>
 
 #include "config.h"
 #include "constants.h"

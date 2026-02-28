@@ -1,25 +1,22 @@
 #ifndef __SENSORS_H
 #define __SENSORS_H
 
-#include "config.h"
-#ifndef MMSIM_ENABLED
-#include "delay.h"
-#include "eeprom.h"
-#include "encoders.h"
-#include "leds.h"
-#endif
-
-#include <stdint.h>
-
 #ifndef MMSIM_ENABLED
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
+
+#include "delay.h"
+#include "eeprom.h"
+#include "encoders.h"
+#include "leds.h"
 #else
-#include "constants.h"
 #include <stdbool.h>
 #include <stdint.h>
+
+#include "constants.h"
 #include "mmsim_api.h"
+
 #define ADC_CHANNEL4 4
 #define ADC_CHANNEL5 5
 #define ADC_CHANNEL6 6
@@ -29,6 +26,10 @@
 #define ADC_CHANNEL12 12
 #define ADC_CHANNEL11 11
 #endif
+
+#include <stdint.h>
+
+#include "config.h"
 
 #define NUM_AUX_ADC_CHANNELS 4
 #define AUX_BATTERY_ID 0

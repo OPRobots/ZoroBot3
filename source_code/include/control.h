@@ -2,19 +2,18 @@
 #define __CONTROL_H
 
 #ifndef MMSIM_ENABLED
+#include <math.h>
+
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/timer.h>
+
 #include "battery.h"
 #include "config.h"
 #include "constants.h"
 #include "debug.h"
 #include "macroarray.h"
 #include "menu.h"
-#endif
 #include "move.h"
-
-#ifndef MMSIM_ENABLED
-#include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/timer.h>
-#include <math.h>
 #else
 #include <stdbool.h>
 #include <stdint.h>

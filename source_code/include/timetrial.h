@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include <move.h>
+#include "move.h"
 
 void timetrial_start(void);
 void timetrial_loop(void);

@@ -1,13 +1,11 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#ifndef MMSIM_ENABLED
-#include "buttons.h"
-#endif
 #include <stdint.h>
 #include <stdio.h>
 
 #ifndef MMSIM_ENABLED
+#include "buttons.h"
 #include "leds.h"
 #include "sensors.h"
 #endif
@@ -50,7 +48,7 @@ enum ROBOT_VERSION {
 #define SENSOR_FRONT_CALIBRATION_READINGS 20
 #define SENSOR_SIDE_CALIBRATION_READINGS 100
 #define SENSOR_FRONT_DETECTION ((CELL_DIMENSION * 1.22))
-#define SENSOR_SIDE_DETECTION 115//((CELL_DIMENSION * 0.7))
+#define SENSOR_SIDE_DETECTION 115 //((CELL_DIMENSION * 0.7))
 
 /** Control de inicio de competición */
 #define SENSOR_FRONT_DETECTION_START 100

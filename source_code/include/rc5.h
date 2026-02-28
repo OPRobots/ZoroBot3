@@ -4,11 +4,11 @@
 #include <libopencm3/stm32/gpio.h>
 
 // #include <control.h>
-#include <buttons.h>
-#include <delay.h>
-#include <menu_run.h>
-#include <stdint.h>
-#include <usart.h>
+#include "buttons.h"
+#include "delay.h"
+#include "menu_run.h"
+#include "stdint.h"
+#include "usart.h"
 // #include <eeprom.h>
 
 enum RC5_TRIGGER {

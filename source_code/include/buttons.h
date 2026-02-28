@@ -1,12 +1,14 @@
 #ifndef __BUTTONS_H
 #define __BUTTONS_H
 
+#include <math.h>
+#include <stdio.h>
+
+#include <libopencm3/stm32/gpio.h>
+
 #include "config.h"
 #include "control.h"
 #include "delay.h"
-#include <libopencm3/stm32/gpio.h>
-#include <math.h>
-#include <stdio.h>
 
 #define MENU_VOLTAGE_LOW_PASS_FILTER_ALPHA 0.1
 

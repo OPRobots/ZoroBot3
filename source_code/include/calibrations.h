@@ -3,11 +3,11 @@
 
 #include <stdint.h>
 
-#include <delay.h>
-#include <eeprom.h>
-#include <lsm6dsr.h>
-#include <move.h>
-#include <sensors.h>
+#include "delay.h"
+#include "eeprom.h"
+#include "lsm6dsr.h"
+#include "move.h"
+#include "sensors.h"
 
 #define CALIBRATE_NONE 0
 #define CALIBRATE_GYRO_Z 1

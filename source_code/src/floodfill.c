@@ -1177,7 +1177,7 @@ static void build_run_sequence(void) {
   printf("Next distance: %f\n", next_distance);
 
   char reverse_run_sequence[MAZE_CELLS + 3];
-  
+
   memset(reverse_run_sequence, 0, sizeof(reverse_run_sequence));
   memset(run_sequence, 0, sizeof(run_sequence));
 
@@ -1401,6 +1401,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
   }
 }
 
+#ifndef MMSIM_ENABLED
 static void floodfill_explore_finish(void) {
   set_target_linear_speed(0);
   set_ideal_angular_speed(0);
@@ -1417,6 +1418,7 @@ static void floodfill_explore_finish(void) {
   set_RGB_color(0, 255, 0);
   delay(500);
 }
+#endif
 
 static void loop_explore(void) {
   while (is_race_started()) {

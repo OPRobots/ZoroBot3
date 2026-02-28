@@ -5,13 +5,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <config.h>
-#include <constants.h>
-#include <delay.h>
-#include <utils.h>
-
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
+
+#include "config.h"
+#include "constants.h"
+#include "delay.h"
+#include "utils.h"
 
 void set_motors_enable(bool enabled);
 void set_motors_speed(float velI, float velD);

@@ -1,21 +1,21 @@
 #ifndef MOVE_H
 #define MOVE_H
 
-#include "control.h"
-#include "menu_run.h"
-#ifndef MMSIM_ENABLED
-#include "menu.h"
-#include "motors.h"
-#include <string.h>
-#else
-#include "constants.h"
-#include "lsm6dsr.h"
-#include "mmsim_api.h"
-#include "sensors.h"
-
 #include <stdbool.h>
 #include <stdint.h>
 
+#ifndef MMSIM_ENABLED
+#include <string.h>
+
+#include "menu.h"
+#include "motors.h"
+#else
+#include "constants.h"
+#include "control.h"
+#include "lsm6dsr.h"
+#include "menu_run.h"
+#include "mmsim_api.h"
+#include "sensors.h"
 #endif
 
 enum kpi_controls {

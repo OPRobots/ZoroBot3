@@ -1195,7 +1195,10 @@ void setup_kinematics(void) {
 
 void configure_kinematics(enum speed_strategy speed) {
   kinematics = kinematics_settings[speed];
+
+#ifndef MMSIM_ENABLED
   lsm6dsr_reload_config();
+#endif
 }
 
 struct kinematics get_kinematics(void) {

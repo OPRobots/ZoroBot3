@@ -6,17 +6,17 @@
 #include <libopencm3/cm3/systick.h>
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/dma.h>
+#include <libopencm3/stm32/exti.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/usart.h>
-#include <libopencm3/stm32/exti.h>
 
-#include <config.h>
-#include <lsm6dsr.h>
-#include <sensors.h>
+#include "config.h"
+#include "lsm6dsr.h"
 #include "rc5.h"
+#include "sensors.h"
 #include "usart.h"
 
 void setup(void);

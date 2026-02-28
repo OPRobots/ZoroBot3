@@ -1,15 +1,16 @@
 #ifndef __LEDS_H
 #define __LEDS_H
 
-#include <config.h>
-#include <constants.h>
-#include <delay.h>
-#include <usart.h>
-#include <utils.h>
-
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
+
+#include "config.h"
+#include "constants.h"
+#include "delay.h"
+#include "usart.h"
+#include "utils.h"
+
 
 enum info_led {
   INFO_LED_1 = 0,

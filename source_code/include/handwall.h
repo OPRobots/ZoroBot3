@@ -3,9 +3,8 @@
 
 #include <stdio.h>
 
-#include <move.h>
-#include <sensors.h>
-
+#include "move.h"
+#include "sensors.h"
 
 void handwall_use_left_hand(void);
 void handwall_use_right_hand(void);
