@@ -1,6 +1,7 @@
 #include "control.h"
 
 static volatile bool race_started = false;
+static volatile bool race_auto_run = false;
 static volatile uint32_t race_finish_ms = 0;
 static volatile uint32_t sensor_front_left_start_ms = 0;
 static volatile uint32_t sensor_front_right_start_ms = 0;
@@ -137,6 +138,14 @@ void set_race_started(bool state) {
 #endif
 }
 
+bool is_race_auto_run(void) {
+  return race_auto_run;
+}
+
+void set_race_auto_run(bool state) {
+  race_auto_run = state;
+}
+
 void set_control_debug(bool state) {
   control_debug = state;
 }
@@ -159,13 +168,35 @@ int8_t check_start_run(void) {
   }
 
   if (sensor_front_left_start_ms >= SENSOR_START_MIN_MS || sensor_front_right_start_ms >= SENSOR_START_MIN_MS) {
-    set_RGB_color(0, 50, 0);
-    delay(1000);
-    set_RGB_color(0, 0, 0);
-    set_race_started(true);
     uint8_t sensor = sensor_front_left_start_ms >= SENSOR_START_MIN_MS ? SENSOR_FRONT_LEFT_WALL_ID : SENSOR_FRONT_RIGHT_WALL_ID;
     sensor_front_left_start_ms = 0;
     sensor_front_right_start_ms = 0;
+    set_RGB_color(0, 50, 0);
+
+    set_race_auto_run(false);
+    uint32_t starting_ms = get_clock_ticks();
+    while (get_clock_ticks() - starting_ms < 2000) {
+      warning_status_led(50);
+
+      if (sensor == SENSOR_FRONT_RIGHT_WALL_ID) {
+        if (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) <= SENSOR_FRONT_DETECTION_START) {
+          if (sensor_front_left_start_ms == 0 && sensor_front_right_start_ms == 0) {
+            sensor_front_left_start_ms = get_clock_ticks();
+          }
+        } else {
+          sensor_front_left_start_ms = 0;
+        }
+
+        if (sensor_front_left_start_ms >= SENSOR_START_MIN_MS) {
+          set_RGB_color(50, 0, 50);
+          set_race_auto_run(true);
+        }
+      }
+    }
+    set_RGB_color(0, 0, 0);
+    set_status_led(false);
+
+    set_race_started(true);
     menu_run_reset();
     return sensor;
   }

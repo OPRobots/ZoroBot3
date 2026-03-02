@@ -21,6 +21,8 @@
 
 bool is_race_started(void);
 void set_race_started(bool state);
+bool is_race_auto_run(void);
+void set_race_auto_run(bool state);
 int8_t check_start_run(void);
 void set_control_debug(bool state);
 

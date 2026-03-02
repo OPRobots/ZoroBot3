@@ -1499,14 +1499,14 @@ static void floodfill_explore_finish(void) {
   set_target_linear_speed(0);
   set_ideal_angular_speed(0);
   set_target_fan_speed(0, 400);
+  set_race_started(false);
   uint16_t ms = get_clock_ticks();
-  while (get_clock_ticks() - ms < 2000) {
+  while (get_clock_ticks() - ms < 1000) {
     warning_status_led(50);
     set_RGB_rainbow();
   }
   set_RGB_color(255, 255, 0);
   set_status_led(false);
-  set_race_started(false);
   save_maze();
   set_RGB_color(0, 255, 0);
   delay(500);
@@ -1530,6 +1530,11 @@ static void loop_explore(void) {
 
 #ifndef MMSIM_ENABLED
       floodfill_explore_finish();
+      if (is_race_auto_run()) {
+        set_race_started(true);
+        floodfill_start_run();
+        return;
+      }
 #else
       set_race_started(false);
 #endif
