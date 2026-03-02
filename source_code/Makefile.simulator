@@ -1,0 +1,36 @@
+# Makefile para ZoroBot3 Maze Simulator
+# Compilación standalone para PC
+
+CC = gcc
+CFLAGS = -DMAZE_SIMULATOR -I./include -Wall -Wextra -O2
+LDFLAGS = -lm
+
+# Archivos fuente necesarios
+SRCS = simulator/maze_simulator.c src/floodfill.c src/maze.c
+
+SIMDIR = simulator
+TARGET = $(SIMDIR)/maze_sim
+
+# Windows
+ifeq ($(OS),Windows_NT)
+    TARGET := $(TARGET).exe
+    RM = if exist "$(TARGET)" del /Q /F "$(TARGET)"
+else
+    RM = rm -f $(TARGET)
+endif
+
+all: $(TARGET)
+
+$(TARGET): $(SRCS)
+	$(CC) $(CFLAGS) -o $@ $(SRCS) $(LDFLAGS)
+
+clean:
+	$(RM)
+
+# Ejemplo de uso:
+# make -f Makefile.simulator
+# ./maze_simulator -floodfill-type=1
+# Luego introducir: 16 (tamaño)
+# Luego pegar el array del laberinto
+
+.PHONY: all clean

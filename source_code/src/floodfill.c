@@ -35,6 +35,14 @@ static struct compass_direction_values directions_values = {
     .NORTH = MAZE_COLUMNS,
 };
 
+// ============== MAZE SIMULATOR ==============
+#ifdef MAZE_SIMULATOR
+static int16_t true_maze[MAZE_CELLS];  // El laberinto "real" (input del usuario)
+static uint8_t sim_maze_rows = 16;
+static uint8_t sim_maze_cols = 16;
+static uint16_t sim_steps_count = 0;   // Contador de pasos/movimientos
+#endif
+
 static void initialize_directions_values(void) {
   directions_values.EAST = 1;
   directions_values.SOUTH = -maze_get_columns();
@@ -1785,3 +1793,155 @@ void floodfill_loop(void) {
     loop_explore();
   }
 }
+
+// ============== MAZE SIMULATOR ==============
+#ifdef MAZE_SIMULATOR
+
+void floodfill_simulator_set_maze_size(uint8_t rows, uint8_t cols) {
+  sim_maze_rows = rows;
+  sim_maze_cols = cols;
+}
+
+void floodfill_simulator_set_true_maze(int16_t *maze_array, uint16_t size) {
+  for (uint16_t i = 0; i < size && i < MAZE_CELLS; i++) {
+    true_maze[i] = maze_array[i];
+  }
+}
+
+// Simula get_walls() leyendo del true_maze en lugar de sensores
+static struct walls simulator_get_walls(void) {
+  struct walls walls;
+  int16_t cell = true_maze[current_position];
+  
+  switch (current_direction) {
+    case EAST:
+      walls.left = (bool)(cell & NORTH_BIT);
+      walls.front = (bool)(cell & EAST_BIT);
+      walls.right = (bool)(cell & SOUTH_BIT);
+      break;
+    case SOUTH:
+      walls.left = (bool)(cell & EAST_BIT);
+      walls.front = (bool)(cell & SOUTH_BIT);
+      walls.right = (bool)(cell & WEST_BIT);
+      break;
+    case WEST:
+      walls.left = (bool)(cell & SOUTH_BIT);
+      walls.front = (bool)(cell & WEST_BIT);
+      walls.right = (bool)(cell & NORTH_BIT);
+      break;
+    case NORTH:
+    default:
+      walls.left = (bool)(cell & WEST_BIT);
+      walls.front = (bool)(cell & NORTH_BIT);
+      walls.right = (bool)(cell & EAST_BIT);
+      break;
+  }
+  return walls;
+}
+
+// Bucle de exploración simulado (sin hardware)
+static void simulator_loop_explore(void) {
+  int max_iterations = 5000; // Evitar bucle infinito
+  int iter = 0;
+  
+  while (iter++ < max_iterations) {
+    // Actualizar paredes desde true_maze
+    struct walls walls = simulator_get_walls();
+    update_walls(walls);
+    
+    // Si llegamos a la celda objetivo actual (ff=0), buscar nuevo objetivo
+    // o verificar si es el goal final
+    if (target_cells.size == 1 && target_cells.stack[0] == current_position) {
+      // Llegamos al target intermedio, buscar siguiente
+      set_goal_as_target();
+      update_floodfill();
+      
+      if (current_cell_is_goal() && floodfill[current_position] == 0) {
+        break;
+      }
+      
+      // Buscar siguiente celda interesante
+      uint8_t interesting_cell = find_unknown_interesting_cell();
+      if (interesting_cell == 0) {
+        // No hay más celdas interesantes, volver a inicio
+        if (current_position == 0) {
+          break;
+        }
+        // Establecer inicio como objetivo para volver
+        set_target(0);
+      } else {
+        set_target(interesting_cell);
+      }
+    }
+    
+    update_floodfill();
+    
+    // Obtener siguiente paso
+    struct walls stored_walls = get_current_stored_walls();
+    enum step_direction next_step = get_next_floodfill_step(stored_walls);
+    
+    if (next_step == BACK) {
+      // Giro de 180 grados
+      update_position(BACK);
+      sim_steps_count++;
+      continue;
+    }
+    
+    // Mover robot
+    update_position(next_step);
+    sim_steps_count++;
+    
+    // Comprobar si estamos en el goal final
+    if (current_cell_is_goal()) {
+      set_goal_as_target();
+      update_floodfill();
+      if (floodfill[current_position] == 0) {
+        break;
+      }
+    }
+  }
+}
+
+uint16_t floodfill_simulator_explore(void) {
+  sim_steps_count = 0;
+  
+  // Inicializar
+  initialize_directions_values();
+  initialize_maze();
+  set_initial_state();
+  set_goals_from_maze();
+  set_goal_as_target();
+  
+  // Actualizar paredes iniciales y floodfill
+  struct walls walls = simulator_get_walls();
+  update_walls(walls);
+  update_floodfill();
+  
+  // Buscar primer objetivo intermedio
+  uint8_t interesting_cell = find_unknown_interesting_cell();
+  if (interesting_cell != 0) {
+    set_target(interesting_cell);
+  }
+  
+  // Bucle principal de exploración
+  simulator_loop_explore();
+  
+  return sim_steps_count;
+}
+
+uint16_t floodfill_count_visited(void) {
+  uint16_t count = 0;
+  uint16_t cells = sim_maze_rows * sim_maze_cols;
+  for (uint16_t i = 0; i < cells; i++) {
+    if (maze[i] & VISITED_BIT) {
+      count++;
+    }
+  }
+  return count;
+}
+
+int16_t floodfill_get_maze_cell(uint8_t pos) {
+  return maze[pos];
+}
+
+#endif // MAZE_SIMULATOR
