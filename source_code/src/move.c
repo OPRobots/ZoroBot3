@@ -942,15 +942,9 @@ static void move_home(void) {
   return;
 #endif
 
-  set_front_sensors_correction(false);
+  set_front_sensors_correction(true);
   set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(false);
-
-  struct walls initial_walls = get_walls();
-  if (initial_walls.front && (!initial_walls.left || !initial_walls.right)) {
-    set_side_sensors_close_correction(false);
-  }
+  set_side_sensors_correction(false);
 
   move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
 
@@ -971,12 +965,11 @@ static void move_end(void) {
 
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(false);
+  set_side_sensors_correction(true);
 
   struct walls initial_walls = get_walls();
   if (initial_walls.front && (!initial_walls.left || !initial_walls.right)) {
-    set_side_sensors_close_correction(false);
+    set_side_sensors_correction(false);
   }
 
   move_straight(MIDDLE_MAZE_DISTANCE, 300, false, true);
@@ -1000,11 +993,9 @@ static void move_front(void) {
   set_front_sensors_diagonal_correction(false);
   struct walls initial_walls = get_walls();
   if (initial_walls.left || initial_walls.right) {
-    set_side_sensors_close_correction(true);
-    set_side_sensors_far_correction(true);
+    set_side_sensors_correction(true);
   } else {
-    set_side_sensors_close_correction(false);
-    set_side_sensors_far_correction(false);
+    set_side_sensors_correction(false);
   }
   move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
   enter_next_cell();
@@ -1046,12 +1037,10 @@ static void move_side(enum movement movement) {
     case MOVE_RIGHT_FROM_45_180:
       enable_start_distance_offset = false;
       enable_end_distance_offset = false;
-      set_side_sensors_close_correction(false);
-      set_side_sensors_far_correction(false);
+      set_side_sensors_correction(false);
       break;
     default:
-      set_side_sensors_close_correction(false);
-      set_side_sensors_far_correction(false);
+      set_side_sensors_correction(false);
       break;
   }
 
@@ -1088,8 +1077,7 @@ static void move_side(enum movement movement) {
   move_arc_turn(kinematics.turns[movement]);
 
   set_front_sensors_correction(false);
-  set_side_sensors_close_correction(false);
-  set_side_sensors_far_correction(false);
+  set_side_sensors_correction(false);
 
   switch (movement) {
     case MOVE_LEFT_TO_45:
@@ -1127,15 +1115,14 @@ static void move_back(enum movement movement) {
 #else
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(true);
+  set_side_sensors_correction(true);
 
   struct walls initial_walls = get_walls();
   if (initial_walls.front) {
+    // Para decelerar de velocidad de mapeo
     move_straight(10, 300, false, false);
     current_cell_start_mm += 10;
-    set_side_sensors_close_correction(false);
-    set_side_sensors_far_correction(false);
+    set_side_sensors_correction(false);
     set_front_sensors_correction(true);
   }
 
@@ -1169,8 +1156,7 @@ static void move_back(enum movement movement) {
   if (movement != MOVE_BACK_STOP) {
     set_front_sensors_correction(false);
     set_front_sensors_diagonal_correction(false);
-    set_side_sensors_close_correction(true);
-    set_side_sensors_far_correction(true);
+    set_side_sensors_correction(true);
     move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
     enter_next_cell();
   }
@@ -1289,8 +1275,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   float stop_distance = 0;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
-  while (is_race_started() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
-    // while (is_race_started() && !is_motor_saturated() && get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) > (distance + stop_distance)) {
+  while (is_race_started() && !is_motor_saturated() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance - stop_distance)) {
     if (stop) {
       stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
     }
@@ -1324,8 +1309,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
 #ifndef MMSIM_ENABLED
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(true);
-  set_side_sensors_far_correction(true);
+  set_side_sensors_correction(true);
 
   int32_t current_distance = get_encoder_avg_micrometers();
   float slow_distance = 0;
@@ -1471,12 +1455,10 @@ void run_side(enum movement movement, struct turn_params turn, struct turn_param
     case MOVE_RIGHT_FROM_45_180:
       // enable_start_distance_offset = false;
       // enable_end_distance_offset = false;
-      set_side_sensors_close_correction(false);
-      set_side_sensors_far_correction(false);
+      set_side_sensors_correction(false);
       break;
     default:
-      set_side_sensors_close_correction(false);
-      set_side_sensors_far_correction(false);
+      set_side_sensors_correction(false);
       break;
   }
 
@@ -1511,8 +1493,7 @@ void run_side(enum movement movement, struct turn_params turn, struct turn_param
   move_arc_turn(turn);
 
   set_front_sensors_correction(false);
-  set_side_sensors_close_correction(false);
-  set_side_sensors_far_correction(false);
+  set_side_sensors_correction(false);
 
   switch (movement) {
     case MOVE_LEFT_TO_45:
@@ -1546,8 +1527,7 @@ void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t spee
   } else {
     set_front_sensors_diagonal_correction(false);
   }
-  set_side_sensors_close_correction(false);
-  set_side_sensors_far_correction(false);
+  set_side_sensors_correction(false);
 
   uint16_t current_cell = 1;
   int32_t current_distance = get_encoder_avg_micrometers();

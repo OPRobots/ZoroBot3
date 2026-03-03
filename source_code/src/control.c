@@ -24,7 +24,7 @@ static volatile float angular_error;
 static volatile float sum_angular_error;
 static volatile float last_angular_error;
 
-static volatile bool side_sensors_close_correction_enabled = false;
+static volatile bool side_sensors_correction_enabled = false;
 static volatile bool side_sensors_far_correction_enabled = false;
 static volatile bool front_sensors_correction_enabled = false;
 static volatile bool front_sensors_diagonal_correction_enabled = false;
@@ -204,12 +204,8 @@ int8_t check_start_run(void) {
 }
 #endif
 
-void set_side_sensors_close_correction(bool enabled) {
-  side_sensors_close_correction_enabled = enabled;
-}
-
-void set_side_sensors_far_correction(bool enabled) {
-  side_sensors_far_correction_enabled = enabled;
+void set_side_sensors_correction(bool enabled) {
+  side_sensors_correction_enabled = enabled;
 }
 
 void set_front_sensors_correction(bool enabled) {
@@ -227,8 +223,7 @@ void set_front_sensors_diagonal_correction(bool enabled) {
 void disable_sensors_correction(void) {
   set_front_sensors_correction(false);
   set_front_sensors_diagonal_correction(false);
-  set_side_sensors_close_correction(false);
-  set_side_sensors_far_correction(false);
+  set_side_sensors_correction(false);
 }
 
 void reset_control_errors(void) {
@@ -341,23 +336,13 @@ void control_loop(void) {
   angular_error = ideal_angular_speed - get_measured_angular_speed();
   sum_angular_error += angular_error;
 
-  // side_sensors_error = 0;
-  // if (side_sensors_close_correction_enabled) {
-  //   side_sensors_error += get_side_sensors_close_error();
-  //   sum_side_sensors_error += side_sensors_error;
-  // }
-  // if (side_sensors_far_correction_enabled) {
-  //   side_sensors_error += get_side_sensors_far_error();
-  //   sum_side_sensors_error += side_sensors_error;
-  // }
-
   side_sensors_error = 0;
-  if (side_sensors_close_correction_enabled) {
+  if (side_sensors_correction_enabled) {
     side_sensors_error += get_side_sensors_error();
     sum_side_sensors_error += side_sensors_error;
   }
 
-  if (!side_sensors_close_correction_enabled && !side_sensors_far_correction_enabled) {
+  if (!side_sensors_correction_enabled && !side_sensors_far_correction_enabled) {
     sum_side_sensors_error = 0;
     last_side_sensors_error = 0;
   }

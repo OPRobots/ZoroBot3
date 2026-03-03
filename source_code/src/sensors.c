@@ -386,7 +386,7 @@ void update_sensors_magics(void) {
 
 void update_side_sensors_leds(void) {
 #ifndef MMSIM_ENABLED
-  int16_t side_error_leds = get_side_sensors_close_error();
+  int16_t side_error_leds = get_side_sensors_error();
   if (abs(side_error_leds) < 2) {
     clear_info_leds();
   } else if (side_error_leds >= 20) {
@@ -487,33 +487,6 @@ struct walls get_walls(void) {
   walls.left = left_wall_detection();
   walls.right = right_wall_detection();
   return walls;
-}
-
-int16_t get_side_sensors_close_error(void) {
-  int16_t left_error = sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
-  int16_t right_error = sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
-  // printf("\t%4d | %4d = ", left_error, right_error);
-  if (left_error > 0 && right_error < 0) {
-    return right_error;
-  } else if (right_error > 0 && left_error < 0) {
-    return -left_error;
-  }
-  return 0;
-}
-
-int16_t get_side_sensors_far_error(void) {
-  int16_t left_error = sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
-  int16_t right_error = sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
-  // printf("\t%4d | %4d = ", left_error, right_error);
-
-  if ((left_error > 90 && left_error < 350) && (right_error < 40)) {
-    return right_error;
-  }
-  if ((right_error > 90 && right_error < 350) && (left_error < 40)) {
-    return -left_error;
-  }
-
-  return 0;
 }
 
 float side_sensors_error = 0;
