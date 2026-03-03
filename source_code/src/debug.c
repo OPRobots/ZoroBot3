@@ -32,9 +32,9 @@ static void debug_sensors_distances(void) {
     printf("FL: %4d ", get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID));
     printf("FR: %4d ", get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID));
     printf("SR: %4d ", get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
-    printf("LW: %d ", left_wall_detection()?1:0);
-    printf("FW: %d ", front_wall_detection()?1:0);
-    printf("RW: %d ", right_wall_detection()?1:0);
+    printf("LW: %d ", left_wall_detection() ? 1 : 0);
+    printf("FW: %d ", front_wall_detection() ? 1 : 0);
+    printf("RW: %d ", right_wall_detection() ? 1 : 0);
     printf("side_error: %4.2f ", get_side_sensors_error());
     printf("diagonal_error: %4d ", get_front_sensors_diagonal_error());
     printf("front_angle_error: %4d ", get_front_sensors_angle_error());
@@ -60,6 +60,13 @@ static void check_debug_active(void) {
   }
 }
 
+static void debug_encoders(void) {
+  if (get_clock_ticks() > last_print_debug + 50) {
+    printf("ENC_D: %4ld\tENC_I: %4ld\n", get_encoder_right_millimeters(), get_encoder_left_millimeters());
+    last_print_debug = get_clock_ticks();
+  }
+}
+
 static void debug_motors_current(void) {
   if (get_clock_ticks() > last_print_debug + 50) {
     set_motors_enable(true);
@@ -70,11 +77,45 @@ static void debug_motors_current(void) {
   }
 }
 
-static void debug_encoders(void) {
-  if (get_clock_ticks() > last_print_debug + 50) {
-    printf("ENC_D: %4ld\tENC_I: %4ld\n", get_encoder_right_millimeters(), get_encoder_left_millimeters());
-    last_print_debug = get_clock_ticks();
+static void debug_timetrial(void) {
+  delay(1000);
+  configure_kinematics(menu_run_get_speed());
+  clear_info_leds();
+  set_RGB_color(0, 0, 0);
+  debug_enabled = false;
+  set_race_started(true);
+  set_target_fan_speed(get_kinematics().fan_speed, 1000);
+  delay(1500);
+
+  run_straight(CELL_DIMENSION * 2 - (ROBOT_BACK_LENGTH + WALL_WIDTH / 2.0f),
+               ROBOT_BACK_LENGTH + WALL_WIDTH / 2.0f,
+               get_kinematics().turns[MOVE_RIGHT_90].start,
+               2,
+               true,
+               get_kinematics().linear_speed,
+               get_kinematics().turns[MOVE_RIGHT_90].linear_speed,
+               get_kinematics().turns[MOVE_RIGHT_90].sign);
+
+  run_side(MOVE_RIGHT_90, get_kinematics().turns[MOVE_RIGHT_90], get_kinematics().turns[MOVE_RIGHT_90]);
+
+  for (int i = 0; i < 3; i++) {
+    run_straight(CELL_DIMENSION + get_kinematics().turns[MOVE_RIGHT_90].end,
+                 get_kinematics().turns[MOVE_RIGHT_90].end,
+                 get_kinematics().turns[MOVE_RIGHT_90].start,
+                 1,
+                 false,
+                 get_kinematics().linear_speed,
+                 get_kinematics().turns[MOVE_RIGHT_90].linear_speed,
+                 get_kinematics().turns[MOVE_RIGHT_90].sign);
+
+    run_side(MOVE_RIGHT_90,
+             get_kinematics().turns[MOVE_RIGHT_90],
+             get_kinematics().turns[MOVE_RIGHT_90]);
   }
+
+  move(MOVE_BACK_STOP);
+  set_race_started(false);
+  menu_config_reset_values();
 }
 
 static void debug_gyro(void) {
@@ -139,11 +180,14 @@ void debug_from_config(uint8_t type) {
       case DEBUG_FLOODFILL_MAZE:
         debug_floodfill_maze();
         break;
+      case DEBUG_ENCODERS:
+        debug_encoders();
+        break;
       case DEBUG_MOTORS_CURRENT:
         debug_motors_current();
         break;
-      case DEBUG_ENCODERS:
-        debug_encoders();
+      case DEBUG_TIMETRIAL:
+        debug_timetrial();
         break;
       case DEBUG_GYRO:
         debug_gyro();
