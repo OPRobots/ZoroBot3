@@ -58,11 +58,11 @@ static int32_t voltage_to_motor_pwm(float voltage) {
 }
 #endif
 
-// #ifndef MMSIM_ENABLED
-// static int32_t percentage_to_fan_pwm(float percentage) {
-//   return percentage > 0 ? (int32_t)constrain((get_battery_high_limit_voltage() / get_battery_voltage()) * percentage, percentage, 100.0f) : 0;
-// }
-// #endif
+#ifndef MMSIM_ENABLED
+static int32_t normalize_fan_percentage(float percentage) {
+  return percentage > 0 ? (int32_t)constrain(get_battery_high_limit_voltage() * percentage / get_battery_voltage(), percentage, 100.0f) : 0;
+}
+#endif
 
 /**
  * @brief Actualiza la velocidad lineal ideal en función de la velocidad lineal objetivo y la aceleración
@@ -277,8 +277,8 @@ float get_ideal_angular_speed(void) {
 
 #ifndef MMSIM_ENABLED
 void set_target_fan_speed(int32_t fan_speed, int32_t ms) {
-  target_fan_speed = fan_speed; // percentage_to_fan_pwm(fan_speed);
-  fan_speed_accel = (fan_speed - ideal_fan_speed) * CONTROL_FREQUENCY_HZ / ms;
+  target_fan_speed = normalize_fan_percentage(fan_speed);
+  fan_speed_accel = (target_fan_speed - ideal_fan_speed) * CONTROL_FREQUENCY_HZ / ms;
 }
 #endif
 
