@@ -78,9 +78,9 @@ static struct kpi_params kpi_run[] = {
         .kd = 0,
     },
     [KPI_FRONT_DIAGONAL_SENSORS] = {
+        .kp = 0.04,
+        .ki = 0.001,
         .kd = 0.040,
-        .kp = 0.001,
-        .ki = 0.040,
     },
 };
 
@@ -1333,31 +1333,31 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
     // Comprobar cambio de celda
     int32_t cell_travelled = (get_encoder_avg_micrometers() - current_distance) / MICROMETERS_PER_MILLIMETER;
     int16_t total_distance = distance;
-    static char *labels[] = {
-        "distance",
-        "current_dist_left",
-        "cell_travelled",
-        "current_wall_lost",
-        "last_wall_lost",
-        "cell_walls",
-        "current_walls",
-        "current_cell",
-        "cells",
-    };
-    macroarray_store(
-        1,
-        0b000000000,
-        labels,
-        9,
-        (int16_t)(total_distance),
-        (int16_t)(current_cell_distance_left),
-        (int16_t)(cell_travelled),
-        (int16_t)(current_cell_wall_lost ? 1 : 0),
-        (int16_t)(last_cell_wall_lost ? 1 : 0),
-        (int16_t)(cell_walls.right ? 1 : 0),
-        (int16_t)(current_walls.right ? 1 : 0),
-        (int16_t)(current_cell),
-        (int16_t)(cells));
+    // static char *labels[] = {
+    //     "distance",
+    //     "current_dist_left",
+    //     "cell_travelled",
+    //     "current_wall_lost",
+    //     "last_wall_lost",
+    //     "cell_walls",
+    //     "current_walls",
+    //     "current_cell",
+    //     "cells",
+    // };
+    // macroarray_store(
+    //     1,
+    //     0b000000000,
+    //     labels,
+    //     9,
+    //     (int16_t)(total_distance),
+    //     (int16_t)(current_cell_distance_left),
+    //     (int16_t)(cell_travelled),
+    //     (int16_t)(current_cell_wall_lost ? 1 : 0),
+    //     (int16_t)(last_cell_wall_lost ? 1 : 0),
+    //     (int16_t)(cell_walls.right ? 1 : 0),
+    //     (int16_t)(current_walls.right ? 1 : 0),
+    //     (int16_t)(current_cell),
+    //     (int16_t)(cells));
 
     if (cell_travelled >= current_cell_distance_left && current_cell < cells) {
       // if (!current_cell_wall_lost) {
@@ -1539,7 +1539,7 @@ void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t spee
   distance += end_offset;
   while (is_race_started() && !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    if (remaining_distance < CELL_DIAGONAL * 0.5f * MICROMETERS_PER_MILLIMETER) {
+    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER) {
       set_front_sensors_diagonal_correction(false);
     }
 
