@@ -67,6 +67,13 @@ static void debug_encoders(void) {
   }
 }
 
+static void debug_gyro(void) {
+  if (get_clock_ticks() > last_print_debug + 50) {
+    printf("raw: %.2f\tangle: %.2f\tangular_speed: %.2f\n", lsm6dsr_get_gyro_z_raw(), lsm6dsr_get_gyro_z_degrees(), lsm6dsr_get_gyro_z_radps());
+    last_print_debug = get_clock_ticks();
+  }
+}
+
 static void debug_motors_current(void) {
   if (get_clock_ticks() > last_print_debug + 50) {
     set_motors_enable(true);
@@ -116,13 +123,6 @@ static void debug_timetrial(void) {
   move(MOVE_BACK_STOP);
   set_race_started(false);
   menu_config_reset_values();
-}
-
-static void debug_gyro(void) {
-  if (get_clock_ticks() > last_print_debug + 50) {
-    printf("raw: %.2f\tangle: %.2f\tangular_speed: %.2f\n", lsm6dsr_get_gyro_z_raw(), lsm6dsr_get_gyro_z_degrees(), lsm6dsr_get_gyro_z_radps());
-    last_print_debug = get_clock_ticks();
-  }
 }
 
 static void debug_gyro_demo(void) {
@@ -183,14 +183,14 @@ void debug_from_config(uint8_t type) {
       case DEBUG_ENCODERS:
         debug_encoders();
         break;
+      case DEBUG_GYRO:
+        debug_gyro();
+        break;
       case DEBUG_MOTORS_CURRENT:
         debug_motors_current();
         break;
       case DEBUG_TIMETRIAL:
         debug_timetrial();
-        break;
-      case DEBUG_GYRO:
-        debug_gyro();
         break;
       case DEBUG_GYRO_DEMO:
         debug_gyro_demo();
