@@ -370,25 +370,38 @@ static struct queue_cell queue_pop(void) {
   return cells_queue.queue[cells_queue.tail++];
 }
 
-static enum step_direction get_next_floodfill_step(struct walls walls) {
+static enum step_direction get_next_floodfill_step(struct walls walls, enum step_direction last_step) {
   float floodfill_value = floodfill[current_position];
   enum step_direction next_step = BACK;
   if (menu_run_get_floodfill_type() == FLOODFILL_TYPE_BASIC) {
-    if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
+    if (!walls.front && (floodfill[get_next_position(FRONT)] < floodfill_value || floodfill[get_next_position(FRONT)] == 0.0f)) {
       floodfill_value = floodfill[get_next_position(FRONT)];
       next_step = FRONT;
     }
   }
-  if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill_value) {
-    floodfill_value = floodfill[get_next_position(RIGHT)];
-    next_step = RIGHT;
+
+  if (last_step == LEFT) {
+    if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(RIGHT)];
+      next_step = RIGHT;
+    }
+    if (!walls.left && floodfill[get_next_position(LEFT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(LEFT)];
+      next_step = LEFT;
+    }
+  } else {
+    if (!walls.left && floodfill[get_next_position(LEFT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(LEFT)];
+      next_step = LEFT;
+    }
+    if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(RIGHT)];
+      next_step = RIGHT;
+    }
   }
-  if (!walls.left && floodfill[get_next_position(LEFT)] < floodfill_value) {
-    floodfill_value = floodfill[get_next_position(LEFT)];
-    next_step = LEFT;
-  }
+
   if (menu_run_get_floodfill_type() != FLOODFILL_TYPE_BASIC) {
-    if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
+    if (!walls.front && (floodfill[get_next_position(FRONT)] < floodfill_value || floodfill[get_next_position(FRONT)] == 0.0f)) {
       floodfill_value = floodfill[get_next_position(FRONT)];
       next_step = FRONT;
     }
@@ -396,7 +409,7 @@ static enum step_direction get_next_floodfill_step(struct walls walls) {
   return next_step;
 }
 
-static enum step_direction get_next_floodfill_virtual_step(struct virtual_walls walls) {
+static enum step_direction get_next_floodfill_virtual_step(struct virtual_walls walls, enum step_direction last_step) {
   float floodfill_value = floodfill[current_position];
   enum step_direction next_step = NONE;
 
@@ -406,14 +419,27 @@ static enum step_direction get_next_floodfill_virtual_step(struct virtual_walls 
       next_step = FRONT;
     }
   }
-  if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill_value) {
-    floodfill_value = floodfill[get_next_position(RIGHT)];
-    next_step = RIGHT;
+
+  if (last_step == LEFT) {
+    if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(RIGHT)];
+      next_step = RIGHT;
+    }
+    if (!walls.left && floodfill[get_next_position(LEFT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(LEFT)];
+      next_step = LEFT;
+    }
+  } else {
+    if (!walls.left && floodfill[get_next_position(LEFT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(LEFT)];
+      next_step = LEFT;
+    }
+    if (!walls.right && floodfill[get_next_position(RIGHT)] < floodfill_value) {
+      floodfill_value = floodfill[get_next_position(RIGHT)];
+      next_step = RIGHT;
+    }
   }
-  if (!walls.left && floodfill[get_next_position(LEFT)] < floodfill_value) {
-    floodfill_value = floodfill[get_next_position(LEFT)];
-    next_step = LEFT;
-  }
+
   if (menu_run_get_floodfill_type() != FLOODFILL_TYPE_BASIC) {
     if (!walls.front && floodfill[get_next_position(FRONT)] < floodfill_value) {
       floodfill_value = floodfill[get_next_position(FRONT)];
@@ -861,7 +887,7 @@ static void update_floodfill(void) {
   }
 
   while (floodfill[current_position] > 0) {
-    next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls());
+    next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls(), next_step);
     if (next_step == NONE) {
       break;
     }
@@ -905,7 +931,7 @@ static uint8_t find_standard_unknown_interesting_cell(void) {
   uint8_t _position = current_position;
   enum compass_direction _direction = current_direction;
 
-  enum step_direction next_step;
+  enum step_direction next_step = NONE;
 
   current_position = 0;
   current_direction = initial_direction;
@@ -914,7 +940,7 @@ static uint8_t find_standard_unknown_interesting_cell(void) {
   set_goal_as_target();
   update_floodfill();
   while (floodfill[current_position] > 0) {
-    next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls());
+    next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls(), next_step);
     if (next_step == NONE) {
       break;
     }
@@ -970,7 +996,7 @@ static uint8_t find_closest_unknown_interesting_cell(void) {
   uint8_t _position = current_position;
   enum compass_direction _direction = current_direction;
 
-  enum step_direction next_step;
+  enum step_direction next_step = NONE;
 
   current_position = 0;
   current_direction = initial_direction;
@@ -979,7 +1005,7 @@ static uint8_t find_closest_unknown_interesting_cell(void) {
   set_goal_as_target();
   update_floodfill();
   while (floodfill[current_position] > 0) {
-    next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls());
+    next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls(), next_step);
     if (next_step == NONE) {
       break;
     }
@@ -1124,7 +1150,7 @@ static bool floodfill_run(void) {
 static void go_to_target(void) {
   struct walls walls;
   enum step_direction next_step_before_update_walls;
-  enum step_direction next_step;
+  enum step_direction next_step = NONE;
 
   update_floodfill();
   do {
@@ -1133,11 +1159,11 @@ static void go_to_target(void) {
     }
 
     if (!current_cell_is_visited()) {
-      next_step_before_update_walls = get_next_floodfill_step(get_current_stored_walls());
+      next_step_before_update_walls = get_next_floodfill_step(get_current_stored_walls(), next_step);
       walls = get_walls();
       update_walls(walls);
       update_floodfill();
-      next_step = get_next_floodfill_step(walls);
+      next_step = get_next_floodfill_step(walls, next_step);
       // Es el target aun interesante?
       if (target_cells.size == 1 && target_cells.stack[0] != 0 && maze_goal_position != 0 && next_step_before_update_walls != next_step) {
         uint8_t interesting_cell = find_unknown_interesting_cell();
@@ -1147,12 +1173,12 @@ static void go_to_target(void) {
         if (interesting_cell != target_cells.stack[0]) {
           set_target(interesting_cell);
           update_floodfill();
-          next_step = get_next_floodfill_step(walls);
+          next_step = get_next_floodfill_step(walls, next_step);
         }
       }
     } else {
       walls = get_current_stored_walls();
-      next_step = get_next_floodfill_step(walls);
+      next_step = get_next_floodfill_step(walls, next_step);
     }
 
 #ifndef MMSIM_ENABLED
@@ -1215,13 +1241,10 @@ static void go_to_target(void) {
 }
 
 static void build_run_sequence(void) {
-  enum step_direction step;
-
-  // set_initial_state();
+  enum step_direction step = NONE;
 
   set_goals_from_maze();
-  // set_goal_as_target();
-  set_target(0);
+  set_goal_as_target();
 
   int16_t bak_maze[MAZE_CELLS];
   memcpy(bak_maze, maze, MAZE_CELLS * sizeof(int16_t));
@@ -1234,80 +1257,35 @@ static void build_run_sequence(void) {
       set_wall(WEST_BIT);
     }
   }
+  set_initial_state();
   update_floodfill();
   memcpy(maze, bak_maze, MAZE_CELLS * sizeof(int16_t));
 
-  float goal_value = MAZE_MAX_DISTANCE;
-  for (uint8_t i = 0; i < goal_cells.size; i++) {
-    if (floodfill[goal_cells.stack[i]] < goal_value) {
-      goal_value = floodfill[goal_cells.stack[i]];
-      current_position = goal_cells.stack[i];
-    }
-  }
-  printf("Current position: %d - %d\n", (current_position % maze_get_columns()) + 1, (current_position / maze_get_rows()) + 1);
-  float next_distance = goal_value;
-  if (!wall_exists(current_position, NORTH_BIT) && floodfill[current_position + get_direction_value(NORTH)] < next_distance) {
-    next_distance = floodfill[current_position + get_direction_value(NORTH)];
-    printf("Next cell: %d - %d\n", ((current_position + get_direction_value(NORTH)) % 6) + 1, ((current_position + get_direction_value(NORTH)) / 6) + 1);
-    current_direction = NORTH;
-  }
-  if (!wall_exists(current_position, EAST_BIT) && floodfill[current_position + get_direction_value(EAST)] < next_distance) {
-    next_distance = floodfill[current_position + get_direction_value(EAST)];
-    printf("Next cell: %d - %d\n", ((current_position + get_direction_value(EAST)) % 6) + 1, ((current_position + get_direction_value(EAST)) / 6) + 1);
-    current_direction = EAST;
-  }
-  if (!wall_exists(current_position, SOUTH_BIT) && floodfill[current_position + get_direction_value(SOUTH)] < next_distance) {
-    next_distance = floodfill[current_position + get_direction_value(SOUTH)];
-    printf("Next cell: %d - %d\n", ((current_position + get_direction_value(SOUTH)) % 6) + 1, ((current_position + get_direction_value(SOUTH)) / 6) + 1);
-    current_direction = SOUTH;
-  }
-  if (!wall_exists(current_position, WEST_BIT) && floodfill[current_position + get_direction_value(WEST)] < next_distance) {
-    next_distance = floodfill[current_position + get_direction_value(WEST)];
-    printf("Next cell: %d - %d\n", ((current_position + get_direction_value(WEST)) % 6) + 1, ((current_position + get_direction_value(WEST)) / 6) + 1);
-    current_direction = WEST;
-  }
+  printf("Current position: %d\n", current_position);
   printf("Current direction: %d\n", current_direction);
-  printf("Next distance: %f\n", next_distance);
 
-  char reverse_run_sequence[MAZE_CELLS + 3];
-
-  memset(reverse_run_sequence, 0, sizeof(reverse_run_sequence));
   memset(run_sequence, 0, sizeof(run_sequence));
 
   uint8_t i = 0;
-  reverse_run_sequence[i++] = 'S';
-  // if (goal_cells.size > 1) {
-  //   reverse_run_sequence[i++] = 'F';
-  // }
   while (floodfill[current_position] > 0) {
-    step = get_next_floodfill_step(get_current_stored_walls());
+    step = get_next_floodfill_step(get_current_stored_walls(), step);
     switch (step) {
       case FRONT:
-        reverse_run_sequence[i++] = (current_position == 0 ? 'B' : 'F');
+        run_sequence[i++] = (current_position == 0 ? 'B' : 'F');
         break;
       case LEFT:
-        reverse_run_sequence[i++] = 'L';
+        run_sequence[i++] = 'L';
         break;
       case RIGHT:
-        reverse_run_sequence[i++] = 'R';
+        run_sequence[i++] = 'R';
         break;
       default:
         break;
     }
     update_position(step);
   }
-  reverse_run_sequence[i++] = 'B';
-
-  i = 0;
-  for (int16_t j = strlen(reverse_run_sequence) - 1; j >= 0; j--) {
-    if (reverse_run_sequence[j] == 'L') {
-      run_sequence[i++] = 'R';
-    } else if (reverse_run_sequence[j] == 'R') {
-      run_sequence[i++] = 'L';
-    } else {
-      run_sequence[i++] = reverse_run_sequence[j];
-    }
-  }
+  run_sequence[i++] = 'F';
+  run_sequence[i++] = 'S';
 
   run_sequence[i] = '\0';
 
