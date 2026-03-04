@@ -1314,6 +1314,11 @@ static void build_run_sequence(enum run_sequence_type type) {
   }
   run_sequence[i++] = 'S';
 
+  // Ajusta la orientación final para que el robot quede mirando hacia atrás al llegar a la meta, listo para hacer la vuelta rápida a casa
+  if (current_cell_is_goal()) {
+    current_direction = get_next_direction(BACK);
+  }
+
   run_sequence[i] = '\0';
 
   printf("Run sequence: %s\n", run_sequence);
