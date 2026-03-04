@@ -1280,7 +1280,7 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   float stop_distance = 0;
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(speed);
-  while (is_race_started() && !is_motor_saturated() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance - stop_distance)) {
+  while (is_race_started() && !is_motor_saturated() && (get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID)) / 2 > (distance + stop_distance)) {
     if (stop) {
       stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
     }
