@@ -29,6 +29,8 @@ static void check_motors_saturated(void) {
       motors_angle_saturated = false;
     }
   } else {
+    left_motor_saturation_count = 0;
+    right_motor_saturation_count = 0;
     motors_pwm_saturated = false;
     motors_angle_saturated = false;
   }
@@ -36,6 +38,7 @@ static void check_motors_saturated(void) {
 
 void set_check_motors_saturated_enabled(bool enabled) {
   check_motors_saturated_enabled = enabled;
+  reset_motors_saturated();
 }
 
 void set_motors_enable(bool enabled) {
@@ -84,7 +87,7 @@ void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
     pwm_left = -MOTORES_MAX_PWM;
   }
 
-  if (abs(pwm_left) >= MOTORES_SATURATION_PWM) {
+  if (abs(pwm_left) >= MOTORES_SATURATION_PWM && check_motors_saturated_enabled) {
     left_motor_saturation_count++;
   } else {
     left_motor_saturation_count = 0;
@@ -104,7 +107,7 @@ void set_motors_pwm(int32_t pwm_left, int32_t pwm_right) {
     pwm_right = -MOTORES_MAX_PWM;
   }
 
-  if (abs(pwm_right) >= MOTORES_SATURATION_PWM) {
+  if (abs(pwm_right) >= MOTORES_SATURATION_PWM && check_motors_saturated_enabled) {
     right_motor_saturation_count++;
   } else {
     right_motor_saturation_count = 0;
@@ -148,7 +151,7 @@ void reset_motors_saturated(void) {
 }
 
 bool is_motor_saturated(void) {
-  return motors_pwm_saturated || motors_angle_saturated;
+  return (motors_pwm_saturated || motors_angle_saturated);
 }
 
 bool is_motor_pwm_saturated(void) {
