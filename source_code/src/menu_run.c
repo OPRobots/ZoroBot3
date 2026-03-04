@@ -89,10 +89,10 @@ static void handle_menu_run_values(void) {
   if (modeRun == MODE_FLOODFILL_TYPE) {
     switch (valueRun[modeRun]) {
       case FLOODFILL_TYPE_BASIC:
-        set_RGB_color(50, 0, 0);
+        set_RGB_color(0, 0, 50);
         break;
       case FLOODFILL_TYPE_DIAGONAL:
-        set_RGB_color(0, 50, 0);
+        set_RGB_color(50, 50, 0);
         break;
       case FLOODFILL_TYPE_TIME:
         set_RGB_color(50, 0, 50);
@@ -131,7 +131,7 @@ static void handle_menu_run_values(void) {
         set_RGB_color(0, 0, 50);
         break;
       case EXPLORE_FLOODFILL:
-        set_RGB_color(0, 50, 0);
+        set_RGB_color(50, 50, 0);
         break;
       case EXPLORE_TIME_TRIAL:
         set_RGB_color(50, 0, 50);
