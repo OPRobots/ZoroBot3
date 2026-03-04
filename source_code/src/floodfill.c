@@ -1501,14 +1501,6 @@ static void smooth_run_sequence(enum speed_strategy speed) {
 
 #ifndef MMSIM_ENABLED
 static void floodfill_explore_finish(void) {
-  set_target_linear_speed(0);
-  set_ideal_angular_speed(0);
-  set_target_fan_speed(0, 400);
-  uint16_t ms = get_clock_ticks();
-  while (get_clock_ticks() - ms < 1000) {
-    warning_status_led(50);
-    set_RGB_rainbow();
-  }
   set_race_started(false);
   set_RGB_color(255, 255, 0);
   set_status_led(false);
@@ -1517,6 +1509,26 @@ static void floodfill_explore_finish(void) {
   delay(500);
 }
 #endif
+
+static void run_back_to_start(void) {
+  configure_kinematics(SPEED_NORMAL);
+  build_run_sequence(current_cell_is_goal() ? GOAL_TO_START : EXPLORE_TO_START);
+  smooth_run_sequence(menu_run_get_speed());
+  set_race_started(true);
+  set_target_fan_speed(get_kinematics().fan_speed, 1000);
+  delay(1500);
+  set_RGB_color(0, 0, 0);
+  move_run_sequence(run_sequence_movements);
+
+  if (!is_motor_saturated()) {
+    set_RGB_color(0, 255, 0);
+    uint32_t ms = get_clock_ticks();
+    while (get_clock_ticks() - ms < 1000) {
+      warning_status_led(50);
+    }
+    set_RGB_color(0, 0, 0);
+  }
+}
 
 static void loop_explore(void) {
   while (is_race_started()) {
@@ -1563,15 +1575,15 @@ static void loop_run(void) {
   move_run_sequence(run_sequence_movements);
 
 #ifndef MMSIM_ENABLED
-  set_target_linear_speed(0);
-  set_ideal_angular_speed(0);
-  set_target_fan_speed(0, 400);
+
   if (!is_motor_saturated()) {
-    set_RGB_color_while(255, 0, 0, 33);
-    uint16_t ms = get_clock_ticks();
-    while (get_clock_ticks() - ms < 1000) {
-      warning_status_led(50);
-    }
+    set_race_started(false);
+    set_target_linear_speed(0);
+    set_ideal_angular_speed(0);
+    set_RGB_color(0, 255, 0);
+
+    run_back_to_start();
+
     set_race_started(false);
   }
   set_status_led(false);
