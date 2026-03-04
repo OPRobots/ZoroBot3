@@ -1140,7 +1140,7 @@ static bool floodfill_run(void) {
   }
 
   if (count_same_direction > 0) {
-    run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, 3000, get_kinematics().linear_speed, next_turn_sign);
+    run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, get_kinematics_explore_linear_speed_run(), get_kinematics().linear_speed, next_turn_sign);
     current_position = _current_position;
     return true;
   }
@@ -1587,7 +1587,9 @@ static void loop_run(void) {
     set_ideal_angular_speed(0);
     set_RGB_color(0, 255, 0);
 
-    run_back_to_start();
+    if (menu_run_get_speed() != SPEED_EXPLORE) {
+      run_back_to_start();
+    }
 
     set_race_started(false);
   }
@@ -1735,6 +1737,7 @@ bool floodfill_is_reset_maze_on_start_explore(void) {
 }
 
 void floodfill_start_explore(void) {
+  configure_explore_kinematics(false);
   configure_kinematics(SPEED_EXPLORE);
 
 #ifndef MMSIM_ENABLED
@@ -1783,6 +1786,7 @@ void floodfill_start_explore(void) {
 }
 
 void floodfill_start_run(void) {
+  configure_explore_kinematics(true);
   configure_kinematics(menu_run_get_speed());
   race_mode = true;
 

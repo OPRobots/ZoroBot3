@@ -104,6 +104,8 @@ char *get_movement_string(enum movement movement);
 void setup_kinematics(void);
 enum speed_strategy;
 void configure_kinematics(enum speed_strategy speed);
+void configure_explore_kinematics(bool is_run);
+int16_t get_kinematics_explore_linear_speed_run(void);
 struct kinematics get_kinematics(void);
 uint16_t get_floodfill_linear_speed(void);
 uint16_t get_floodfill_max_linear_speed(void);

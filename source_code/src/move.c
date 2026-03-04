@@ -112,20 +112,20 @@ static struct inplace_params turns_inplace[] = {
 static struct turn_params turns_explore[] = {
     [MOVE_LEFT] = {
         .start = 10.1633,
-        .end = 10.1581,
-        .linear_speed = 650,
-        .max_angular_speed = 11.8182,
-        .transition = 63.3458,
-        .arc = 5.7460,
+        .end = 10.1571,
+        .linear_speed = 800,
+        .max_angular_speed = 14.5455,
+        .transition = 63.3480,
+        .arc = 5.7440,
         .sign = -1,
     },
     [MOVE_RIGHT] = {
         .start = 10.1633,
-        .end = 10.1581,
-        .linear_speed = 650,
-        .max_angular_speed = 11.8182,
-        .transition = 63.3458,
-        .arc = 5.7460,
+        .end = 10.1571,
+        .linear_speed = 800,
+        .max_angular_speed = 14.5455,
+        .transition = 63.3480,
+        .arc = 5.7440,
         .sign = 1,
     },
 };
@@ -775,16 +775,19 @@ static struct turn_params turns_haki[] = {
     },
 };
 
+#define SPEED_EXPLORE_LINEAR_SPEED 800
+#define SPEED_EXPLORE_LINEAR_SPEED_RUN 3500
+
 static struct kinematics kinematics_settings[] = {
     [SPEED_EXPLORE] = {
-        .linear_speed = 650,
+        .linear_speed = SPEED_EXPLORE_LINEAR_SPEED,
         .linear_accel = {
-            .break_accel = 5000,
-            .accel_hard = 5000,
+            .break_accel = 8000,
+            .accel_hard = 8000,
             .speed_hard = 0,
             .accel_soft = 0,
         },
-        .fan_speed = 30,
+        .fan_speed = 40,
         .turns = turns_explore,
         .kpi = kpi_explore,
         .mpu = {
@@ -1190,6 +1193,14 @@ void configure_kinematics(enum speed_strategy speed) {
 #ifndef MMSIM_ENABLED
   lsm6dsr_reload_config();
 #endif
+}
+
+void configure_explore_kinematics(bool is_run) {
+  kinematics_settings[SPEED_EXPLORE].linear_speed = is_run ? SPEED_EXPLORE_LINEAR_SPEED_RUN : SPEED_EXPLORE_LINEAR_SPEED;
+}
+
+int16_t get_kinematics_explore_linear_speed_run(void) {
+  return SPEED_EXPLORE_LINEAR_SPEED_RUN;
 }
 
 struct kinematics get_kinematics(void) {
