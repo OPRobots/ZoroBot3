@@ -144,10 +144,12 @@ void lsm6dsr_init(void) {
 }
 
 void lsm6dsr_reload_config(void) {
-  lsm6dsr_gy_full_scale_set(&dev_ctx, get_kinematics().mpu.full_scale_dps);
-  current_full_scale_dps = get_kinematics().mpu.full_scale_dps;
-  delay(50);
-  reset_control_all();
+  if (current_full_scale_dps != get_kinematics().mpu.full_scale_dps) {
+    lsm6dsr_gy_full_scale_set(&dev_ctx, get_kinematics().mpu.full_scale_dps);
+    current_full_scale_dps = get_kinematics().mpu.full_scale_dps;
+    delay(50);
+    reset_control_all();
+  }
 }
 
 uint8_t lsm6dsr_who_am_i(void) {
