@@ -250,9 +250,16 @@ void reset_control_speed(void) {
   pwm_right = 0;
 }
 
+void reset_control_fan_speed(void) {
+  target_fan_speed = 0;
+  ideal_fan_speed = 0;
+  fan_speed_accel = 0;
+}
+
 void reset_control_all(void) {
   reset_control_errors();
   reset_control_speed();
+  reset_control_fan_speed();
 #ifndef MMSIM_ENABLED
   reset_motors_saturated();
   reset_encoder_avg();
@@ -277,8 +284,14 @@ float get_ideal_angular_speed(void) {
 
 #ifndef MMSIM_ENABLED
 void set_target_fan_speed(int32_t fan_speed, int32_t ms) {
-  target_fan_speed = normalize_fan_percentage(fan_speed);
-  fan_speed_accel = (target_fan_speed - ideal_fan_speed) * CONTROL_FREQUENCY_HZ / ms;
+  if (ms > 0) {
+    target_fan_speed = normalize_fan_percentage(fan_speed);
+    fan_speed_accel = (target_fan_speed - ideal_fan_speed) * CONTROL_FREQUENCY_HZ / ms;
+  } else {
+    target_fan_speed = normalize_fan_percentage(fan_speed);
+    ideal_fan_speed = target_fan_speed;
+    fan_speed_accel = 0;
+  }
 }
 #endif
 
