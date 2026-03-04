@@ -1401,7 +1401,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                   } else if (next_step_1 == 'L' && next_step_2 == 'R') {
                     run_sequence_movements[index++] = MOVE_LEFT_45_TO_45;
                     i++;
-                  } else if (next_step_1 == 'L' && next_step_2 == 'F') {
+                  } else if (next_step_1 == 'L' && (next_step_2 == 'F' || next_step_2 == 'S')) {
                     run_sequence_movements[index++] = MOVE_LEFT_FROM_45_180;
                     i++;
                     run_diagonal = false;
@@ -1434,7 +1434,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                   } else if (next_step_1 == 'R' && next_step_2 == 'L') {
                     run_sequence_movements[index++] = MOVE_RIGHT_45_TO_45;
                     i++;
-                  } else if (next_step_1 == 'R' && next_step_2 == 'F') {
+                  } else if (next_step_1 == 'R' && (next_step_2 == 'F' || next_step_2 == 'S')) {
                     run_sequence_movements[index++] = MOVE_RIGHT_FROM_45_180;
                     i++;
                     run_diagonal = false;
