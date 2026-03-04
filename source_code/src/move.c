@@ -951,7 +951,9 @@ static void move_home(void) {
   disable_sensors_correction();
   move_inplace_turn(MOVE_BACK);
   reset_control_errors();
+  set_check_motors_saturated_enabled(false);
   move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
+  set_check_motors_saturated_enabled(true);
   set_starting_position();
 }
 
@@ -977,7 +979,10 @@ static void move_end(void) {
   disable_sensors_correction();
   move_inplace_turn(MOVE_BACK);
   reset_control_errors();
+
+  set_check_motors_saturated_enabled(false);
   move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
+  set_check_motors_saturated_enabled(true);
 }
 
 /**
@@ -1332,7 +1337,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
 
     // Comprobar cambio de celda
     int32_t cell_travelled = (get_encoder_avg_micrometers() - current_distance) / MICROMETERS_PER_MILLIMETER;
-    int16_t total_distance = distance;
+    // int16_t total_distance = distance;
     // static char *labels[] = {
     //     "distance",
     //     "current_dist_left",
