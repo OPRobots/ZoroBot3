@@ -1417,8 +1417,11 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
         } else if (next_turn_sign == 0) {
           last_cell_wall_lost = true;
         }
-        if (cell_travelled >= CELL_DIMENSION / 2) {
-          last_cell_wall_lost = true;
+        if (last_cell_wall_lost && !current_cell_wall_lost) {
+          current_cell_wall_lost = true;
+          current_distance = get_encoder_avg_micrometers();
+          distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + end_offset;
+          current_cell_distance_left = distance;
         }
       } else {
         cell_walls = get_walls();
