@@ -1744,9 +1744,9 @@ void move_run_sequence(enum movement *sequence_movements) {
       case MOVE_HOME:
         if (distance > 0) {
           if (running_diagonal) {
-            run_diagonal(distance, 0, straight_cells, kinematics.linear_speed, 500);
+            run_diagonal(distance, 0, straight_cells, kinematics.linear_speed, 300);
           } else {
-            run_straight(distance, 0, 0, straight_cells, straight_has_begin, kinematics.linear_speed, 500, 0);
+            run_straight(distance, 0, 0, straight_cells, straight_has_begin, kinematics.linear_speed, 300, 0);
           }
           distance = 0;
           start_offset = 0;
