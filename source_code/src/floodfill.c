@@ -1240,11 +1240,21 @@ static void go_to_target(void) {
   }
 }
 
-static void build_run_sequence(void) {
+static void build_run_sequence(enum run_sequence_type type) {
   enum step_direction step = NONE;
+  uint8_t _current_position = current_position;
+  uint8_t _current_direction = current_direction;
 
-  set_goals_from_maze();
-  set_goal_as_target();
+  switch (type) {
+    case GOAL_TO_START:
+    case EXPLORE_TO_START:
+      set_target(0);
+      break;
+    case START_TO_GOAL:
+      set_goals_from_maze();
+      set_goal_as_target();
+      break;
+  }
 
   int16_t bak_maze[MAZE_CELLS];
   memcpy(bak_maze, maze, MAZE_CELLS * sizeof(int16_t));
@@ -1257,7 +1267,18 @@ static void build_run_sequence(void) {
       set_wall(WEST_BIT);
     }
   }
-  set_initial_state();
+
+  switch (type) {
+    case GOAL_TO_START:
+    case EXPLORE_TO_START:
+      current_position = _current_position;
+      current_direction = _current_direction;
+      break;
+    case START_TO_GOAL:
+      set_initial_state();
+      break;
+  }
+
   update_floodfill();
   memcpy(maze, bak_maze, MAZE_CELLS * sizeof(int16_t));
 
@@ -1266,12 +1287,16 @@ static void build_run_sequence(void) {
 
   memset(run_sequence, 0, sizeof(run_sequence));
 
+  uint8_t begin_position = type == START_TO_GOAL ? 0 : _current_position;
   uint8_t i = 0;
   while (floodfill[current_position] > 0) {
     step = get_next_floodfill_step(get_current_stored_walls(), step);
     switch (step) {
       case FRONT:
-        run_sequence[i++] = (current_position == 0 ? 'B' : 'F');
+        run_sequence[i++] = (current_position == begin_position ? 'B' : 'F');
+        if (type == GOAL_TO_START && current_position == begin_position) {
+          run_sequence[i++] = 'F';
+        }
         break;
       case LEFT:
         run_sequence[i++] = 'L';
@@ -1284,7 +1309,9 @@ static void build_run_sequence(void) {
     }
     update_position(step);
   }
-  run_sequence[i++] = 'F';
+  if (type == START_TO_GOAL) {
+    run_sequence[i++] = 'F';
+  }
   run_sequence[i++] = 'S';
 
   run_sequence[i] = '\0';
@@ -1565,7 +1592,7 @@ void floodfill_load_maze(void) {
 void floodfill_maze_print(void) {
   initialize_directions_values();
   configure_kinematics(menu_run_get_speed());
-  build_run_sequence();
+  build_run_sequence(START_TO_GOAL);
   smooth_run_sequence(menu_run_get_speed());
   // update_floodfill();
   for (int16_t r = maze_get_cells() - maze_get_columns(); r >= 0; r = r - maze_get_columns()) {
@@ -1741,19 +1768,20 @@ void floodfill_start_explore(void) {
 void floodfill_start_run(void) {
   configure_kinematics(menu_run_get_speed());
   race_mode = true;
+
+  initialize_directions_values();
+  build_run_sequence(START_TO_GOAL);
+  smooth_run_sequence(menu_run_get_speed());
+
 #ifndef MMSIM_ENABLED
   clear_info_leds();
   set_RGB_color(0, 0, 0);
-  delay(125);
-  side_sensors_calibration(true);
-  delay(125);
+  if (!is_race_auto_run()) {
+    side_sensors_calibration(true);
+  }
   set_target_fan_speed(get_kinematics().fan_speed, 1000);
-  delay(1500);
+  delay(1300);
 #endif
-
-  initialize_directions_values();
-  build_run_sequence();
-  smooth_run_sequence(menu_run_get_speed());
 }
 
 void floodfill_loop(void) {

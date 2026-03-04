@@ -2,8 +2,9 @@
 #define FLOODFILL_H
 
 #ifndef MMSIM_ENABLED
-#include "usart.h"
 #include "calibrations.h"
+#include "usart.h"
+
 #else
 #include "menu_run.h"
 #include "mmsim_api.h"
@@ -67,6 +68,12 @@ struct cells_queue {
 struct cells_stack {
   uint8_t stack[MAX_TARGETS];
   uint8_t size;
+};
+
+enum run_sequence_type {
+  START_TO_GOAL,
+  GOAL_TO_START,
+  EXPLORE_TO_START,
 };
 
 void floodfill_set_time_limit(uint32_t ms);
