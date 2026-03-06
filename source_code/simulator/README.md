@@ -1,138 +1,98 @@
-# ZoroBot3 Maze Simulator
+# ZoroBot3 Maze Simulator (Standalone)
 
 Este simulador permite ejecutar el algoritmo de mapeo y resolución de laberintos de ZoroBot3 en PC, usando exactamente las mismas funciones y lógica que el robot real.
 
 ## ¿Qué hace?
-- Recibe como input un array de laberinto en el formato interno de ZoroBot3 (por consola).
+- Recibe como input un array de laberinto en el formato interno de ZoroBot3 (por consola o fichero).
 - Simula la exploración y resolución del laberinto, igual que el robot.
-- Imprime la solución, el número de casillas visitadas y la eficiencia.
-- Muestra el laberinto mapeado y la secuencia de movimientos.
+- Imprime el laberinto mapeado con las celdas visitadas.
+- Usa el mismo flujo que el simulador MMS (`floodfill_start_explore()` + `floodfill_loop()`).
 
-## Estructura
-- El código fuente principal está en `simulator/maze_simulator.c`.
-- El ejecutable se genera como `simulator/maze_sim.exe`.
-- Utiliza los archivos reales de ZoroBot3 (`src/floodfill.c`, `src/maze.c`, etc.)
+## Arquitectura
 
-## Compilación
-Puedes compilar el simulador con:
+El simulador usa los **ficheros originales de ZoroBot3** sin modificarlos:
 
 ```
+simulator/
+├── sim_api.c      # Implementa API_* (lee paredes de array interno)
+├── sim_main.c     # main() - lee laberinto y ejecuta exploración
+└── README.md
+
+src/               # Ficheros originales (no modificados)
+├── floodfill.c    # Algoritmo de exploración
+├── maze.c         # Gestión del laberinto
+├── move.c         # Movimientos (usa API_* cuando MMSIM_ENABLED)
+├── sensors.c      # Sensores (usa API_wall* cuando MMSIM_ENABLED)
+└── ...
+```
+
+El flag `-DMMSIM_ENABLED` activa los bloques condicionales en el código original que usan `API_moveForward()`, `API_turnLeft()`, `API_wallFront()`, etc.
+
+## Compilación
+```bash
 make -f Makefile.simulator
 ```
 
 O manualmente:
-```
-gcc -DMAZE_SIMULATOR -I./include simulator/maze_simulator.c src/floodfill.c src/maze.c -o simulator/maze_sim.exe -lm
+```bash
+gcc -DMMSIM_ENABLED -I./include -I./lib/mmsim_api \
+    simulator/sim_main.c simulator/sim_api.c \
+    src/floodfill.c src/maze.c src/move.c src/floodfill_weigths.c \
+    src/sensors.c src/menu_run.c src/control.c \
+    -o simulator/maze_sim.exe -lm
 ```
 
 ## Uso
-Ejecuta el simulador y sigue las instrucciones:
 
+```bash
+# Desde fichero
+./simulator/maze_sim.exe -floodfill-type=2 < simulator/test_maze_input.txt
+
+# Interactivo
+./simulator/maze_sim.exe -floodfill-type=2
+# Introduce: 16 (tamaño)
+# Pega: 14,12,20,20,...
 ```
-simulator/maze_sim.exe -floodfill-type=0
-```
-- Introduce el tamaño del laberinto (ej: 16 para 16x16)
-- Pega el array de celdas (ejemplo: `14,12,20,20,...`)
 
 ## Argumentos
-- `-floodfill-type=0` : Floodfill básico
+- `-floodfill-type=0` : Floodfill básico (Manhattan)
 - `-floodfill-type=1` : Floodfill diagonal
-- `-floodfill-type=2` : Floodfill por tiempo
+- `-floodfill-type=2` : Floodfill por tiempo (default)
+- `-floodfill-type=3` : Floodfill por tiempo v2
 
-## Ejemplos de uso
-
-### Laberinto estándar 16x16
+## Formato del fichero de entrada
 
 ```
-.\maze_sim.exe -floodfill-type=0
-=== ZoroBot3 Maze Simulator ===
-
-Floodfill type: 0
-Tamaño del laberinto (ej: 16 para 16x16): 16
-Introduce los 256 valores de casillas (separados por coma o espacio):
-14,12,20,20,20,20,20,20,6,12,20,20,4,20,20,6,24,18,12,20,20,20,6,14,10,24,20,22,10,12,22,10,12,20,16,20,6,28,16,18,10,12,6,12,18,8,6,10,10,12,20,22,24,20,20,20,18,10,10,24,6,26,10,10,10,10,12,20,20,4,6,12,20,2,24,6,24,6,10,10,10,24,16,20,6,10,26,10,14,10,14,24,20,18,8,18,24,20,6,12,18,24,4,16,18,10,8,20,4,22,24,6,12,20,18,26,12,6,10,12,6,10,10,14,24,20,6,10,24,20,20,20,18,10,8,16,18,10,10,8,6,12,18,10,12,20,6,12,20,18,24,20,6,10,8,18,26,24,20,18,10,14,24,18,12,20,6,14,10,10,10,12,20,20,20,6,10,24,20,20,2,14,10,10,10,10,26,10,12,22,12,18,24,20,20,6,10,8,18,24,18,24,20,2,8,6,24,6,12,20,6,10,10,10,28,4,20,20,6,10,26,24,6,10,10,28,18,24,18,24,20,18,12,22,10,24,20,20,18,10,24,20,20,20,20,20,20,20,16,20,16,20,20,20,20,18
-
-Laberinto cargado: 16x16 (256 celdas)
-Ejecutando exploración...
-
-
-=== RESULTADO ===
-Pasos totales: 222
-Casillas visitadas: 112
-Casillas totales: 256
-Eficiencia: 43.8%
-
-=== LABERINTO MAPEADO ===
-Current position: 10 - 16
-Next cell: 5 - 42
-Current direction: 1
-Next distance: 75.000000
-Run sequence: BRRLFFFFFFLFFLFFFLRFFFRFFFRFLLFRRFFFRLLFLFRLLRFRFFRFFLFRRFFFLFLFLRFRFRLFFLFLFS
-START > 2x? > LEFT_90 > 6xNONE > LEFT_90 > 2xNONE > LEFT_90 > 3xNONE > LEFT_90 > ? > 3xNONE > ? > 3xNONE > ? > NONE > 2xLEFT_90 > NONE > 2x? > 3xNONE > ? > 2xLEFT_90 > NONE > LEFT_90 > NONE > ? > 2xLEFT_90 > ? > NONE > ? > 2xNONE > ? > 2xNONE > LEFT_90 > NONE > 2x? > 3xNONE > LEFT_90 > NONE > LEFT_90 > NONE > LEFT_90 > ? > NONE > ? > NONE > ? > LEFT_90 > 2xNONE > LEFT_90 > NONE > LEFT_90 > NONE > HOME
-·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·
-║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00 9999.00 9999.00 9999.00 9999.00  75.000  76.000  77.000  78.000  79.000  80.000║
-·       ·       ·       ·═══════·═══════·═══════·═══════·═══════·       ·       ·       ·═══════·═══════·═══════·═══════·       ·
-║9999.00 9999.00 9999.00║ 55.000  56.000║ 67.000  68.000  69.000║9999.00 9999.00║ 74.000║9999.00 9999.00 9999.00 9999.00║ 81.000║
-·       ·       ·       ·       ·       ·       ·═══════·       ·═══════·═══════·       ·       ·       ·       ·       ·       ·
-║9999.00 9999.00 9999.00║ 54.000║ 57.000║ 66.000║9999.00  70.000  71.000  72.000  73.000║9999.00 9999.00 9999.00 9999.00║ 82.000║
-·═══════·═══════·═══════·       ·       ·       ·═══════·═══════·═══════·═══════·═══════·       ·       ·       ·═══════·       ·
-║ 50.000  51.000  52.000  53.000║ 58.000║ 65.000  64.000║9999.00 9999.00║ 95.000  94.000  93.000║9999.00 9999.00║ 84.000  83.000║
-·       ·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·═══════·       ·       ·       ·       ·═══════·
-║ 49.000║9999.00 9999.00 9999.00  59.000║9999.00║ 63.000║9999.00 9999.00║ 96.000║9999.00║ 92.000║9999.00 9999.00║ 85.000  86.000║
-·       ·       ·═══════·═══════·       ·═══════·       ·       ·       ·       ·       ·       ·═══════·═══════·═══════·       ·
-║ 48.000║9999.00║ 44.000  43.000║ 60.000  61.000  62.000║9999.00 9999.00║ 97.000║9999.00║ 91.000  90.000  89.000  88.000  87.000║
-·       ·═══════·       ·       ·═══════·═══════·═══════·       ·       ·       ·       ·═══════·═══════·═══════·═══════·═══════·
-║ 47.000  46.000  45.000║ 42.000  41.000  40.000║9999.00 9999.00 9999.00║ 98.000║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║
-·═══════·═══════·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·
-║ 32.000  33.000  34.000  35.000  36.000║ 39.000║ 110.00 9999.00 9999.00║ 99.000║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║
-·       ·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·
-║ 31.000  30.000  29.000║9999.00║ 37.000  38.000║ 109.00║9999.00 9999.00║ 100.00║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║
-·═══════·═══════·       ·       ·═══════·═══════·       ·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·
-║ 26.000  27.000  28.000║9999.00 9999.00 9999.00  108.00  107.00  108.00║ 101.00║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║
-·       ·═══════·═══════·       ·       ·       ·═══════·       ·       ·       ·       ·       ·       ·       ·       ·       ·
-║ 25.000║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║ 106.00║9999.00║ 102.00║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║
-·       ·       ·       ·       ·       ·       ·       ·       ·═══════·       ·       ·       ·       ·       ·       ·       ·
-║ 24.000║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║ 105.00  104.00  103.00║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║
-·       ·       ·       ·       ·═══════·═══════·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·
-║ 23.000║9999.00 9999.00 9999.00║ 17.000  16.000  15.000  14.000  13.000║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║
-·       ·═══════·═══════·═══════·       ·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·       ·
-║ 22.000  21.000  20.000  19.000  18.000║9999.00 9999.00 9999.00║ 12.000║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║
-·═══════·═══════·       ·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·
-║ 1.0000  2.0000║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║ 11.000║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║
-·       ·       ·═══════·═══════·═══════·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·       ·
-║ 0.0000║ 3.0000  4.0000  5.0000  6.0000  7.0000  8.0000  9.0000  10.000║9999.00 9999.00 9999.00 9999.00 9999.00 9999.00 9999.00║
-·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·
-·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·
-║                                                                                   V       V       V       V       V       V   ║
-·       ·       ·       ·═══════·═══════·═══════·═══════·═══════·       ·       ·       ·═══════·═══════·═══════·═══════·       ·
-║                       ║   V       V   ║   V       V       V   ║               ║   V   ║                               ║   V   ║
-·       ·       ·       ·       ·       ·       ·═══════·       ·═══════·═══════·       ·       ·       ·       ·       ·       ·
-║                       ║   V   ║   V   ║   V   ║           V       V       V       V   ║                               ║   V   ║
-·═══════·═══════·═══════·       ·       ·       ·═══════·═══════·═══════·═══════·═══════·       ·       ·       ·═══════·       ·
-║   V       V       V       V   ║   V   ║   V       V   ║               ║   V       V       V   ║               ║   V       V   ║
-·       ·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·═══════·       ·       ·       ·       ·═══════·
-║   V   ║                           V   ║       ║   V   ║               ║   V   ║       ║   V   ║               ║   V       V   ║
-·       ·       ·═══════·═══════·       ·═══════·       ·       ·       ·       ·       ·       ·═══════·═══════·═══════·       ·
-║   V   ║       ║   V       V   ║   V       V       V   ║               ║   V   ║       ║   V       V       V       V       V   ║
-·       ·═══════·       ·       ·═══════·═══════·═══════·       ·       ·       ·       ·═══════·═══════·═══════·═══════·═══════·
-║   V       V       V   ║   V       V       V   ║                       ║   V   ║                                               ║
-·═══════·═══════·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·
-║   V       V       V       V       V   ║   V   ║   V                   ║   V   ║                                               ║
-·       ·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·
-║   V       V       V   ║       ║   V       V   ║   V   ║               ║   V   ║                                               ║
-·═══════·═══════·       ·       ·═══════·═══════·       ·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·
-║   V       V       V   ║                           V       V       V   ║   V   ║                                               ║
-·       ·═══════·═══════·       ·       ·       ·═══════·       ·       ·       ·       ·       ·       ·       ·       ·       ·
-║   V   ║                                               ║   V   ║       ║   V   ║                                               ║
-·       ·       ·       ·       ·       ·       ·       ·       ·═══════·       ·       ·       ·       ·       ·       ·       ·
-║   V   ║                                               ║   V       V       V   ║                                               ║
-·       ·       ·       ·       ·═══════·═══════·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·
-║   V   ║                       ║   V       V       V       V       V   ║                                                       ║
-·       ·═══════·═══════·═══════·       ·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·       ·
-║   V       V       V       V       V   ║                       ║   V   ║                                                       ║
-·═══════·═══════·       ·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·       ·
-║   V       V   ║                                               ║   V   ║                                                       ║
-·       ·       ·═══════·═══════·═══════·═══════·═══════·═══════·       ·       ·       ·       ·       ·       ·       ·       ·
-║   V   ║   V       V       V       V       V       V       V       V   ║                                                       ║
-·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·═══════·
+16
+14,12,20,20,20,20,20,20,4,20,20,20,20,20,20,6,...
 ```
+
+- **Línea 1**: Tamaño del laberinto (16 = 16x16)
+- **Línea 2+**: Valores de celdas separados por coma (256 valores para 16x16)
+
+Cada valor codifica las paredes (bits): N=1, E=2, S=4, W=8
+
+## Ejemplo de salida
+
+```
+=== ZoroBot3 Standalone Maze Simulator ===
+Floodfill type: 2
+Maze loaded: 16x16 (256 cells)
+Starting exploration...
+
+Interesting cell 0,2 dist: 2.00
+Interesting cell 0,3 dist: 3.00
+...
+
+=== MAPPED MAZE ===
+·═══════·═══════·═══════·...
+║   V   │   V   │   V   │...
+```
+
+Las casillas marcadas con `V` son las que el robot ha visitado durante la exploración.
+
+## Diferencia con MMS
+
+El simulador MMS (`lib/mmsim_api/mmsim_api.c`) se comunica con un GUI externo mediante stdout/stdin. Este simulador standalone (`simulator/sim_api.c`) lee las paredes de un array interno, permitiendo ejecutar el algoritmo sin necesidad de GUI.
+
+Ambos usan el mismo flag `MMSIM_ENABLED` y las mismas funciones `API_*`.

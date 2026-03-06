@@ -1,13 +1,20 @@
-# Makefile para ZoroBot3 Maze Simulator
-# Compilación standalone para PC
-# Los archivos del simulador están aislados en simulator/ y no afectan al firmware
+# Makefile para ZoroBot3 Maze Simulator (Standalone)
+# Usa los ficheros originales de ZoroBot3 con MMSIM_ENABLED
+# No duplica código - usa las mismas funciones que el MMS
 
 CC = gcc
-CFLAGS = -I./simulator -Wall -Wextra -O2
+CFLAGS = -DMMSIM_ENABLED -I./include -I./lib/mmsim_api -Wall -Wextra -O2
 LDFLAGS = -lm
 
-# Archivos fuente del simulador (aislados, no usan src/)
-SRCS = simulator/maze_simulator.c simulator/floodfill_sim.c simulator/maze_sim.c
+# Archivos del simulador standalone
+SIM_SRCS = simulator/sim_main.c simulator/sim_api.c
+
+# Archivos originales de ZoroBot3 (los mismos que usa el MMS)
+ZORO_SRCS = src/floodfill.c src/maze.c src/move.c \
+            src/floodfill_weigths.c src/sensors.c \
+            src/menu_run.c src/control.c
+
+SRCS = $(SIM_SRCS) $(ZORO_SRCS)
 
 SIMDIR = simulator
 TARGET = $(SIMDIR)/maze_sim
@@ -30,8 +37,6 @@ clean:
 
 # Ejemplo de uso:
 # make -f Makefile.simulator
-# ./maze_simulator -floodfill-type=1
-# Luego introducir: 16 (tamaño)
-# Luego pegar el array del laberinto
+# ./simulator/maze_sim.exe -floodfill-type=2 < simulator/test_maze_input.txt
 
 .PHONY: all clean
