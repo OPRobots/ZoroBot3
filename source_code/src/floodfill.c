@@ -1517,6 +1517,7 @@ static void floodfill_explore_finish(void) {
 }
 #endif
 
+#ifndef MMSIM_ENABLED
 static void run_back_to_start(void) {
   configure_kinematics(SPEED_NORMAL);
   build_run_sequence(current_cell_is_goal() ? GOAL_TO_START : EXPLORE_TO_START);
@@ -1536,6 +1537,7 @@ static void run_back_to_start(void) {
     set_RGB_color(0, 0, 0);
   }
 }
+#endif
 
 static void loop_explore(void) {
   while (is_race_started()) {

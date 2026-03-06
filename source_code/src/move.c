@@ -966,8 +966,7 @@ static void move_home(void) {
   API_moveForward();
   API_turnRight();
   API_turnRight();
-  return;
-#endif
+#else
 
   set_front_sensors_angle_correction(true);
   set_front_sensors_diagonal_correction(false);
@@ -978,7 +977,7 @@ static void move_home(void) {
   // move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
   if (current_cell_start_mm == 0) {
     move_straight(MIDDLE_MAZE_DISTANCE + current_cell_start_mm, 300, false, true);
-  }else{
+  } else {
     force_linear_speed(0);
     delay(500);
   }
@@ -1006,6 +1005,7 @@ static void move_home(void) {
 
   set_front_sensors_angle_correction(false);
   set_side_sensors_correction(true);
+#endif
 }
 
 static void move_end(void) {
@@ -1013,8 +1013,7 @@ static void move_end(void) {
   API_moveForward();
   API_turnRight();
   API_turnRight();
-  return;
-#endif
+#else
 
   set_front_sensors_angle_correction(false);
   set_front_sensors_diagonal_correction(false);
@@ -1034,6 +1033,7 @@ static void move_end(void) {
   set_check_motors_saturated_enabled(false);
   move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
   set_check_motors_saturated_enabled(true);
+#endif
 }
 
 /**
