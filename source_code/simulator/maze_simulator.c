@@ -1,24 +1,10 @@
 // maze_simulator.c
 // Simulador standalone que usa las funciones reales de ZoroBot3 para mapear y resolver el laberinto
 // Input: array de laberinto por consola. Output: solución y número de casillas visitadas.
-// Compilar: gcc -DMAZE_SIMULATOR -I./include maze_simulator.c floodfill.c maze.c -o maze_sim -lm
+// Compilar: gcc -I. maze_simulator.c floodfill_sim.c maze_sim.c -o maze_sim -lm
 // Uso: maze_sim.exe [-floodfill-type=N]
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <math.h>
-
-#include "floodfill.h"
-
-// Forward declaration from maze.c
-void maze_simulator_set_size(uint16_t rows, uint16_t cols);
-struct cells_stack *maze_get_goals(void);
-
-// Forward declaration from floodfill.c (MAZE_SIMULATOR)
-struct walls simulator_get_walls(void);
+#include "floodfill_sim.h"
 
 // Variables globales para simular funciones
 static uint8_t sim_floodfill_type = 0;

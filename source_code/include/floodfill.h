@@ -1,190 +1,20 @@
 #ifndef FLOODFILL_H
 #define FLOODFILL_H
 
-#ifdef MAZE_SIMULATOR
-// Modo simulador standalone: no incluir dependencias de hardware
-#elif defined(MMSIM_ENABLED)
-#include "menu_run.h"
-#include "mmsim_api.h"
-#else
+#ifndef MMSIM_ENABLED
 #include "usart.h"
 #include "calibrations.h"
-#endif
-
-#ifdef MAZE_SIMULATOR
-// Modo simulador: includes mínimos
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-
-// Definiciones de constantes necesarias
-#ifndef MAZE_COLUMNS
-#define MAZE_COLUMNS 16
-#endif
-#ifndef MAZE_CELLS
-#define MAZE_CELLS 256
-#endif
-#ifndef MAZE_MAX_DISTANCE
-#define MAZE_MAX_DISTANCE 9999.0f
-#endif
-
-// Constantes de menu_run
-#define FLOODFILL_TYPE_BASIC 0
-#define FLOODFILL_TYPE_DIAGONAL 1
-#define FLOODFILL_TYPE_TIME 2
-#define FLOODFILL_TYPE_TIMEv2 3
-#define ACCEL_EXPLORE_DISABLED 0
-
-// Constante de eeprom
-#define DATA_INDEX_MAZE 0
-
-// Constantes de config
-#define CELL_DIMENSION 180.0f
-
-// Constantes de move
-#define MOVE_FRONT 4
-#define MOVE_LEFT 5
-#define MOVE_RIGHT 6
-#define MOVE_BACK_WALL 7
-#define MOVE_BACK_STOP 8
-
-// Forward declarations - structs
-struct walls {
-  bool front;
-  bool left;
-  bool right;
-};
-
-struct virtual_walls {
-  bool front;
-  bool left;
-  bool right;
-  bool back;
-};
-
-struct cell_weigth {
-  uint16_t speed;
-  float time;
-  float total_time;
-  float penalty;
-};
-
-struct kinematics {
-  uint16_t linear_speed;
-  uint16_t fan_speed;
-};
-
-// enum movement - todos los valores necesarios
-enum movement {
-  MOVE_START = 0,
-  MOVE_END,
-  MOVE_HOME,
-  MOVE_BACK,
-  MOVE_NONE,
-  MOVE_LEFT_90,
-  MOVE_LEFT_TO_45,
-  MOVE_LEFT_180,
-  MOVE_LEFT_TO_135,
-  MOVE_DIAGONAL,
-  MOVE_LEFT_FROM_45,
-  MOVE_LEFT_45_TO_45,
-  MOVE_LEFT_FROM_45_180,
-  MOVE_RIGHT_90,
-  MOVE_RIGHT_TO_45,
-  MOVE_RIGHT_180,
-  MOVE_RIGHT_TO_135,
-  MOVE_RIGHT_FROM_45,
-  MOVE_RIGHT_45_TO_45,
-  MOVE_RIGHT_FROM_45_180
-};
-
-// enum speed_strategy - todos los valores necesarios
-enum speed_strategy {
-  SPEED_EXPLORE = 0,
-  SPEED_NORMAL,
-  SPEED_MEDIUM,
-  SPEED_FAST,
-  SPEED_SUPER,
-  SPEED_HAKI
-};
-
-// enum solve_strategy
-enum solve_strategy {
-  SOLVE_STANDARD = 0,
-  SOLVE_DIAGONALS
-};
-
-// enum maze_type
-enum maze_type {
-  MAZE_HOME = 0,
-  MAZE_COMPETITION
-};
-
-// Forward declarations - funciones de maze.c
-uint16_t maze_get_rows(void);
-uint16_t maze_get_columns(void);
-uint16_t maze_get_cells(void);
-
-// Forward declarations - stubs definidos en maze_simulator.c
-uint8_t menu_run_get_floodfill_type(void);
-enum speed_strategy menu_run_get_speed(void);
-uint8_t menu_run_get_accel_explore(void);
-void configure_kinematics(enum speed_strategy speed);
-uint16_t get_floodfill_linear_speed(void);
-uint16_t get_floodfill_max_linear_speed(void);
-uint16_t get_floodfill_accel(void);
-uint16_t floodfill_weights_cells_to_max_speed(float distance, uint16_t init_speed, uint16_t max_speed, uint16_t accel);
-void floodfill_weights_table(float distance, uint16_t init_speed, uint16_t max_speed, uint16_t accel, uint16_t cells, struct cell_weigth *weights);
-void eeprom_set_data(uint16_t index, void *data, uint16_t size);
-void eeprom_save(void);
-uint32_t get_clock_ticks(void);
-void set_target_linear_speed(int32_t speed);
-void set_ideal_angular_speed(float speed);
-int32_t get_ideal_linear_speed(void);
-void set_target_fan_speed(int32_t speed, int32_t ms);
-bool is_race_started(void);
-void set_race_started(bool state);
-bool is_motor_saturated(void);
-bool is_race_auto_run(void);
-void move(enum movement m);
-void move_run_sequence(void *seq);
-void run_straight(float dist, float a, float b, uint16_t cells, bool c, uint32_t timeout, uint16_t speed, int8_t turn);
-void clear_info_leds(void);
-void set_RGB_color(uint8_t r, uint8_t g, uint8_t b);
-void set_RGB_color_while(uint8_t r, uint8_t g, uint8_t b, uint32_t ms);
-void set_RGB_rainbow(void);
-void warning_status_led(uint32_t ms);
-void set_status_led(bool state);
-void delay(uint32_t ms);
-void side_sensors_calibration(bool keep);
-void lsm6dsr_gyro_z_calibration(void);
-struct walls get_walls(void);
-struct kinematics get_kinematics(void);
-enum solve_strategy menu_run_get_solve_strategy(void);
-enum maze_type menu_run_get_maze_type(void);
-const char* get_movement_string(enum movement m);
-int16_t* eeprom_get_data(void);
-
 #else
-// Modo normal (robot real o MMSIM)
+#include "menu_run.h"
+#include "mmsim_api.h"
+#endif
+
 #include "config.h"
 #include "constants.h"
 #include "floodfill_weigths.h"
 #include "maze.h"
 #include "move.h"
 #include "sensors.h"
-
-#ifndef MMSIM_ENABLED
-#include <usart.h>
-#include "calibrations.h"
-#else
-#include "mmsim_api.h"
-#include "menu_run.h"
-#endif
-
-#endif // MAZE_SIMULATOR
 
 #define VISITED_BIT 1
 #define EAST_BIT 2
@@ -247,16 +77,5 @@ void floodfill_load_maze(void);
 void floodfill_start_explore(void);
 void floodfill_start_run(void);
 void floodfill_loop(void);
-
-// ============== MAZE SIMULATOR ==============
-#ifdef MAZE_SIMULATOR
-void floodfill_simulator_set_true_maze(int16_t *maze_array, uint16_t size);
-void floodfill_simulator_set_maze_size(uint8_t rows, uint8_t cols);
-struct walls simulator_get_walls(void);  // Lee paredes de true_maze[]
-uint16_t floodfill_count_visited(void);
-int16_t floodfill_get_maze_cell(uint8_t pos);
-struct cells_stack *maze_get_goals(void);
-void maze_simulator_set_size(uint16_t rows, uint16_t cols);
-#endif
 
 #endif
