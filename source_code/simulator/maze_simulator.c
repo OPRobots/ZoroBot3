@@ -17,15 +17,20 @@
 void maze_simulator_set_size(uint16_t rows, uint16_t cols);
 struct cells_stack *maze_get_goals(void);
 
+// Forward declaration from floodfill.c (MAZE_SIMULATOR)
+struct walls simulator_get_walls(void);
+
 // Variables globales para simular funciones
 static uint8_t sim_floodfill_type = 0;
+static bool sim_race_started = false;
+static uint16_t sim_move_count = 0;
 
 // ============== STUBS para funciones no necesarias en simulador ==============
 
-// menu_run stubs
+// menu_run stubs - valores idénticos a MMS (ver src/menu_run.c con MMSIM_ENABLED)
 uint8_t menu_run_get_floodfill_type(void) { return sim_floodfill_type; }
-enum speed_strategy menu_run_get_speed(void) { return SPEED_EXPLORE; }
-uint8_t menu_run_get_accel_explore(void) { return ACCEL_EXPLORE_DISABLED; }
+enum speed_strategy menu_run_get_speed(void) { return SPEED_HAKI; }
+uint8_t menu_run_get_accel_explore(void) { return true; }  // MMS usa 'true' (=1)
 
 // kinematics stubs
 void configure_kinematics(enum speed_strategy speed) { (void)speed; }
@@ -98,13 +103,20 @@ void set_target_linear_speed(int32_t speed) { (void)speed; }
 void set_ideal_angular_speed(float speed) { (void)speed; }
 int32_t get_ideal_linear_speed(void) { return 0; }
 void set_target_fan_speed(int32_t speed, int32_t ms) { (void)speed; (void)ms; }
-bool is_race_started(void) { return true; }
-void set_race_started(bool state) { (void)state; }
+bool is_race_started(void) { return sim_race_started; }
+void set_race_started(bool state) { sim_race_started = state; }
 bool is_motor_saturated(void) { return false; }
 bool is_race_auto_run(void) { return false; }
 
-// move stubs
-void move(enum movement m) { (void)m; }
+// move stubs - cuenta pasos para métricas
+void move(enum movement m) { 
+    (void)m; 
+    sim_move_count++;
+    if (sim_move_count > 10000) {
+        fprintf(stderr, "ERROR: Demasiados pasos (%d), posible bucle infinito\n", sim_move_count);
+        exit(1);
+    }
+}
 void move_run_sequence(void *seq) { (void)seq; }
 void run_straight(float dist, float a, float b, uint16_t cells, bool c, uint32_t timeout, uint16_t speed, int8_t turn) {
     (void)dist; (void)a; (void)b; (void)cells; (void)c; (void)timeout; (void)speed; (void)turn;
@@ -124,11 +136,12 @@ void delay(uint32_t ms) { (void)ms; }
 // sensors/calibration stubs
 void side_sensors_calibration(bool keep) { (void)keep; }
 void lsm6dsr_gyro_z_calibration(void) {}
-struct walls get_walls(void) { struct walls w = {false, false, false}; return w; }
+// get_walls delega a simulator_get_walls() que lee de true_maze[]
+struct walls get_walls(void) { return simulator_get_walls(); }
 
-// menu_run additional stubs
-enum solve_strategy menu_run_get_solve_strategy(void) { return SOLVE_STANDARD; }
-enum maze_type menu_run_get_maze_type(void) { return MAZE_HOME; }
+// menu_run additional stubs - valores idénticos a MMS (ver src/menu_run.c con MMSIM_ENABLED)
+enum solve_strategy menu_run_get_solve_strategy(void) { return SOLVE_DIAGONALS; }
+enum maze_type menu_run_get_maze_type(void) { return MAZE_COMPETITION; }
 
 // eeprom additional stubs
 static int16_t dummy_eeprom_data[512] = {0};
@@ -196,15 +209,38 @@ int main(int argc, char *argv[]) {
     }
     
     printf("\nLaberinto cargado: %dx%d (%d celdas)\n", maze_size, maze_size, maze_cells);
+    fflush(stdout);
     
+    printf("[DEBUG] Configurando simulador...\n"); fflush(stdout);
     // Configurar simulador (tanto maze.c como floodfill.c)
     maze_simulator_set_size(maze_size, maze_size);
+    printf("[DEBUG] maze_simulator_set_size OK\n"); fflush(stdout);
     floodfill_simulator_set_maze_size(maze_size, maze_size);
+    printf("[DEBUG] floodfill_simulator_set_maze_size OK\n"); fflush(stdout);
     floodfill_simulator_set_true_maze(maze_array, maze_cells);
+    printf("[DEBUG] floodfill_simulator_set_true_maze OK\n"); fflush(stdout);
     
-    // Ejecutar exploración simulada
+    // Ejecutar exploración usando MISMO flujo que MMS
     printf("Ejecutando exploración...\n\n");
-    uint16_t steps = floodfill_simulator_explore();
+    printf("[MAIN DEBUG] floodfill_type=%d\n", menu_run_get_floodfill_type());
+    fflush(stdout);
+    sim_move_count = 0;
+    sim_race_started = true;
+    uint32_t loop_counter = 0;
+    printf("[MAIN DEBUG] Llamando a floodfill_start_explore()...\n");
+    fflush(stdout);
+    floodfill_start_explore();  // Mismo punto de entrada que MMS
+    printf("[MAIN DEBUG] Entrando en bucle principal\n");
+    fflush(stdout);
+    while (sim_race_started) {
+        floodfill_loop();  // Mismo bucle que MMS: loop_explore() -> go_to_target()
+        loop_counter++;
+        if (loop_counter > 100000) {
+            fprintf(stderr, "ERROR: Bucle infinito detectado (%lu iteraciones)\n", (unsigned long)loop_counter);
+            break;
+        }
+    }
+    uint16_t steps = sim_move_count;
     
     // Contar casillas visitadas
     uint16_t visited = floodfill_count_visited();

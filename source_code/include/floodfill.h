@@ -252,7 +252,7 @@ void floodfill_loop(void);
 #ifdef MAZE_SIMULATOR
 void floodfill_simulator_set_true_maze(int16_t *maze_array, uint16_t size);
 void floodfill_simulator_set_maze_size(uint8_t rows, uint8_t cols);
-uint16_t floodfill_simulator_explore(void);
+struct walls simulator_get_walls(void);  // Lee paredes de true_maze[]
 uint16_t floodfill_count_visited(void);
 int16_t floodfill_get_maze_cell(uint8_t pos);
 struct cells_stack *maze_get_goals(void);

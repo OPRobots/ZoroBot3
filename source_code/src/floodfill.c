@@ -35,12 +35,18 @@ static struct compass_direction_values directions_values = {
     .NORTH = MAZE_COLUMNS,
 };
 
-// ============== MAZE SIMULATOR ==============
+// ============== SIMULATION MODE ==============
+// SIM_MODE: tanto MMS como standalone simulator usan el mismo flujo
+#if defined(MMSIM_ENABLED) || defined(MAZE_SIMULATOR)
+#define SIM_MODE 1
+#endif
+
 #ifdef MAZE_SIMULATOR
+#include <stdlib.h>  // Para exit()
 static int16_t true_maze[MAZE_CELLS];  // El laberinto "real" (input del usuario)
 static uint8_t sim_maze_rows = 16;
 static uint8_t sim_maze_cols = 16;
-static uint16_t sim_steps_count = 0;   // Contador de pasos/movimientos
+static uint8_t cell_colors[MAZE_CELLS];  // 0=normal, 1=visitado, 2=ruta final (azul)
 #endif
 
 static void initialize_directions_values(void) {
@@ -694,6 +700,20 @@ static enum compass_direction get_next_floodfill_direction(enum compass_directio
 #pragma GCC diagnostic pop
 
 static void update_floodfill(void) {
+#ifdef MAZE_SIMULATOR
+  static int update_call_count = 0;
+  update_call_count++;
+  if (update_call_count <= 3) {
+    fprintf(stderr, "[update_floodfill #%d] targets=%d, floodfill_type=%d\n", 
+            update_call_count, target_cells.size, menu_run_get_floodfill_type());
+    for (uint8_t i = 0; i < target_cells.size && i < 8; i++) {
+      fprintf(stderr, "  target[%d]=%d (x=%d,y=%d)\n", i, target_cells.stack[i], 
+              target_cells.stack[i] % maze_get_columns(), 
+              target_cells.stack[i] / maze_get_columns());
+    }
+    fflush(stderr);
+  }
+#endif
   if (straight_weights_count == 0 || diagonal_weights_count == 0) {
     uint16_t linear_speed = get_floodfill_linear_speed();
     uint16_t max_linear_speed = get_floodfill_max_linear_speed();
@@ -721,7 +741,18 @@ static void update_floodfill(void) {
 #endif
   }
 
+#ifdef MAZE_SIMULATOR
+  uint32_t update_flood_iters = 0;
+#endif
   while (cells_queue.head != cells_queue.tail) {
+#ifdef MAZE_SIMULATOR
+    update_flood_iters++;
+    if (update_flood_iters > 100000) {
+      fprintf(stderr, "update_floodfill: bucle infinito! head=%d tail=%d\n", cells_queue.head, cells_queue.tail);
+      fflush(stderr);
+      exit(1);
+    }
+#endif
     struct queue_cell queue_cell = queue_pop();
     uint8_t current_cell = queue_cell.cell;
     enum compass_direction direction = queue_cell.direction;
@@ -885,6 +916,45 @@ static void update_floodfill(void) {
   current_position = _position;
   current_direction = _direction;
 #endif
+
+#ifdef MAZE_SIMULATOR
+  // Marcar la ruta final igual que en MMS
+  // Solo trazar cuando el objetivo NO es el inicio (evitar ciclo infinito)
+  if (target_cells.stack[0] != 0) {
+    // Guardar posición actual
+    uint8_t _position_sim = current_position;
+    enum compass_direction _direction_sim = current_direction;
+
+    // Empezar desde el inicio
+    current_position = 0;
+    current_direction = initial_direction;
+
+    enum step_direction next_step_sim = NONE;
+
+    // Limpiar colores anteriores de ruta (solo ruta, no visitados)
+    for (uint16_t i = 0; i < MAZE_CELLS; i++) {
+      if (cell_colors[i] == 2) {
+        cell_colors[i] = 0;
+      }
+    }
+
+    // Marcar inicio como ruta
+    cell_colors[0] = 2;
+
+    while (floodfill[current_position] > 0) {
+      next_step_sim = get_next_floodfill_virtual_step(get_current_stored_virtual_walls());
+      if (next_step_sim == NONE) {
+        break;
+      }
+      update_position(next_step_sim);
+      cell_colors[current_position] = 2;  // Marcar como ruta final
+    }
+
+    // Restaurar posición
+    current_position = _position_sim;
+    current_direction = _direction_sim;
+  }
+#endif
 }
 
 #ifndef MMSIM_ENABLED
@@ -921,7 +991,18 @@ static uint8_t find_standard_unknown_interesting_cell(void) {
   // set_target(0);
   set_goal_as_target();
   update_floodfill();
+  uint16_t max_iterations = maze_get_cells() * 4;  // Límite razonable
+  uint16_t iterations = 0;
   while (floodfill[current_position] > 0) {
+    iterations++;
+    if (iterations > max_iterations) {
+#ifdef MAZE_SIMULATOR
+      fprintf(stderr, "[find_standard] bucle infinito! pos=%d, floodfill=%.2f\n", 
+              current_position, floodfill[current_position]);
+      fflush(stderr);
+#endif
+      break;
+    }
     next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls());
     if (next_step == NONE) {
       break;
@@ -986,7 +1067,18 @@ static uint8_t find_closest_unknown_interesting_cell(void) {
   // set_target(0);
   set_goal_as_target();
   update_floodfill();
+  uint16_t max_iterations = maze_get_cells() * 4;  // Límite razonable
+  uint16_t iterations = 0;
   while (floodfill[current_position] > 0) {
+    iterations++;
+    if (iterations > max_iterations) {
+#ifdef MAZE_SIMULATOR
+      fprintf(stderr, "[find_closest] bucle infinito! pos=%d, floodfill=%.2f\n", 
+              current_position, floodfill[current_position]);
+      fflush(stderr);
+#endif
+      break;
+    }
     next_step = get_next_floodfill_virtual_step(get_current_stored_virtual_walls());
     if (next_step == NONE) {
       break;
@@ -1102,6 +1194,13 @@ static bool floodfill_run(void) {
 
   } while (next_direction == current_direction && _current_position != 0);
 
+#ifdef MAZE_SIMULATOR
+  if (count_same_direction > 0) {
+    fprintf(stderr, "  -> floodfill_run: saltando %d celdas, de pos %d a %d\n", count_same_direction, current_position, _current_position);
+    fflush(stderr);
+  }
+#endif
+
   int8_t next_turn_sign = 0;
   if (current_direction == EAST && next_direction == SOUTH) {
     next_turn_sign = 1;
@@ -1133,9 +1232,21 @@ static void go_to_target(void) {
   struct walls walls;
   enum step_direction next_step_before_update_walls;
   enum step_direction next_step;
+#ifdef MAZE_SIMULATOR
+  uint32_t go_to_target_iterations = 0;  // No static - resetear en cada llamada
+#endif
 
   update_floodfill();
   do {
+#ifdef MAZE_SIMULATOR
+    go_to_target_iterations++;
+    if (go_to_target_iterations > 5000) {
+      fprintf(stderr, "go_to_target: bucle infinito, pos=%d, floodfill=%.2f\n", current_position, floodfill[current_position]);
+      fflush(stderr);
+      set_race_started(false);
+      return;
+    }
+#endif
     if (!is_race_started()) {
       return;
     }
@@ -1161,10 +1272,49 @@ static void go_to_target(void) {
     } else {
       walls = get_current_stored_walls();
       next_step = get_next_floodfill_step(walls);
+      
+      // Durante retorno a casa: evitar celdas no visitadas
+      // maze_goal_position != 0 significa que ya llegamos al centro al menos una vez
+      // target_cells contiene solo el 0 (casa) cuando volvemos
+      if (maze_goal_position != 0 && target_cells.size == 1 && target_cells.stack[0] == 0) {
+        uint8_t next_pos = get_next_position(next_step);
+        if (!is_visited(next_pos)) {
+          // Celda no visitada durante retorno - marcarla como bloqueada virtualmente
+          // Añadir pared virtual hacia esa dirección y recalcular
+          enum compass_direction wall_dir = get_next_direction(next_step);
+          uint8_t wall_bit = (wall_dir == NORTH) ? NORTH_BIT : 
+                             (wall_dir == EAST) ? EAST_BIT : 
+                             (wall_dir == SOUTH) ? SOUTH_BIT : WEST_BIT;
+          maze[current_position] |= wall_bit;
+          update_floodfill();
+          walls = get_current_stored_walls();
+          next_step = get_next_floodfill_step(walls);
+        }
+      }
     }
 
-#ifndef MMSIM_ENABLED
+#ifndef SIM_MODE
     set_RGB_color_while(255, 255, 0, 33);
+#endif
+
+#ifdef MAZE_SIMULATOR
+    {
+      uint8_t cols = maze_get_columns();
+      uint8_t cur_col = current_position % cols;
+      uint8_t cur_row = current_position / cols;
+      const char* step_str[] = {"FRONT", "LEFT", "RIGHT", "BACK"};
+      uint8_t next_pos = get_next_position(next_step);
+      bool accel = menu_run_get_accel_explore() != ACCEL_EXPLORE_DISABLED;
+      bool next_visited = is_visited(next_pos);
+      const char* dir_name = (current_direction == NORTH) ? "N" : 
+                             (current_direction == EAST) ? "E" : 
+                             (current_direction == SOUTH) ? "S" : 
+                             (current_direction == WEST) ? "W" : "?";
+      fprintf(stderr, "STEP %u: pos=%d [%d,%d] dir=%s walls=F%d L%d R%d -> next=%s nextpos=%d visited=%d accel=%d\n",
+        go_to_target_iterations, current_position, cur_col, cur_row, dir_name,
+        walls.front, walls.left, walls.right, step_str[next_step], next_pos, next_visited, accel);
+      fflush(stderr);
+    }
 #endif
 
     if (menu_run_get_accel_explore() == ACCEL_EXPLORE_DISABLED || !(next_step != BACK && is_visited(get_next_position(next_step)) && floodfill_run())) {
@@ -1186,13 +1336,17 @@ static void go_to_target(void) {
           }
           break;
         default:
+#ifdef SIM_MODE
+          // Error en simulador: salir con error
+          set_race_started(false);
+          return;
+#else
           while (true) {
-#ifndef MMSIM_ENABLED
             set_target_linear_speed(0);
             set_ideal_angular_speed(0);
             warning_status_led(50);
-#endif
           }
+#endif
           break;
       }
       update_position(next_step);
@@ -1536,7 +1690,7 @@ static void loop_explore(void) {
         }
       }
 
-#ifndef MMSIM_ENABLED
+#ifndef SIM_MODE
       floodfill_explore_finish();
       if (is_race_auto_run()) {
         set_race_started(true);
@@ -1556,7 +1710,7 @@ static void loop_explore(void) {
     }
     set_target(interesting_cell);
 
-#ifndef MMSIM_ENABLED
+#ifndef SIM_MODE
     check_time_limit();
 #endif
   }
@@ -1565,7 +1719,7 @@ static void loop_explore(void) {
 static void loop_run(void) {
   move_run_sequence(run_sequence_movements);
 
-#ifndef MMSIM_ENABLED
+#ifndef SIM_MODE
   set_target_linear_speed(0);
   set_ideal_angular_speed(0);
   set_target_fan_speed(0, 400);
@@ -1678,6 +1832,15 @@ void floodfill_maze_print(void) {
       } else {
         printf(" ");
       }
+#ifdef MAZE_SIMULATOR
+      if (cell_colors[c] == 2) {
+        printf("  ███  ");  // Ruta final (azul en MMS)
+      } else if (maze[c] & VISITED_BIT) {
+        printf("   V   ");
+      } else {
+        printf("       ");
+      }
+#else
       if (maze[c] & VISITED_BIT) {
         printf("   V   ");
         // printf("%5.2f", floodfill[c]);
@@ -1685,6 +1848,7 @@ void floodfill_maze_print(void) {
         printf("       ");
         // printf("%5.2f", floodfill[c]);
       }
+#endif
       //   if ((c + 1 % maze_get_columns()) == 0) {
       //     printf("|");
       //   }
@@ -1723,7 +1887,7 @@ bool floodfill_is_reset_maze_on_start_explore(void) {
 void floodfill_start_explore(void) {
   configure_kinematics(SPEED_EXPLORE);
 
-#ifndef MMSIM_ENABLED
+#ifndef SIM_MODE
   clear_info_leds();
   set_RGB_color(0, 0, 0);
   delay(125);
@@ -1737,18 +1901,36 @@ void floodfill_start_explore(void) {
   race_mode = false;
   maze_goal_position = 0;
 
+#ifdef MAZE_SIMULATOR
+  fprintf(stderr, "[DEBUG] Paso 1: initialize_directions_values()\n"); fflush(stderr);
+#endif
   initialize_directions_values();
   if (reset_maze_on_start_explore) {
+#ifdef MAZE_SIMULATOR
+    fprintf(stderr, "[DEBUG] Paso 2: initialize_maze()\n"); fflush(stderr);
+#endif
     initialize_maze();
     reset_maze_on_start_explore = false;
   }
+#ifdef MAZE_SIMULATOR
+  fprintf(stderr, "[DEBUG] Paso 3: set_initial_state()\n"); fflush(stderr);
+#endif
   set_initial_state();
 
+#ifdef MAZE_SIMULATOR
+  fprintf(stderr, "[DEBUG] Paso 4: set_goals_from_maze()\n"); fflush(stderr);
+#endif
   set_goals_from_maze();
+#ifdef MAZE_SIMULATOR
+  fprintf(stderr, "[DEBUG] Paso 5: set_goal_as_target()\n"); fflush(stderr);
+#endif
   set_goal_as_target();
 
+#ifdef MAZE_SIMULATOR
+  fprintf(stderr, "[DEBUG] Paso 6: find_unknown_interesting_cell()\n"); fflush(stderr);
+#endif
   if (find_unknown_interesting_cell() == 0) {
-#ifndef MMSIM_ENABLED
+#ifndef SIM_MODE
     floodfill_explore_finish();
 #else
     set_race_started(false);
@@ -1756,9 +1938,37 @@ void floodfill_start_explore(void) {
     return;
   }
 
+#ifdef MAZE_SIMULATOR
+  fprintf(stderr, "[DEBUG] Paso 7: get_walls()\n"); fflush(stderr);
+#endif
   struct walls walls = get_walls();
+#ifdef MAZE_SIMULATOR
+  fprintf(stderr, "[DEBUG] Paso 8: update_walls()\n"); fflush(stderr);
+#endif
   update_walls(walls);
+#ifdef MAZE_SIMULATOR
+  fprintf(stderr, "[DEBUG] Paso 9: update_floodfill()\n"); fflush(stderr);
+#endif
   update_floodfill();
+
+#ifdef MAZE_SIMULATOR
+  // DEBUG: Imprimir targets y valores iniciales de floodfill
+  fprintf(stderr, "[DEBUG] ===== ESTADO INICIAL =====\n");
+  fprintf(stderr, "[DEBUG] current_position: %d\n", current_position);
+  fprintf(stderr, "[DEBUG] current_direction: %d\n", current_direction);
+  fprintf(stderr, "[DEBUG] goal_cells.size: %d\n", goal_cells.size);
+  for (uint8_t i = 0; i < goal_cells.size; i++) {
+    fprintf(stderr, "[DEBUG]   goal[%d] = %d (floodfill=%.2f)\n", i, goal_cells.stack[i], floodfill[goal_cells.stack[i]]);
+  }
+  fprintf(stderr, "[DEBUG] target_cells.size: %d\n", target_cells.size);
+  for (uint8_t i = 0; i < target_cells.size; i++) {
+    fprintf(stderr, "[DEBUG]   target[%d] = %d (floodfill=%.2f)\n", i, target_cells.stack[i], floodfill[target_cells.stack[i]]);
+  }
+  fprintf(stderr, "[DEBUG] floodfill[0] (start) = %.2f\n", floodfill[0]);
+  fprintf(stderr, "[DEBUG] floodfill_type = %d\n", menu_run_get_floodfill_type());
+  fprintf(stderr, "[DEBUG] ==============================\n");
+  fflush(stderr);
+#endif
 
   move(MOVE_START);
   update_position(FRONT);
@@ -1771,7 +1981,7 @@ void floodfill_start_explore(void) {
 void floodfill_start_run(void) {
   configure_kinematics(menu_run_get_speed());
   race_mode = true;
-#ifndef MMSIM_ENABLED
+#ifndef SIM_MODE
   clear_info_leds();
   set_RGB_color(0, 0, 0);
   delay(125);
@@ -1809,7 +2019,8 @@ void floodfill_simulator_set_true_maze(int16_t *maze_array, uint16_t size) {
 }
 
 // Simula get_walls() leyendo del true_maze en lugar de sensores
-static struct walls simulator_get_walls(void) {
+// Pública para que maze_simulator.c pueda llamarla desde su stub get_walls()
+struct walls simulator_get_walls(void) {
   struct walls walls;
   int16_t cell = true_maze[current_position];
   
@@ -1839,96 +2050,7 @@ static struct walls simulator_get_walls(void) {
   return walls;
 }
 
-// Bucle de exploración simulado (sin hardware)
-static void simulator_loop_explore(void) {
-  int max_iterations = 5000; // Evitar bucle infinito
-  int iter = 0;
-  
-  while (iter++ < max_iterations) {
-    // Actualizar paredes desde true_maze
-    struct walls walls = simulator_get_walls();
-    update_walls(walls);
-    
-    // Si llegamos a la celda objetivo actual (ff=0), buscar nuevo objetivo
-    // o verificar si es el goal final
-    if (target_cells.size == 1 && target_cells.stack[0] == current_position) {
-      // Llegamos al target intermedio, buscar siguiente
-      set_goal_as_target();
-      update_floodfill();
-      
-      if (current_cell_is_goal() && floodfill[current_position] == 0) {
-        break;
-      }
-      
-      // Buscar siguiente celda interesante
-      uint8_t interesting_cell = find_unknown_interesting_cell();
-      if (interesting_cell == 0) {
-        // No hay más celdas interesantes, volver a inicio
-        if (current_position == 0) {
-          break;
-        }
-        // Establecer inicio como objetivo para volver
-        set_target(0);
-      } else {
-        set_target(interesting_cell);
-      }
-    }
-    
-    update_floodfill();
-    
-    // Obtener siguiente paso
-    struct walls stored_walls = get_current_stored_walls();
-    enum step_direction next_step = get_next_floodfill_step(stored_walls);
-    
-    if (next_step == BACK) {
-      // Giro de 180 grados
-      update_position(BACK);
-      sim_steps_count++;
-      continue;
-    }
-    
-    // Mover robot
-    update_position(next_step);
-    sim_steps_count++;
-    
-    // Comprobar si estamos en el goal final
-    if (current_cell_is_goal()) {
-      set_goal_as_target();
-      update_floodfill();
-      if (floodfill[current_position] == 0) {
-        break;
-      }
-    }
-  }
-}
-
-uint16_t floodfill_simulator_explore(void) {
-  sim_steps_count = 0;
-  
-  // Inicializar
-  initialize_directions_values();
-  initialize_maze();
-  set_initial_state();
-  set_goals_from_maze();
-  set_goal_as_target();
-  
-  // Actualizar paredes iniciales y floodfill
-  struct walls walls = simulator_get_walls();
-  update_walls(walls);
-  update_floodfill();
-  
-  // Buscar primer objetivo intermedio
-  uint8_t interesting_cell = find_unknown_interesting_cell();
-  if (interesting_cell != 0) {
-    set_target(interesting_cell);
-  }
-  
-  // Bucle principal de exploración
-  simulator_loop_explore();
-  
-  return sim_steps_count;
-}
-
+// Funciones de utilidad para el simulador
 uint16_t floodfill_count_visited(void) {
   uint16_t count = 0;
   uint16_t cells = sim_maze_rows * sim_maze_cols;

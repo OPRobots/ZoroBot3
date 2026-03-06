@@ -72,18 +72,10 @@ struct cells_stack *maze_get_goals(void) {
 
 #ifdef MAZE_SIMULATOR
   // Para 16x16 el centro es (8,8), (8,9), (9,8), (9,9)
-  if (sim_rows == 16 && sim_cols == 16) {
-    add_goal(8, 8);
-    add_goal(8, 9);
-    add_goal(9, 8);
-    add_goal(9, 9);
-  } else {
-    // Centro genérico
-    add_goal(sim_cols / 2, sim_rows / 2);
-    add_goal(sim_cols / 2 + 1, sim_rows / 2);
-    add_goal(sim_cols / 2, sim_rows / 2 + 1);
-    add_goal(sim_cols / 2 + 1, sim_rows / 2 + 1);
-  }
+  add_goal(8, 8);
+  add_goal(8, 9);
+  add_goal(9, 8);
+  add_goal(9, 9);
   return &goals;
 #endif
 
