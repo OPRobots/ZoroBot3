@@ -1322,6 +1322,8 @@ static void build_run_sequence(enum run_sequence_type type) {
   run_sequence[i] = '\0';
 
   printf("Run sequence: %s\n", run_sequence);
+  printf("Final position: %d\n", current_position);
+  printf("Final direction: %d\n", current_direction);
 }
 
 static void smooth_run_sequence(enum speed_strategy speed) {
@@ -1379,7 +1381,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 next_step_1 = run_sequence[i + 1];
                 next_step_2 = run_sequence[i + 2];
                 if (!run_diagonal) {
-                  if (next_step_1 == 'F') {
+                  if (next_step_1 == 'F' || next_step_1 == 'S') {
                     run_sequence_movements[index++] = MOVE_LEFT_90;
                   } else if (next_step_1 == 'R') {
                     run_sequence_movements[index++] = MOVE_LEFT_TO_45;
@@ -1395,7 +1397,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 } else {
                   if (next_step_1 == 'R') {
                     run_sequence_movements[index++] = MOVE_DIAGONAL;
-                  } else if (next_step_1 == 'F') {
+                  } else if (next_step_1 == 'F' || next_step_1 == 'S') {
                     run_sequence_movements[index++] = MOVE_LEFT_FROM_45;
                     run_diagonal = false;
                   } else if (next_step_1 == 'L' && next_step_2 == 'R') {
@@ -1412,7 +1414,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 next_step_1 = run_sequence[i + 1];
                 next_step_2 = run_sequence[i + 2];
                 if (!run_diagonal) {
-                  if (next_step_1 == 'F') {
+                  if (next_step_1 == 'F' || next_step_1 == 'S') {
                     run_sequence_movements[index++] = MOVE_RIGHT_90;
                   } else if (next_step_1 == 'L') {
                     run_sequence_movements[index++] = MOVE_RIGHT_TO_45;
@@ -1428,7 +1430,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 } else {
                   if (next_step_1 == 'L') {
                     run_sequence_movements[index++] = MOVE_DIAGONAL;
-                  } else if (next_step_1 == 'F') {
+                  } else if (next_step_1 == 'F' || next_step_1 == 'S') {
                     run_sequence_movements[index++] = MOVE_RIGHT_FROM_45;
                     run_diagonal = false;
                   } else if (next_step_1 == 'R' && next_step_2 == 'L') {
