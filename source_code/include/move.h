@@ -22,7 +22,8 @@ enum kpi_controls {
   KPI_LINEAR,
   KPI_ANGULAR,
   KPI_SIDE_SENSORS,
-  KPI_FRONT_SENSORS,
+  KPI_FRONT_ANGLE_SENSORS,
+  KPI_FRONT_DISTANCE_SENSORS,
   KPI_FRONT_DIAGONAL_SENSORS,
 };
 
@@ -60,6 +61,8 @@ enum movement {
   MOVE_LEFT_FROM_45_180,
   MOVE_RIGHT_FROM_45_180,
   MOVE_BACK,
+  MOVE_LEFT_INPLACE,
+  MOVE_RIGHT_INPLACE,
   MOVE_BACK_WALL,
   MOVE_BACK_STOP,
 };
@@ -116,6 +119,7 @@ int32_t get_current_cell_travelled_distance(void);
 
 void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool stop);
 void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool stop);
+void keep_front_distance(uint16_t distance, uint16_t timeout);
 void move_arc_turn(struct turn_params turn);
 void move_inplace_turn(enum movement movement);
 void move_inplace_angle(float angle, float rads);

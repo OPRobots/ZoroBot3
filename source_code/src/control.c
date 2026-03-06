@@ -16,26 +16,36 @@ static volatile int32_t target_fan_speed = 0;
 static volatile float ideal_fan_speed = 0;
 static volatile float fan_speed_accel = 0;
 
+static volatile int16_t ideal_front_distance = 0;
+
+static volatile bool linear_error_correction_enabled = true;
+
 static volatile float linear_error;
 static volatile float sum_linear_error;
 static volatile float last_linear_error;
+
+static volatile bool angular_error_correction_enabled = true;
 
 static volatile float angular_error;
 static volatile float sum_angular_error;
 static volatile float last_angular_error;
 
 static volatile bool side_sensors_correction_enabled = false;
-static volatile bool side_sensors_far_correction_enabled = false;
-static volatile bool front_sensors_correction_enabled = false;
+static volatile bool front_sensors_angle_correction_enabled = false;
+static volatile bool front_sensors_distance_correction_enabled = false;
 static volatile bool front_sensors_diagonal_correction_enabled = false;
 
 static volatile float side_sensors_error;
 static volatile float last_side_sensors_error;
 static volatile float sum_side_sensors_error;
 
-static volatile float front_sensors_error;
-static volatile float last_front_sensors_error;
-static volatile float sum_front_sensors_error;
+static volatile float front_sensors_angle_error;
+static volatile float last_front_sensors_angle_error;
+static volatile float sum_front_sensors_angle_error;
+
+static volatile float front_sensors_distance_error;
+static volatile float last_front_sensors_distance_error;
+static volatile float sum_front_sensors_distance_error;
 
 static volatile float front_sensors_diagonal_error;
 static volatile float last_front_sensors_diagonal_error;
@@ -204,16 +214,31 @@ int8_t check_start_run(void) {
 }
 #endif
 
+void set_linear_error_correction(bool enabled) {
+  linear_error_correction_enabled = enabled;
+}
+
+void set_angular_error_correction(bool enabled) {
+  angular_error_correction_enabled = enabled;
+}
+
 void set_side_sensors_correction(bool enabled) {
   side_sensors_correction_enabled = enabled;
 }
 
-void set_front_sensors_correction(bool enabled) {
-  front_sensors_correction_enabled = enabled;
+void set_front_sensors_angle_correction(bool enabled) {
+  front_sensors_angle_correction_enabled = enabled;
 }
 
-bool is_front_sensors_correction_enabled(void) {
-  return front_sensors_correction_enabled;
+bool is_front_sensors_angle_correction_enabled(void) {
+  return front_sensors_angle_correction_enabled;
+}
+
+void set_front_sensors_distance_correction(bool enabled) {
+  front_sensors_distance_correction_enabled = enabled;
+  if (!enabled) {
+    ideal_front_distance = 0;
+  }
 }
 
 void set_front_sensors_diagonal_correction(bool enabled) {
@@ -221,7 +246,7 @@ void set_front_sensors_diagonal_correction(bool enabled) {
 }
 
 void disable_sensors_correction(void) {
-  set_front_sensors_correction(false);
+  set_front_sensors_angle_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_correction(false);
 }
@@ -229,8 +254,8 @@ void disable_sensors_correction(void) {
 void reset_control_errors(void) {
   sum_side_sensors_error = 0;
   last_side_sensors_error = 0;
-  last_front_sensors_error = 0;
-  sum_front_sensors_error = 0;
+  last_front_sensors_angle_error = 0;
+  sum_front_sensors_angle_error = 0;
   sum_front_sensors_diagonal_error = 0;
   linear_error = 0;
   angular_error = 0;
@@ -270,6 +295,11 @@ void set_target_linear_speed(int32_t linear_speed) {
   target_linear_speed = linear_speed;
 }
 
+void force_linear_speed(int32_t linear_speed) {
+  target_linear_speed = linear_speed;
+  ideal_linear_speed = linear_speed;
+}
+
 int32_t get_ideal_linear_speed(void) {
   return ideal_linear_speed;
 }
@@ -295,6 +325,10 @@ void set_target_fan_speed(int32_t fan_speed, int32_t ms) {
 }
 #endif
 
+void set_ideal_front_distance(int16_t distance) {
+  ideal_front_distance = distance;
+}
+
 /**
  * @brief Función de control general del robot
  * · Gestiona velocidades, aceleraciones, correcciones, ...
@@ -307,7 +341,7 @@ void control_loop(void) {
   // delay_us(100);
   // gpio_clear(GPIOB, GPIO13);
   // return;
-  if (is_debug_enabled()) {
+  if (is_debug_enabled() && !is_debug_use_control()) {
     return;
   }
   if ((is_motor_pwm_saturated() || is_motor_angle_saturated()) && is_race_started()) {
@@ -341,40 +375,74 @@ void control_loop(void) {
   float linear_voltage = 0;
   float angular_voltage = 0;
 
-  last_linear_error = linear_error;
-  linear_error = ideal_linear_speed - get_measured_linear_speed();
-  sum_linear_error += linear_error;
-
-  last_angular_error = angular_error;
-  angular_error = ideal_angular_speed - get_measured_angular_speed();
-  sum_angular_error += angular_error;
-
-  side_sensors_error = 0;
-  if (side_sensors_correction_enabled) {
-    side_sensors_error += get_side_sensors_error();
-    sum_side_sensors_error += side_sensors_error;
+  if (linear_error_correction_enabled) {
+    last_linear_error = linear_error;
+    linear_error = ideal_linear_speed - get_measured_linear_speed();
+    sum_linear_error += linear_error;
+  } else {
+    linear_error = 0;
+    sum_linear_error = 0;
+    last_linear_error = 0;
   }
 
-  if (!side_sensors_correction_enabled && !side_sensors_far_correction_enabled) {
+  if (angular_error_correction_enabled) {
+    last_angular_error = angular_error;
+    angular_error = ideal_angular_speed - get_measured_angular_speed();
+    sum_angular_error += angular_error;
+  } else {
+    angular_error = 0;
+    sum_angular_error = 0;
+    last_angular_error = 0;
+  }
+
+  if (side_sensors_correction_enabled) {
+    side_sensors_error = get_side_sensors_error();
+    sum_side_sensors_error += side_sensors_error;
+  } else {
+    side_sensors_error = 0;
     sum_side_sensors_error = 0;
     last_side_sensors_error = 0;
   }
 
-  front_sensors_error = 0;
-  if (front_sensors_correction_enabled) {
-    front_sensors_error = get_front_sensors_angle_error();
-    sum_front_sensors_error += front_sensors_error;
+  if (front_sensors_angle_correction_enabled) {
+    front_sensors_angle_error = get_front_sensors_angle_error();
+    sum_front_sensors_angle_error += front_sensors_angle_error;
+  } else {
+    front_sensors_angle_error = 0;
+    sum_front_sensors_angle_error = 0;
+    last_front_sensors_angle_error = 0;
   }
 
-  front_sensors_diagonal_error = 0;
+  if (front_sensors_distance_correction_enabled && ideal_front_distance > 0 && get_front_wall_distance() < CELL_DIMENSION) {
+    front_sensors_distance_error = get_front_wall_distance() - ideal_front_distance;
+    // if (abs(front_sensors_distance_error) <= 2) {
+    //   front_sensors_distance_error = 0;
+    // }
+    // printf("front distance: %4d front error: %.4f\n", get_front_wall_distance(), front_sensors_distance_error);
+    sum_front_sensors_distance_error += front_sensors_distance_error;
+
+    static char *labels[] = {
+        "front_error",
+        "pwm_left",
+        "pwm_right",
+    };
+    macroarray_store(
+        1,
+        0b0,
+        labels,
+        3,
+        (int16_t)front_sensors_distance_error,
+        (int16_t)pwm_left,
+        (int16_t)pwm_right);
+  } else {
+    front_sensors_distance_error = 0;
+    sum_front_sensors_distance_error = 0;
+    last_front_sensors_distance_error = 0;
+  }
+
   if (front_sensors_diagonal_correction_enabled) {
     front_sensors_diagonal_error = get_front_sensors_diagonal_error();
     sum_front_sensors_diagonal_error += front_sensors_diagonal_error;
-    // if (front_sensors_diagonal_error != 0) {
-    //   set_RGB_color(255, 0, 0);
-    // } else {
-    //   set_RGB_color(0, 255, 0);
-    // }
   } else {
     front_sensors_diagonal_error = 0;
     sum_front_sensors_diagonal_error = 0;
@@ -384,7 +452,11 @@ void control_loop(void) {
   linear_voltage =
       get_kinematics().kpi[KPI_LINEAR].kp * linear_error +
       get_kinematics().kpi[KPI_LINEAR].ki * sum_linear_error +
-      get_kinematics().kpi[KPI_LINEAR].kd * (linear_error - last_linear_error);
+      get_kinematics().kpi[KPI_LINEAR].kd * (linear_error - last_linear_error) +
+
+      get_kinematics().kpi[KPI_FRONT_DISTANCE_SENSORS].kp * front_sensors_distance_error +
+      get_kinematics().kpi[KPI_FRONT_DISTANCE_SENSORS].ki * sum_front_sensors_distance_error +
+      get_kinematics().kpi[KPI_FRONT_DISTANCE_SENSORS].kd * (front_sensors_distance_error - last_front_sensors_distance_error);
 
   angular_voltage =
       get_kinematics().kpi[KPI_ANGULAR].kp * angular_error +
@@ -395,16 +467,17 @@ void control_loop(void) {
       get_kinematics().kpi[KPI_SIDE_SENSORS].ki * sum_side_sensors_error +
       get_kinematics().kpi[KPI_SIDE_SENSORS].kd * (side_sensors_error - last_side_sensors_error) +
 
-      get_kinematics().kpi[KPI_FRONT_SENSORS].kp * front_sensors_error +
-      get_kinematics().kpi[KPI_FRONT_SENSORS].ki * sum_front_sensors_error +
-      get_kinematics().kpi[KPI_FRONT_SENSORS].kd * (front_sensors_error - last_front_sensors_error) +
+      get_kinematics().kpi[KPI_FRONT_ANGLE_SENSORS].kp * front_sensors_angle_error +
+      get_kinematics().kpi[KPI_FRONT_ANGLE_SENSORS].ki * sum_front_sensors_angle_error +
+      get_kinematics().kpi[KPI_FRONT_ANGLE_SENSORS].kd * (front_sensors_angle_error - last_front_sensors_angle_error) +
 
       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].kp * front_sensors_diagonal_error +
       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].ki * sum_front_sensors_diagonal_error +
       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].kd * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
 
   last_side_sensors_error = side_sensors_error;
-  last_front_sensors_error = front_sensors_error;
+  last_front_sensors_angle_error = front_sensors_angle_error;
+  last_front_sensors_distance_error = front_sensors_distance_error;
   last_front_sensors_diagonal_error = front_sensors_diagonal_error;
 
   voltage_left = linear_voltage + angular_voltage;

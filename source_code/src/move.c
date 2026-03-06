@@ -24,6 +24,8 @@ static char *movement_string[] = {
     "MOVE_LEFT_FROM_45_180",
     "MOVE_RIGHT_FROM_45_180",
     "MOVE_BACK",
+    "MOVE_LEFT_INPLACE",
+    "MOVE_RIGHT_INPLACE",
     "MOVE_BACK_WALL",
     "MOVE_BACK_STOP",
 };
@@ -44,10 +46,15 @@ static struct kpi_params kpi_explore[] = {
         .ki = 0.002,
         .kd = 0.0,
     },
-    [KPI_FRONT_SENSORS] = {
+    [KPI_FRONT_ANGLE_SENSORS] = {
         .kp = 0.02,
-        .ki = 0.00035,
-        .kd = 0,
+        .ki = 0.00,
+        .kd = 0.12,
+    },
+    [KPI_FRONT_DISTANCE_SENSORS] = {
+        .kp = 0.05,
+        .ki = 0.00,
+        .kd = 0.25,
     },
     [KPI_FRONT_DIAGONAL_SENSORS] = {
         .kd = 0.040,
@@ -72,10 +79,15 @@ static struct kpi_params kpi_run[] = {
         .ki = 0.002,
         .kd = 0.0,
     },
-    [KPI_FRONT_SENSORS] = {
+    [KPI_FRONT_ANGLE_SENSORS] = {
         .kp = 0.02,
-        .ki = 0.00035,
-        .kd = 0,
+        .ki = 0.00,
+        .kd = 0.12,
+    },
+    [KPI_FRONT_DISTANCE_SENSORS] = {
+        .kp = 0.05,
+        .ki = 0.00,
+        .kd = 0.25,
     },
     [KPI_FRONT_DIAGONAL_SENSORS] = {
         .kp = 0.04,
@@ -89,6 +101,18 @@ static struct kpi_params kpi_run[] = {
 //! MOVE_****_TO_135 -> El .end tiene que ser el .start y el .start tiene que ser el .end del MOVE_****_FROM_45_180
 
 static struct inplace_params turns_inplace[] = {
+    [MOVE_LEFT_INPLACE] = {
+        .radians = PI / 2,
+        .angular_accel = 350,
+        .max_angular_speed = 10,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_INPLACE] = {
+        .radians = PI / 2,
+        .angular_accel = 350,
+        .max_angular_speed = 10,
+        .sign = 1,
+    },
     [MOVE_BACK] = {
         .radians = PI,
         .angular_accel = 350,
@@ -945,19 +969,43 @@ static void move_home(void) {
   return;
 #endif
 
-  set_front_sensors_correction(true);
+  set_front_sensors_angle_correction(true);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_correction(false);
 
-  move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
+  struct walls initial_walls = get_walls();
+
+  // move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
+  if (current_cell_start_mm == 0) {
+    move_straight(MIDDLE_MAZE_DISTANCE + current_cell_start_mm, 300, false, true);
+  }else{
+    force_linear_speed(0);
+    delay(500);
+  }
+
+  keep_front_distance(MIDDLE_MAZE_DISTANCE, 150);
 
   disable_sensors_correction();
-  move_inplace_turn(MOVE_BACK);
+  if (initial_walls.left) {
+    move_inplace_turn(MOVE_LEFT_INPLACE);
+    keep_front_distance(MIDDLE_MAZE_DISTANCE, 150);
+    move_inplace_turn(MOVE_LEFT_INPLACE);
+  } else if (initial_walls.right) {
+    move_inplace_turn(MOVE_RIGHT_INPLACE);
+    keep_front_distance(MIDDLE_MAZE_DISTANCE, 150);
+    move_inplace_turn(MOVE_RIGHT_INPLACE);
+  } else {
+    move_inplace_turn(MOVE_BACK);
+  }
   reset_control_errors();
+
   set_check_motors_saturated_enabled(false);
   move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
   set_check_motors_saturated_enabled(true);
   set_starting_position();
+
+  set_front_sensors_angle_correction(false);
+  set_side_sensors_correction(true);
 }
 
 static void move_end(void) {
@@ -968,7 +1016,7 @@ static void move_end(void) {
   return;
 #endif
 
-  set_front_sensors_correction(false);
+  set_front_sensors_angle_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_correction(true);
 
@@ -997,7 +1045,7 @@ static void move_front(void) {
   API_moveForward();
 #else
 
-  set_front_sensors_correction(false);
+  set_front_sensors_angle_correction(false);
   set_front_sensors_diagonal_correction(false);
   struct walls initial_walls = get_walls();
   if (initial_walls.left || initial_walls.right) {
@@ -1024,7 +1072,7 @@ static void move_side(enum movement movement) {
   }
 #else
 
-  set_front_sensors_correction(false);
+  set_front_sensors_angle_correction(false);
   set_front_sensors_diagonal_correction(false);
 
   int32_t end_distance_offset = 0;
@@ -1084,7 +1132,7 @@ static void move_side(enum movement movement) {
   // reset_control_errors(); //! Esto se había puesto por un problema en la acumulación de error según aumenta el número de giros realizados
   move_arc_turn(kinematics.turns[movement]);
 
-  set_front_sensors_correction(false);
+  set_front_sensors_angle_correction(false);
   set_side_sensors_correction(false);
 
   switch (movement) {
@@ -1110,6 +1158,10 @@ static void move_side(enum movement movement) {
     set_RGB_color(0, 0, 0);
   }
   enter_next_cell();
+  if (kinematics.turns[movement].end > 0) {
+    current_cell_start_mm = kinematics.turns[movement].end;
+  }
+
 #endif
 }
 
@@ -1121,9 +1173,6 @@ static void move_back(enum movement movement) {
     API_moveForward();
   }
 #else
-  set_front_sensors_correction(false);
-  set_front_sensors_diagonal_correction(false);
-  set_side_sensors_correction(true);
 
   struct walls initial_walls = get_walls();
   if (initial_walls.front) {
@@ -1131,18 +1180,38 @@ static void move_back(enum movement movement) {
     move_straight(10, 300, false, false);
     current_cell_start_mm += 10;
     set_side_sensors_correction(false);
-    set_front_sensors_correction(true);
+    set_front_sensors_angle_correction(true);
   }
+
+  set_front_sensors_angle_correction(false);
+  set_front_sensors_diagonal_correction(false);
+  set_side_sensors_correction(true);
 
   if (initial_walls.front) {
-    move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
+    set_front_sensors_angle_correction(true);
+    set_side_sensors_correction(false);
+    move_straight(MIDDLE_MAZE_DISTANCE, 300, false, true);
+    keep_front_distance(MIDDLE_MAZE_DISTANCE, 150);
+
+    if (initial_walls.left) {
+      move_inplace_turn(MOVE_LEFT_INPLACE);
+      keep_front_distance(MIDDLE_MAZE_DISTANCE, 150);
+      move_inplace_turn(MOVE_LEFT_INPLACE);
+    } else if (initial_walls.right) {
+      move_inplace_turn(MOVE_RIGHT_INPLACE);
+      keep_front_distance(MIDDLE_MAZE_DISTANCE, 150);
+      move_inplace_turn(MOVE_RIGHT_INPLACE);
+    } else {
+      disable_sensors_correction();
+      move_inplace_turn(movement);
+    }
+    reset_control_errors();
+
   } else {
     move_straight(MIDDLE_MAZE_DISTANCE * 1.75f - current_cell_start_mm, 300, false, true);
+    disable_sensors_correction();
+    move_inplace_turn(movement);
   }
-
-  disable_sensors_correction();
-
-  move_inplace_turn(movement);
 
   switch (movement) {
     case MOVE_BACK_WALL:
@@ -1162,7 +1231,7 @@ static void move_back(enum movement movement) {
   reset_control_errors(); //? Aquí sí reseteamos al estar en una "posición inicial estática"
 
   if (movement != MOVE_BACK_STOP) {
-    set_front_sensors_correction(false);
+    set_front_sensors_angle_correction(false);
     set_front_sensors_diagonal_correction(false);
     set_side_sensors_correction(true);
     move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
@@ -1298,9 +1367,9 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
   }
   if (stop) {
     set_target_linear_speed(0);
-    while (is_race_started() && !is_motor_saturated() && (get_ideal_linear_speed() != 0 || (is_front_sensors_correction_enabled() && get_front_sensors_angle_error() != 0))) {
+    while (is_race_started() && !is_motor_saturated() && (get_ideal_linear_speed() != 0 || (is_front_sensors_angle_correction_enabled() && get_front_sensors_angle_error() != 0))) {
     }
-    if (is_front_sensors_correction_enabled()) {
+    if (is_front_sensors_angle_correction_enabled()) {
       uint32_t timeout = get_clock_ticks() + 1000;
       uint16_t count = 0;
       while (count < 250 && get_clock_ticks() < timeout) {
@@ -1315,6 +1384,43 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
 #endif
 }
 
+void keep_front_distance(uint16_t distance, uint16_t timeout) {
+#ifndef MMSIM_ENABLED
+  set_ideal_angular_speed(0.0);
+  set_linear_error_correction(false);
+  set_angular_error_correction(false);
+  set_front_sensors_angle_correction(true);
+  set_front_sensors_distance_correction(true);
+  set_ideal_front_distance(distance);
+  uint16_t count = 0;
+  while (front_wall_detection() && (abs(get_front_wall_distance() - distance) > 2 || count < timeout)) {
+    if (abs(get_front_wall_distance() - distance) <= 2) {
+      count++;
+      // } else {
+      // count = 0;
+    }
+    delay(1);
+  }
+  set_linear_error_correction(true);
+
+  if (is_front_sensors_angle_correction_enabled() && abs(get_front_sensors_angle_error()) >= 5) {
+    uint32_t timeout2 = get_clock_ticks() + 250;
+    uint16_t count2 = 0;
+    while (count2 < 125 && get_clock_ticks() < timeout2) {
+      if (abs(get_front_sensors_angle_error()) <= 2) {
+        count2++;
+      }
+      delay(1);
+    }
+  }
+
+  set_angular_error_correction(true);
+  set_front_sensors_angle_correction(false);
+  set_front_sensors_distance_correction(false);
+
+#endif
+}
+
 void run_straight(float distance, float start_offset, float end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed, int8_t next_turn_sign) {
 #ifdef MMSIM_ENABLED
   for (uint16_t i = 0; i < cells; i++) {
@@ -1323,7 +1429,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
   return;
 #endif
 #ifndef MMSIM_ENABLED
-  set_front_sensors_correction(false);
+  set_front_sensors_angle_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_correction(true);
 
@@ -1453,7 +1559,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
 
 void run_side(enum movement movement, struct turn_params turn, struct turn_params next_turn) {
 #ifndef MMSIM_ENABLED
-  set_front_sensors_correction(false);
+  set_front_sensors_angle_correction(false);
   set_front_sensors_diagonal_correction(false);
 
   float end_distance_offset = 0.0f;
@@ -1511,7 +1617,7 @@ void run_side(enum movement movement, struct turn_params turn, struct turn_param
   // reset_control_errors(); //! Esto se había puesto por un problema en la acumulación de error según aumenta el número de giros realizados
   move_arc_turn(turn);
 
-  set_front_sensors_correction(false);
+  set_front_sensors_angle_correction(false);
   set_side_sensors_correction(false);
 
   switch (movement) {
@@ -1540,7 +1646,7 @@ void run_side(enum movement movement, struct turn_params turn, struct turn_param
 
 void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
 #ifndef MMSIM_ENABLED
-  set_front_sensors_correction(false);
+  set_front_sensors_angle_correction(false);
   if (cells > 1) {
     set_front_sensors_diagonal_correction(true);
   } else {
@@ -1770,6 +1876,8 @@ void move_run_sequence(enum movement *sequence_movements) {
           straight_cells = 0;
           straight_has_begin = false;
           running_diagonal = false;
+        } else {
+          current_cell_start_mm = distance;
         }
         move(MOVE_HOME);
         break;

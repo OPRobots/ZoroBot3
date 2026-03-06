@@ -26,9 +26,12 @@ void set_race_auto_run(bool state);
 int8_t check_start_run(void);
 void set_control_debug(bool state);
 
+void set_linear_error_correction(bool enabled);
+void set_angular_error_correction(bool enabled);
 void set_side_sensors_correction(bool enabled);
-void set_front_sensors_correction(bool enabled);
-bool is_front_sensors_correction_enabled(void);
+void set_front_sensors_angle_correction(bool enabled);
+bool is_front_sensors_angle_correction_enabled(void);
+void set_front_sensors_distance_correction(bool enabled);
 void set_front_sensors_diagonal_correction(bool enabled);
 void disable_sensors_correction(void);
 void reset_control_errors(void);
@@ -37,11 +40,14 @@ void reset_control_fan_speed(void);
 void reset_control_all(void);
 
 void set_target_linear_speed(int32_t linear_speed);
+void force_linear_speed(int32_t linear_speed);
 int32_t get_ideal_linear_speed(void);
 void set_ideal_angular_speed(float angular_speed);
 float get_ideal_angular_speed(void);
 
 void set_target_fan_speed(int32_t fan_speed, int32_t ms);
+
+void set_ideal_front_distance(int16_t distance);
 
 void control_loop(void);
 

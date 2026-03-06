@@ -1,9 +1,13 @@
 #include <debug.h>
 
 bool debug_enabled = false;
+bool debug_use_control = false;
 uint32_t last_print_debug = 0;
 
+bool debug_sensors_raw_enabled = false;
+
 uint32_t last_keep_z_angle = 0;
+uint32_t last_keep_front_distance = 0;
 
 static void debug_macroarray(void) {
   macroarray_print();
@@ -56,6 +60,9 @@ static void check_debug_active(void) {
     debug_enabled = !debug_enabled;
     if (!debug_enabled) {
       menu_config_reset_values();
+      set_RGB_color(0, 0, 0);
+    } else {
+      set_RGB_color(0, 50, 0);
     }
   }
 }
@@ -84,7 +91,7 @@ static void debug_motors_current(void) {
   }
 }
 
-static void debug_timetrial(void) {
+static void debug_timetrial_demo(void) {
   delay(1000);
   configure_kinematics(menu_run_get_speed());
   clear_info_leds();
@@ -125,6 +132,53 @@ static void debug_timetrial(void) {
   menu_config_reset_values();
 }
 
+static void debug_keep_front_distance_demo(void) {
+  // if (get_clock_ticks() >= last_keep_front_distance + 50) {
+  //   if (get_front_wall_distance() < CELL_DIMENSION) {
+  //     printf("front distance: %4d front error: %.4f\n", get_front_wall_distance(), get_front_wall_distance() - MIDDLE_MAZE_DISTANCE);
+  //   }
+  //   last_keep_front_distance = get_clock_ticks();
+  // }
+  set_RGB_color(0, 50, 0);
+  reset_control_all();
+  debug_use_control = true;
+  configure_kinematics(SPEED_EXPLORE);
+  delay(1000);
+  set_race_started(true);
+  set_sensors_enabled(true);
+  set_RGB_color(0, 50, 0);
+  set_target_fan_speed(get_kinematics().fan_speed, 1000);
+  delay(1200);
+  do {
+    if (get_clock_ticks() >= last_keep_front_distance + 1) {
+      if (get_front_wall_distance() < CELL_DIMENSION) {
+        // printf("front distance: %4d front error: %.4f\n", get_front_wall_distance(), get_front_wall_distance() - MIDDLE_MAZE_DISTANCE);
+        set_RGB_color(0, 0, 50);
+        set_linear_error_correction(false);
+        set_angular_error_correction(false);
+        set_front_sensors_angle_correction(true);
+        set_front_sensors_distance_correction(true);
+        set_ideal_front_distance(MIDDLE_MAZE_DISTANCE);
+      } else {
+        set_RGB_color(50, 0, 0);
+        set_front_sensors_angle_correction(false);
+        set_front_sensors_distance_correction(false);
+        set_linear_error_correction(true);
+        set_angular_error_correction(true);
+      }
+      last_keep_front_distance = get_clock_ticks();
+    }
+    check_debug_active();
+  } while (debug_enabled && is_race_started() && !is_motor_saturated());
+
+  debug_enabled = false;
+  debug_use_control = false;
+  set_fan_speed(0);
+  set_race_started(false);
+  reset_control_all();
+  menu_config_reset_values();
+}
+
 static void debug_gyro_demo(void) {
   reset_control_all();
   delay(1000);
@@ -155,6 +209,10 @@ bool is_debug_enabled(void) {
   return debug_enabled;
 }
 
+bool is_debug_use_control(void) {
+  return debug_use_control;
+}
+
 void set_debug_enabled(bool enabled) {
   debug_enabled = enabled;
 }
@@ -166,16 +224,21 @@ void debug_from_config(uint8_t type) {
     debug_enabled = false;
   }
   if (debug_enabled) {
-    set_RGB_color(0, 50, 0);
     switch (type) {
       case DEBUG_MACROARRAY:
         debug_macroarray();
         break;
-      case DEBUG_TYPE_SENSORS_RAW:
-        debug_sensors_raw();
-        break;
-      case DEBUG_TYPE_SENSORS_DISTANCES:
-        debug_sensors_distances();
+      case DEBUG_TYPE_SENSORS:
+        if (get_menu_up_btn()) {
+          while (get_menu_up_btn()) {
+          }
+          debug_sensors_raw_enabled = !debug_sensors_raw_enabled;
+        }
+        if (debug_sensors_raw_enabled) {
+          debug_sensors_raw();
+        } else {
+          debug_sensors_distances();
+        }
         break;
       case DEBUG_FLOODFILL_MAZE:
         debug_floodfill_maze();
@@ -190,7 +253,10 @@ void debug_from_config(uint8_t type) {
         debug_motors_current();
         break;
       case DEBUG_TIMETRIAL:
-        debug_timetrial();
+        debug_timetrial_demo();
+        break;
+      case DEBUG_KEEP_FRONT_DISTANCE:
+        debug_keep_front_distance_demo();
         break;
       case DEBUG_GYRO_DEMO:
         debug_gyro_demo();
