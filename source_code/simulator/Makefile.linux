@@ -1,0 +1,28 @@
+# Makefile.linux para ZoroBot3 Maze Simulator (Standalone)
+# Uso: make -f Makefile.linux
+
+CC = gcc
+CFLAGS = -DMMSIM_ENABLED -I../include -I../lib/mmsim_api -Wall -Wextra -O2
+LDFLAGS = -lm
+
+# Archivos del simulador standalone
+SIM_SRCS = sim_main.c sim_api.c
+
+# Archivos originales de ZoroBot3
+ZORO_SRCS = ../src/floodfill.c ../src/maze.c ../src/move.c \
+            ../src/floodfill_weigths.c ../src/sensors.c \
+            ../src/menu_run.c ../src/control.c
+
+SRCS = $(SIM_SRCS) $(ZORO_SRCS)
+
+TARGET = maze_sim
+
+all: $(TARGET)
+
+$(TARGET): $(SRCS)
+	$(CC) $(CFLAGS) -o $@ $(SRCS) $(LDFLAGS)
+
+clean:
+	rm -f $(TARGET)
+
+.PHONY: all clean
