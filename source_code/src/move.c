@@ -1158,9 +1158,9 @@ static void move_side(enum movement movement) {
     set_RGB_color(0, 0, 0);
   }
   enter_next_cell();
-  if (kinematics.turns[movement].end > 0) {
+/*   if (kinematics.turns[movement].end > 0) {
     current_cell_start_mm = kinematics.turns[movement].end;
-  }
+  } */
 
 #endif
 }
