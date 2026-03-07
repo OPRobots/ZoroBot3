@@ -15,6 +15,10 @@
 extern void sim_api_set_maze_size(int w, int h);
 extern void sim_api_set_maze_cell(int i, int16_t v);
 extern void sim_api_reset_position(void);
+extern void sim_api_print_stats(void);
+extern char sim_api_get_cell_color(int x, int y);
+extern void sim_api_print_times_maze(void);
+extern void sim_api_print_path_maze(void);
 
 // Variable global para floodfill_type (usada por menu_run.c cuando MMSIM_ENABLED)
 int MMSIM_FLOODFILL_TYPE = 2;  // Default: FLOODFILL_TYPE_TIME
@@ -93,7 +97,15 @@ int main(int argc, char *argv[]) {
 
     printf("\n=== Exploración completada ===\n");
     printf("Loops ejecutados: %u\n", loop_count);
-    floodfill_maze_print();
+    
+    // Imprimir stats de exploración
+    sim_api_print_stats();
+    
+    // Imprimir laberinto con tiempos
+    sim_api_print_times_maze();
+    
+    // Imprimir mapa combinado de visitados + camino óptimo
+    sim_api_print_path_maze();
 
     return 0;
 }
