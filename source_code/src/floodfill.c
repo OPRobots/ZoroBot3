@@ -1164,16 +1164,18 @@ static void go_to_target(void) {
       update_walls(walls);
       update_floodfill();
       next_step = get_next_floodfill_step(walls, next_step);
-      // Es el target aun interesante?
-      if (target_cells.size == 1 && target_cells.stack[0] != 0 && maze_goal_position != 0 && next_step_before_update_walls != next_step) {
-        uint8_t interesting_cell = find_unknown_interesting_cell();
-        if (interesting_cell == 0) {
-          return;
-        }
-        if (interesting_cell != target_cells.stack[0]) {
-          set_target(interesting_cell);
-          update_floodfill();
-          next_step = get_next_floodfill_step(walls, next_step);
+      if (menu_run_get_explore_type() == EXPLORE_COMPLETE) {
+        // Es el target aun interesante?
+        if (target_cells.size == 1 && target_cells.stack[0] != 0 && maze_goal_position != 0 && next_step_before_update_walls != next_step) {
+          uint8_t interesting_cell = find_unknown_interesting_cell();
+          if (interesting_cell == 0) {
+            return;
+          }
+          if (interesting_cell != target_cells.stack[0]) {
+            set_target(interesting_cell);
+            update_floodfill();
+            next_step = get_next_floodfill_step(walls, next_step);
+          }
         }
       }
     } else {
@@ -1185,7 +1187,7 @@ static void go_to_target(void) {
     set_RGB_color_while(255, 255, 0, 33);
 #endif
 
-    if (menu_run_get_accel_explore() == ACCEL_EXPLORE_DISABLED || !(next_step != BACK && is_visited(get_next_position(next_step)) && floodfill_run())) {
+    if (!(next_step != BACK && is_visited(get_next_position(next_step)) && floodfill_run())) {
       switch (next_step) {
         case FRONT:
           move(MOVE_FRONT);
@@ -1518,10 +1520,19 @@ static void floodfill_explore_finish(void) {
 #endif
 
 #ifndef MMSIM_ENABLED
-static void run_back_to_start(void) {
-  configure_kinematics(SPEED_NORMAL);
+static void run_back_to_start(enum speed_strategy speed) {
+  configure_kinematics(speed);
+
+  set_race_started(false);
+  // while (true) {
+  //   printf("current_position: %d\n", current_position);
+  //   printf("current_direction: %d\n", current_direction);
+  //   delay(1000);
+  // }
+
   build_run_sequence(current_cell_is_goal() ? GOAL_TO_START : EXPLORE_TO_START);
-  smooth_run_sequence(menu_run_get_speed());
+  smooth_run_sequence(speed);
+
   set_race_started(true);
   set_target_fan_speed(get_kinematics().fan_speed, 1000);
   delay(1500);
@@ -1569,10 +1580,29 @@ static void loop_explore(void) {
       update_floodfill();
       return;
     } else if (current_cell_is_goal() && get_ideal_linear_speed() == 0) {
-      move(MOVE_START);
+      if (menu_run_get_explore_type() != EXPLORE_SIMPLE) {
+        move(MOVE_START);
+      }
       update_position(BACK);
     }
-    set_target(interesting_cell);
+    switch (menu_run_get_explore_type()) {
+      case EXPLORE_SIMPLE:
+        configure_explore_kinematics(true);
+        run_back_to_start(SPEED_EXPLORE);
+        set_race_started(false);
+        if (is_race_auto_run()) {
+          set_race_started(true);
+          floodfill_start_run();
+          return;
+        }
+        return;
+      case EXPLORE_HOME:
+        set_target(0);
+        break;
+      case EXPLORE_COMPLETE:
+        set_target(interesting_cell);
+        break;
+    }
 
 #ifndef MMSIM_ENABLED
     check_time_limit();
@@ -1592,7 +1622,7 @@ static void loop_run(void) {
     set_RGB_color(0, 255, 0);
 
     if (menu_run_get_speed() != SPEED_EXPLORE) {
-      run_back_to_start();
+      run_back_to_start(SPEED_NORMAL);
     }
 
     set_race_started(false);
@@ -1615,7 +1645,12 @@ void floodfill_load_maze(void) {
 void floodfill_maze_print(void) {
   initialize_directions_values();
   configure_kinematics(menu_run_get_speed());
-  build_run_sequence(START_TO_GOAL);
+
+  current_position = 34;
+  current_direction = WEST;
+  build_run_sequence(GOAL_TO_START);
+
+  // build_run_sequence(START_TO_GOAL);
   smooth_run_sequence(menu_run_get_speed());
   // update_floodfill();
   for (int16_t r = maze_get_cells() - maze_get_columns(); r >= 0; r = r - maze_get_columns()) {

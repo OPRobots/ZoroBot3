@@ -22,9 +22,10 @@ enum speed_strategy {
   SPEED_HAKI = 5,
 };
 
-enum accel_explore {
-  ACCEL_EXPLORE_DISABLED = 0,
-  ACCEL_EXPLORE_ENABLED = 1,
+enum explore_type {
+  EXPLORE_SIMPLE = 0,
+  EXPLORE_HOME = 1,
+  EXPLORE_COMPLETE = 2,
 };
 
 enum floodfill_type {
@@ -46,8 +47,8 @@ enum solve_strategy {
 
 enum explore_algorithm {
   EXPLORE_HANDWALL = 0,
-  EXPLORE_FLOODFILL = 1,
-  EXPLORE_TIME_TRIAL = 2,
+  EXPLORE_TIME_TRIAL = 1,
+  EXPLORE_FLOODFILL = 2,
 };
 
 bool menu_run_handler(void);
@@ -63,7 +64,7 @@ void menu_run_down(void);
 
 int16_t *get_menu_run_values(void);
 enum speed_strategy menu_run_get_speed(void);
-enum accel_explore menu_run_get_accel_explore(void);
+enum explore_type menu_run_get_explore_type(void);
 enum floodfill_type menu_run_get_floodfill_type(void);
 enum maze_type menu_run_get_maze_type(void);
 enum solve_strategy menu_run_get_solve_strategy(void);
