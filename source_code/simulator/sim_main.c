@@ -24,14 +24,59 @@ extern void sim_api_print_path_maze(void);
 int MMSIM_FLOODFILL_TYPE = 2;  // Default: FLOODFILL_TYPE_TIME
 
 static void print_usage(const char *prog) {
-    fprintf(stderr, "Uso: %s [-floodfill-type=N] < maze_file.txt\n", prog);
+    fprintf(stderr, "Uso: %s [-floodfill-type=N] maze_file.map\n", prog);
     fprintf(stderr, "  N: 0=BASIC, 1=DIAGONAL, 2=TIME (default), 3=TIMEv2\n");
-    fprintf(stderr, "\nFormato del fichero de entrada:\n");
-    fprintf(stderr, "  Linea 1: tamaño (ej: 16 para 16x16)\n");
-    fprintf(stderr, "  Linea 2+: valores de celdas separados por coma\n");
+    fprintf(stderr, "\nFormato del fichero:\n");
+    fprintf(stderr, "  Laberinto ASCII seguido de valores entre []\n");
+    fprintf(stderr, "  Ejemplo: [14,12,6,12,...]\n");
+}
+
+// Lee el fichero y extrae los valores entre []
+static int load_maze_from_file(const char *filename) {
+    FILE *f = fopen(filename, "r");
+    if (!f) {
+        fprintf(stderr, "Error: No se puede abrir '%s'\n", filename);
+        return -1;
+    }
+    
+    // Buscar el caracter '['
+    int c;
+    while ((c = fgetc(f)) != EOF) {
+        if (c == '[') break;
+    }
+    
+    if (c == EOF) {
+        fprintf(stderr, "Error: No se encontró '[' en el fichero\n");
+        fclose(f);
+        return -1;
+    }
+    
+    // Leer los 256 valores (16x16)
+    sim_api_set_maze_size(16, 16);
+    
+    for (int i = 0; i < 256; i++) {
+        int16_t value;
+        if (fscanf(f, "%hd", &value) != 1) {
+            fprintf(stderr, "Error leyendo celda %d\n", i);
+            fclose(f);
+            return -1;
+        }
+        sim_api_set_maze_cell(i, value);
+        
+        // Consumir coma o ] 
+        c = fgetc(f);
+        while (c == ' ' || c == '\n' || c == '\r') c = fgetc(f);
+        if (c == ']') break;  // Fin de datos
+        if (c != ',') ungetc(c, f);
+    }
+    
+    fclose(f);
+    return 0;
 }
 
 int main(int argc, char *argv[]) {
+    const char *maze_file = NULL;
+    
     // Parsear argumentos
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "-floodfill-type=", 16) == 0 ||
@@ -43,41 +88,25 @@ int main(int argc, char *argv[]) {
         } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             print_usage(argv[0]);
             return 0;
+        } else if (argv[i][0] != '-') {
+            // Argumento sin guión = fichero de laberinto
+            maze_file = argv[i];
         }
     }
-
-    // Leer tamaño del laberinto
-    int size;
-    if (scanf("%d", &size) != 1 || size <= 0 || size > 16) {
-        fprintf(stderr, "Error: tamaño de laberinto inválido (debe ser 1-16)\n");
+    
+    if (!maze_file) {
+        fprintf(stderr, "Error: Debes especificar un fichero de laberinto\n");
+        print_usage(argv[0]);
+        return 1;
+    }
+    
+    // Cargar laberinto desde fichero
+    if (load_maze_from_file(maze_file) != 0) {
         return 1;
     }
 
-    sim_api_set_maze_size(size, size);
-
-    // Leer valores de celdas
-    int cells = size * size;
-    for (int i = 0; i < cells; i++) {
-        int16_t value;
-        if (scanf(" %hd", &value) != 1) {
-            // Intentar con coma
-            char comma;
-            if (scanf(" %c %hd", &comma, &value) != 2) {
-                fprintf(stderr, "Error leyendo celda %d\n", i);
-                return 1;
-            }
-        }
-        sim_api_set_maze_cell(i, value);
-        
-        // Consumir coma separadora si existe
-        int c = getchar();
-        if (c != ',' && c != ' ' && c != '\n' && c != '\r' && c != EOF) {
-            ungetc(c, stdin);
-        }
-    }
-
     printf("=== ZoroBot3 Maze Simulator (Standalone) ===\n");
-    printf("Laberinto: %dx%d (%d celdas)\n", size, size, cells);
+    printf("Laberinto: %s (16x16)\n", maze_file);
     printf("Floodfill type: %d\n\n", MMSIM_FLOODFILL_TYPE);
 
     // Ejecutar exploración (igual que mmsim.c)
