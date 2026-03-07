@@ -31,6 +31,7 @@ El flag `-DMMSIM_ENABLED` activa los bloques condicionales en el código origina
 
 ## Compilación
 ```bash
+cd simulator
 make -f Makefile.simulator
 ```
 
@@ -38,7 +39,7 @@ make -f Makefile.simulator
 
 ```bash
 # Ejecutar con fichero .map
-.\simulator\maze_sim.exe -floodfill-type=0 laberinto.map
+simulator\maze_sim.exe -floodfill-type=0 laberinto.map
 ```
 
 ## Argumentos
@@ -210,3 +211,22 @@ Score: 517.2
 El simulador MMS (`lib/mmsim_api/mmsim_api.c`) se comunica con un GUI externo mediante stdout/stdin. Este simulador standalone (`simulator/sim_api.c`) lee las paredes de un array interno, permitiendo ejecutar el algoritmo sin necesidad de GUI y sin los retrasos en las comunicaciones, por lo que se pueden obtener los stats de manera rapida y eficaz.
 
 Ambos usan el mismo flag `MMSIM_ENABLED` y las mismas funciones `API_*` definidas en zoro.
+
+
+## Uso del script de Python para pruebas automáticas
+
+El script `autotest_mazes.py` permite ejecutar el simulador sobre una carpeta de laberintos (.map o .txt) y guardar los resultados de distancia para cada tipo de floodfill.
+
+### Ejemplo de uso:
+
+```bash
+python simulator/autotest_mazes.py <carpeta_laberintos>
+```
+
+- `<carpeta_laberintos>`: Ruta a la carpeta que contiene los archivos .map o .txt
+
+El script ejecuta el simulador para cada laberinto y cada tipo de floodfill (0, 1, 2, 3), y guarda los resultados en `resultados_floodfill.txt`.
+
+### Requisitos:
+- Tener `maze_sim.exe` compilado en la carpeta `simulator/`
+- Python 3 instalado

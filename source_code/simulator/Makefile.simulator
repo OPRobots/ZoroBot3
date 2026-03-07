@@ -3,20 +3,20 @@
 # No duplica código - usa las mismas funciones que el MMS
 
 CC = gcc
-CFLAGS = -DMMSIM_ENABLED -I./include -I./lib/mmsim_api -Wall -Wextra -O2
+CFLAGS = -DMMSIM_ENABLED -I../include -I../lib/mmsim_api -Wall -Wextra -O2
 LDFLAGS = -lm
 
 # Archivos del simulador standalone
-SIM_SRCS = simulator/sim_main.c simulator/sim_api.c
+SIM_SRCS = sim_main.c sim_api.c
 
 # Archivos originales de ZoroBot3 (los mismos que usa el MMS)
-ZORO_SRCS = src/floodfill.c src/maze.c src/move.c \
-            src/floodfill_weigths.c src/sensors.c \
-            src/menu_run.c src/control.c
+ZORO_SRCS = ../src/floodfill.c ../src/maze.c ../src/move.c \
+            ../src/floodfill_weigths.c ../src/sensors.c \
+            ../src/menu_run.c ../src/control.c
 
 SRCS = $(SIM_SRCS) $(ZORO_SRCS)
 
-SIMDIR = simulator
+SIMDIR = .
 TARGET = $(SIMDIR)/maze_sim
 
 # Windows
