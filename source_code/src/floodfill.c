@@ -1562,6 +1562,12 @@ static void loop_explore(void) {
         return;
       }
 #else
+      // Imprimir run sequence y estrategia para el simulador standalone
+      initialize_directions_values();
+      printf("\n");
+      build_run_sequence(START_TO_GOAL);
+      smooth_run_sequence(SPEED_HAKI);
+      
       set_race_started(false);
 #endif
 

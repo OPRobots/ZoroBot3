@@ -106,7 +106,7 @@ Los ficheros .map se guardan automáticamente desde MMS.
 
 ```
 === ZoroBot3 Maze Simulator (Standalone) ===
-Laberinto: C:\Users\Hunter\Desktop\ROBOTS\micromouseonline mazefiles classic\alljapan-005-1984.txt (16x16)
+Laberinto: ../others/Portuguese Micromouse Contest 2025.map (16x16)
 Floodfill type: 0
 
 Interesting cell: 1 - 2
@@ -120,6 +120,16 @@ Interesting cell: 8 - 3
 Interesting cell: 9 - 3
 Interesting cell: 1 - 1
 Interesting cell: 1 - 1
+
+
+Current position: 0
+Current direction: 16
+Run sequence: BRRLLRRLLRRLLRRLLFFRRFFLFFFFLRLFFFFFFFLLRLRLRFRRLLRLLRFS
+Final position: 136
+Final direction: 1
+Solve strategy: 1
+MOVE_START > MOVE_RIGHT_TO_135 > MOVE_LEFT_45_TO_45 > MOVE_RIGHT_45_TO_45 > ...
+> MOVE_HOME
 
 === Exploración completada ===
 Loops ejecutados: 1

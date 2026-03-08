@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
     while (is_race_started()) {
         floodfill_loop();
         loop_count++;
-        if (loop_count > 100000) {
+        if (loop_count > 3000) {
             fprintf(stderr, "ERROR: Bucle infinito detectado (%u iteraciones)\n", loop_count);
             break;
         }
