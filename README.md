@@ -6,71 +6,21 @@ Tercera versión de nuestro primer robot. Un robot micromouse de alto rendimient
 
 ## 🏆 Palmarés
 
-<table style="width:50%; border-collapse: collapse; margin-left:auto; margin-right:auto;">
-  <tr>
-    <th style="text-align:center; font-size:1.2em;">🥇</th>
-    <th style="text-align:center; font-size:1.2em;">🥈</th>
-    <th style="text-align:center; font-size:1.2em;">🥉</th>
-  </tr>
-  <tr>
-    <td style="text-align:center; font-size:1.5em; font-weight:bold;">7</td>
-    <td style="text-align:center; font-size:1.5em; font-weight:bold;">0</td>
-    <td style="text-align:center; font-size:1.5em; font-weight:bold;">0</td>
-  </tr>
-</table>
+| 🥇 | 🥈 | 🥉 |
+|:--:|:--:|:--:|
+| **7** | **0** | **0** |
 
 ### Resultados por Evento
 
-<table style="width:100%; border-collapse: collapse;">
-  <tr>
-    <th>Evento</th>
-    <th>Categoría</th>
-    <th style="text-align:center;">Posición</th>
-    <th style="text-align:center;">Año</th>
-  </tr>
-  <tr>
-    <td><img src="./images/flags/romania-flag-xs.png" height="14px" title="Rumanía" alt="🇷🇴"/> <strong>RoboChallenge</strong></td>
-    <td>Maze</td>
-    <td style="text-align:center;">🥇</td>
-    <td style="text-align:center;">2025</td>
-  </tr>
-  <tr>
-    <td><img src="./images/flags/spain-flag-xs.png" height="14px" title="España" alt="🇪🇸"/> <strong>OSHWDem</strong></td>
-    <td>Micromouse Classic</td>
-    <td style="text-align:center;">🥇</td>
-    <td style="text-align:center;">2025</td>
-  </tr>
-  <tr>
-    <td><img src="./images/flags/portugal-flag-xs.png" height="14px" title="Portugal" alt="🇵🇹"/> <strong>Micromouse Portugese Contest</strong></td>
-    <td>Micromouse Classic</td>
-    <td style="text-align:center;">🥇</td>
-    <td style="text-align:center;">2025</td>
-  </tr>
-  <tr>
-    <td><img src="./images/flags/portugal-flag-xs.png" height="14px" title="Portugal" alt="🇵🇹"/> <strong>Micromouse Portugese Contest</strong></td>
-    <td>Time Trial</td>
-    <td style="text-align:center;">🥇</td>
-    <td style="text-align:center;">2025</td>
-  </tr>
-  <tr>
-    <td><img src="./images/flags/romania-flag-xs.png" height="14px" title="Rumanía" alt="🇷🇴"/> <strong>RoboChallenge</strong></td>
-    <td>Maze</td>
-    <td style="text-align:center;">🥇</td>
-    <td style="text-align:center;">2024</td>
-  </tr>
-  <tr>
-    <td><img src="./images/flags/spain-flag-xs.png" height="14px" title="España" alt="🇪🇸"/> <strong>OSHWDem</strong></td>
-    <td>Micromouse Classic</td>
-    <td style="text-align:center;">🥇</td>
-    <td style="text-align:center;">2024</td>
-  </tr>
-  <tr>
-    <td><img src="./images/flags/spain-flag-xs.png" height="14px" title="España" alt="🇪🇸"/> <strong>OSHWDem</strong></td>
-    <td>Micromouse Wall-Follower</td>
-    <td style="text-align:center;">🥇</td>
-    <td style="text-align:center;">2023</td>
-  </tr>
-</table>
+| Evento | Categoría | Posición | Año |
+|--------|-----------|:--------:|:---:|
+| <img src="./images/flags/romania-flag-xs.png" height="16px" title="Rumanía" alt="🇷🇴"/> **RoboChallenge** | Maze | 🥇 | 2025 |
+| <img src="./images/flags/spain-flag-xs.png" height="16px" title="España" alt="🇪🇸"/> **OSHWDem** | Micromouse Classic | 🥇 | 2025 |
+| <img src="./images/flags/portugal-flag-xs.png" height="16px" title="Portugal" alt="🇵🇹"/> **Micromouse Portugese Contest** | Micromouse Classic | 🥇 | 2025 |
+| <img src="./images/flags/portugal-flag-xs.png" height="16px" title="Portugal" alt="🇵🇹"/> **Micromouse Portugese Contest** | Time Trial | 🥇 | 2025 |
+| <img src="./images/flags/romania-flag-xs.png" height="16px" title="Rumanía" alt="🇷🇴"/> **RoboChallenge** | Maze | 🥇 | 2024 |
+| <img src="./images/flags/spain-flag-xs.png" height="16px" title="España" alt="🇪🇸"/> **OSHWDem** | Micromouse Classic | 🥇 | 2024 |
+| <img src="./images/flags/spain-flag-xs.png" height="16px" title="España" alt="🇪🇸"/> **OSHWDem** | Micromouse Wall-Follower | 🥇 | 2023 |
 
 ---
 
