@@ -148,7 +148,7 @@ static void handle_menu_run_values(void) {
     }
     set_info_led(INFO_LED_E, blinkState);
   } else {
-    set_info_led(INFO_LED_E, valueRun[MODE_EXPLORE_ALGORITHM] == 1);
+    set_info_led(INFO_LED_E, valueRun[MODE_EXPLORE_ALGORITHM] == EXPLORE_FLOODFILL);
   }
 }
 

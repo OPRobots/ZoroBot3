@@ -1158,9 +1158,9 @@ static void move_side(enum movement movement) {
     set_RGB_color(0, 0, 0);
   }
   enter_next_cell();
-  if (kinematics.turns[movement].end > 0) {
+/*   if (kinematics.turns[movement].end > 0) {
     current_cell_start_mm = kinematics.turns[movement].end;
-  }
+  } */
 
 #endif
 }
@@ -1532,18 +1532,23 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
     if (current_cell == cells && !last_cell_wall_lost) {
       if (cell_travelled >= 15) {
         current_walls = get_walls();
+        bool has_turn_wall = false;
         if (next_turn_sign == 1 /* && cell_walls.right */ && !current_walls.right) {
+          has_turn_wall = cell_walls.right;
           last_cell_wall_lost = true;
         } else if (next_turn_sign == -1 /* && cell_walls.left */ && !current_walls.left) {
+          has_turn_wall = cell_walls.left;
           last_cell_wall_lost = true;
         } else if (next_turn_sign == 0) {
           last_cell_wall_lost = true;
         }
         if (last_cell_wall_lost && !current_cell_wall_lost) {
           current_cell_wall_lost = true;
+          if(has_turn_wall){
           current_distance = get_encoder_avg_micrometers();
           distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + end_offset;
           current_cell_distance_left = distance;
+          }
         }
       } else {
         cell_walls = get_walls();
