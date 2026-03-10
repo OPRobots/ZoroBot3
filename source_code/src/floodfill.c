@@ -1588,19 +1588,31 @@ static void loop_explore(void) {
     switch (menu_run_get_explore_type()) {
       case EXPLORE_SIMPLE:
         configure_explore_kinematics(true);
-        run_back_to_start(SPEED_EXPLORE);
-        set_race_started(false);
         if (is_race_auto_run()) {
+          run_back_to_start(SPEED_EXPLORE);
+          set_race_started(false);
           set_race_started(true);
           floodfill_start_run();
           return;
+        } else {
+          set_race_started(false);
         }
         return;
       case EXPLORE_HOME:
         set_target(0);
         break;
       case EXPLORE_COMPLETE:
-        set_target(interesting_cell);
+        if (interesting_cell == 0 && !is_race_auto_run()) {
+          if (get_current_stored_walls().front) {
+            move(MOVE_HOME);
+          } else {
+            move(MOVE_END);
+          }
+          set_race_started(false);
+          return;
+        } else {
+          set_target(interesting_cell);
+        }
         break;
     }
 
@@ -1621,9 +1633,9 @@ static void loop_run(void) {
     set_ideal_angular_speed(0);
     set_RGB_color(0, 255, 0);
 
-    if (menu_run_get_speed() != SPEED_EXPLORE) {
-      run_back_to_start(SPEED_NORMAL);
-    }
+    // if (menu_run_get_speed() != SPEED_EXPLORE) {
+    //   run_back_to_start(SPEED_NORMAL);
+    // }
 
     set_race_started(false);
   }
