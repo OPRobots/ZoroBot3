@@ -1,9 +1,31 @@
 # ZoroBot3
+
 Tercera versión de nuestro primer robot. Un robot micromouse de alto rendimiento con STM32F4, encoders magneticos de alta resolución, succión y muchos leds molones.
 
 ![ZoroBot3](./images/ZoroBot3_rev2_finish_3.jpg "ZoroBot3")
 
-## Hardware
+## 🏆 Palmarés
+
+| 🥇 | 🥈 | 🥉 |
+|:--:|:--:|:--:|
+| **7** | **0** | **0** |
+
+### Resultados por Evento
+
+| Evento | Categoría | Posición | Año |
+|--------|-----------|:--------:|:---:|
+| <img src="./images/flags/romania-flag-xs.png" height="16px" title="Rumanía" alt="🇷🇴"/> **RoboChallenge** | Maze | 🥇 | 2025 |
+| <img src="./images/flags/spain-flag-xs.png" height="16px" title="España" alt="🇪🇸"/> **OSHWDem** | Micromouse Classic | 🥇 | 2025 |
+| <img src="./images/flags/portugal-flag-xs.png" height="16px" title="Portugal" alt="🇵🇹"/> **Micromouse Portugese Contest** | Micromouse Classic | 🥇 | 2025 |
+| <img src="./images/flags/portugal-flag-xs.png" height="16px" title="Portugal" alt="🇵🇹"/> **Micromouse Portugese Contest** | Time Trial | 🥇 | 2025 |
+| <img src="./images/flags/romania-flag-xs.png" height="16px" title="Rumanía" alt="🇷🇴"/> **RoboChallenge** | Maze | 🥇 | 2024 |
+| <img src="./images/flags/spain-flag-xs.png" height="16px" title="España" alt="🇪🇸"/> **OSHWDem** | Micromouse Classic | 🥇 | 2024 |
+| <img src="./images/flags/spain-flag-xs.png" height="16px" title="España" alt="🇪🇸"/> **OSHWDem** | Micromouse Wall-Follower | 🥇 | 2023 |
+
+---
+
+## ⚙️ Hardware
+
 - **Microcontrolador**: STM32F405RGT6 @168MHz
 - **Driver de motores**: MP6551 @20kHz
 - **Giroscopio**: LSM6DSRTR 4000dps
@@ -15,7 +37,6 @@ Tercera versión de nuestro primer robot. Un robot micromouse de alto rendimient
 - **Sensores**:
   - 4 Emisores IR SFH-4550
   - 4 Receptores IR ST-1KL3A
-  
 - **Tracción**:
   - 2x Motores Coreless 8520 7.4v genéricos (AliExpress)
   - Goma de ruedas Kyosho K.MZW39-30
@@ -29,7 +50,8 @@ Tercera versión de nuestro primer robot. Un robot micromouse de alto rendimient
 
 ![ZoroBot3 Chasis](./images/ZoroBot3_rev2_3d_model.png "ZoroBot3 - Chasis")
 
-## Software
+## 💻 Software
+
 - Programado en VSCode y PlatformIO con LibOpenCM3.
 - Todos los valores analógicos se leen mediante **DMA** y son procesados cada 1ms.
 - Los sensores se leen mediante una máquina de estados a 16kHz, enciendiendo y apagando los emisores para **filtrar la luz ambiente**.
@@ -40,5 +62,24 @@ Tercera versión de nuestro primer robot. Un robot micromouse de alto rendimient
 - Las curvas se realizan mediante perfiles de giro con **aceleración senoidal** para mayor suavidad.
 - Dispone de programas para seguimiento de pared derecha/izquierda, exploración y resolución mediante floodfill basado en pesos (más información en [TimeBased FloodFill Simulator](https://github.com/OPRobots/TimeBased-FloodFill-Simulator)) y hardcodeo de movimientos.
 
-## Victoria de ZoroBot3 en la OSHWDem2024
-https://github.com/user-attachments/assets/b749b48b-d331-48f7-bc95-2def68d67b7c
+## 🎥 Vídeos
+
+### OSHWDem 2025 - 🥇
+<p align="center" width="100%">
+<video src="https://github.com/user-attachments/assets/332fd117-6600-4692-b59f-4b1154166f3f" width="80%" controls></video>
+</p>
+
+### Micromouse Portugese Contest 2025 - 🥇
+<p align="center" width="100%">
+<video src="https://github.com/user-attachments/assets/cf21e942-3fe0-4065-8892-fa3d181a9791" width="80%" controls></video>
+</p>
+
+### RoboChallenge 2024 - 🥇
+<p align="center" width="100%">
+<video src="https://github.com/user-attachments/assets/a8c53e97-a756-4934-9c83-6c93fda1b235" width="80%" controls></video>
+</p>
+
+### OSHWDem 2024 - 🥇
+<p align="center" width="100%">
+<video src="https://github.com/user-attachments/assets/a70629e6-34b6-473f-afb0-14d8290bd128" width="80%" controls></video>
+</p>

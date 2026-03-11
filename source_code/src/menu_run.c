@@ -2,7 +2,7 @@
 
 #define MODE_SPEED 0
 #define MODE_RACE 1
-#define MODE_ACCEL_EXPLORE 2
+#define MODE_EXPLORE_TYPE 2
 #define MODE_FLOODFILL_TYPE 3
 #define MODE_MAZE_TYPE 4
 #define MODE_SOLVE_STRATEGY 5
@@ -10,7 +10,7 @@
 uint8_t modeRun = MODE_SPEED;
 
 #define MODE_SPEED_VALUES 6
-#define MODE_ACCEL_EXPLORE_VALUES 2
+#define MODE_EXPLORE_TYPE_VALUES 3
 #define MODE_FLOODFILL_TYPE_VALUES 3
 #define MODE_RACE_VALUES 2
 #define MODE_MAZE_TYPE_VALUES 2
@@ -75,15 +75,21 @@ static void handle_menu_run_values(void) {
     set_status_led(false);
   }
 
-  if (modeRun == MODE_ACCEL_EXPLORE) {
-    if (valueRun[modeRun] == 1) {
-      set_RGB_color(0, 50, 0);
-    } else {
-      set_RGB_color(0, 0, 0);
+  if (modeRun == MODE_EXPLORE_TYPE) {
+    switch (valueRun[modeRun]) {
+      case EXPLORE_SIMPLE:
+        set_RGB_color(0, 0, 50);
+        break;
+      case EXPLORE_HOME:
+        set_RGB_color(50, 50, 0);
+        break;
+      case EXPLORE_COMPLETE:
+        set_RGB_color(50, 0, 50);
+        break;
     }
     set_info_led(INFO_LED_A, blinkState);
   } else {
-    set_info_led(INFO_LED_A, valueRun[MODE_ACCEL_EXPLORE] == 1);
+    set_info_led(INFO_LED_A, valueRun[MODE_EXPLORE_TYPE] != EXPLORE_SIMPLE);
   }
 
   if (modeRun == MODE_FLOODFILL_TYPE) {
@@ -130,10 +136,10 @@ static void handle_menu_run_values(void) {
       case EXPLORE_HANDWALL:
         set_RGB_color(0, 0, 50);
         break;
-      case EXPLORE_FLOODFILL:
+      case EXPLORE_TIME_TRIAL:
         set_RGB_color(50, 50, 0);
         break;
-      case EXPLORE_TIME_TRIAL:
+      case EXPLORE_FLOODFILL:
         set_RGB_color(50, 0, 50);
         break;
       default:
@@ -142,7 +148,7 @@ static void handle_menu_run_values(void) {
     }
     set_info_led(INFO_LED_E, blinkState);
   } else {
-    set_info_led(INFO_LED_E, valueRun[MODE_EXPLORE_ALGORITHM] == 1);
+    set_info_led(INFO_LED_E, valueRun[MODE_EXPLORE_ALGORITHM] == EXPLORE_FLOODFILL);
   }
 }
 
@@ -219,8 +225,8 @@ void menu_run_up() {
     case MODE_RACE:
       mode_values = MODE_RACE_VALUES;
       break;
-    case MODE_ACCEL_EXPLORE:
-      mode_values = MODE_ACCEL_EXPLORE_VALUES;
+    case MODE_EXPLORE_TYPE:
+      mode_values = MODE_EXPLORE_TYPE_VALUES;
       break;
     case MODE_FLOODFILL_TYPE:
       mode_values = MODE_FLOODFILL_TYPE_VALUES;
@@ -266,9 +272,9 @@ enum speed_strategy menu_run_get_speed(void) {
 #endif
 }
 
-enum accel_explore menu_run_get_accel_explore(void) {
+enum explore_type menu_run_get_explore_type(void) {
 #ifndef MMSIM_ENABLED
-  return valueRun[MODE_ACCEL_EXPLORE];
+  return valueRun[MODE_EXPLORE_TYPE];
 #else
   return true;
 #endif
