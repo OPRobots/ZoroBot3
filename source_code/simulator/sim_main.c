@@ -148,8 +148,5 @@ int main(int argc, char *argv[]) {
   // Imprimir mapa combinado de visitados + camino óptimo
   sim_api_print_path_maze();
 
-  // Mapa y ruta "real"
-  floodfill_maze_print();
-
   return 0;
 }

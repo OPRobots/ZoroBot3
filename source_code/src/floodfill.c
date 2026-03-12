@@ -341,7 +341,19 @@ static void update_walls(struct walls walls) {
 static void reset_floodfill_and_queue(void) {
   for (uint16_t i = 0; i < MAZE_CELLS; i++) {
     floodfill[i] = MAZE_MAX_DISTANCE;
+#ifdef MMSIM_ENABLED
+    if (!is_race_started()) {
+      API_setFloodFill(
+          i % maze_get_columns(),
+          i / maze_get_columns(),
+          MAZE_MAX_DISTANCE);
+      API_clearColor(
+          i % maze_get_columns(),
+          i / maze_get_columns());
+    }
+#endif
   }
+
   cells_queue.head = 0;
   cells_queue.tail = 0;
 }
@@ -1550,6 +1562,12 @@ static void run_back_to_start(enum speed_strategy speed) {
 }
 #endif
 
+#ifdef MMSIM_ENABLED
+static void mmsim_finish_explore(void) {
+  floodfill_maze_print();
+}
+#endif
+
 static void loop_explore(void) {
   while (is_race_started()) {
     go_to_target();
@@ -1573,17 +1591,12 @@ static void loop_explore(void) {
         return;
       }
 #else
-      // Imprimir run sequence y estrategia para el simulador standalone
-      initialize_directions_values();
-      printf("\n");
-      build_run_sequence(START_TO_GOAL);
-      smooth_run_sequence(SPEED_HAKI);
-
       set_race_started(false);
 #endif
 
-      set_goal_as_target();
-      update_floodfill();
+#ifdef MMSIM_ENABLED
+      mmsim_finish_explore();
+#endif
       return;
     } else if (current_cell_is_goal() && get_ideal_linear_speed() == 0) {
       if (menu_run_get_explore_type() != EXPLORE_SIMPLE) {
@@ -1604,6 +1617,9 @@ static void loop_explore(void) {
           return;
         } else {
           set_race_started(false);
+#ifdef MMSIM_ENABLED
+          mmsim_finish_explore();
+#endif
         }
         return;
       case EXPLORE_HOME:
@@ -1617,6 +1633,9 @@ static void loop_explore(void) {
             move(MOVE_END);
           }
           set_race_started(false);
+#ifdef MMSIM_ENABLED
+          mmsim_finish_explore();
+#endif
           return;
         } else {
           set_target(interesting_cell);
@@ -1668,6 +1687,11 @@ void floodfill_maze_print(void) {
 
   build_run_sequence(START_TO_GOAL);
   smooth_run_sequence(menu_run_get_speed());
+
+#ifdef MMSIM_ENABLED
+  return;
+#endif
+
   // update_floodfill();
   for (int16_t r = maze_get_cells() - maze_get_columns(); r >= 0; r = r - maze_get_columns()) {
     // Borde superior del laberinto
