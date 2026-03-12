@@ -1578,7 +1578,7 @@ static void loop_explore(void) {
       printf("\n");
       build_run_sequence(START_TO_GOAL);
       smooth_run_sequence(SPEED_HAKI);
-      
+
       set_race_started(false);
 #endif
 
@@ -1595,7 +1595,9 @@ static void loop_explore(void) {
       case EXPLORE_SIMPLE:
         configure_explore_kinematics(true);
         if (is_race_auto_run()) {
+#ifndef MMSIM_ENABLED
           run_back_to_start(SPEED_EXPLORE);
+#endif
           set_race_started(false);
           set_race_started(true);
           floodfill_start_run();
@@ -1664,11 +1666,7 @@ void floodfill_maze_print(void) {
   initialize_directions_values();
   configure_kinematics(menu_run_get_speed());
 
-  current_position = 34;
-  current_direction = WEST;
-  build_run_sequence(GOAL_TO_START);
-
-  // build_run_sequence(START_TO_GOAL);
+  build_run_sequence(START_TO_GOAL);
   smooth_run_sequence(menu_run_get_speed());
   // update_floodfill();
   for (int16_t r = maze_get_cells() - maze_get_columns(); r >= 0; r = r - maze_get_columns()) {
