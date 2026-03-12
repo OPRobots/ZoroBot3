@@ -276,7 +276,8 @@ enum explore_type menu_run_get_explore_type(void) {
 #ifndef MMSIM_ENABLED
   return valueRun[MODE_EXPLORE_TYPE];
 #else
-  return true;
+  extern int MMSIM_EXPLORE_TYPE;
+  return MMSIM_EXPLORE_TYPE;
 #endif
 }
 
@@ -286,11 +287,6 @@ enum floodfill_type menu_run_get_floodfill_type(void) {
 #else
   extern int MMSIM_FLOODFILL_TYPE;
   return MMSIM_FLOODFILL_TYPE;
-#ifdef MMSIM_FLOODFILL_TYPE
-  return MMSIM_FLOODFILL_TYPE;
-#else
-  return FLOODFILL_TYPE_TIME;
-#endif
 #endif
 }
 
