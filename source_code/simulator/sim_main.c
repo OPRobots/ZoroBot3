@@ -21,7 +21,7 @@ extern void sim_api_print_times_maze(void);
 extern void sim_api_print_path_maze(void);
 
 // Variables globales para floodfill_type y explore_type (usadas por menu_run.c cuando MMSIM_ENABLED)
-int MMSIM_FLOODFILL_TYPE = 2; // Default: FLOODFILL_TYPE_TIME
+int MMSIM_FLOODFILL_TYPE = 3; // Default: FLOODFILL_TYPE_TIMEv2
 int MMSIM_EXPLORE_TYPE = 2;   // Default: EXPLORE_COMPLETE
 
 static void print_usage(const char *prog) {

@@ -3,6 +3,7 @@
 Este simulador permite ejecutar el algoritmo de mapeo y resolución de ZoroBot3 en PC, usando la lógica del robot real.
 
 ## ¿Qué hace?
+
 - Recibe como input un fichero de laberinto en formato .map.
 - Simula la exploración y resolución del laberinto, igual que el robot.
 - Muestra **stats de exploración** (igual que MMS).
@@ -15,8 +16,13 @@ El simulador usa los **ficheros originales de ZoroBot3** sin modificarlos:
 
 ```
 simulator/
-├── sim_api.c      # Implementa API_* (lee paredes de array interno)
-├── sim_main.c     # main() - lee laberinto y ejecuta exploración
+├── mazes/              # Ficheros de laberintos (.map o .txt)
+|    ├── Portuguese Micromouse Contest 2025.map
+|    └── ...
+├── sim_api.c           # Implementa API_* (lee paredes de array interno)
+├── sim_main.c          # main() - lee laberinto y ejecuta exploración
+├── Makefile.linux      # Makefile para compilar en Linux
+├── Makefile.simulator  # Makefile para compilar en Windows
 └── README.md
 
 src/               # Ficheros originales (no modificados)
@@ -30,6 +36,7 @@ src/               # Ficheros originales (no modificados)
 El flag `-DMMSIM_ENABLED` activa los bloques condicionales en el código original.
 
 ## Compilación
+
 ```bash
 cd simulator
 make -f Makefile.simulator
@@ -39,14 +46,19 @@ make -f Makefile.simulator
 
 ```bash
 # Ejecutar con fichero .map
-simulator\maze_sim.exe -floodfill-type=0 laberinto.map
+simulator\maze_sim.exe -floodfill-type=0 -explore-type=0 maze.map
 ```
 
 ## Argumentos
-- `-floodfill-type=0` : Floodfill básico (Manhattan)
-- `-floodfill-type=1` : Floodfill diagonal
-- `-floodfill-type=2` : Floodfill por tiempo (default)
-- `-floodfill-type=3` : Floodfill por tiempo v2
+
+- `-floodfill-type=0` : FLOODFILL_BASIC
+- `-floodfill-type=1` : FLOODFILL_DIAGONAL
+- `-floodfill-type=2` : FLOODFILL_TIME
+- `-floodfill-type=3` : FLOODFILL_TIMEv2 (default)
+
+- `-explore-type=0` : EXPLORE_SIMPLE
+- `-explore-type=1` : EXPLORE_HOME
+- `-explore-type=2` : EXPLORE_COMPLETE (default)
 
 ## Stats de Exploración
 
@@ -222,7 +234,6 @@ El simulador MMS (`lib/mmsim_api/mmsim_api.c`) se comunica con un GUI externo me
 
 Ambos usan el mismo flag `MMSIM_ENABLED` y las mismas funciones `API_*` definidas en zoro.
 
-
 ## Uso del script de Python para pruebas automáticas
 
 El script `autotest_mazes.py` permite ejecutar el simulador sobre una carpeta de laberintos (.map o .txt) y guardar los resultados de distancia para cada tipo de floodfill.
@@ -230,13 +241,14 @@ El script `autotest_mazes.py` permite ejecutar el simulador sobre una carpeta de
 ### Ejemplo de uso:
 
 ```bash
-python simulator/autotest_mazes.py <carpeta_laberintos>
+python simulator/autotest_mazes.py <mazes_folder>
 ```
 
-- `<carpeta_laberintos>`: Ruta a la carpeta que contiene los archivos .map o .txt
+- `<mazes_folder>`: Ruta a la carpeta que contiene los archivos .map o .txt
 
 El script ejecuta el simulador para cada laberinto y cada tipo de floodfill (0, 1, 2, 3), y guarda los resultados en `resultados_floodfill.txt`.
 
 ### Requisitos:
+
 - Tener `maze_sim.exe` compilado en la carpeta `simulator/`
 - Python 3 instalado
