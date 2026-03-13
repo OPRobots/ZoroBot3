@@ -56,11 +56,11 @@ void floodfill_weights_table(float distance, uint16_t init_speed, uint16_t max_s
   weights_out[0].time = time;
   weights_out[0].total_time = total_time;
   weights_out[0].penalty = penalty;
-  for (uint16_t i = 1; i < cells_to_max_speed; i++) {
+  for (uint16_t i = 0; i < cells_to_max_speed; i++) {
     time = time_taken_distance(distance, speed, max_speed, accel);
     total_time += time;
     speed = speed_after_time(time, speed, max_speed, accel);
-    penalty = time_penalty(speed, init_speed, accel);
+    penalty = time_penalty(speed, init_speed, accel)*2;
     weights_out[i].speed = speed;
     weights_out[i].time = time;
     weights_out[i].total_time = total_time;
