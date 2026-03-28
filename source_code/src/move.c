@@ -984,6 +984,7 @@ static void move_home(void) {
   // delay(500);
   // move_straight(MIDDLE_MAZE_DISTANCE + current_cell_start_mm, 300, false, true);
   move_straight_until_front_distance(MIDDLE_MAZE_DISTANCE, 300, true);
+  // move_straight(MIDDLE_MAZE_DISTANCE, 300, false, true);
 
   keep_front_distance(MIDDLE_MAZE_DISTANCE, 150);
 
@@ -1002,7 +1003,8 @@ static void move_home(void) {
   reset_control_errors();
 
   set_check_motors_saturated_enabled(false);
-  move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
+  // move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
+  move_back_until_wall();
   set_check_motors_saturated_enabled(true);
   set_starting_position();
 
@@ -1218,9 +1220,15 @@ static void move_back(enum movement movement) {
 
   switch (movement) {
     case MOVE_BACK_WALL:
+      set_check_motors_saturated_enabled(false);
+      // move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH + 10, -100, false, true);
+      move_back_until_wall();
+      set_check_motors_saturated_enabled(true);
+      set_starting_position();
+      break;
     case MOVE_BACK_STOP:
       set_check_motors_saturated_enabled(false);
-      move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH + 10, -100, false, true);
+      move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
       set_check_motors_saturated_enabled(true);
       set_starting_position();
       break;
@@ -1422,6 +1430,21 @@ void keep_front_distance(uint16_t distance, uint16_t timeout) {
   set_front_sensors_angle_correction(false);
   set_front_sensors_distance_correction(false);
 
+#endif
+}
+
+void move_back_until_wall(void) {
+#ifndef MMSIM_ENABLED
+  set_ideal_angular_speed(0.0);
+  set_target_linear_speed(-100);
+  while (abs(get_encoder_avg_speed()) < 50) {
+  }
+  while (abs(get_encoder_avg_speed()) > 20) {
+    warning_status_led(50);
+  }
+  delay(MAX_MOTOR_SATURATION_COUNT / 2);
+  force_linear_speed(0);
+  set_status_led(false);
 #endif
 }
 
