@@ -1159,7 +1159,7 @@ static void go_to_target(void) {
       update_floodfill();
       next_step = get_next_floodfill_step(walls, next_step);
       if (menu_run_get_explore_type() == EXPLORE_COMPLETE) {
-        // Es el target aun interesante?
+        //* Es el target aun interesante?
         if (target_cells.size == 1 && target_cells.stack[0] != 0 && maze_goal_position != 0 && next_step_before_update_walls != next_step) {
           uint8_t interesting_cell = find_unknown_interesting_cell();
           if (interesting_cell == 0) {
@@ -1230,6 +1230,8 @@ static void go_to_target(void) {
       maze_goal_position = current_position;
       maze_goal_direction = current_direction;
     }
+    //* Ajusta SOLO la orientación final después de MOVE_BACK_STOP
+    current_direction = get_next_direction(BACK);
 #ifndef MMSIM_ENABLED
     save_maze();
 #endif
@@ -1290,9 +1292,29 @@ static void build_run_sequence(enum run_sequence_type type) {
     switch (step) {
       case FRONT:
         run_sequence[i++] = (current_position == begin_position ? 'B' : 'F');
-        if (type == GOAL_TO_START && current_position == begin_position) {
-          run_sequence[i++] = 'F';
-        }
+        //? Por qué había metido esto en su momento??
+        // if (type == GOAL_TO_START && current_position == begin_position) {
+        //   run_sequence[i++] = 'F';
+        // }
+
+        /*
+        Al hacer esto, en el laberinto de 6x6 mete un MOVE_FRONT de más en el siguiente caso en un GOAL_TO_START:
+        - BFFFFRFFFRFLLFFS
+        - MOVE_START > 4xMOVE_FRONT > MOVE_RIGHT_90 > 3xMOVE_FRONT > MOVE_RIGHT_90 > MOVE_FRONT > MOVE_LEFT_180 > 2xMOVE_FRONT > MOVE_HOME
+        ·═══════·═══════·═══════·═══════·═══════·═══════·
+        ║ 255.00  255.00  255.00  255.00  255.00  12.800║
+        ·       ·       ·       ·       ·       ·       ·
+        ║ 255.00  255.00  255.00  255.00  255.00  11.800║
+        ·       ·═══════·       ·       ·       ·       ·
+        ║ 3.0000  3.7000║ 255.00  255.00  255.00║ 10.800║
+        ·       ·       ·       ·       ·       ·       ·
+        ║ 2.0000║ 4.4000║ 255.00  255.00  255.00║  9.800║
+        ·       ·       ·═══════·═══════·═══════·       ·
+        ║ 1.0000║ 5.4000  6.1000  7.1000  8.1000   9.100║
+        ·       ·       ·       ·       ·       ·       ·
+        ║ 0.0000║ 255.00  255.00  255.00  255.00  255.00║
+        ·═══════·═══════·═══════·═══════·═══════·═══════·
+        */
         break;
       case LEFT:
         run_sequence[i++] = 'L';
@@ -1310,7 +1332,7 @@ static void build_run_sequence(enum run_sequence_type type) {
   }
   run_sequence[i++] = 'S';
 
-  // Ajusta la orientación final para que el robot quede mirando hacia atrás al llegar a la meta, listo para hacer la vuelta rápida a casa
+  //* Ajusta la orientación final para que el robot quede mirando hacia atrás al llegar a la meta, listo para hacer la vuelta rápida a casa
   if (current_cell_is_goal()) {
     current_direction = get_next_direction(BACK);
   }
@@ -1502,27 +1524,26 @@ static void smooth_run_sequence(enum speed_strategy speed) {
   }
 }
 
-#ifndef MMSIM_ENABLED
-static void floodfill_explore_finish(void) {
+static void floodfill_explore_finish(bool save_current_maze) {
   set_race_started(false);
-  set_RGB_color(255, 255, 0);
-  set_status_led(false);
-  save_maze();
-  set_RGB_color(0, 255, 0);
-  delay(500);
-}
+#ifndef MMSIM_ENABLED
+  if (save_current_maze) {
+    set_RGB_color(255, 255, 0);
+    set_status_led(false);
+    save_maze();
+    set_RGB_color(0, 255, 0);
+    delay(500);
+  }
 #endif
+}
+
+static bool check_can_do_autorun(void) {
+  return is_race_started() && !is_motor_saturated();
+}
 
 #ifndef MMSIM_ENABLED
 static void run_back_to_start(enum speed_strategy speed) {
   configure_kinematics(speed);
-
-  set_race_started(false);
-  // while (true) {
-  //   printf("current_position: %d\n", current_position);
-  //   printf("current_direction: %d\n", current_direction);
-  //   delay(1000);
-  // }
 
   build_run_sequence(current_cell_is_goal() ? GOAL_TO_START : EXPLORE_TO_START);
   smooth_run_sequence(speed);
@@ -1540,7 +1561,7 @@ static void run_back_to_start(enum speed_strategy speed) {
   if (!is_motor_saturated()) {
     set_RGB_color(0, 255, 0);
     uint32_t ms = get_clock_ticks();
-    while (get_clock_ticks() - ms < 1000) {
+    while (get_clock_ticks() - ms < 500) {
       warning_status_led(50);
     }
     set_RGB_color(0, 0, 0);
@@ -1602,92 +1623,100 @@ static void mmsim_finish_explore(void) {
 #endif
 
 static void loop_explore(void) {
-  while (is_race_started()) {
+  while (is_race_started() && !is_motor_saturated()) {
     go_to_target();
 
+    bool can_do_autorun = false;
     uint8_t interesting_cell = find_unknown_interesting_cell();
-    if (current_position == 0) {
-      // if (current_position == 0 || (interesting_cell == 0 /*  && current_cell_is_goal() */)) {
-      if (!current_cell_is_goal()) {
-        if (get_current_stored_walls().front) {
-          move(MOVE_HOME);
-        } else {
-          move(MOVE_END);
-        }
-      }
 
-#ifndef MMSIM_ENABLED
-      floodfill_explore_finish();
-      if (is_race_auto_run()) {
-        set_race_started(true);
-        floodfill_start_run();
-        return;
-      }
-#else
-      set_race_started(false);
-#endif
-
-#ifdef MMSIM_ENABLED
-      mmsim_finish_explore();
-#endif
-      return;
-    } else if (current_cell_is_goal() && get_ideal_linear_speed() == 0) {
-      if (menu_run_get_explore_type() != EXPLORE_SIMPLE) {
-        move(MOVE_START);
-      }
-      update_position(BACK);
-    }
     switch (menu_run_get_explore_type()) {
       case EXPLORE_SIMPLE:
-        configure_explore_kinematics(true);
-        if (is_race_auto_run()) {
+        can_do_autorun = check_can_do_autorun();
+        floodfill_explore_finish(false);
+
 #ifndef MMSIM_ENABLED
+        if (is_race_auto_run() && can_do_autorun) {
+          configure_explore_kinematics(true);
           run_back_to_start(SPEED_EXPLORE);
+          can_do_autorun = check_can_do_autorun();
+          floodfill_explore_finish(false);
+          if (can_do_autorun) {
+            set_race_started(true);
+            floodfill_start_run();
+            return;
+          }
+        }
+#else
+        mmsim_finish_explore();
 #endif
-          set_race_started(false);
-          set_race_started(true);
-          floodfill_start_run();
-          return;
+        break;
+      case EXPLORE_HOME:
+        if (current_position != 0) {
+          set_target(0);
+          move(MOVE_START);
+          update_position(FRONT);
         } else {
-          set_race_started(false);
-#ifdef MMSIM_ENABLED
+          move(MOVE_HOME);
+          can_do_autorun = check_can_do_autorun();
+          floodfill_explore_finish(true);
+#ifndef MMSIM_ENABLED
+          if (is_race_auto_run() && can_do_autorun) {
+            configure_explore_kinematics(true);
+            set_race_started(true);
+            floodfill_start_run();
+            return;
+          }
+#else
           mmsim_finish_explore();
 #endif
         }
-        return;
-      case EXPLORE_HOME:
-        set_target(0);
         break;
       case EXPLORE_COMPLETE:
-#ifdef MMSIM_ENABLED
-        if (interesting_cell == 0 && current_position == 0) {
-          set_race_started(false);
-          mmsim_finish_explore();
-          return;
-        } else {
-          set_target(interesting_cell);
-        }
-
-#else
-        if (interesting_cell == 0 && !is_race_auto_run()) {
-          if (get_current_stored_walls().front) {
+        if (is_race_auto_run()) {
+          if (interesting_cell == 0 && current_position == 0) {
             move(MOVE_HOME);
-          } else {
-            move(MOVE_END);
-          }
-          set_race_started(false);
-          return;
-        } else {
-          set_target(interesting_cell);
-        }
+            can_do_autorun = check_can_do_autorun();
+            floodfill_explore_finish(true);
+#ifndef MMSIM_ENABLED
+            if (is_race_auto_run() && can_do_autorun) {
+              configure_explore_kinematics(true);
+              set_race_started(true);
+              floodfill_start_run();
+              return;
+            }
+#else
+            mmsim_finish_explore();
 #endif
+          } else {
+            set_target(interesting_cell);
+            if (current_cell_is_goal() && get_ideal_linear_speed() == 0) {
+              move(MOVE_START);
+              update_position(FRONT);
+            }
+          }
 
+        } else {
+          if (interesting_cell == 0) {
+            if (get_current_stored_walls().front) {
+              move(MOVE_HOME);
+            } else {
+              move(MOVE_END);
+            }
+            floodfill_explore_finish(true);
+#ifdef MMSIM_ENABLED
+            mmsim_finish_explore();
+#endif
+            return;
+          } else {
+            set_target(interesting_cell);
+            if (current_cell_is_goal() && get_ideal_linear_speed() == 0) {
+              move(MOVE_START);
+              update_position(FRONT);
+            }
+          }
+        }
         break;
     }
-
-#ifndef MMSIM_ENABLED
-    check_time_limit();
-#endif
   }
 }
 
@@ -1885,11 +1914,7 @@ void floodfill_start_explore(void) {
   set_goal_as_target();
 
   if (find_unknown_interesting_cell() == 0) {
-#ifndef MMSIM_ENABLED
-    floodfill_explore_finish();
-#else
-    set_race_started(false);
-#endif
+    floodfill_explore_finish(false);
     return;
   }
 

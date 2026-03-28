@@ -141,6 +141,7 @@ void set_race_started(bool state) {
 
 #ifndef MMSIM_ENABLED
   reset_control_all();
+  set_sensors_enabled(state);
   if (!state) {
     menu_reset();
     race_finish_ms = get_clock_ticks();
