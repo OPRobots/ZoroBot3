@@ -1,8 +1,6 @@
 #include <handwall.h>
 
 static bool use_left_hand = true;
-static uint32_t start_ms = 0;
-static uint32_t time_limit = 0;
 
 void handwall_use_left_hand(void) {
   use_left_hand = true;
@@ -12,12 +10,7 @@ void handwall_use_right_hand(void) {
   use_left_hand = false;
 }
 
-void handwall_set_time_limit(uint32_t ms) {
-  time_limit = ms;
-}
-
 void handwall_start(void) {
-  start_ms = get_clock_ticks();
   configure_kinematics(menu_run_get_speed());
   clear_info_leds();
   set_RGB_color(0, 0, 0);
@@ -31,10 +24,6 @@ void handwall_start(void) {
 }
 
 void handwall_loop(void) {
-  if (time_limit > 0 && get_clock_ticks() - start_ms >= time_limit) {
-    set_race_started(false);
-    return;
-  }
   struct walls walls = get_walls();
   set_RGB_color_while(255, 255, 0, 20);
   if ((use_left_hand && !walls.left) || (!use_left_hand && walls.right && !walls.left)) {

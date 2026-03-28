@@ -1,8 +1,5 @@
 #include <floodfill.h>
 
-static uint32_t start_ms = 0;
-static uint32_t time_limit = 0;
-
 static float floodfill[MAZE_CELLS];
 static int16_t maze[MAZE_CELLS];
 static bool reset_maze_on_start_explore = true;
@@ -921,19 +918,6 @@ static void save_maze(void) {
   eeprom_set_data(DATA_INDEX_MAZE, maze, MAZE_CELLS);
   eeprom_save();
 }
-
-static void check_time_limit(void) {
-  if ((time_limit > 0 && get_clock_ticks() - start_ms >= time_limit)) {
-    set_target_linear_speed(0);
-    set_ideal_angular_speed(0);
-    while (get_ideal_linear_speed() != 0) {
-      warning_status_led(50);
-    }
-    set_status_led(false);
-    delay(500);
-    set_race_started(false);
-  }
-}
 #endif
 
 #pragma GCC diagnostic push
@@ -1092,8 +1076,8 @@ static uint8_t find_closest_unknown_interesting_cell(void) {
 }
 
 static uint8_t find_unknown_interesting_cell(void) {
-      return find_closest_unknown_interesting_cell();
-      // return find_standard_unknown_interesting_cell();
+  return find_closest_unknown_interesting_cell();
+  // return find_standard_unknown_interesting_cell();
 }
 
 static bool floodfill_run(void) {
@@ -1861,10 +1845,6 @@ void floodfill_maze_print(void) {
   printf("\n");
 }
 
-void floodfill_set_time_limit(uint32_t ms) {
-  time_limit = ms;
-}
-
 void floodfill_set_reset_maze_on_start_explore(bool reset) {
   reset_maze_on_start_explore = reset;
 }
@@ -1888,7 +1868,6 @@ void floodfill_start_explore(void) {
   } else {
     set_target_fan_speed(get_kinematics().fan_speed_3s, 400);
   }
-  start_ms = get_clock_ticks();
   delay(800);
 #endif
 
