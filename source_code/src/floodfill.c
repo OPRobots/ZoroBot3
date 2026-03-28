@@ -479,8 +479,7 @@ static float get_next_floodfill_distance(float distance, enum compass_direction 
         default:
           return distance + 0.7f;
       }
-    case FLOODFILL_TYPE_TIME:
-    case FLOODFILL_TYPE_TIMEv2: {
+    case FLOODFILL_TYPE_TIME: {
       bool from_orthogonal = false;
       bool from_diagonal = false;
       bool to_orthogonal = false;
@@ -937,6 +936,8 @@ static void check_time_limit(void) {
 }
 #endif
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
 static uint8_t find_standard_unknown_interesting_cell(void) {
   uint8_t cell = 0;
 
@@ -992,6 +993,7 @@ static uint8_t find_standard_unknown_interesting_cell(void) {
 
   return cell;
 }
+#pragma GCC diagnostic pop
 
 static uint8_t find_closest_unknown_interesting_cell(void) {
   uint8_t cell = 0;
@@ -1090,12 +1092,8 @@ static uint8_t find_closest_unknown_interesting_cell(void) {
 }
 
 static uint8_t find_unknown_interesting_cell(void) {
-  switch (menu_run_get_floodfill_type()) {
-    case FLOODFILL_TYPE_TIMEv2:
       return find_closest_unknown_interesting_cell();
-    default:
-      return find_standard_unknown_interesting_cell();
-  }
+      // return find_standard_unknown_interesting_cell();
 }
 
 static bool floodfill_run(void) {
