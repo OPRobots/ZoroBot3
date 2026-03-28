@@ -37,8 +37,8 @@ static void check_motors_saturated(void) {
 }
 
 void set_check_motors_saturated_enabled(bool enabled) {
-  check_motors_saturated_enabled = enabled;
   reset_motors_saturated();
+  check_motors_saturated_enabled = enabled;
 }
 
 void set_motors_enable(bool enabled) {
@@ -147,7 +147,7 @@ void reset_motors_saturated(void) {
   left_motor_saturation_count = 0;
   right_motor_saturation_count = 0;
   angular_speed_saturation_count = 0;
-  check_motors_saturated_enabled = true;
+  // check_motors_saturated_enabled = true;
 }
 
 bool is_motor_saturated(void) {
