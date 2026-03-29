@@ -1479,6 +1479,13 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
   bool last_cell_wall_lost = (has_begin && cells <= 2) || cells <= 1;
   while (is_race_started() && !is_motor_saturated() && (get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER || !last_cell_wall_lost)) {
 
+    // Desactiva corrección de sensores si detecta pared frontal para evitar oscilaciones
+    if (front_wall_detection()) {
+      set_side_sensors_correction(false);
+    } else {
+      set_side_sensors_correction(true);
+    }
+
     // Comprobar cambio de celda
     int32_t cell_travelled = (get_encoder_avg_micrometers() - current_distance) / MICROMETERS_PER_MILLIMETER;
     // int16_t total_distance = distance;
@@ -1537,7 +1544,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
       distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell) + end_offset;
       if (current_cell == cells) {
         current_cell_distance_left = distance;
-        last_cell_wall_lost = true; //??
+        last_cell_wall_lost = true;
         set_RGB_color_while(0, 255, 0, 33);
       } else {
         current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
