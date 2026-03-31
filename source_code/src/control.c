@@ -145,6 +145,7 @@ void set_race_started(bool state) {
   if (!state) {
     menu_reset();
     race_finish_ms = get_clock_ticks();
+    disable_sensors_correction();
   }
 #endif
 }
