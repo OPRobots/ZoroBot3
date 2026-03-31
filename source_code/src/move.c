@@ -1437,7 +1437,12 @@ void move_back_until_wall(void) {
 #ifndef MMSIM_ENABLED
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(-100);
-  while (abs(get_encoder_avg_speed()) < 50) {
+  uint8_t count = 0;
+  while (count < MAX_MOTOR_SATURATION_COUNT / 2) {
+    if (abs(get_encoder_avg_speed()) >= 80) {
+      count++;
+    }
+    delay(1);
   }
   while (abs(get_encoder_avg_speed()) > 20) {
     warning_status_led(50);
