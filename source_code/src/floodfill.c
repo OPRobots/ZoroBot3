@@ -1287,7 +1287,8 @@ static void build_run_sequence(enum run_sequence_type type) {
 
   uint8_t begin_position = type == START_TO_GOAL ? 0 : _current_position;
   uint8_t i = 0;
-  while (floodfill[current_position] > 0) {
+  bool dead_end = false;
+  while (floodfill[current_position] > 0 && !dead_end) {
     step = get_next_floodfill_step(get_current_stored_walls(), step);
     switch (step) {
       case FRONT:
@@ -1321,6 +1322,9 @@ static void build_run_sequence(enum run_sequence_type type) {
         break;
       case RIGHT:
         run_sequence[i++] = 'R';
+        break;
+      case BACK:
+        dead_end = true;
         break;
       default:
         break;
