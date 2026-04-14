@@ -1,5 +1,9 @@
 #include <floodfill.h>
 
+static uint32_t floodfill_step_cycles = 0;
+static uint32_t floodfill_step_us = 0;
+static uint32_t floodfill_step_ms = 0;
+
 static float floodfill[MAZE_CELLS];
 static int16_t maze[MAZE_CELLS];
 static bool reset_maze_on_start_explore = true;
@@ -1182,6 +1186,21 @@ static void go_to_target(void) {
 #endif
 
     if (!(next_step != BACK && is_visited(get_next_position(next_step)) && floodfill_run())) {
+
+      static char *labels[] = {
+          "cycles",
+          "us",
+          "ms",
+      };
+      macroarray_store(
+          0,
+          0b0,
+          labels,
+          3,
+          (uint16_t)(read_cycle_counter() - floodfill_step_cycles),
+          (uint16_t)(get_us_counter() - floodfill_step_us),
+          (uint16_t)(get_clock_ticks() - floodfill_step_ms));
+          
       switch (next_step) {
         case FRONT:
           move(MOVE_FRONT);
@@ -1209,6 +1228,11 @@ static void go_to_target(void) {
           }
           break;
       }
+
+      floodfill_step_cycles = read_cycle_counter();
+      floodfill_step_us = get_us_counter();
+      floodfill_step_ms = get_clock_ticks();
+
       update_position(next_step);
     }
 
