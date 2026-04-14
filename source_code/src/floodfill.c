@@ -1200,7 +1200,7 @@ static void go_to_target(void) {
           (uint16_t)(read_cycle_counter() - floodfill_step_cycles),
           (uint16_t)(get_us_counter() - floodfill_step_us),
           (uint16_t)(get_clock_ticks() - floodfill_step_ms));
-          
+
       switch (next_step) {
         case FRONT:
           move(MOVE_FRONT);
@@ -1301,7 +1301,9 @@ static void build_run_sequence(enum run_sequence_type type) {
       break;
   }
 
+  uint32_t start_us = get_us_counter();
   update_floodfill();
+  printf("Floodfill time: %lu us\n", get_us_counter() - start_us);
   memcpy(maze, bak_maze, MAZE_CELLS * sizeof(int16_t));
 
   printf("Current position: %d\n", current_position);
