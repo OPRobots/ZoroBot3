@@ -28,6 +28,8 @@ int16_t sensors_distance_offset[NUM_SENSORES] = {0, 0, 0, 0};
 
 struct sensors_distance_calibration sensors_distance_calibrations[] = {{}, {}, {}, {}};
 
+static int16_t sensors_raw_wall_detection_threshold[NUM_SENSORES] = {0, 0, 0, 0};
+
 #define LOG_LINEARIZATION_TABLE_STEP 4
 #define LOG_LINEARIZATION_TABLE_SIZE (ADC_RESOLUTION / LOG_LINEARIZATION_TABLE_STEP)
 
@@ -291,8 +293,11 @@ void front_sensors_calibration(void) {
 
 void side_sensors_calibration(bool keep_sensors_on) {
 #ifndef MMSIM_ENABLED
+  int32_t left_raw_temp = 0;
   int32_t left_temp = 0;
   int16_t left_offset = 0;
+
+  int32_t right_raw_temp = 0;
   int32_t right_temp = 0;
   int16_t right_offset = 0;
 
@@ -302,12 +307,16 @@ void side_sensors_calibration(bool keep_sensors_on) {
   delay(5);
 
   for (int i = 0; i < SENSOR_SIDE_CALIBRATION_READINGS; i++) {
+    left_raw_temp += get_sensor_raw_filter(SENSOR_SIDE_LEFT_WALL_ID);
+    right_raw_temp += get_sensor_raw_filter(SENSOR_SIDE_RIGHT_WALL_ID);
     left_temp += sensors_distance[SENSOR_SIDE_LEFT_WALL_ID];
     right_temp += sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID];
     set_leds_wave(35);
     delay(5);
   }
   set_info_leds();
+  sensors_raw_wall_detection_threshold[SENSOR_SIDE_LEFT_WALL_ID] = (uint16_t)(left_raw_temp / SENSOR_SIDE_CALIBRATION_READINGS / 2);
+  sensors_raw_wall_detection_threshold[SENSOR_SIDE_RIGHT_WALL_ID] = (uint16_t)(right_raw_temp / SENSOR_SIDE_CALIBRATION_READINGS / 2);
   left_offset = (int16_t)(MIDDLE_MAZE_DISTANCE - (left_temp / SENSOR_SIDE_CALIBRATION_READINGS));
   right_offset = (int16_t)(MIDDLE_MAZE_DISTANCE - (right_temp / SENSOR_SIDE_CALIBRATION_READINGS));
   sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] = left_offset;
@@ -333,16 +342,29 @@ void sensors_load_eeprom(void) {
 }
 
 bool left_wall_detection(void) {
-  return sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < SENSOR_SIDE_DETECTION;
+  if (sensors_raw_wall_detection_threshold[SENSOR_SIDE_LEFT_WALL_ID] == 0) {
+    return sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < SENSOR_SIDE_DETECTION;
+  } else {
+    return get_sensor_raw_filter(SENSOR_SIDE_LEFT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_SIDE_LEFT_WALL_ID];
+  }
 }
 
 bool right_wall_detection(void) {
-  return sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < SENSOR_SIDE_DETECTION;
+  if (sensors_raw_wall_detection_threshold[SENSOR_SIDE_RIGHT_WALL_ID] == 0) {
+    return sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < SENSOR_SIDE_DETECTION;
+  } else {
+    return get_sensor_raw_filter(SENSOR_SIDE_RIGHT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_SIDE_RIGHT_WALL_ID];
+  }
 }
 
 bool front_wall_detection(void) {
-  return (sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < SENSOR_FRONT_DETECTION) ||
-         (sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] < SENSOR_FRONT_DETECTION);
+  if (sensors_raw_wall_detection_threshold[SENSOR_FRONT_LEFT_WALL_ID] == 0 || sensors_raw_wall_detection_threshold[SENSOR_FRONT_RIGHT_WALL_ID] == 0) {
+    return sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < SENSOR_FRONT_DETECTION ||
+           sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] < SENSOR_FRONT_DETECTION;
+  } else {
+    return get_sensor_raw_filter(SENSOR_FRONT_LEFT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_FRONT_LEFT_WALL_ID] ||
+           get_sensor_raw_filter(SENSOR_FRONT_RIGHT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_FRONT_RIGHT_WALL_ID];
+  }
 }
 
 /**
@@ -503,11 +525,11 @@ float get_side_sensors_error(void) {
     new_side_sensors_error = -2 * left_error;
   } else if (sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 90) {
     new_side_sensors_error = 2 * right_error;
-  }/*  else if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 120) {
-    new_side_sensors_error = -2 * left_error;
-  } else if (sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 120) {
-    new_side_sensors_error = 2 * right_error;
-  } */
+  } /*  else if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 120) {
+     new_side_sensors_error = -2 * left_error;
+   } else if (sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 120) {
+     new_side_sensors_error = 2 * right_error;
+   } */
   side_sensors_error = 0.8f * side_sensors_error + (1 - 0.8f) * new_side_sensors_error;
   return side_sensors_error;
 }
