@@ -48,6 +48,7 @@ enum explore_algorithm {
   EXPLORE_HANDWALL = 0,
   EXPLORE_TIME_TRIAL = 1,
   EXPLORE_FLOODFILL = 2,
+  EXPLORE_DRAGRACE = 3,
 };
 
 bool menu_run_handler(void);

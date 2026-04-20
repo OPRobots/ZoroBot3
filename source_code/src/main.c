@@ -12,6 +12,7 @@
 #include <motors.h>
 #include <move.h>
 #include <timetrial.h>
+#include <dragrace.h>
 
 // #include <mpu6500.h>
 #include <rc5.h>
@@ -97,6 +98,9 @@ int main(void) {
             case EXPLORE_TIME_TRIAL:
               timetrial_start();
               break;
+            case EXPLORE_DRAGRACE:
+              dragrace_start();
+            break;
             default:
               set_race_started(false);
               break;
