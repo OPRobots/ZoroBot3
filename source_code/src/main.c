@@ -71,6 +71,28 @@ int main(void) {
                   floodfill_start_explore();
                   break;
               }
+
+              // configure_explore_kinematics(false);
+              // configure_kinematics(SPEED_EXPLORE);
+
+              // clear_info_leds();
+              // set_RGB_color(0, 0, 0);
+              // delay(125);
+              // side_sensors_calibration(true);
+              // delay(125);
+              // if (is_battery_2s()) {
+              //   set_target_fan_speed(get_kinematics().fan_speed_2s, 400);
+              // } else {
+              //   set_target_fan_speed(get_kinematics().fan_speed_3s, 400);
+              // }
+              // delay(800);
+
+              // move(MOVE_START);
+              // move(MOVE_BACK_STOP);
+
+              // delay(1000);
+              // set_race_started(false);
+
               break;
             case EXPLORE_TIME_TRIAL:
               timetrial_start();

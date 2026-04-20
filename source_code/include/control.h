@@ -32,6 +32,7 @@ void set_side_sensors_correction(bool enabled);
 void set_front_sensors_angle_correction(bool enabled);
 bool is_front_sensors_angle_correction_enabled(void);
 void set_front_sensors_distance_correction(bool enabled);
+void set_front_sensors_raw_distance_correction(bool enabled);
 void set_front_sensors_diagonal_correction(bool enabled);
 void disable_sensors_correction(void);
 void reset_control_errors(void);

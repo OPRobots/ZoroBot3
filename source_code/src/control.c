@@ -33,6 +33,7 @@ static volatile float last_angular_error;
 static volatile bool side_sensors_correction_enabled = false;
 static volatile bool front_sensors_angle_correction_enabled = false;
 static volatile bool front_sensors_distance_correction_enabled = false;
+static volatile bool front_sensors_raw_distance_correction_enabled = false;
 static volatile bool front_sensors_diagonal_correction_enabled = false;
 
 static volatile float side_sensors_error;
@@ -243,6 +244,13 @@ void set_front_sensors_distance_correction(bool enabled) {
   }
 }
 
+void set_front_sensors_raw_distance_correction(bool enabled) {
+  front_sensors_raw_distance_correction_enabled = enabled;
+  if (!enabled) {
+    ideal_front_distance = 0;
+  }
+}
+
 void set_front_sensors_diagonal_correction(bool enabled) {
   front_sensors_diagonal_correction_enabled = enabled;
 }
@@ -418,7 +426,14 @@ void control_loop(void) {
   if (front_sensors_distance_correction_enabled && ideal_front_distance > 0 && get_front_wall_distance() < CELL_DIMENSION) {
     front_sensors_distance_error = get_front_wall_distance() - ideal_front_distance;
     sum_front_sensors_distance_error += front_sensors_distance_error;
-  } else {
+  }
+
+  if (front_sensors_raw_distance_correction_enabled && ideal_front_distance > 0) {
+    front_sensors_distance_error = ideal_front_distance - get_front_wall_distance();
+    sum_front_sensors_distance_error += front_sensors_distance_error;
+  }
+
+  if (!front_sensors_distance_correction_enabled && !front_sensors_raw_distance_correction_enabled) {
     front_sensors_distance_error = 0;
     sum_front_sensors_distance_error = 0;
     last_front_sensors_distance_error = 0;
@@ -436,11 +451,17 @@ void control_loop(void) {
   linear_voltage =
       get_kinematics().kpi[KPI_LINEAR].kp * linear_error +
       get_kinematics().kpi[KPI_LINEAR].ki * sum_linear_error +
-      get_kinematics().kpi[KPI_LINEAR].kd * (linear_error - last_linear_error) +
+      get_kinematics().kpi[KPI_LINEAR].kd * (linear_error - last_linear_error);
 
-      get_kinematics().kpi[KPI_FRONT_DISTANCE_SENSORS].kp * front_sensors_distance_error +
-      get_kinematics().kpi[KPI_FRONT_DISTANCE_SENSORS].ki * sum_front_sensors_distance_error +
-      get_kinematics().kpi[KPI_FRONT_DISTANCE_SENSORS].kd * (front_sensors_distance_error - last_front_sensors_distance_error);
+  if (use_raw_sensors()) {
+    linear_voltage += get_kinematics().kpi[KPI_FRONT_RAW_DISTANCE_SENSORS].kp * front_sensors_distance_error +
+                      get_kinematics().kpi[KPI_FRONT_RAW_DISTANCE_SENSORS].ki * sum_front_sensors_distance_error +
+                      get_kinematics().kpi[KPI_FRONT_RAW_DISTANCE_SENSORS].kd * (front_sensors_distance_error - last_front_sensors_distance_error);
+  } else {
+    linear_voltage += get_kinematics().kpi[KPI_FRONT_DISTANCE_SENSORS].kp * front_sensors_distance_error +
+                      get_kinematics().kpi[KPI_FRONT_DISTANCE_SENSORS].ki * sum_front_sensors_distance_error +
+                      get_kinematics().kpi[KPI_FRONT_DISTANCE_SENSORS].kd * (front_sensors_distance_error - last_front_sensors_distance_error);
+  }
 
   angular_voltage =
       get_kinematics().kpi[KPI_ANGULAR].kp * angular_error +
@@ -507,7 +528,7 @@ void control_loop(void) {
         (int16_t)(get_battery_voltage() * 100));
   }
 
-  if (ideal_linear_speed != 0 || ideal_angular_speed != 0) {
+  if (/* ideal_linear_speed != 0 || */ ideal_angular_speed != 0) {
     // static char *labels[] = {
     //     "target_linear_speed",
     //     "ideal_linear_speed",
@@ -543,35 +564,35 @@ void control_loop(void) {
     //     // (int16_t)(angular_voltage * 100),
     //     (int16_t)(get_battery_voltage() * 100));
 
-    // static char *labels[] = {
-    //     "target_linear_speed",
-    //     "ideal_linear_speed",
-    //     "measured_linear_speed",
-    //     "ideal_angular_speed",
-    //     "measured_angular_speed",
-    //     "front_left_distance",
-    //     "front_right_distance",
-    //     "diagonal_error",
-    //     "encoder_avg_millimeters",
-    //     "wall_lost_toggle_state",
-    //     "cell_change_toggle_state"};
-    // macroarray_store(
-    //     2,
-    //     0b00011000000,
-    //     labels,
-    //     11,
-    //     (int16_t)target_linear_speed,
-    //     (int16_t)ideal_linear_speed,
-    //     (int16_t)(get_measured_linear_speed()),
-    //     (int16_t)(ideal_angular_speed * 100.0),
-    //     (int16_t)(get_measured_angular_speed() * 100),
-    //     (int16_t)get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID),
-    //     (int16_t)get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID),
-    //     (int16_t)front_sensors_diagonal_error,
-    //     (int16_t)get_encoder_avg_millimeters(),
-    //     (int16_t)get_wall_lost_toggle_state() ? 1 : 0,
-    //     (int16_t)get_cell_change_toggle_state() ? 1 : 0
-    //     );
+    static char *labels[] = {
+        "target_linear_speed",
+        "ideal_linear_speed",
+        "measured_linear_speed",
+        "ideal_angular_speed",
+        "measured_angular_speed",
+        "front_left_distance",
+        "front_right_distance",
+        "diagonal_error",
+        "encoder_avg_millimeters",
+        "wall_lost_toggle_state",
+        "cell_change_toggle_state"};
+    macroarray_store(
+        2,
+        0b00011000000,
+        labels,
+        11,
+        (int16_t)target_linear_speed,
+        (int16_t)ideal_linear_speed,
+        (int16_t)(get_measured_linear_speed()),
+        (int16_t)(ideal_angular_speed * 100.0),
+        (int16_t)(get_measured_angular_speed() * 100),
+        (int16_t)get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID),
+        (int16_t)get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID),
+        (int16_t)front_sensors_diagonal_error,
+        (int16_t)get_encoder_avg_millimeters(),
+        (int16_t)get_wall_lost_toggle_state() ? 1 : 0,
+        (int16_t)get_cell_change_toggle_state() ? 1 : 0
+        );
 
     // static char *labels[] = {
     //     "sl",

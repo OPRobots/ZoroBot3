@@ -138,8 +138,8 @@ static void debug_timetrial_demo(void) {
 
 static void debug_keep_front_distance_demo(void) {
   // if (get_clock_ticks() >= last_keep_front_distance + 50) {
-  //   if (get_front_wall_distance() < CELL_DIMENSION) {
-  //     printf("front distance: %4d front error: %.4f\n", get_front_wall_distance(), get_front_wall_distance() - MIDDLE_MAZE_DISTANCE);
+  //   if (get_front_wall_distance_mm() < CELL_DIMENSION) {
+  //     printf("front distance: %4d front error: %.4f\n", get_front_wall_distance_mm(), get_front_wall_distance_mm() - MIDDLE_MAZE_DISTANCE);
   //   }
   //   last_keep_front_distance = get_clock_ticks();
   // }
@@ -159,18 +159,24 @@ static void debug_keep_front_distance_demo(void) {
   delay(1200);
   do {
     if (get_clock_ticks() >= last_keep_front_distance + 1) {
-      if (get_front_wall_distance() < CELL_DIMENSION) {
-        // printf("front distance: %4d front error: %.4f\n", get_front_wall_distance(), get_front_wall_distance() - MIDDLE_MAZE_DISTANCE);
+      if (get_front_wall_distance_mm() < CELL_DIMENSION) {
+        // printf("front distance: %4d front error: %.4f\n", get_front_wall_distance_mm(), get_front_wall_distance_mm() - MIDDLE_MAZE_DISTANCE);
         set_RGB_color(0, 0, 50);
         set_linear_error_correction(false);
         set_angular_error_correction(false);
         set_front_sensors_angle_correction(true);
-        set_front_sensors_distance_correction(true);
-        set_ideal_front_distance(MIDDLE_MAZE_DISTANCE);
+        if (use_raw_sensors()) {
+          set_front_sensors_raw_distance_correction(true);
+          set_ideal_front_distance(get_front_wall_middle_target_distance());
+        } else {
+          set_front_sensors_distance_correction(true);
+          set_ideal_front_distance(get_front_wall_middle_target_distance());
+        }
       } else {
         set_RGB_color(50, 0, 0);
         set_front_sensors_angle_correction(false);
         set_front_sensors_distance_correction(false);
+        set_front_sensors_raw_distance_correction(false);
         set_linear_error_correction(true);
         set_angular_error_correction(true);
       }
