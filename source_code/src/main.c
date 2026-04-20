@@ -2,6 +2,7 @@
 #include <buttons.h>
 #include <control.h>
 #include <delay.h>
+#include <dragrace.h>
 #include <encoders.h>
 #include <floodfill.h>
 #include <handwall.h>
@@ -12,7 +13,6 @@
 #include <motors.h>
 #include <move.h>
 #include <timetrial.h>
-#include <dragrace.h>
 
 // #include <mpu6500.h>
 #include <rc5.h>
@@ -48,7 +48,10 @@ int main(void) {
         set_sensors_enabled(menu_run_can_start() || is_debug_enabled());
       }
       if (menu_run_can_start()) {
-        int8_t sensor_started = check_start_run();
+        int8_t sensor_started = -1;
+        if (menu_run_get_explore_algorithm() != EXPLORE_DRAGRACE) {
+          sensor_started = check_start_run();
+        }
         if (is_race_started()) {
           switch (menu_run_get_explore_algorithm()) {
             case EXPLORE_HANDWALL:
@@ -100,7 +103,7 @@ int main(void) {
               break;
             case EXPLORE_DRAGRACE:
               dragrace_start();
-            break;
+              break;
             default:
               set_race_started(false);
               break;
