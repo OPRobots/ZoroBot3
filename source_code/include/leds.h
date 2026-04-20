@@ -11,7 +11,6 @@
 #include "usart.h"
 #include "utils.h"
 
-
 enum info_led {
   INFO_LED_1 = 0,
   INFO_LED_2 = 1,
@@ -37,6 +36,7 @@ void check_leds_while(void);
 void set_leds_wave(int ms);
 void set_leds_side_sensors(int ms);
 void set_leds_front_sensors(int ms);
+void set_leds_front_sensors_middle(int ms);
 void set_leds_blink(int ms);
 void set_leds_battery_level(float battery_level);
 void all_leds_clear(void);

@@ -24,6 +24,10 @@ static uint32_t lastTickFrontSensors = 0;
 static uint32_t currentStepFrontSensors = 1;
 static uint8_t currentIndexFrontSensors = 0;
 
+static uint32_t lastTickFrontSensorsMiddle = 0;
+static uint32_t currentStepFrontSensorsMiddle = 1;
+static uint8_t currentIndexFrontSensorsMiddle = 0;
+
 static uint32_t lastTicksLedsBlink = 0;
 
 static uint32_t lastTicksWarningBateria = 0;
@@ -197,6 +201,35 @@ void set_leds_front_sensors(int ms) {
 
     currentIndexFrontSensors += currentStepFrontSensors;
     lastTickFrontSensors = get_clock_ticks();
+  }
+}
+
+void set_leds_front_sensors_middle(int ms) {
+  if (get_clock_ticks() > lastTickFrontSensorsMiddle + ms) {
+    gpio_clear(GPIOC, GPIO4 | GPIO5);
+    gpio_clear(GPIOB, GPIO0 | GPIO1 | GPIO2);
+    gpio_clear(GPIOC, GPIO15 | GPIO14 | GPIO13);
+    gpio_clear(GPIOB, GPIO9 | GPIO8);
+
+    switch (currentIndexFrontSensorsMiddle) {
+      case 0:
+        gpio_set(GPIOC, GPIO5);
+        gpio_set(GPIOB, GPIO9);
+        break;
+      case 1:
+        gpio_set(GPIOB, GPIO0);
+        gpio_set(GPIOC, GPIO13);
+        break;
+    }
+
+    if (currentIndexFrontSensorsMiddle >= 1) {
+      currentStepFrontSensorsMiddle = -1;
+    } else if (currentIndexFrontSensorsMiddle <= 0) {
+      currentStepFrontSensorsMiddle = 1;
+    }
+
+    currentIndexFrontSensorsMiddle += currentStepFrontSensorsMiddle;
+    lastTickFrontSensorsMiddle = get_clock_ticks();
   }
 }
 

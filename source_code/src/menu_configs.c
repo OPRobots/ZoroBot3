@@ -7,7 +7,7 @@ uint8_t modeConfig = MODE_CALIBRATION;
 #define NUM_MODES 2
 
 int8_t valueConfig[NUM_MODES] = {0, 0};
-#define NUM_VALUES_CALIBRATION 5
+#define NUM_VALUES_CALIBRATION 6
 #define NUM_VALUES_DEBUG 10
 
 /**
@@ -41,6 +41,9 @@ static void handle_menu_config_value(void) {
           break;
         case CALIBRATE_FRONT_SENSORS:
           set_leds_front_sensors(120);
+          break;
+        case CALIBRATE_FRONT_SENSORS_MIDDLE:
+          set_leds_front_sensors_middle(120);
           break;
         case CALIBRATE_STORE_EEPROM:
           set_leds_blink(250);

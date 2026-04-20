@@ -50,6 +50,9 @@ enum ROBOT_VERSION {
 #define SENSOR_FRONT_DETECTION ((CELL_DIMENSION * 1.22))
 #define SENSOR_SIDE_DETECTION 115 //((CELL_DIMENSION * 0.7))
 
+#define USE_RAW_SENSORS true
+// #define USE_DISTANCE_SENSORS true
+
 /** Control de inicio de competición */
 #define SENSOR_FRONT_DETECTION_START 100
 #define SENSOR_START_MIN_MS 350

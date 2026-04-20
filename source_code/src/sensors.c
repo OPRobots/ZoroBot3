@@ -29,6 +29,7 @@ int16_t sensors_distance_offset[NUM_SENSORES] = {0, 0, 0, 0};
 struct sensors_distance_calibration sensors_distance_calibrations[] = {{}, {}, {}, {}};
 
 static int16_t sensors_raw_wall_detection_threshold[NUM_SENSORES] = {0, 0, 0, 0};
+static int16_t sensors_middle_target_distance[NUM_SENSORES] = {0, 0, 0, 0};
 
 #define LOG_LINEARIZATION_TABLE_STEP 4
 #define LOG_LINEARIZATION_TABLE_SIZE (ADC_RESOLUTION / LOG_LINEARIZATION_TABLE_STEP)
@@ -260,12 +261,21 @@ uint16_t get_sensor_raw_filter(uint8_t pos) {
   }
 }
 
+bool use_raw_sensors(void) {
+#ifdef USE_RAW_SENSORS
+  return true;
+#else
+  return false;
+#endif
+}
+
 void front_sensors_calibration(void) {
 #ifndef MMSIM_ENABLED
+  int32_t left_raw_temp = 0;
   int32_t left_temp = 0;
-  int16_t left_offset = 0;
+
+  int32_t right_raw_temp = 0;
   int32_t right_temp = 0;
-  int16_t right_offset = 0;
 
   set_sensors_enabled(true);
   sensors_distance_offset[SENSOR_FRONT_LEFT_WALL_ID] = 0;
@@ -273,21 +283,72 @@ void front_sensors_calibration(void) {
   delay(5);
 
   for (int i = 0; i < SENSOR_FRONT_CALIBRATION_READINGS; i++) {
+    left_raw_temp += get_sensor_raw_filter(SENSOR_FRONT_LEFT_WALL_ID);
+    right_raw_temp += get_sensor_raw_filter(SENSOR_FRONT_RIGHT_WALL_ID);
+
     left_temp += sensors_distance[SENSOR_FRONT_LEFT_WALL_ID];
     right_temp += sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID];
     set_leds_wave(35);
     delay(5);
   }
   set_info_leds();
-  left_offset = (int16_t)((CELL_DIMENSION - WALL_WIDTH - ROBOT_BACK_LENGTH) - (left_temp / SENSOR_FRONT_CALIBRATION_READINGS));
-  right_offset = (int16_t)((CELL_DIMENSION - WALL_WIDTH - ROBOT_BACK_LENGTH) - (right_temp / SENSOR_FRONT_CALIBRATION_READINGS));
-  sensors_distance_offset[SENSOR_FRONT_LEFT_WALL_ID] = left_offset;
-  sensors_distance_offset[SENSOR_FRONT_RIGHT_WALL_ID] = right_offset;
+  sensors_raw_wall_detection_threshold[SENSOR_FRONT_LEFT_WALL_ID] = (uint16_t)(left_raw_temp / SENSOR_FRONT_CALIBRATION_READINGS / 2);
+  sensors_raw_wall_detection_threshold[SENSOR_FRONT_RIGHT_WALL_ID] = (uint16_t)(right_raw_temp / SENSOR_FRONT_CALIBRATION_READINGS / 2);
+
+  for (uint8_t i = 0; i < NUM_SENSORES; i++) {
+    printf("Sensor %d raw threshold: %d\n", i, sensors_raw_wall_detection_threshold[i]);
+  }
+
+  sensors_distance_offset[SENSOR_FRONT_LEFT_WALL_ID] = (int16_t)((CELL_DIMENSION - WALL_WIDTH / 2) - (left_temp / SENSOR_FRONT_CALIBRATION_READINGS));
+  sensors_distance_offset[SENSOR_FRONT_RIGHT_WALL_ID] = (int16_t)((CELL_DIMENSION - WALL_WIDTH / 2) - (right_temp / SENSOR_FRONT_CALIBRATION_READINGS));
 
   set_sensors_enabled(false);
   delay(500);
   clear_info_leds();
   eeprom_set_data(DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset, NUM_SENSORES);
+  eeprom_set_data(DATA_INDEX_SENSORS_RAW_THRESHOLDS, sensors_raw_wall_detection_threshold, NUM_SENSORES);
+#endif
+}
+
+void front_sensors_middle_calibration(void) {
+#ifndef MMSIM_ENABLED
+  int32_t left_raw_temp = 0;
+  int32_t left_temp = 0;
+
+  int32_t right_raw_temp = 0;
+  int32_t right_temp = 0;
+
+  set_sensors_enabled(true);
+  delay(5);
+
+  for (int i = 0; i < SENSOR_FRONT_CALIBRATION_READINGS; i++) {
+    left_raw_temp += get_sensor_raw_filter(SENSOR_FRONT_LEFT_WALL_ID);
+    right_raw_temp += get_sensor_raw_filter(SENSOR_FRONT_RIGHT_WALL_ID);
+
+    left_temp += sensors_distance[SENSOR_FRONT_LEFT_WALL_ID];
+    right_temp += sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID];
+    set_leds_wave(35);
+    delay(5);
+  }
+  set_info_leds();
+  sensors_middle_target_distance[SENSOR_FRONT_LEFT_WALL_ID] = (uint16_t)(left_temp / SENSOR_FRONT_CALIBRATION_READINGS);
+  sensors_middle_target_distance[SENSOR_FRONT_RIGHT_WALL_ID] = (uint16_t)(right_temp / SENSOR_FRONT_CALIBRATION_READINGS);
+
+  sensors_middle_target_distance[SENSOR_FRONT_LEFT_WALL_ID + 2] = (uint16_t)(left_raw_temp / SENSOR_FRONT_CALIBRATION_READINGS);
+  sensors_middle_target_distance[SENSOR_FRONT_RIGHT_WALL_ID + 2] = (uint16_t)(right_raw_temp / SENSOR_FRONT_CALIBRATION_READINGS);
+
+  for (uint8_t i = 0; i < NUM_SENSORES; i++) {
+    if (i <= 1) {
+      printf("Sensor %d middle target_distance: %d\n", i, sensors_middle_target_distance[i]);
+    } else {
+      printf("Sensor %d middle target_raw: %d\n", (i - 2), sensors_middle_target_distance[i]);
+    }
+  }
+
+  set_sensors_enabled(false);
+  delay(500);
+  clear_info_leds();
+  eeprom_set_data(DATA_INDEX_SENSORS_MIDDLE_TARGET_DISTANCE, sensors_middle_target_distance, NUM_SENSORES);
 #endif
 }
 
@@ -295,11 +356,9 @@ void side_sensors_calibration(bool keep_sensors_on) {
 #ifndef MMSIM_ENABLED
   int32_t left_raw_temp = 0;
   int32_t left_temp = 0;
-  int16_t left_offset = 0;
 
   int32_t right_raw_temp = 0;
   int32_t right_temp = 0;
-  int16_t right_offset = 0;
 
   set_sensors_enabled(true);
   sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] = 0;
@@ -317,10 +376,13 @@ void side_sensors_calibration(bool keep_sensors_on) {
   set_info_leds();
   sensors_raw_wall_detection_threshold[SENSOR_SIDE_LEFT_WALL_ID] = (uint16_t)(left_raw_temp / SENSOR_SIDE_CALIBRATION_READINGS / 2);
   sensors_raw_wall_detection_threshold[SENSOR_SIDE_RIGHT_WALL_ID] = (uint16_t)(right_raw_temp / SENSOR_SIDE_CALIBRATION_READINGS / 2);
-  left_offset = (int16_t)(MIDDLE_MAZE_DISTANCE - (left_temp / SENSOR_SIDE_CALIBRATION_READINGS));
-  right_offset = (int16_t)(MIDDLE_MAZE_DISTANCE - (right_temp / SENSOR_SIDE_CALIBRATION_READINGS));
-  sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] = left_offset;
-  sensors_distance_offset[SENSOR_SIDE_RIGHT_WALL_ID] = right_offset;
+
+  for (uint8_t i = 0; i < NUM_SENSORES; i++) {
+    printf("Sensor %d raw threshold: %d\n", i, sensors_raw_wall_detection_threshold[i]);
+  }
+
+  sensors_distance_offset[SENSOR_SIDE_LEFT_WALL_ID] = (int16_t)(MIDDLE_MAZE_DISTANCE - (left_temp / SENSOR_SIDE_CALIBRATION_READINGS));
+  sensors_distance_offset[SENSOR_SIDE_RIGHT_WALL_ID] = (int16_t)(MIDDLE_MAZE_DISTANCE - (right_temp / SENSOR_SIDE_CALIBRATION_READINGS));
 
   if (!keep_sensors_on) {
     set_sensors_enabled(false);
@@ -328,6 +390,7 @@ void side_sensors_calibration(bool keep_sensors_on) {
   delay(500);
   clear_info_leds();
   eeprom_set_data(DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset, NUM_SENSORES);
+  eeprom_set_data(DATA_INDEX_SENSORS_RAW_THRESHOLDS, sensors_raw_wall_detection_threshold, NUM_SENSORES);
 #endif
 }
 
@@ -338,32 +401,40 @@ void sensors_load_eeprom(void) {
     sensors_distance_offset[i - DATA_INDEX_SENSORS_OFFSETS] = data[i];
     printf("Sensor %d offset: %d\n", i - DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset[i - DATA_INDEX_SENSORS_OFFSETS]);
   }
+  for (uint16_t i = DATA_INDEX_SENSORS_RAW_THRESHOLDS; i < (DATA_INDEX_SENSORS_RAW_THRESHOLDS + NUM_SENSORES); i++) {
+    sensors_raw_wall_detection_threshold[i - DATA_INDEX_SENSORS_RAW_THRESHOLDS] = data[i];
+    printf("Sensor %d raw threshold: %d\n", i - DATA_INDEX_SENSORS_RAW_THRESHOLDS, sensors_raw_wall_detection_threshold[i - DATA_INDEX_SENSORS_RAW_THRESHOLDS]);
+  }
+  for (uint16_t i = DATA_INDEX_SENSORS_MIDDLE_TARGET_DISTANCE; i < (DATA_INDEX_SENSORS_MIDDLE_TARGET_DISTANCE + NUM_SENSORES); i++) {
+    sensors_middle_target_distance[i - DATA_INDEX_SENSORS_MIDDLE_TARGET_DISTANCE] = data[i];
+    printf("Sensor %d raw middle position: %d\n", i - DATA_INDEX_SENSORS_MIDDLE_TARGET_DISTANCE, sensors_middle_target_distance[i - DATA_INDEX_SENSORS_MIDDLE_TARGET_DISTANCE]);
+  }
 #endif
 }
 
 bool left_wall_detection(void) {
-  if (sensors_raw_wall_detection_threshold[SENSOR_SIDE_LEFT_WALL_ID] == 0) {
-    return sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < SENSOR_SIDE_DETECTION;
-  } else {
+  if (use_raw_sensors()) {
     return get_sensor_raw_filter(SENSOR_SIDE_LEFT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_SIDE_LEFT_WALL_ID];
+  } else {
+    return sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < SENSOR_SIDE_DETECTION;
   }
 }
 
 bool right_wall_detection(void) {
-  if (sensors_raw_wall_detection_threshold[SENSOR_SIDE_RIGHT_WALL_ID] == 0) {
-    return sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < SENSOR_SIDE_DETECTION;
-  } else {
+  if (use_raw_sensors()) {
     return get_sensor_raw_filter(SENSOR_SIDE_RIGHT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_SIDE_RIGHT_WALL_ID];
+  } else {
+    return sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < SENSOR_SIDE_DETECTION;
   }
 }
 
 bool front_wall_detection(void) {
-  if (sensors_raw_wall_detection_threshold[SENSOR_FRONT_LEFT_WALL_ID] == 0 || sensors_raw_wall_detection_threshold[SENSOR_FRONT_RIGHT_WALL_ID] == 0) {
-    return sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < SENSOR_FRONT_DETECTION ||
-           sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] < SENSOR_FRONT_DETECTION;
-  } else {
+  if (use_raw_sensors()) {
     return get_sensor_raw_filter(SENSOR_FRONT_LEFT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_FRONT_LEFT_WALL_ID] ||
            get_sensor_raw_filter(SENSOR_FRONT_RIGHT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_FRONT_RIGHT_WALL_ID];
+  } else {
+    return sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < SENSOR_FRONT_DETECTION ||
+           sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] < SENSOR_FRONT_DETECTION;
   }
 }
 
@@ -491,7 +562,27 @@ uint16_t get_sensor_distance(uint8_t pos) {
   return sensors_distance[pos];
 }
 
+uint16_t get_front_wall_middle_target_distance(void) {
+  if (use_raw_sensors()) {
+    return (sensors_middle_target_distance[SENSOR_FRONT_LEFT_WALL_ID + 2] + sensors_middle_target_distance[SENSOR_FRONT_RIGHT_WALL_ID + 2]) / 2;
+  } else {
+    return get_front_wall_middle_target_distance_mm();
+  }
+}
+
+uint16_t get_front_wall_middle_target_distance_mm(void) {
+  return (sensors_middle_target_distance[SENSOR_FRONT_LEFT_WALL_ID] + sensors_middle_target_distance[SENSOR_FRONT_RIGHT_WALL_ID]) / 2;
+}
+
 uint16_t get_front_wall_distance(void) {
+  if (use_raw_sensors()) {
+    return (get_sensor_raw_filter(SENSOR_FRONT_LEFT_WALL_ID) + get_sensor_raw_filter(SENSOR_FRONT_RIGHT_WALL_ID)) / 2;
+  } else {
+    return get_front_wall_distance_mm();
+  }
+}
+
+uint16_t get_front_wall_distance_mm(void) {
   return (sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] + sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID]) / 2;
 }
 
