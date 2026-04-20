@@ -616,11 +616,11 @@ float get_side_sensors_error(void) {
     new_side_sensors_error = -2 * left_error;
   } else if (sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 90) {
     new_side_sensors_error = 2 * right_error;
-  } /*  else if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 120) {
-     new_side_sensors_error = -2 * left_error;
-   } else if (sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 120) {
-     new_side_sensors_error = 2 * right_error;
-   } */
+  } else if (left_error > 100 && right_error < 40) {
+    new_side_sensors_error = 2 * right_error;
+  } else if (right_error > 100 && left_error < 40) {
+    new_side_sensors_error = -2 * left_error;
+  }
   side_sensors_error = 0.8f * side_sensors_error + (1 - 0.8f) * new_side_sensors_error;
   return side_sensors_error;
 }
