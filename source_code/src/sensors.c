@@ -50,21 +50,21 @@ static volatile int16_t last_front_sensors_angle_error = 0;
 void set_sensors_robot_calibration(uint16_t version) {
   switch (version) {
     case ZOROBOT3_A:
-      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].a = 2.881;
-      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].b = 0.333;
-      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].c = -3.307;
+      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].a = 2.792;
+      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].b = 0.323;
+      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].c = 55.097;
 
-      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].a = 2.866;
-      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].b = 0.333;
-      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].c = 2.251;
+      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].a = 2.606;
+      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].b = 0.304;
+      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].c = 27.843;
 
-      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].a = 2.357;
-      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].b = 0.297;
-      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].c = -50.430;
+      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].a = 2.240;
+      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].b = 0.284;
+      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].c = -4.468;
 
-      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].a = 2.399;
-      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].b = 0.307;
-      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].c = -4.694;
+      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].a = 2.335;
+      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].b = 0.300;
+      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].c = 31.534;
       break;
     case ZOROBOT3_B:
       sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].a = 2.932;
