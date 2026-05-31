@@ -180,8 +180,10 @@ int8_t check_start_run(void) {
     sensor_front_right_start_ms = 0;
   }
 
-  if (sensor_front_left_start_ms >= SENSOR_START_MIN_MS || sensor_front_right_start_ms >= SENSOR_START_MIN_MS) {
-    uint8_t sensor = sensor_front_left_start_ms >= SENSOR_START_MIN_MS ? SENSOR_FRONT_LEFT_WALL_ID : SENSOR_FRONT_RIGHT_WALL_ID;
+  bool left_ready  = sensor_front_left_start_ms  > 0 && get_clock_ticks() - sensor_front_left_start_ms  >= SENSOR_START_MIN_MS;
+  bool right_ready = sensor_front_right_start_ms > 0 && get_clock_ticks() - sensor_front_right_start_ms >= SENSOR_START_MIN_MS;
+  if (left_ready || right_ready) {
+    uint8_t sensor = left_ready ? SENSOR_FRONT_LEFT_WALL_ID : SENSOR_FRONT_RIGHT_WALL_ID;
     sensor_front_left_start_ms = 0;
     sensor_front_right_start_ms = 0;
     set_RGB_color(0, 50, 0);
@@ -200,7 +202,7 @@ int8_t check_start_run(void) {
           sensor_front_left_start_ms = 0;
         }
 
-        if (sensor_front_left_start_ms >= SENSOR_START_MIN_MS) {
+        if (sensor_front_left_start_ms > 0 && get_clock_ticks() - sensor_front_left_start_ms >= SENSOR_START_MIN_MS) {
           set_RGB_color(50, 0, 50);
           set_race_auto_run(true);
         }
