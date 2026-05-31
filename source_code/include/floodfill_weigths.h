@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#define FLOODFILL_MAX_WEIGHTS_COUNT 15
+
 struct cell_weigth {
   uint16_t speed;
   float time;

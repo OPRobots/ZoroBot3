@@ -12,9 +12,9 @@ static enum compass_direction current_direction = NORTH;
 static uint8_t maze_goal_position = 0;
 static enum compass_direction maze_goal_direction = NORTH;
 
-static struct cell_weigth straight_weights[15];
+static struct cell_weigth straight_weights[FLOODFILL_MAX_WEIGHTS_COUNT];
 static uint16_t straight_weights_count = 0;
-static struct cell_weigth diagonal_weights[15];
+static struct cell_weigth diagonal_weights[FLOODFILL_MAX_WEIGHTS_COUNT];
 static uint16_t diagonal_weights_count = 0;
 
 static struct cells_queue cells_queue;
@@ -1355,6 +1355,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
     run_sequence_movements[index++] = MOVE_NONE;
   }
   index = 0;
+  uint16_t sequence_length = (uint16_t)strlen(run_sequence);
 
   enum movement turn_movement;
   bool run_diagonal = false;
@@ -1362,7 +1363,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
   char next_step_2;
   switch (speed) {
     case SPEED_EXPLORE:
-      for (uint8_t i = 0; i < strlen(run_sequence); i++) {
+      for (uint16_t i = 0; i < sequence_length; i++) {
         switch (run_sequence[i]) {
           case 'B':
             run_sequence_movements[index++] = MOVE_START;
@@ -1391,7 +1392,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
       printf("Solve strategy: %d\n", menu_run_get_solve_strategy());
       switch (menu_run_get_solve_strategy()) {
         case SOLVE_DIAGONALS:
-          for (uint8_t i = 0; i < strlen(run_sequence); i++) {
+          for (uint16_t i = 0; i < sequence_length; i++) {
             switch (run_sequence[i]) {
               case 'B':
                 run_sequence_movements[index++] = MOVE_START;
@@ -1400,8 +1401,8 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 run_sequence_movements[index++] = MOVE_FRONT;
                 break;
               case 'L':
-                next_step_1 = run_sequence[i + 1];
-                next_step_2 = run_sequence[i + 2];
+                next_step_1 = (i + 1 < sequence_length) ? run_sequence[i + 1] : '\0';
+                next_step_2 = (i + 2 < sequence_length) ? run_sequence[i + 2] : '\0';
                 if (!run_diagonal) {
                   if (next_step_1 == 'F' || next_step_1 == 'S') {
                     run_sequence_movements[index++] = MOVE_LEFT_90;
@@ -1433,8 +1434,8 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 }
                 break;
               case 'R':
-                next_step_1 = run_sequence[i + 1];
-                next_step_2 = run_sequence[i + 2];
+                next_step_1 = (i + 1 < sequence_length) ? run_sequence[i + 1] : '\0';
+                next_step_2 = (i + 2 < sequence_length) ? run_sequence[i + 2] : '\0';
                 if (!run_diagonal) {
                   if (next_step_1 == 'F' || next_step_1 == 'S') {
                     run_sequence_movements[index++] = MOVE_RIGHT_90;
@@ -1473,7 +1474,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
           break;
         case SOLVE_STANDARD:
         default:
-          for (uint8_t i = 0; i < strlen(run_sequence); i++) {
+          for (uint16_t i = 0; i < sequence_length; i++) {
             switch (run_sequence[i]) {
               case 'B':
                 run_sequence_movements[index++] = MOVE_START;
@@ -1482,7 +1483,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 run_sequence_movements[index++] = MOVE_FRONT;
                 break;
               case 'L':
-                if (i + 1 < (uint16_t)strlen(run_sequence) && run_sequence[i + 1] == 'L') {
+                if (i + 1 < sequence_length && run_sequence[i + 1] == 'L') {
                   turn_movement = MOVE_LEFT_180;
                   i++;
                 } else {
@@ -1491,7 +1492,7 @@ static void smooth_run_sequence(enum speed_strategy speed) {
                 run_sequence_movements[index++] = turn_movement;
                 break;
               case 'R':
-                if (i + 1 < (uint16_t)strlen(run_sequence) && run_sequence[i + 1] == 'R') {
+                if (i + 1 < sequence_length && run_sequence[i + 1] == 'R') {
                   turn_movement = MOVE_RIGHT_180;
                   i++;
                 } else {
