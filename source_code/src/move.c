@@ -1466,13 +1466,15 @@ void move_back_until_wall(void) {
   set_ideal_angular_speed(0.0);
   set_target_linear_speed(-100);
   uint8_t count = 0;
-  while (count < MAX_MOTOR_SATURATION_COUNT / 2) {
+  uint32_t start_ms = get_clock_ticks();
+  while (count < MAX_MOTOR_SATURATION_COUNT / 2 && is_race_started() && (get_clock_ticks() - start_ms) < 1000) {
     if (abs(get_encoder_avg_speed()) >= 80) {
       count++;
     }
     delay(1);
   }
-  while (abs(get_encoder_avg_speed()) > 20) {
+  start_ms = get_clock_ticks();
+  while (abs(get_encoder_avg_speed()) > 20 && is_race_started() && (get_clock_ticks() - start_ms) < 1000) {
     warning_status_led(50);
   }
   delay(MAX_MOTOR_SATURATION_COUNT / 2);
