@@ -40,9 +40,7 @@ static int16_t sensors_middle_target_distance[NUM_SENSORES] = {0, 0, 0, 0};
 static int8_t wall_counter[NUM_SENSORES] = {0, 0, 0, 0};
 static bool wall_present[NUM_SENSORES] = {false, false, false, false};
 
-static volatile int16_t last_front_sensors_angle_error = 0;
 
-static float side_sensors_error = 0;
 
 void set_sensors_robot_calibration(uint16_t version) {
   switch (version) {
@@ -488,8 +486,7 @@ void update_sensors_magics(void) {
           break;
       }
       new_sensor_distance += sensors_distance_offset[sensor];
-      // sensors_distance[sensor] = 0.1f * new_sensor_distance + (1 - 0.1f) * sensors_distance[sensor];
-      sensors_distance[sensor] = new_sensor_distance;
+      sensors_distance[sensor] = (uint16_t)(0.3f * new_sensor_distance + 0.7f * sensors_distance[sensor]);
     }
 
     bool detected = false;
@@ -650,29 +647,22 @@ struct walls get_walls(void) {
   return walls;
 }
 
-void reset_side_sensors_error(void) {
-  side_sensors_error = 0;
-}
-
 float get_side_sensors_error(void) {
   int16_t left_error = sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
   int16_t right_error = sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] - MIDDLE_MAZE_DISTANCE;
 
-  int16_t new_side_sensors_error = 0;
-
   if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 90 && sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 90) {
-    new_side_sensors_error = right_error - left_error;
+    return right_error - left_error;
   } else if (sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < 90) {
-    new_side_sensors_error = -2 * left_error;
+    return -2 * left_error;
   } else if (sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < 90) {
-    new_side_sensors_error = 2 * right_error;
+    return 2 * right_error;
   } else if (left_error > 100 && right_error < 40) {
-    new_side_sensors_error = 2 * right_error;
+    return 2 * right_error;
   } else if (right_error > 100 && left_error < 40) {
-    new_side_sensors_error = -2 * left_error;
+    return -2 * left_error;
   }
-  side_sensors_error = 0.8f * side_sensors_error + (1 - 0.8f) * new_side_sensors_error;
-  return side_sensors_error;
+  return 0;
 }
 
 int16_t get_diagonal_sensors_error(void) {
@@ -688,13 +678,9 @@ int16_t get_diagonal_sensors_error(void) {
 
 int16_t get_front_sensors_angle_error(void) {
   if (!front_wall_detection()) {
-    last_front_sensors_angle_error = 0;
     return 0;
   }
-  int16_t error = sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID];
-  // error = 0.1 * error + (1 - 0.1) * last_front_sensors_angle_error;
-  // last_front_sensors_angle_error = error;
-  return error;
+  return sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID];
 }
 
 int16_t get_front_sensors_diagonal_error(void) {

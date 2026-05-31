@@ -106,7 +106,6 @@ uint16_t get_front_wall_distance(void);
 uint16_t get_front_wall_distance_mm(void);
 int16_t get_front_wall_angle(void);
 
-void reset_side_sensors_error(void);
 float get_side_sensors_error(void);
 int16_t get_diagonal_sensors_error(void);
 int16_t get_front_sensors_angle_error(void);
