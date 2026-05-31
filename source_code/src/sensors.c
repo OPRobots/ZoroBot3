@@ -2,6 +2,9 @@
 
 static bool sensors_enabled = false;
 
+static bool sensors_taking_values = false;
+static uint32_t sensors_take_value_ms = 0;
+
 static uint8_t emitter_status = 1;
 static uint8_t sensor_index = SENSOR_FRONT_LEFT_WALL_ID;
 
@@ -181,6 +184,16 @@ void set_sensors_enabled(bool enabled) {
 
 bool get_sensors_enabled(void) {
   return sensors_enabled;
+}
+
+bool is_sensors_taking_values(void) {
+  return sensors_taking_values;
+}
+
+void sensors_take_value(void) {
+  if (sensors_take_value_ms == 0 || get_clock_ticks() - sensors_take_value_ms > 1000) {
+    sensors_take_value_ms = get_clock_ticks();
+  }
 }
 
 void get_sensors_raw(uint16_t *on, uint16_t *off) {
@@ -392,6 +405,26 @@ void side_sensors_calibration(bool keep_sensors_on) {
   eeprom_set_data(DATA_INDEX_SENSORS_OFFSETS, sensors_distance_offset, NUM_SENSORES);
   eeprom_set_data(DATA_INDEX_SENSORS_RAW_THRESHOLDS, sensors_raw_wall_detection_threshold, NUM_SENSORES);
 #endif
+}
+
+void all_sensors_take_values(uint8_t sensor) {
+  sensors_taking_values = true;
+  set_sensors_enabled(true);
+  delay(100);
+  do {
+    if (get_clock_ticks() - sensors_take_value_ms < 1000) {
+
+      uint32_t sum_raw_filter = 0;
+      for (uint8_t i = 0; i < 5; i++) {
+        uint16_t s = get_sensor_raw_filter(sensor);
+        sum_raw_filter += s;
+        // printf("r: %d\n", s);
+        delay(50);
+      }
+      printf("S: %ld\n", sum_raw_filter / 5);
+      delay(1000);
+    }
+  } while (true);
 }
 
 void sensors_load_eeprom(void) {

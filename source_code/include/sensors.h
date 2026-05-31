@@ -66,6 +66,8 @@ void set_sensors_robot_calibration(uint16_t version);
 
 void set_sensors_enabled(bool enabled);
 bool get_sensors_enabled(void);
+bool is_sensors_taking_values(void);
+void sensors_take_value(void);
 
 uint8_t *get_aux_adc_channels(void);
 uint8_t get_aux_adc_channels_num(void);
@@ -82,6 +84,7 @@ bool use_raw_sensors(void);
 void front_sensors_calibration(void);
 void front_sensors_middle_calibration(void);
 void side_sensors_calibration(bool keep_sensors_on);
+void all_sensors_take_values(uint8_t sensor);
 void sensors_load_eeprom(void);
 
 uint16_t get_sensor_raw(uint8_t pos, bool on);

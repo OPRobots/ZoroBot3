@@ -91,7 +91,11 @@ static void rc5_manage_command(uint16_t message) {
       break;
     case ADDRESS_MENU:
       if (command == CUSTOM_CMD_MENU || command == rc5_stored_data[DATA_MENU]) {
-        menu_rc5_mode_change();
+        if(is_sensors_taking_values()){
+          sensors_take_value();
+        }else{
+          menu_rc5_mode_change();
+        }
       } else if (command == CUSTOM_CMD_MENU_UP || command == rc5_stored_data[DATA_MENU_UP]) {
         menu_rc5_up();
       } else if (command == CUSTOM_CMD_MENU_DOWN || command == rc5_stored_data[DATA_MENU_DOWN]) {
