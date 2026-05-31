@@ -29,24 +29,17 @@ static bool mpu_updating = false;
 static float offset_z[MPU_FULL_SCALE_COUNT];
 
 static uint8_t lsm6dsr_read_register(uint8_t address) {
-  uint8_t reading;
-
   gpio_clear(GPIOA, GPIO15);
-  spi_send(SPI3, (MPU_READ | address));
-  spi_read(SPI3);
-  spi_send(SPI3, 0x00);
-  reading = spi_read(SPI3);
+  spi_xfer(SPI3, (MPU_READ | address));
+  uint8_t reading = spi_xfer(SPI3, 0x00);
   gpio_set(GPIOA, GPIO15);
-
   return reading;
 }
 
 static void lsm6dsr_write_register(uint8_t address, uint8_t value) {
   gpio_clear(GPIOA, GPIO15);
-  spi_send(SPI3, address);
-  spi_read(SPI3);
-  spi_send(SPI3, value);
-  spi_read(SPI3);
+  spi_xfer(SPI3, address);
+  spi_xfer(SPI3, value);
   gpio_set(GPIOA, GPIO15);
 }
 
@@ -71,9 +64,12 @@ static void platform_delay(uint32_t ms) {
 /* #endregion */
 
 static int16_t lsm6dsr_read_gyro_z_raw(void) {
-  uint8_t zl = lsm6dsr_read_register(OUTZ_L_G);
-  uint8_t zh = lsm6dsr_read_register(OUTZ_H_G);
-  return ((zh << 8) | zl);
+  gpio_clear(GPIOA, GPIO15);
+  spi_xfer(SPI3, (MPU_READ | OUTZ_L_G));
+  uint8_t zl = spi_xfer(SPI3, 0x00);
+  uint8_t zh = spi_xfer(SPI3, 0x00);
+  gpio_set(GPIOA, GPIO15);
+  return (int16_t)((zh << 8) | zl);
 }
 
 static int get_sensitivity_dps(void) {
