@@ -50,6 +50,8 @@ const float ln_lookup[LOG_LINEARIZATION_TABLE_SIZE] = {
 
 static volatile int16_t last_front_sensors_angle_error = 0;
 
+static float side_sensors_error = 0;
+
 void set_sensors_robot_calibration(uint16_t version) {
   switch (version) {
     case ZOROBOT3_A:
@@ -635,7 +637,9 @@ struct walls get_walls(void) {
   return walls;
 }
 
-float side_sensors_error = 0;
+void reset_side_sensors_error(void) {
+  side_sensors_error = 0;
+}
 
 float get_side_sensors_error(void) {
   int16_t left_error = sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] - MIDDLE_MAZE_DISTANCE;

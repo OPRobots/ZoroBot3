@@ -226,6 +226,9 @@ void set_angular_error_correction(bool enabled) {
 }
 
 void set_side_sensors_correction(bool enabled) {
+  if (enabled && !side_sensors_correction_enabled) {
+    reset_side_sensors_error();
+  }
   side_sensors_correction_enabled = enabled;
 }
 
