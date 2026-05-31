@@ -205,7 +205,7 @@ void lsm6dsr_update(void) {
         get_kinematics().mpu.low_pass_filter_alpha * gyro_z_raw +
         (1 - get_kinematics().mpu.low_pass_filter_alpha) * new_gyro_z_raw;
 
-    deg_integ = deg_integ - lsm6dsr_get_gyro_z_dps() / SYSTICK_FREQUENCY_HZ;
+    deg_integ = deg_integ - lsm6dsr_get_gyro_z_dps() / UPDATE_FREQUENCY_HZ;
   }
 }
 

@@ -21,13 +21,40 @@
 #include <usart.h>
 
 void sys_tick_handler(void) {
-  clock_tick();
-  update_encoder_readings();
-  update_sensors_magics();
-  update_battery_voltage();
-  check_leds_while();
-  check_buttons();
-  lsm6dsr_update();
+  static uint8_t tick_count = 0;
+
+  sm_emitter_adc();
+
+  switch (tick_count) {
+    case 0:
+      clock_tick();
+      break;
+    case 1:
+      update_encoder_readings();
+      break;
+    case 2:
+      update_sensors_magics();
+      break;
+    case 3:
+      update_battery_voltage();
+      break;
+    case 4:
+      check_leds_while();
+      break;
+    case 5:
+      check_buttons();
+      break;
+    case 6:
+      lsm6dsr_update();
+      break;
+    case 7:
+      control_loop();
+      break;
+    default:
+      break;
+  }
+
+  tick_count = (tick_count + 1) % 16;
 }
 
 int main(void) {
