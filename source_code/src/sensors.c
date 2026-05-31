@@ -668,10 +668,10 @@ float get_side_sensors_error(void) {
 int16_t get_diagonal_sensors_error(void) {
   bool left_correction = sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID];
 
-  if (left_correction && sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < 320) {
-    return -(sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - 320);
-  } else if (!left_correction && sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] < 320) {
-    return sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] - 320;
+  if (left_correction && sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < SENSOR_DIAGONAL_REFERENCE_DISTANCE) {
+    return -(sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - SENSOR_DIAGONAL_REFERENCE_DISTANCE);
+  } else if (!left_correction && sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] < SENSOR_DIAGONAL_REFERENCE_DISTANCE) {
+    return sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] - SENSOR_DIAGONAL_REFERENCE_DISTANCE;
   }
   return 0;
 }
@@ -684,8 +684,8 @@ int16_t get_front_sensors_angle_error(void) {
 }
 
 int16_t get_front_sensors_diagonal_error(void) {
-  int16_t left_error = sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - 320;
-  int16_t right_error = sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] - 320;
+  int16_t left_error = sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] - SENSOR_DIAGONAL_REFERENCE_DISTANCE;
+  int16_t right_error = sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] - SENSOR_DIAGONAL_REFERENCE_DISTANCE;
   // printf("\t\t%4d - %4d\n", left_error, right_error);
 
   if (right_error < 0) {
