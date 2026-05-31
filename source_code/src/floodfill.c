@@ -366,7 +366,7 @@ static void queue_push(uint8_t position, enum compass_direction direction, enum 
   float value = floodfill[position];
   int16_t i = cells_queue.head;
 
-  while (i > 0 && floodfill[cells_queue.queue[i - 1].cell] > value) {
+  while (i > (int16_t)cells_queue.tail && floodfill[cells_queue.queue[i - 1].cell] > value) {
     cells_queue.queue[i] = cells_queue.queue[i - 1];
     i--;
   }
@@ -556,7 +556,7 @@ static float get_next_floodfill_distance(float distance, enum compass_direction 
 }
 
 static uint8_t get_next_floodfill_count(enum compass_direction from_direction, enum compass_direction to_direction, uint8_t count) {
-  if (from_direction == to_direction /* || from_direction == TARGET */) {
+  if (from_direction == to_direction) {
     return count + 1;
   } else {
     return 0;

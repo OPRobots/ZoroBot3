@@ -61,8 +61,8 @@ struct queue_cell {
 
 struct cells_queue {
   struct queue_cell queue[MAZE_CELLS];
-  uint8_t head;
-  uint8_t tail;
+  uint16_t head;
+  uint16_t tail;
 };
 
 struct cells_stack {
