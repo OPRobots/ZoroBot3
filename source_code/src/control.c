@@ -299,7 +299,7 @@ void reset_control_all(void) {
   reset_control_fan_speed();
 #ifndef MMSIM_ENABLED
   reset_motors_saturated();
-  reset_encoder_avg();
+  reset_encoders();
 #endif
 }
 

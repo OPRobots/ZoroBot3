@@ -87,7 +87,9 @@ int32_t get_encoder_avg_millimeters(void) {
   return (left_millimeters + right_millimeters) / 2;
 }
 
-void reset_encoder_avg(void) {
+void reset_encoders(void) {
+  left_total_ticks = 0;
+  right_total_ticks = 0;
   left_micrometers = 0;
   right_micrometers = 0;
   avg_micrometers = 0;
