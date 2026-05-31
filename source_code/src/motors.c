@@ -50,6 +50,17 @@ void set_motors_enable(bool enabled) {
 }
 
 void set_motors_speed(float velI, float velD) {
+  if (velI > 1000) {
+    velI = 1000;
+  } else if (velI < -1000) {
+    velI = -1000;
+  }
+  if (velD > 1000) {
+    velD = 1000;
+  } else if (velD < -1000) {
+    velD = -1000;
+  }
+
   float ocI = 0;
   float ocD = 0;
 
