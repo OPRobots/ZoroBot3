@@ -34,6 +34,12 @@ struct sensors_distance_calibration sensors_distance_calibrations[] = {{}, {}, {
 static int16_t sensors_raw_wall_detection_threshold[NUM_SENSORES] = {0, 0, 0, 0};
 static int16_t sensors_middle_target_distance[NUM_SENSORES] = {0, 0, 0, 0};
 
+#define WALL_DETECT_CONFIRM_COUNT 4
+#define WALL_DETECT_RELEASE_COUNT 6
+
+static int8_t wall_counter[NUM_SENSORES] = {0, 0, 0, 0};
+static bool wall_present[NUM_SENSORES] = {false, false, false, false};
+
 #define LOG_LINEARIZATION_TABLE_STEP 4
 #define LOG_LINEARIZATION_TABLE_SIZE (ADC_RESOLUTION / LOG_LINEARIZATION_TABLE_STEP)
 
@@ -180,6 +186,10 @@ void set_sensors_enabled(bool enabled) {
   if (!sensors_enabled && enabled) {
     emitter_status = 1;
     sensor_index = SENSOR_FRONT_LEFT_WALL_ID;
+    for (uint8_t i = 0; i < NUM_SENSORES; i++) {
+      wall_counter[i] = 0;
+      wall_present[i] = false;
+    }
   }
   sensors_enabled = enabled;
 }
@@ -448,29 +458,15 @@ void sensors_load_eeprom(void) {
 }
 
 bool left_wall_detection(void) {
-  if (use_raw_sensors()) {
-    return get_sensor_raw_filter(SENSOR_SIDE_LEFT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_SIDE_LEFT_WALL_ID];
-  } else {
-    return sensors_distance[SENSOR_SIDE_LEFT_WALL_ID] < SENSOR_SIDE_DETECTION;
-  }
+  return wall_present[SENSOR_SIDE_LEFT_WALL_ID];
 }
 
 bool right_wall_detection(void) {
-  if (use_raw_sensors()) {
-    return get_sensor_raw_filter(SENSOR_SIDE_RIGHT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_SIDE_RIGHT_WALL_ID];
-  } else {
-    return sensors_distance[SENSOR_SIDE_RIGHT_WALL_ID] < SENSOR_SIDE_DETECTION;
-  }
+  return wall_present[SENSOR_SIDE_RIGHT_WALL_ID];
 }
 
 bool front_wall_detection(void) {
-  if (use_raw_sensors()) {
-    return get_sensor_raw_filter(SENSOR_FRONT_LEFT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_FRONT_LEFT_WALL_ID] ||
-           get_sensor_raw_filter(SENSOR_FRONT_RIGHT_WALL_ID) > sensors_raw_wall_detection_threshold[SENSOR_FRONT_RIGHT_WALL_ID];
-  } else {
-    return sensors_distance[SENSOR_FRONT_LEFT_WALL_ID] < SENSOR_FRONT_DETECTION ||
-           sensors_distance[SENSOR_FRONT_RIGHT_WALL_ID] < SENSOR_FRONT_DETECTION;
-  }
+  return wall_present[SENSOR_FRONT_LEFT_WALL_ID] || wall_present[SENSOR_FRONT_RIGHT_WALL_ID];
 }
 
 /**
@@ -508,6 +504,37 @@ void update_sensors_magics(void) {
       new_sensor_distance += sensors_distance_offset[sensor];
       // sensors_distance[sensor] = 0.1f * new_sensor_distance + (1 - 0.1f) * sensors_distance[sensor];
       sensors_distance[sensor] = new_sensor_distance;
+    }
+
+    bool detected = false;
+    if (use_raw_sensors()) {
+      detected = get_sensor_raw_filter(sensor) > (uint16_t)sensors_raw_wall_detection_threshold[sensor];
+    } else {
+      switch (sensor) {
+        case SENSOR_FRONT_LEFT_WALL_ID:
+        case SENSOR_FRONT_RIGHT_WALL_ID:
+          detected = sensors_distance[sensor] < (uint16_t)SENSOR_FRONT_DETECTION;
+          break;
+        default:
+          detected = sensors_distance[sensor] < SENSOR_SIDE_DETECTION;
+          break;
+      }
+    }
+
+    if (detected) {
+      if (wall_counter[sensor] < WALL_DETECT_RELEASE_COUNT) {
+        wall_counter[sensor]++;
+      }
+    } else if (wall_counter[sensor] > 0) {
+      wall_counter[sensor]--;
+    }
+
+    if (!wall_present[sensor]) {
+      if (wall_counter[sensor] >= WALL_DETECT_CONFIRM_COUNT) {
+        wall_present[sensor] = true;
+      }
+    } else if (wall_counter[sensor] <= 0) {
+      wall_present[sensor] = false;
     }
   }
 }
