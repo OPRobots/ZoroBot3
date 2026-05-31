@@ -977,6 +977,12 @@ static bool check_wall_loss_correction(struct walls initial_walls) {
   return wall_lost;
 }
 
+#ifdef MMSIM_ENABLED
+static bool is_motor_saturated(void) {
+  return false;
+}
+#endif
+
 static void move_home(void) {
 #ifdef MMSIM_ENABLED
   API_moveForward();

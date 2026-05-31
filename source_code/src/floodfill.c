@@ -1542,6 +1542,12 @@ static void floodfill_explore_finish(bool save_current_maze) {
 #endif
 }
 
+#ifdef MMSIM_ENABLED
+static bool is_motor_saturated(void) {
+  return false;
+}
+#endif
+
 static bool check_can_do_autorun(void) {
   return is_race_started() && !is_motor_saturated();
 }

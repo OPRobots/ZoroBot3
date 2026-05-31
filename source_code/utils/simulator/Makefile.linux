@@ -11,7 +11,7 @@ SIM_SRCS = ./src/sim_main.c ./src/sim_api.c
 # Archivos originales de ZoroBot3
 ZORO_SRCS = ../../src/floodfill.c ../../src/maze.c ../../src/move.c \
             ../../src/floodfill_weigths.c ../../src/sensors.c \
-            ../../src/menu_run.c ../../src/control.c
+            ../../src/menu_run.c ../../src/control.c ../../src/utils.c
 
 SRCS = $(SIM_SRCS) $(ZORO_SRCS)
 

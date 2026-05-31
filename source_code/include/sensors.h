@@ -30,6 +30,7 @@
 #include <stdint.h>
 
 #include "config.h"
+#include "utils.h"
 
 #define NUM_AUX_ADC_CHANNELS 4
 #define AUX_BATTERY_ID 0

@@ -40,8 +40,6 @@ static int16_t sensors_middle_target_distance[NUM_SENSORES] = {0, 0, 0, 0};
 static int8_t wall_counter[NUM_SENSORES] = {0, 0, 0, 0};
 static bool wall_present[NUM_SENSORES] = {false, false, false, false};
 
-
-
 void set_sensors_robot_calibration(uint16_t version) {
   switch (version) {
     case ZOROBOT3_A:
@@ -186,11 +184,13 @@ bool is_sensors_taking_values(void) {
   return sensors_taking_values;
 }
 
+#ifndef MMSIM_ENABLED
 void sensors_take_value(void) {
   if (sensors_take_value_ms == 0 || get_clock_ticks() - sensors_take_value_ms > 1000) {
     sensors_take_value_ms = get_clock_ticks();
   }
 }
+#endif
 
 void get_sensors_raw(uint16_t *on, uint16_t *off) {
   for (uint8_t i = 0; i < NUM_SENSORES; i++) {
@@ -403,6 +403,7 @@ void side_sensors_calibration(bool keep_sensors_on) {
 #endif
 }
 
+#ifndef MMSIM_ENABLED
 void all_sensors_take_values(uint8_t sensor) {
   sensors_taking_values = true;
   set_sensors_enabled(true);
@@ -422,6 +423,7 @@ void all_sensors_take_values(uint8_t sensor) {
     }
   } while (true);
 }
+#endif
 
 void sensors_load_eeprom(void) {
 #ifndef MMSIM_ENABLED
