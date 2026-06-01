@@ -30,19 +30,19 @@ void sys_tick_handler(void) {
       clock_tick();
       break;
     case 1:
-      update_encoder_readings();
+      check_leds_while();
       break;
     case 2:
-      update_sensors_magics();
+      check_buttons();
       break;
     case 3:
       update_battery_voltage();
       break;
     case 4:
-      check_leds_while();
+      update_encoder_readings();
       break;
     case 5:
-      check_buttons();
+      update_sensors_magics();
       break;
     case 6:
       lsm6dsr_update();
