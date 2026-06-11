@@ -325,8 +325,8 @@ void front_sensors_calibration(void) {
     delay(5);
   }
   set_info_leds();
-  sensors_raw_wall_detection_threshold[SENSOR_FRONT_LEFT_WALL_ID] = (uint16_t)(left_raw_temp / SENSOR_FRONT_CALIBRATION_READINGS / 2);
-  sensors_raw_wall_detection_threshold[SENSOR_FRONT_RIGHT_WALL_ID] = (uint16_t)(right_raw_temp / SENSOR_FRONT_CALIBRATION_READINGS / 2);
+  sensors_raw_wall_detection_threshold[SENSOR_FRONT_LEFT_WALL_ID] = (uint16_t)(left_raw_temp / SENSOR_FRONT_CALIBRATION_READINGS / (SENSOR_RAW_THRESHOLD_DISTANCE_FACTOR * SENSOR_RAW_THRESHOLD_DISTANCE_FACTOR));
+  sensors_raw_wall_detection_threshold[SENSOR_FRONT_RIGHT_WALL_ID] = (uint16_t)(right_raw_temp / SENSOR_FRONT_CALIBRATION_READINGS / (SENSOR_RAW_THRESHOLD_DISTANCE_FACTOR * SENSOR_RAW_THRESHOLD_DISTANCE_FACTOR));
 
   for (uint8_t i = 0; i < NUM_SENSORES; i++) {
     printf("Sensor %d raw threshold: %d\n", i, sensors_raw_wall_detection_threshold[i]);
@@ -407,8 +407,8 @@ void side_sensors_calibration(bool keep_sensors_on) {
     delay(5);
   }
   set_info_leds();
-  sensors_raw_wall_detection_threshold[SENSOR_SIDE_LEFT_WALL_ID] = (uint16_t)(left_raw_temp / SENSOR_SIDE_CALIBRATION_READINGS / 2);
-  sensors_raw_wall_detection_threshold[SENSOR_SIDE_RIGHT_WALL_ID] = (uint16_t)(right_raw_temp / SENSOR_SIDE_CALIBRATION_READINGS / 2);
+  sensors_raw_wall_detection_threshold[SENSOR_SIDE_LEFT_WALL_ID] = (uint16_t)(left_raw_temp / SENSOR_SIDE_CALIBRATION_READINGS / (SENSOR_RAW_THRESHOLD_DISTANCE_FACTOR * SENSOR_RAW_THRESHOLD_DISTANCE_FACTOR));
+  sensors_raw_wall_detection_threshold[SENSOR_SIDE_RIGHT_WALL_ID] = (uint16_t)(right_raw_temp / SENSOR_SIDE_CALIBRATION_READINGS / (SENSOR_RAW_THRESHOLD_DISTANCE_FACTOR * SENSOR_RAW_THRESHOLD_DISTANCE_FACTOR));
 
   for (uint8_t i = 0; i < NUM_SENSORES; i++) {
     printf("Sensor %d raw threshold: %d\n", i, sensors_raw_wall_detection_threshold[i]);
