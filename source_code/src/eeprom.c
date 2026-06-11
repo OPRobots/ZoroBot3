@@ -1,6 +1,26 @@
 #include "eeprom.h"
 
-static int16_t eeprom_data[DATA_LENGTH];
+static int16_t eeprom_data[DATA_TOTAL_WORDS];
+
+static int16_t eeprom_compute_checksum(void) {
+  int16_t sum = 0;
+  for (uint16_t i = 0; i < DATA_LENGTH; i++) {
+    sum += eeprom_data[i];
+  }
+  return -sum;
+}
+
+static bool eeprom_validate_checksum(void) {
+  bool empty = true;
+  int16_t sum = 0;
+  for (uint16_t i = 0; i < DATA_TOTAL_WORDS; i++) {
+    if (eeprom_data[i] != 0 && empty) {
+      empty = false;
+    }
+    sum += eeprom_data[i];
+  }
+  return sum == 0 && !empty;
+}
 
 void eeprom_save(void) {
   uint32_t addr = EEPROM_BASE_ADDRESS;
@@ -13,9 +33,10 @@ void eeprom_save(void) {
   }
 
   set_status_led(true);
+  eeprom_data[DATA_CHECKSUM_INDEX] = eeprom_compute_checksum();
   flash_unlock();
   flash_erase_sector(EEPROM_SECTOR, FLASH_CR_PROGRAM_X16);
-  for (uint16_t i = 0; i < DATA_LENGTH; i++) {
+  for (uint16_t i = 0; i < DATA_TOTAL_WORDS; i++) {
     flash_program_word(addr, eeprom_data[i]);
     addr += 4;
   }
@@ -25,10 +46,20 @@ void eeprom_save(void) {
 
 void eeprom_load(void) {
   uint32_t addr = EEPROM_BASE_ADDRESS;
-  for (uint16_t i = 0; i < DATA_LENGTH; i++) {
+  for (uint16_t i = 0; i < DATA_TOTAL_WORDS; i++) {
     eeprom_data[i] = MMIO32(addr);
     addr += 4;
   }
+
+  if (!eeprom_validate_checksum()) {
+    warning_eeprom();
+  }
+
+  uint16_t used_bytes = DATA_TOTAL_WORDS * 4;
+  printf("EEPROM usage: %lu/%lu bytes (%.1f%%)\n",
+         (unsigned long)used_bytes,
+         (unsigned long)EEPROM_SECTOR_SIZE,
+         (float)used_bytes * 100.0f / (float)EEPROM_SECTOR_SIZE);
 
   lsm6dsr_load_eeprom();
   sensors_load_eeprom();
@@ -44,8 +75,8 @@ void eeprom_clear(void) {
 }
 
 void eeprom_backup(void) {
-  printf("int16_t eeprom_backup[DATA_LENGTH] = {");
-  for (uint16_t i = 0; i < DATA_LENGTH; i++) {
+  printf("int16_t eeprom_backup[DATA_TOTAL_WORDS] = {");
+  for (uint16_t i = 0; i < DATA_TOTAL_WORDS; i++) {
     printf("%d,", eeprom_data[i]);
   }
   printf("};\n");

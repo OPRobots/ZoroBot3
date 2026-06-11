@@ -425,3 +425,11 @@ void clear_info_leds(void) {
   gpio_clear(GPIOC, GPIO15 | GPIO14 | GPIO13);
   gpio_clear(GPIOB, GPIO9 | GPIO8);
 }
+
+void warning_eeprom(void) {
+  uint32_t ms = get_clock_ticks();
+  while (get_clock_ticks() < ms + 3000) {
+    blink_RGB_color(200, 0, 0, 500);
+    set_leds_blink(500);
+  }
+}

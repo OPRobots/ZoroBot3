@@ -44,5 +44,6 @@ void set_info_led(uint8_t index, bool state);
 void set_info_leds(void);
 void show_robot_version(uint16_t version);
 void clear_info_leds(void);
+void warning_eeprom(void);
 
 #endif
