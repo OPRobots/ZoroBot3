@@ -40,6 +40,30 @@ static int16_t sensors_middle_target_distance[NUM_SENSORES] = {0, 0, 0, 0};
 static int8_t wall_counter[NUM_SENSORES] = {0, 0, 0, 0};
 static bool wall_present[NUM_SENSORES] = {false, false, false, false};
 
+#define RAW_MEDIAN_SIZE 3
+static uint16_t raw_median[NUM_SENSORES][RAW_MEDIAN_SIZE];
+static uint8_t raw_median_index[NUM_SENSORES];
+
+static uint16_t triplet_median(uint16_t a, uint16_t b, uint16_t c) {
+  uint16_t t;
+  if (a > b) {
+    t = a;
+    a = b;
+    b = t;
+  }
+  if (b > c) {
+    t = b;
+    b = c;
+    c = t;
+  }
+  if (a > b) {
+    t = a;
+    a = b;
+    b = t;
+  }
+  return b;
+}
+
 void set_sensors_robot_calibration(uint16_t version) {
   switch (version) {
     case ZOROBOT3_A:
@@ -467,7 +491,17 @@ void update_sensors_magics(void) {
     if (sensors_on[sensor] > sensors_off[sensor]) {
       sensors_raw[sensor] = sensors_on[sensor] - sensors_off[sensor];
 
-      int16_t ln_index = (sensors_raw[sensor] + sensors_distance_calibrations[sensor].c) / 4;
+      if (raw_median[sensor][0] == 0) {
+        raw_median[sensor][0] = sensors_raw[sensor];
+        raw_median[sensor][1] = sensors_raw[sensor];
+        raw_median[sensor][2] = sensors_raw[sensor];
+      }
+      raw_median[sensor][raw_median_index[sensor]] = sensors_raw[sensor];
+      raw_median_index[sensor] = (raw_median_index[sensor] + 1) % RAW_MEDIAN_SIZE;
+
+      uint16_t raw_filtered = triplet_median(raw_median[sensor][0], raw_median[sensor][1], raw_median[sensor][2]);
+
+      int16_t ln_index = (raw_filtered + sensors_distance_calibrations[sensor].c) / 4;
       if (ln_index < 0) {
         ln_index = 0;
       }
@@ -488,7 +522,13 @@ void update_sensors_magics(void) {
           break;
       }
       new_sensor_distance += sensors_distance_offset[sensor];
-      sensors_distance[sensor] = (uint16_t)(0.3f * new_sensor_distance + 0.7f * sensors_distance[sensor]);
+
+      float delta = new_sensor_distance - sensors_distance[sensor];
+      if (delta < 0.0f) {
+        delta = -delta;
+      }
+      float alpha = (delta > 10.0f) ? 0.6f : 0.2f;
+      sensors_distance[sensor] = (uint16_t)(alpha * new_sensor_distance + (1.0f - alpha) * sensors_distance[sensor]);
     }
 
     bool detected = false;
