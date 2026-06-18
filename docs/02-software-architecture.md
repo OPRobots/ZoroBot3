@@ -1,4 +1,4 @@
-# 2. Arquitectura Software — ZoroBot3
+# Arquitectura Software
 
 ## Índice
 1. [Visión General](#visión-general)

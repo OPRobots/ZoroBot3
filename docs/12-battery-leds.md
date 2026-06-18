@@ -1,4 +1,4 @@
-# 12. Batería y LEDs — ZoroBot3
+# Batería y LEDs
 
 ## Índice
 1. [Monitorización de Batería](#monitorización-de-batería)

@@ -1,4 +1,4 @@
-# 9. Calibraciones — ZoroBot3
+# Calibraciones
 
 ## Índice
 1. [Tipos de Calibración](#tipos-de-calibración)

@@ -1,0 +1,36 @@
+site_name: ZoroBot3
+site_description: Documentación técnica del robot micromouse ZoroBot3 — STM32F4, encoders magnéticos, 4 sensores IR, ventilador de succión
+site_author: robotaleh
+site_url: !ENV READTHEDOCS_CANONICAL_URL
+repo_name: OPRobots/ZoroBot3
+theme:
+  name: material
+  custom_dir: docs/rtd-template
+
+extra_javascript:
+- js/readthedocs.js
+
+exclude_docs: |
+  README.md
+
+validation:
+  links:
+    not_found: ignore
+
+nav:
+  - Inicio: index.md
+  - Hardware: 01-hardware.md
+  - Arquitectura Software: 02-software-architecture.md
+  - Sensores: 03-sensors.md
+  - Movimiento: 04-movement.md
+  - Floodfill: 05-floodfill.md
+  - Control PID: 06-control-system.md
+  - Menú: 07-menu-system.md
+  - Debug: 08-debug-system.md
+  - Calibración: 09-calibration.md
+  - EEPROM: 10-eeprom.md
+  - Encoders y Giroscopio: 11-encoders-gyro.md
+  - Batería y LEDs: 12-battery-leds.md
+  - Simulador: 13-simulator.md
+  - Cinemática: 14-kinematics.md
+  - Problemas Conocidos: 15-known-issues.md

@@ -1,4 +1,4 @@
-# 15. Problemas Conocidos — ZoroBot3
+# Problemas Conocidos
 
 > **Fecha de análisis**: 2026-06-11
 > **Última actualización**: 2026-06-12

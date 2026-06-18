@@ -1,4 +1,4 @@
-# 8. Sistema de Debug — ZoroBot3
+# Sistema de Debug
 
 ## Índice
 1. [Modos de Debug](#modos-de-debug)

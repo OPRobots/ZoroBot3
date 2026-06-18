@@ -1,4 +1,4 @@
-# 5. Algoritmo Floodfill — ZoroBot3
+# Algoritmo Floodfill
 
 ## Índice
 1. [Visión General](#visión-general)

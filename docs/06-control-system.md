@@ -1,4 +1,4 @@
-# 6. Sistema de Control PID — ZoroBot3
+# Sistema de Control PID
 
 ## Índice
 1. [Arquitectura de Control](#arquitectura-de-control)

@@ -1,4 +1,4 @@
-# 13. Simulador MMSIM — ZoroBot3
+# Simulador MMSIM
 
 ## Índice
 1. [Integración](#integración)

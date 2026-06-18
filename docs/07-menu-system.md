@@ -1,4 +1,4 @@
-# 7. Sistema de Menú — ZoroBot3
+# Sistema de Menú
 
 ## Índice
 1. [Estructura General](#estructura-general)

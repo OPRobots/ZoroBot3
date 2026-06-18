@@ -1,4 +1,4 @@
-# 3. Sistema de Sensores — ZoroBot3
+# Sistema de Sensores
 
 ## Índice
 1. [Hardware](#hardware)

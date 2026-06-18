@@ -1,4 +1,4 @@
-# 4. Sistema de Movimiento — ZoroBot3
+# Sistema de Movimiento
 
 ## Índice
 1. [Arquitectura General](#arquitectura-general)

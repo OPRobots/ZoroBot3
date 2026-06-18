@@ -1,4 +1,4 @@
-# 14. Cinemática y Estrategias de Velocidad — ZoroBot3
+# Cinemática y Estrategias de Velocidad
 
 ## Índice
 1. [Estructuras de Datos](#estructuras-de-datos)

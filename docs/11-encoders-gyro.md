@@ -1,4 +1,4 @@
-# 11. Encoders y Giroscopio — ZoroBot3
+# Encoders y Giroscopio
 
 ## Índice
 1. [Encoders AS5145B-HSST](#encoders-as5145b-hsst)

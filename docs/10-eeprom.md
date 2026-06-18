@@ -1,4 +1,4 @@
-# 10. Gestión de EEPROM — ZoroBot3
+# Gestión de EEPROM
 
 ## Índice
 1. [Hardware y Configuración](#hardware-y-configuración)
