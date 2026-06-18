@@ -1,0 +1,75 @@
+/* ==========================================================================
+   OPRobots minimal overrides for MkDocs Material
+   Only touches: accent color + heading font/color. Nothing else.
+   ========================================================================== */
+
+/* Google Fonts: Roboto Slab for headings, Roboto Mono for code */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+/* Accent color — used for links and interactive elements */
+:root {
+  --md-accent-fg-color: #1b176b;
+}
+
+.md-header__inner{
+  height: 70px;
+}
+
+.md-logo{
+  height: 50px;
+}
+
+/* Headings: Roboto Slab + brand color */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  font-family: 'Roboto Slab', 'Times New Roman', serif;
+  font-weight: 700;
+  color: #1b176b;
+}
+
+.md-nav__title {
+  font-family: 'Roboto Slab', 'Times New Roman', serif;
+  font-weight: 700;
+}
+
+/* Active sidebar link */
+.md-nav__link--active {
+  color: #1b176b;
+}
+
+/* Back-to-top button */
+.md-top {
+  background-color: #1b176b;
+  color: #fff;
+}
+
+/* Header text — brand color in light theme */
+[data-md-color-scheme="default"] .md-header__topic,
+[data-md-color-scheme="default"] .md-header__title {
+  color: #1b176b;
+}
+
+/* ==========================================================================
+   Dark mode — adjust accent + headings to be legible
+   ========================================================================== */
+
+[data-md-color-scheme="slate"] {
+  --md-accent-fg-color: #7b73b4;
+}
+
+[data-md-color-scheme="slate"] .md-typeset h1,
+[data-md-color-scheme="slate"] .md-typeset h2,
+[data-md-color-scheme="slate"] .md-typeset h3,
+[data-md-color-scheme="slate"] .md-typeset h4,
+[data-md-color-scheme="slate"] .md-typeset h5,
+[data-md-color-scheme="slate"] .md-typeset h6 {
+  color: #9b94d0;
+}
+
+[data-md-color-scheme="slate"] .md-nav__link--active {
+  color: #9b94d0;
+}

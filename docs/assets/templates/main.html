@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block site_meta %}
+{{ super() }}
+<meta name="readthedocs-addons-api-version" content="1" />
+<link rel="apple-touch-icon" sizes="180x180" href="assets/imgs/favicon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/imgs/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/imgs/favicon/favicon-16x16.png">
+<link rel="manifest" href="assets/imgs/favicon/site.webmanifest">
+<link rel="mask-icon" href="assets/imgs/favicon/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="assets/imgs/favicon/favicon.ico">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="msapplication-config" content="assets/imgs/favicon/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+{% endblock %}
+
+{% block header %}
+{{ super() }}
+<!-- OPRobots subtle link -->
+<div style="text-align: center; padding: 5px 0; font-size: .75rem; background: #fafafa; border-bottom: 1px solid rgba(0,0,0,.06);">
+  <a href="https://oprobots.github.io" style="color: #1b176b; text-decoration: none; font-weight: 500;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+    ← Volver a OPRobots.github.io
+  </a>
+</div>
+{% endblock %}
+
+{% block footer %}
+<footer class="md-footer">
+  <div class="md-footer__inner">
+    <span class="md-footer__title">
+      Designed by <a href="https://github.com/robotaleh" target="_blank" style="color: #1b176b; font-weight: 700;">@robotaleh</a>
+    </span>
+  </div>
+  <div class="md-footer-meta">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+        &copy; 2024-2026 <a href="https://oprobots.github.io" target="_blank">OPRobots</a>.
+        Framework made by <a href="https://www.creative-tim.com/" target="_blank">Creative Tim</a>.
+        Documentation built with <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank">MkDocs Material</a>.
+      </div>
+      {% if config.extra.social %}
+        {% include "partials/social.html" %}
+      {% endif %}
+    </div>
+  </div>
+</footer>
+{% endblock %}

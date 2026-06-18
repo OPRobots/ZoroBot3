@@ -3,12 +3,42 @@ site_description: Documentación técnica del robot micromouse ZoroBot3 — STM3
 site_author: robotaleh
 site_url: !ENV READTHEDOCS_CANONICAL_URL
 repo_name: OPRobots/ZoroBot3
+
 theme:
   name: material
-  custom_dir: docs/rtd-template
+  custom_dir: docs/assets/templates
+  language: es
+  font:
+    text: Roboto
+    code: Roboto Mono
+  palette:
+    - scheme: default
+      primary: white
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Modo oscuro
+    - scheme: slate
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Modo claro
+  features:
+    - navigation.instant
+    - navigation.top
+    - toc.follow
+    - search.highlight
+    - content.code.copy
+  logo: assets/imgs/opr_logo.png
+  favicon: assets/imgs/favicon/favicon.ico
+  icon:
+    repo: fontawesome/brands/github
 
 extra_javascript:
-- js/readthedocs.js
+  - assets/js/readthedocs.js
+
+extra_css:
+  - assets/css/custom.css
 
 exclude_docs: |
   README.md
