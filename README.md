@@ -8,12 +8,13 @@ Tercera versión de nuestro primer robot. Un robot micromouse de alto rendimient
 
 | 🥇 | 🥈 | 🥉 |
 |:--:|:--:|:--:|
-| **7** | **0** | **0** |
+| **8** | **0** | **0** |
 
 ### Resultados por Evento
 
 | Evento | Categoría | Posición | Año |
 |--------|-----------|:--------:|:---:|
+| <img src="./images/flags/portugal-flag-xs.png" height="16px" title="Portugal" alt="🇵🇹"/> **Micromouse Portuguese Contest** | Micromouse Classic | 🥇 | 2026 |
 | <img src="./images/flags/romania-flag-xs.png" height="16px" title="Rumanía" alt="🇷🇴"/> **RoboChallenge** | Maze | 🥇 | 2025 |
 | <img src="./images/flags/spain-flag-xs.png" height="16px" title="España" alt="🇪🇸"/> **OSHWDem** | Micromouse Classic | 🥇 | 2025 |
 | <img src="./images/flags/portugal-flag-xs.png" height="16px" title="Portugal" alt="🇵🇹"/> **Micromouse Portugese Contest** | Micromouse Classic | 🥇 | 2025 |
@@ -63,6 +64,11 @@ Tercera versión de nuestro primer robot. Un robot micromouse de alto rendimient
 - Dispone de programas para seguimiento de pared derecha/izquierda, exploración y resolución mediante floodfill basado en pesos (más información en [TimeBased FloodFill Simulator](https://github.com/OPRobots/TimeBased-FloodFill-Simulator)) y hardcodeo de movimientos.
 
 ## 🎥 Vídeos
+
+### Micromouse Portugese Contest 2026 - 🥇
+<p align="center" width="100%">
+<video src="https://github.com/user-attachments/assets/5a7cf803-e31e-463a-afa9-e5784b378937" width="80%" controls></video>
+</p>
 
 ### OSHWDem 2025 - 🥇
 <p align="center" width="100%">
