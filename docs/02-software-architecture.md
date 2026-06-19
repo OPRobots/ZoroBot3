@@ -1,15 +1,5 @@
 # Arquitectura Software
 
-## Índice
-1. [Visión General](#visión-general)
-2. [SysTick ISR](#systick-isr)
-3. [Bucle Principal](#bucle-principal)
-4. [Inicio de Competición](#inicio-de-competición)
-5. [Algoritmos de Exploración](#algoritmos-de-exploración)
-6. [Modo Carrera (Speed Run)](#modo-carrera-speed-run)
-7. [Compilación Condicional](#compilación-condicional)
-
----
 
 ## Visión General
 

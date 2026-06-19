@@ -1,17 +1,5 @@
 # Hardware
 
-## Índice
-1. [Microcontrolador](#microcontrolador)
-2. [Sensores Infrarrojos](#sensores-infrarrojos)
-3. [Encoders Magnéticos](#encoders-magnéticos)
-4. [Giroscopio](#giroscopio)
-5. [Motores y Tracción](#motores-y-tracción)
-6. [Alimentación](#alimentación)
-7. [Chasis y PCB](#chasis-y-pcb)
-8. [Versiones del Robot](#versiones-del-robot)
-9. [Pinout y Periféricos](#pinout-y-periféricos)
-
----
 
 ## Microcontrolador
 

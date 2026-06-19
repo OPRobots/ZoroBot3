@@ -1,14 +1,5 @@
 # Sistema de Menú
 
-## Índice
-1. [Estructura General](#estructura-general)
-2. [Menú RUN](#menú-run)
-3. [Menú CONFIG](#menú-config)
-4. [Interacción](#interacción)
-5. [Algoritmos de Ejecución](#algoritmos-de-ejecución)
-6. [Control Remoto RC5](#control-remoto-rc5)
-
----
 
 ## Estructura General
 

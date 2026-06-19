@@ -1,12 +1,5 @@
 # Simulador MMSIM
 
-## Índice
-1. [Integración](#integración)
-2. [API de Paredes Virtuales](#api-de-paredes-virtuales)
-3. [Estimación de Tiempo](#estimación-de-tiempo)
-4. [Compilación Condicional](#compilación-condicional)
-
----
 
 ## Integración
 

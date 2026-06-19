@@ -1,15 +1,5 @@
 # Calibraciones
 
-## Índice
-1. [Tipos de Calibración](#tipos-de-calibración)
-2. [Calibración del Giroscopio](#calibración-del-giroscopio)
-3. [Calibración de Sensores Frontales](#calibración-de-sensores-frontales)
-4. [Calibración Frontal Media](#calibración-frontal-media)
-5. [Calibración de Sensores Laterales](#calibración-de-sensores-laterales)
-6. [Persistencia en EEPROM](#persistencia-en-eeprom)
-7. [Procedimiento de Calibración Completo](#procedimiento-de-calibración-completo)
-
----
 
 ## Tipos de Calibración
 

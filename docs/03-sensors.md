@@ -1,18 +1,5 @@
 # Sistema de Sensores
 
-## Índice
-1. [Hardware](#hardware)
-2. [Arquitectura Software](#arquitectura-software)
-3. [Máquina de Estados ADC](#máquina-de-estados-adc)
-4. [Linealización y Conversión a Distancia](#linealización-y-conversión-a-distancia)
-5. [Detección de Paredes](#detección-de-paredes)
-6. [Cálculo de Errores para Control](#cálculo-de-errores-para-control)
-7. [Uso de Sensores en Movimiento](#uso-de-sensores-en-movimiento)
-8. [Modo Raw vs Modo Linealizado](#modo-raw-vs-modo-linealizado)
-9. [Parámetros ABC por Versión](#parámetros-abc-por-versión-del-robot)
-10. [Pipeline de Filtrado](#pipeline-de-filtrado)
-
----
 
 ## Hardware
 

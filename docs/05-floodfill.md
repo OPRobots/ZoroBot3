@@ -1,18 +1,5 @@
 # Algoritmo Floodfill
 
-## Índice
-1. [Visión General](#visión-general)
-2. [Estructuras de Datos](#estructuras-de-datos)
-3. [Modos de Floodfill](#modos-de-floodfill)
-4. [Cálculo de Pesos (Time-Based)](#cálculo-de-pesos-time-based)
-5. [Algoritmo BFS/Dijkstra](#algoritmo-bfsdijkstra)
-6. [Seguimiento de Dirección](#seguimiento-de-dirección)
-7. [Path Following (Seguimiento de Ruta)](#path-following-seguimiento-de-ruta)
-8. [Exploración](#exploración)
-9. [Speed Run (Carrera)](#speed-run-carrera)
-10. [Estimación de Tiempo (Simulador)](#estimación-de-tiempo-simulador)
-
----
 
 ## Visión General
 

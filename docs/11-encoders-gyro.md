@@ -1,14 +1,5 @@
 # Encoders y Giroscopio
 
-## Índice
-1. [Encoders AS5145B-HSST](#encoders-as5145b-hsst)
-2. [Lectura y Conversión](#lectura-y-conversión)
-3. [Cálculo de Velocidad](#cálculo-de-velocidad)
-4. [Giroscopio LSM6DSR](#giroscopio-lsm6dsr)
-5. [Calibración y Offset](#calibración-y-offset)
-6. [Integración Angular](#integración-angular)
-
----
 
 ## Encoders AS5145B-HSST
 

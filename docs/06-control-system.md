@@ -1,16 +1,5 @@
 # Sistema de Control PID
 
-## Índice
-1. [Arquitectura de Control](#arquitectura-de-control)
-2. [Lazos PID](#lazos-pid)
-3. [Fórmula PID](#fórmula-pid)
-4. [Compensación de Batería](#compensación-de-batería)
-5. [Rampas de Aceleración](#rampas-de-aceleración)
-6. [Detección de Saturación](#detección-de-saturación)
-7. [Control de Ventilador](#control-de-ventilador)
-8. [Diagrama de Cascada](#diagrama-de-cascada)
-
----
 
 ## Arquitectura de Control
 

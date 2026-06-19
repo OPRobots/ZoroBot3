@@ -1,13 +1,5 @@
 # Cinemática y Estrategias de Velocidad
 
-## Índice
-1. [Estructuras de Datos](#estructuras-de-datos)
-2. [Estrategias de Velocidad](#estrategias-de-velocidad)
-3. [Parámetros de Giro](#parámetros-de-giro)
-4. [Perfiles de Aceleración](#perfiles-de-aceleración)
-5. [Degradación de Velocidad](#degradación-de-velocidad)
-
----
 
 ## Estructuras de Datos
 

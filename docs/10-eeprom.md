@@ -1,13 +1,5 @@
 # Gestión de EEPROM
 
-## Índice
-1. [Hardware y Configuración](#hardware-y-configuración)
-2. [Layout de Datos](#layout-de-datos)
-3. [Checksum](#checksum)
-4. [Operaciones](#operaciones)
-5. [Carga durante el Arranque](#carga-durante-el-arranque)
-
----
 
 ## Hardware y Configuración
 

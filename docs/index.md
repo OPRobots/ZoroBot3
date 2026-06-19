@@ -91,16 +91,16 @@
 ## 🎥 Vídeos
 
 ### Micromouse Portuguese Contest 2026 — 🥇
-<video src="https://github.com/user-attachments/assets/5a7cf803-e31e-463a-afa9-e5784b378937" width="100%" controls></video>
+<video src="https://github.com/user-attachments/assets/5a7cf803-e31e-463a-afa9-e5784b378937" width="50%" controls></video>
 
 ### OSHWDem 2025 — 🥇
-<video src="https://github.com/user-attachments/assets/332fd117-6600-4692-b59f-4b1154166f3f" width="100%" controls></video>
+<video src="https://github.com/user-attachments/assets/332fd117-6600-4692-b59f-4b1154166f3f" width="50%" controls></video>
 
 ### Micromouse Portuguese Contest 2025 — 🥇
-<video src="https://github.com/user-attachments/assets/cf21e942-3fe0-4065-8892-fa3d181a9791" width="100%" controls></video>
+<video src="https://github.com/user-attachments/assets/cf21e942-3fe0-4065-8892-fa3d181a9791" width="50%" controls></video>
 
 ### RoboChallenge 2024 — 🥇
-<video src="https://github.com/user-attachments/assets/a8c53e97-a756-4934-9c83-6c93fda1b235" width="100%" controls></video>
+<video src="https://github.com/user-attachments/assets/a8c53e97-a756-4934-9c83-6c93fda1b235" width="50%" controls></video>
 
 ### OSHWDem 2024 — 🥇
-<video src="https://github.com/user-attachments/assets/a70629e6-34b6-473f-afb0-14d8290bd128" width="100%" controls></video>
+<video src="https://github.com/user-attachments/assets/a70629e6-34b6-473f-afb0-14d8290bd128" width="50%" controls></video>

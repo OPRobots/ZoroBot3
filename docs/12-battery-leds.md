@@ -1,12 +1,5 @@
 # Batería y LEDs
 
-## Índice
-1. [Monitorización de Batería](#monitorización-de-batería)
-2. [LEDs de Estado e Información](#leds-de-estado-e-información)
-3. [LED RGB](#led-rgb)
-4. [Control de Ventilador](#control-de-ventilador)
-
----
 
 ## Monitorización de Batería
 

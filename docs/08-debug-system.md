@@ -1,13 +1,5 @@
 # Sistema de Debug
 
-## Índice
-1. [Modos de Debug](#modos-de-debug)
-2. [Salida Serie (USART)](#salida-serie-usart)
-3. [LEDs de Información](#leds-de-información)
-4. [Macroarray](#macroarray)
-5. [Zona de Debug en Main](#zona-de-debug-en-main)
-
----
 
 ## Modos de Debug
 

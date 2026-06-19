@@ -1,16 +1,5 @@
 # Sistema de Movimiento
 
-## Índice
-1. [Arquitectura General](#arquitectura-general)
-2. [Tipos de Movimiento](#tipos-de-movimiento)
-3. [Movimientos Lineales](#movimientos-lineales)
-4. [Movimientos Angulares](#movimientos-angulares)
-5. [Orquestración de Speed Run](#orquestración-de-speed-run)
-6. [Corrección por Pérdida de Pared](#corrección-por-pérdida-de-pared)
-7. [Detección de Saturación](#detección-de-saturación)
-8. [Problemas Conocidos](#problemas-conocidos)
-
----
 
 ## Arquitectura General
 
