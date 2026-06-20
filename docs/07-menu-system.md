@@ -5,11 +5,9 @@
 
 El sistema de menú tiene dos niveles principales, alternados mediante **pulsación larga** del botón MODE:
 
-```
-┌──────────────┐         ┌──────────────┐
-│  MENU_RUN    │ ◄─────► │ MENU_CONFIG  │
-│  (carrera)   │  long   │ (debug/cal)  │
-└──────────────┘  press  └──────────────┘
+```mermaid
+flowchart LR
+    A["MENU_RUN<br>(carrera)"] <-->|"pulsación<br>larga"| B["MENU_CONFIG<br>(debug/cal)"]
 ```
 
 Archivos: [`menu.c`](../source_code/src/menu.c), [`menu_run.c`](../source_code/src/menu_run.c), [`menu_configs.c`](../source_code/src/menu_configs.c).

@@ -147,13 +147,12 @@
 
 ## Resumen por Prioridades
 
-```
-🔴 Críticos:  10  (FF-01..03, SS-01..03, MV-01..04)
-🟡 Moderados: 19  (FF-04..07, SS-04..10/15, MV-05..11)
-🟢 Leves:     18  (FF-08..13, SS-11..14, MV-12..19)
-─────────────────
-TOTAL:        47
-```
+| Prioridad | Cantidad | Issues |
+|-----------|:--------:|--------|
+| 🔴 Críticos | 10 | FF-01..03, SS-01..03, MV-01..04 |
+| 🟡 Moderados | 19 | FF-04..07, SS-04..10/15, MV-05..11 |
+| 🟢 Leves | 18 | FF-08..13, SS-11..14, MV-12..19 |
+| **TOTAL** | **47** | |
 
 ---
 

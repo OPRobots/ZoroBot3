@@ -5,20 +5,44 @@
 
 `control_loop()` en [`control.c:351-615`](../source_code/src/control.c#L351-L615) se ejecuta a **1 kHz** desde el SysTick ISR. Implementa 7 lazos PID en cascada para controlar velocidad lineal, velocidad angular y correcciones basadas en sensores.
 
-```
-target_linear_speed ──► [PID lineal] ──────────────────┐
-ideal_angular_speed ──► [PID angular] ──────┐          │
-side_sensors ─────────► [PID lateral] ──────┤          │
-front_angle ──────────► [PID ángulo front] ─┤          ▼
-front_distance ───────► [PID dist front] ───┤     ┌──────────┐
-front_diagonal ───────► [PID diag front] ───┘───► │ linear + │
-                                                  │ angular  │
-                                                  │ voltage  │
-                                                  └────┬─────┘
-                                                       ▼
-                                               voltage_to_pwm()
-                                                       ▼
-                                               set_motors_pwm(L,R)
+```mermaid
+flowchart LR
+    subgraph inputs["Señales de entrada"]
+        direction TB
+        A["target_linear_speed"]
+        B["ideal_angular_speed"]
+        C["side_sensors"]
+        D["front_angle"]
+        E["front_distance"]
+        F["front_diagonal"]
+    end
+
+    subgraph pids["6 Lazos PID"]
+        direction TB
+        P1["PID lineal"]
+        P2["PID angular"]
+        P3["PID lateral"]
+        P4["PID ángulo front"]
+        P5["PID dist front"]
+        P6["PID diag front"]
+    end
+
+    A --> P1
+    B --> P2
+    C --> P3
+    D --> P4
+    E --> P5
+    F --> P6
+
+    P1 --> SUM["linear +<br>angular<br>voltage"]
+    P2 --> SUM
+    P3 --> SUM
+    P4 --> SUM
+    P5 --> SUM
+    P6 --> SUM
+
+    SUM --> PWM["voltage_to_pwm()"]
+    PWM --> MOTORS["set_motors_pwm(L, R)"]
 ```
 
 ---
@@ -183,47 +207,23 @@ La velocidad del ventilador depende de la estrategia y del voltaje de batería (
 
 ## Diagrama de Cascada
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    control_loop() @ 1 kHz                   │
-│                                                             │
-│  ┌───────────────────┐                                      │
-│  │ Rampa aceleración │  ideal += accel/1000                 │
-│  └────────┬──────────┘                                      │
-│           │                                                 │
-│  ┌────────┴────────┐                                        │
-│  │ Error = ideal − │  measured (encoders)                   │
-│  │ measured_speed  │                                        │
-│  └────────┬────────┘                                        │
-│           │                                                 │
-│  ┌────────┴────────────────────────────────────┐            │
-│  │ PID Lineal: kp·e + ki·∫e + kd·(e−e_prev)     │            │
-│  └────────┬────────────────────────────────────┘            │
-│           │ linear_voltage                                  │
-│           ▼                                                 │
-│  ┌────────────────────────────────────────────┐             │
-│  │ Σ correcciones angulares:                  │             │
-│  │   + PID angular (gyro)                     │             │
-│  │   + PID lateral (side sensors)             │             │
-│  │   + PID ángulo frontal                     │             │
-│  │   + PID diagonal frontal                   │             │
-│  └────────┬───────────────────────────────────┘             │
-│           │ angular_voltage                                 │
-│           ▼                                                 │
-│  ┌────────────────────────────────────────────┐             │
-│  │  voltage_L = linear + angular              │             │
-│  │  voltage_R = linear − angular              │             │
-│  └────────┬───────────────────────────────────┘             │
-│           │                                                 │
-│  ┌────────┴────────────────────────────────────┐            │
-│  │  PWM = voltage / Vbat × MAX_PWM             │            │
-│  └────────┬────────────────────────────────────┘            │
-│           │                                                 │
-│  ┌────────┴────────┐                                        │
-│  │ set_motors_pwm  │                                        │
-│  │ check_saturation│                                        │
-│  └─────────────────┘                                        │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph CL["control_loop() @ 1 kHz"]
+        direction TB
+        A["Rampa aceleración<br>ideal += accel / 1000"]
+        B["Error = ideal − measured<br>(encoders)"]
+        C["PID Lineal<br>kp·e + ki·∫e + kd·(e − e_prev)"]
+        D["Σ correcciones angulares:<br>  + PID angular (gyro)<br>  + PID lateral (side sensors)<br>  + PID ángulo frontal<br>  + PID diagonal frontal"]
+        E["voltage_L = linear + angular<br>voltage_R = linear − angular"]
+        F["PWM = voltage / Vbat × MAX_PWM"]
+        G["set_motors_pwm()<br>check_saturation()"]
+
+        A --> B --> C
+        C -->|"linear_voltage"| D
+        D -->|"angular_voltage"| E
+        E --> F --> G
+    end
 ```
 
 ---

@@ -41,20 +41,19 @@ void sys_tick_handler(void) {
 
 ### Distribución Temporal
 
-```
-SysTick 16 kHz (62.5 µs por tick)
-│
-├── sm_emitter_adc() ─────────── CADA tick (16 kHz)
-│
-└── Contador módulo 16 (1 kHz por tarea):
-     [0] clock_tick()               — Reloj del sistema
-     [1] check_leds_while()         — Actualización LEDs
-     [2] check_buttons()            — Lectura de botones
-     [3] update_battery_voltage()   — Medición batería
-     [4] update_encoder_readings()  —Lectura encoders
-     [5] update_sensors_magics()    — Procesado sensores
-     [6] lsm6dsr_update()           — Lectura giroscopio
-     [7] control_loop()             — Control PID motores
+```mermaid
+flowchart TD
+    A["SysTick 16 kHz (62.5 µs por tick)"]
+    A --> B["sm_emitter_adc()<br>CADA tick (16 kHz)"]
+    A --> C["Contador módulo 16<br>(1 kHz por tarea)"]
+    C --> D["[0] clock_tick()<br>Reloj del sistema"]
+    C --> E["[1] check_leds_while()<br>Actualización LEDs"]
+    C --> F["[2] check_buttons()<br>Lectura de botones"]
+    C --> G["[3] update_battery_voltage()<br>Medición batería"]
+    C --> H["[4] update_encoder_readings()<br>Lectura encoders"]
+    C --> I["[5] update_sensors_magics()<br>Procesado sensores"]
+    C --> J["[6] lsm6dsr_update()<br>Lectura giroscopio"]
+    C --> K["[7] control_loop()<br>Control PID motores"]
 ```
 
 > **Nota**: La frecuencia efectiva de 1 kHz por tarea depende de que SysTick sea exactamente 16 kHz. Si el prescaler no coincide, todas las frecuencias derivadas serán incorrectas. Ver [issue MV-18](15-known-issues.md#mv-18).
@@ -65,37 +64,32 @@ SysTick 16 kHz (62.5 µs por tick)
 
 Archivo: [`source_code/src/main.c:60-205`](../source_code/src/main.c#L60-L205)
 
-```
-main()
-  │
-  ├─ setup()                    — Inicialización de hardware
-  ├─ eeprom_load()              — Cargar calibraciones guardadas
-  ├─ handle_robot_version()     — Detectar versión del robot
-  ├─ show_battery_level()       — Mostrar nivel de batería en LEDs
-  │
-  └─ while(1):
-       │
-       ├─ ¿Carrera iniciada? (is_race_started())
-       │   │
-       │   ├─ NO:
-       │   │   ├─ menu_handler()               — Navegación por menú
-       │   │   ├─ Activar/desactivar sensores   — Según estado del menú
-       │   │   │
-       │   │   └─ Si menú permite inicio (menu_run_can_start()):
-       │   │       ├─ check_start_run()          — Detectar mano en sensores
-       │   │       └─ Si detecta inicio (is_race_started()):
-       │   │           └─ Según algoritmo seleccionado:
-       │   │               ├─ EXPLORE_HANDWALL   → handwall_start()
-       │   │               ├─ EXPLORE_FLOODFILL  → floodfill_start_explore()
-       │   │               │                        o floodfill_start_run()
-       │   │               ├─ EXPLORE_TIME_TRIAL → timetrial_start()
-       │   │               └─ EXPLORE_DRAGRACE   → dragrace_start()
-       │   │
-       │   └─ SÍ:
-       │       └─ Según algoritmo:
-       │           ├─ EXPLORE_HANDWALL  → handwall_loop()
-       │           ├─ EXPLORE_FLOODFILL → floodfill_loop()
-       │           └─ EXPLORE_TIME_TRIAL → timetrial_loop()
+```mermaid
+flowchart TD
+    A["main()"]
+    A --> B["setup()<br>Inicialización de hardware"]
+    B --> C["eeprom_load()<br>Cargar calibraciones guardadas"]
+    C --> D["handle_robot_version()<br>Detectar versión del robot"]
+    D --> E["show_battery_level()<br>Mostrar nivel de batería en LEDs"]
+    E --> F["while(1)"]
+
+    F --> G{"¿Carrera iniciada?<br>(is_race_started)"}
+
+    G -->|"NO"| H["menu_handler()<br>Navegación por menú"]
+    H --> I["Activar/desactivar sensores<br>Según estado del menú"]
+    I --> J{"¿menu_run_can_start()?"}
+    J -->|"Sí"| K["check_start_run()<br>Detectar mano en sensores"]
+    K --> L{"¿Detectó inicio?<br>(is_race_started)"}
+    L -->|"Sí"| M{"Según algoritmo<br>seleccionado"}
+    M -->|"EXPLORE_HANDWALL"| N1["handwall_start()"]
+    M -->|"EXPLORE_FLOODFILL"| N2["floodfill_start_explore()<br>o floodfill_start_run()"]
+    M -->|"EXPLORE_TIME_TRIAL"| N3["timetrial_start()"]
+    M -->|"EXPLORE_DRAGRACE"| N4["dragrace_start()"]
+
+    G -->|"SÍ"| O{"Según algoritmo"}
+    O -->|"EXPLORE_HANDWALL"| P1["handwall_loop()"]
+    O -->|"EXPLORE_FLOODFILL"| P2["floodfill_loop()"]
+    O -->|"EXPLORE_TIME_TRIAL"| P3["timetrial_loop()"]
 ```
 
 ### Modelo de Ejecución
@@ -192,32 +186,30 @@ Controla el modo de ejecución por defecto (RACE o DEBUG).
 
 ## Diagrama de Flujo General
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                      SysTick ISR (16 kHz)                    │
-│  ┌─────────────────────────────────────────────────────────┐ │
-│  │ sm_emitter_adc() × 16 kHz                               │ │
-│  │   └── Máquina de estados: LED OFF→read→LED ON→read      │ │
-│  └─────────────────────────────────────────────────────────┘ │
-│  ┌─────────────────────────────────────────────────────────┐ │
-│  │ Tareas a 1 kHz (módulo 16):                             │ │
-│  │   clock → LEDs → buttons → battery → encoders →         │ │
-│  │   sensors_magics → gyro → control_loop                  │ │
-│  └─────────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────┐
-│                     Main Loop (variable)                     │
-│                                                              │
-│  MENU ───► check_start_run() ───► ALGORITMO ───► FIN         │
-│                                        │                     │
-│                                        ├─ handwall_loop()    │
-│                                        ├─ floodfill_loop()   │
-│                                        │   ├─ loop_explore() │
-│                                        │   └─ loop_run()     │
-│                                        └─ timetrial_loop()   │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph ISR["SysTick ISR (16 kHz)"]
+        direction TB
+        ISR1["sm_emitter_adc() × 16 kHz<br>Máquina de estados: LED OFF → read → LED ON → read"]
+        ISR2["Tareas a 1 kHz (módulo 16):<br>clock → LEDs → buttons → battery → encoders →<br>sensors_magics → gyro → control_loop"]
+        ISR1 --> ISR2
+    end
+
+    ISR --> MAIN
+
+    subgraph MAIN["Main Loop (variable)"]
+        direction TB
+        ML1["MENU"]
+        ML2["check_start_run()"]
+        ML3["ALGORITMO"]
+        ML4["FIN"]
+        ML1 --> ML2 --> ML3 --> ML4
+        ML3 --> ML3a["handwall_loop()"]
+        ML3 --> ML3b["floodfill_loop()"]
+        ML3 --> ML3c["timetrial_loop()"]
+        ML3b --> ML3b1["loop_explore()"]
+        ML3b --> ML3b2["loop_run()"]
+    end
 ```
 
 ---

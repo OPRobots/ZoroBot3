@@ -34,6 +34,13 @@ theme:
   icon:
     repo: fontawesome/brands/github
 
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
 extra_javascript:
   - assets/js/readthedocs.js
 

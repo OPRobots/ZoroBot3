@@ -48,15 +48,17 @@ En `update_floodfill()`, tras el BFS, se colorean las celdas del camino óptimo:
 
 ### Algoritmo
 
-```
-Para cada movimiento en la secuencia:
-├── Si es recto (F):
-│   tiempo += straight_weights[move_count].time
-├── Si es giro (L/R):
-│   tiempo += diagonal_weights[move_count].time
-│   Si cambió la dirección respecto al movimiento anterior:
-│       penalty += diagonal_weights[last_count].penalty
-└── move_count++ (misma dirección) o move_count=0 (cambio)
+```mermaid
+flowchart TD
+    A["Para cada movimiento<br>en la secuencia"]
+    A --> B{"¿Tipo?"}
+    B -->|"Recto (F)"| C["tiempo +=<br>straight_weights[move_count].time"]
+    B -->|"Giro (L/R)"| D["tiempo +=<br>diagonal_weights[move_count].time"]
+    D --> E{"¿Cambió dirección<br>respecto al anterior?"}
+    E -->|"Sí"| F["penalty +=<br>diagonal_weights[last_count].penalty"]
+    E -->|"No"| G["move_count++<br>(misma dirección)"]
+    C --> G
+    F --> H["move_count = 0<br>(cambio de dirección)"]
 ```
 
 ### Issue Conocido

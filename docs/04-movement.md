@@ -12,18 +12,27 @@
 
 El main loop llama a funciones bloqueantes (`move_straight`, `move_arc_turn`, etc.) que establecen velocidades objetivo y esperan condiciones de finalización. El ISR ejecuta el control PID en segundo plano.
 
-```
-Main Loop                         ISR (1 kHz)
-    │                                  │
-    ├─ move_straight(d, speed) ──►     │
-    │  ├─ set_target_linear_speed()    ├─ control_loop()
-    │  └─ while(dist < target)         │  ├─ update_ideal_linear_speed()
-    │     │  (espera ocupada)          │  ├─ PID lineal (error velocidad)
-    │     │                            │  ├─ PID angular (error giro)
-    │     │                            │  ├─ PID sensores (error paredes)
-    │     │                            │  └─ set_motors_pwm()
-    │     └─ (distancia alcanzada)     │
-    └──────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant ML as Main Loop
+    participant ISR as ISR (1 kHz)
+
+    ML->>ML: move_straight(d, speed)
+    ML->>ML: set_target_linear_speed()
+    activate ML
+    ML->>ML: while(dist < target) { ... }
+
+    loop Cada 1 ms (espera ocupada)
+        ISR->>ISR: control_loop()
+        ISR->>ISR: update_ideal_linear_speed()
+        ISR->>ISR: PID lineal (error velocidad)
+        ISR->>ISR: PID angular (error giro)
+        ISR->>ISR: PID sensores (error paredes)
+        ISR->>ISR: set_motors_pwm()
+    end
+
+    deactivate ML
+    Note over ML,ISR: distancia alcanzada → move_straight retorna
 ```
 
 Archivos: [`move.h`](../source_code/include/move.h), [`move.c`](../source_code/src/move.c) (~60 KB, el archivo más grande del proyecto).
@@ -278,31 +287,33 @@ Los problemas del sistema de movimiento están documentados en el [registro de i
 
 ## Diagrama de Flujo
 
-```
-┌─────────────────────────────────────────┐
-│        Main Loop (bloqueante)           │
-│                                         │
-│  move(movement)                         │
-│    ├─ move_front()                      │
-│    │   └─ move_straight(180mm, speed)   │
-│    │       ├─ set_target_linear_speed() │
-│    │       └─ while(dist < target)      │
-│    │           └─ (ISR ejecuta PID)     │
-│    ├─ move_side(movement)               │
-│    │   ├─ move_straight(turn.start)     │
-│    │   ├─ move_arc_turn(turn)           │
-│    │   │   └─ Perfil sinusoidal         │
-│    │   └─ move_straight(turn.end)       │
-│    └─ move_back(movement)               │
-│        └─ move_inplace_turn(180°)       │
-│                                         │
-│  move_run_sequence() [speed run]        │
-│    ├─ Acumula tramos rectos             │
-│    ├─ Ajusta velocidad de giro          │
-│    ├─ run_straight(d, offsets, cells)   │
-│    ├─ run_side(movement, turn, next)    │
-│    └─ run_diagonal(d, end, cells)       │
-└─────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph MAIN["Main Loop (bloqueante)"]
+        direction TB
+        A["move(movement)"]
+        A --> B["move_front()"]
+        A --> C["move_side(movement)"]
+        A --> D["move_back(movement)"]
+        A --> E["move_run_sequence()<br>[speed run]"]
+
+        B --> B1["move_straight(180 mm, speed)"]
+        B1 --> B1a["set_target_linear_speed()"]
+        B1 --> B1b["while(dist < target)<br>(ISR ejecuta PID)"]
+
+        C --> C1["move_straight(turn.start)"]
+        C --> C2["move_arc_turn(turn)"]
+        C --> C3["move_straight(turn.end)"]
+        C2 --> C2a["Perfil sinusoidal"]
+
+        D --> D1["move_inplace_turn(180°)"]
+
+        E --> E1["Acumula tramos rectos"]
+        E --> E2["Ajusta velocidad de giro"]
+        E --> E3["run_straight(d, offsets, cells)"]
+        E --> E4["run_side(movement, turn, next)"]
+        E --> E5["run_diagonal(d, end, cells)"]
+    end
 ```
 
 ---

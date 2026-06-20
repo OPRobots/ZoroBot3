@@ -189,26 +189,25 @@ La detección se realiza en `handle_robot_version()` leyendo `UID_WORD0` del reg
 
 ## Esquema de Bloques
 
-```
-┌──────────────────────────────────────────────────┐
-│             STM32F405RGT6 @168MHz                │
-│                                                  │
-│    ┌──────────┐  ┌──────────┐  ┌──────────┐      │
-│    │ TIM3/4   │  │ SPI3     │  │ ADC2     │      │
-│    │ Encoders │  │ LSM6DSR  │  │ 4×IR +   │      │
-│    │ (L,R)    │  │ (Gyro)   │  │ 4×Aux    │      │
-│    └──────────┘  └──────────┘  └──────────┘      │
-│                                                  │
-│    ┌──────────┐  ┌──────────┐  ┌──────────┐      │
-│    │ TIM2/5   │  │ USART3   │  │ GPIO     │      │
-│    │ PWM 20kHz│  │ Debug    │  │ IR LEDs  │      │
-│    │ (Motores)│  │ 115200   │  │ Info LEDs│      │
-│    └──────────┘  └──────────┘  └──────────┘      │
-│                                                  │
-│  ┌──────────────────────────────────────────┐    │
-│  │ DMA: Transferencias ADC automáticas      │    │
-│  └──────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph MCU["STM32F405RGT6 @ 168 MHz"]
+        direction TB
+        subgraph row1[" "]
+            direction LR
+            P1["TIM3/4<br>Encoders (L,R)"]
+            P2["SPI3<br>LSM6DSR (Gyro)"]
+            P3["ADC2<br>4×IR + 4×Aux"]
+        end
+        subgraph row2[" "]
+            direction LR
+            P4["TIM2/5<br>PWM 20 kHz<br>(Motores)"]
+            P5["USART3<br>Debug<br>115200"]
+            P6["GPIO<br>IR LEDs<br>Info LEDs"]
+        end
+        DMA["DMA<br>Transferencias ADC automáticas"]
+        P3 --> DMA
+    end
 ```
 
 ---

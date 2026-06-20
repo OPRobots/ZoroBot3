@@ -96,7 +96,7 @@ Cada sección enlaza a un documento detallado independiente.
 
 ## 🏗️ Estructura del Proyecto
 
-```
+```text
 ZoroBot3/
 ├── docs/                    # 📚 Documentación (este directorio)
 ├── source_code/
@@ -159,40 +159,29 @@ ZoroBot3/
 
 ## 🔄 Flujo de Alto Nivel
 
-```
-Inicio (main)
-  │
-  ├─ setup() — Inicialización hardware
-  ├─ eeprom_load() — Cargar calibraciones
-  ├─ handle_robot_version() — Detectar versión A/B/C
-  │
-  └─ Bucle principal
-       │
-       ├─ ¿Carrera iniciada?
-       │   │
-       │   ├─ NO → menu_handler()
-       │   │        │
-       │   │        ├─ Seleccionar algoritmo
-       │   │        ├─ Configurar parámetros
-       │   │        └─ Esperar inicio (sensores frontales)
-       │   │
-       │   └─ SÍ → Según algoritmo:
-       │            ├─ EXPLORE_HANDWALL  → handwall_loop()
-       │            ├─ EXPLORE_FLOODFILL → floodfill_loop()
-       │            ├─ EXPLORE_TIME_TRIAL → timetrial_loop()
-       │            └─ EXPLORE_DRAGRACE  → (inicia directamente)
-       │
-       └─ ISR SysTick (16 kHz, en paralelo)
-            ├─ sm_emitter_adc() — 16 kHz
-            └─ Tareas a 1 kHz (módulo 16):
-                 ├─ clock_tick()
-                 ├─ check_leds_while()
-                 ├─ check_buttons()
-                 ├─ update_battery_voltage()
-                 ├─ update_encoder_readings()
-                 ├─ update_sensors_magics()
-                 ├─ lsm6dsr_update()
-                 └─ control_loop()
+```mermaid
+flowchart TD
+    A["Inicio (main)"]
+    A --> B["setup()<br>Inicialización hardware"]
+    B --> C["eeprom_load()<br>Cargar calibraciones"]
+    C --> D["handle_robot_version()<br>Detectar versión A/B/C"]
+    D --> E["Bucle principal"]
+    E --> F{"¿Carrera iniciada?"}
+    F -->|"NO"| G["menu_handler()"]
+    G --> G1["Seleccionar algoritmo"]
+    G1 --> G2["Configurar parámetros"]
+    G2 --> G3["Esperar inicio<br>(sensores frontales)"]
+    F -->|"SÍ"| H{"Según algoritmo"}
+    H -->|"EXPLORE_HANDWALL"| I["handwall_loop()"]
+    H -->|"EXPLORE_FLOODFILL"| J["floodfill_loop()"]
+    H -->|"EXPLORE_TIME_TRIAL"| K["timetrial_loop()"]
+    H -->|"EXPLORE_DRAGRACE"| L["(inicia directamente)"]
+    subgraph ISR["ISR SysTick (16 kHz, en paralelo)"]
+        direction TB
+        ISR1["sm_emitter_adc() — 16 kHz"]
+        ISR2["Tareas a 1 kHz (módulo 16):<br>clock_tick() → check_leds_while() →<br>check_buttons() → update_battery_voltage() →<br>update_encoder_readings() →<br>update_sensors_magics() →<br>lsm6dsr_update() → control_loop()"]
+        ISR1 --> ISR2
+    end
 ```
 
 ---

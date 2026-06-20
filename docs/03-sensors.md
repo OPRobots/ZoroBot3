@@ -265,39 +265,14 @@ Determinados empíricamente mediante script Python externo. Cargados automática
 
 ## Pipeline de Filtrado
 
-```
-ADC raw (12-bit) @ 16 kHz
-    │
-    ▼
-┌───────────────────────┐
-│ Diferencial           │  raw = on − off
-│ (filtra luz ambiente) │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ Mediana N=3           │  Elimina spikes (EMI motores)
-│ (buffer circular)     │  Latencia: ~0.5 ms
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ Linealización         │  dist = (a/ln(raw+c) − b) × 1000
-│ (LUT 1024 entradas)   │  + ajuste geométrico + offset
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ EMA Adaptativo        │  |Δ|>10mm → α=0.6 (rápido, τ≈1.7)
-│                       │  |Δ|≤10mm → α=0.2 (suave, τ≈5)
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ Detección de pared    │  Raw: raw_filter > threshold
-│ + histéresis          │  Dist: distance < detection
-│ (4 conf, 6 release)   │
-└───────────────────────┘
+```mermaid
+flowchart TD
+    A["ADC raw (12-bit) @ 16 kHz"]
+    A --> B["Diferencial<br>raw = on − off<br>(filtra luz ambiente)"]
+    B --> C["Mediana N=3<br>(buffer circular)<br>Elimina spikes (EMI motores)<br>Latencia: ~0.5 ms"]
+    C --> D["Linealización<br>dist = a / ln(raw + c) − b × 1000<br>(LUT 1024 entradas)<br>+ ajuste geométrico + offset"]
+    D --> E["EMA Adaptativo<br>|Δ| > 10 mm → α = 0.6 (rápido, τ ≈ 1.7)<br>|Δ| ≤ 10 mm → α = 0.2 (suave, τ ≈ 5)"]
+    E --> F["Detección de pared + histéresis<br>(4 confirmaciones, 6 release)<br>Raw: raw_filter > threshold<br>Dist: distance < detection"]
 ```
 
 ---

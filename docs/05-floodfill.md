@@ -237,55 +237,31 @@ Recorre la secuencia de movimientos acumulando tiempos de las tablas de pesos. A
 
 ## Diagrama de Flujo
 
-```
-Inicio (start_explore o start_run)
-    │
-    ▼
-Inicializar maze / Cargar desde EEPROM
-    │
-    ▼
-Establecer objetivos (goals)
-    │
-    ▼
-┌──────────────────────────────────────┐
-│        update_floodfill()            │
-│  ┌────────────────────────────────┐  │
-│  │ Calcular tablas de pesos       │  │
-│  │ (si no calculadas aún)         │  │
-│  └────────────┬───────────────────┘  │
-│               ▼                      │
-│  ┌────────────────────────────────┐  │
-│  │ Reset floodfill[] = MAX        │  │
-│  │ Vaciar cola                    │  │
-│  └────────────┬───────────────────┘  │
-│               ▼                      │
-│  ┌────────────────────────────────┐  │
-│  │ Pushear goals con dist=0       │  │
-│  └────────────┬───────────────────┘  │
-│               ▼                      │
-│  ┌────────────────────────────────┐  │
-│  │ BFS Dijkstra con cola prioridad│  │
-│  │ Para cada celda:               │  │
-│  │   Para cada vecino sin pared:  │  │
-│  │     - next_direction           │  │
-│  │     - next_count               │  │
-│  │     - next_distance (coste)    │  │
-│  │     - Si mejora: actualizar    │  │
-│  └────────────────────────────────┘  │
-└──────────────────────────────────────┘
-    │
-    ▼
-┌──────────────────────────────────────┐
-│     Path Following / Exploración     │
-│  Mientras floodfill[pos] > 0:        │
-│    - Elegir paso con min floodfill   │
-│    - Ejecutar movimiento             │
-│    - Actualizar posición/dirección   │
-└──────────────────────────────────────┘
-    │
-    ▼
-¿Explorando? → Buscar siguiente celda interesante
-¿En carrera? → build_run_sequence() → move_run_sequence()
+```mermaid
+flowchart TD
+    A["Inicio (start_explore o start_run)"]
+    A --> B["Inicializar maze / Cargar desde EEPROM"]
+    B --> C["Establecer objetivos (goals)"]
+    C --> D
+
+    subgraph D["update_floodfill()"]
+        direction TB
+        D1["Calcular tablas de pesos<br>(si no calculadas aún)"]
+        D1 --> D2["Reset floodfill[] = MAX<br>Vaciar cola"]
+        D2 --> D3["Pushear goals con dist = 0"]
+        D3 --> D4["BFS Dijkstra con cola prioridad<br>Para cada celda:<br>  Para cada vecino sin pared:<br>    - next_direction<br>    - next_count<br>    - next_distance (coste)<br>    - Si mejora: actualizar"]
+    end
+
+    D --> E
+
+    subgraph E["Path Following / Exploración"]
+        direction TB
+        E1["Mientras floodfill[pos] > 0:<br>  - Elegir paso con min floodfill<br>  - Ejecutar movimiento<br>  - Actualizar posición/dirección"]
+    end
+
+    E --> F{"¿Explorando?"}
+    F -->|"Sí"| G["Buscar siguiente<br>celda interesante"]
+    F -->|"No (carrera)"| H["build_run_sequence()<br>→ move_run_sequence()"]
 ```
 
 ---

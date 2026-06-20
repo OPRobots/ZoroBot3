@@ -20,26 +20,16 @@ Archivos: [`eeprom.c`](../source_code/src/eeprom.c), [`eeprom.h`](../source_code
 
 La EEPROM emulada almacena un bloque contiguo de palabras de 32 bits con checksum al final:
 
-```
-Offset  Contenido                          Tamaño (words)
-──────  ─────────────────────────────────  ──────────────
-0       Offset Z giroscopio                MPU_DATA_LENGTH
-        (3 valores: 1000/2000/4000 dps)
-───
-N       Offsets de distancia (4 sensores)  4
-───
-        Umbrales raw de detección (×4)     4
-───
-        Distancias medias objetivo (×4)     4
-───
-        Laberinto (MAZE_CELLS celdas)      256
-───
-        Configuración del menú RUN         7
-───
-        Datos RC5                          5
-───
-        Checksum (complemento a 2)         1
-```
+| Offset | Contenido | Tamaño (words) |
+|--------|-----------|:--------------:|
+| 0 | Offset Z giroscopio (3 valores: 1000/2000/4000 dps) | MPU_DATA_LENGTH |
+| N | Offsets de distancia (4 sensores) | 4 |
+| N | Umbrales raw de detección (4 sensores) | 4 |
+| N | Distancias medias objetivo (4 sensores) | 4 |
+| N | Laberinto (MAZE_CELLS celdas) | 256 |
+| N | Configuración del menú RUN | 7 |
+| N | Datos RC5 | 5 |
+| N | Checksum (complemento a 2) | 1 |
 
 ### Índices de Acceso
 

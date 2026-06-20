@@ -102,18 +102,26 @@ Cada estrategia tiene su propio array `turn_params[]` indexado por `enum movemen
 
 El punto de referencia es la **línea divisoria de casillas** (sensing point):
 
-```
-                sensing point entrada          sensing point salida
-                      │                              │
-   ───────────────────┬──────────────────────────────┬──────────────────
-      tramo recto     │         perfil de giro       │   tramo recto
-       reducido       │                              │    reducido
-     ←── start (-) ──→│                              │←── end (-) ──→
-                      │  ┌──────────────────────┐    │
-                      │  │ transition (63 ms)   │    │
-                      │  │ arc (131 ms)         │    │
-                      │  │ transition (63 ms)   │    │
-                      │  └──────────────────────┘    │
+```mermaid
+flowchart LR
+    subgraph road[" "]
+        direction LR
+        A["tramo recto<br>reducido<br>← start (−) →"]
+        B["sensing point<br>entrada"]
+        C["sensing point<br>salida"]
+        D["tramo recto<br>reducido<br>← end (−) →"]
+    end
+    subgraph turn["perfil de giro"]
+        direction LR
+        T1["transition<br>63 ms"]
+        T2["arc<br>131 ms"]
+        T3["transition<br>63 ms"]
+        T1 --> T2 --> T3
+    end
+    A --- B
+    C --- D
+    B -.-> T1
+    T3 -.-> C
 ```
 
 - **`start` negativo**: el perfil comienza antes del sensing point → el tramo recto previo se **reduce** (el robot empieza a girar antes de cruzar la línea divisoria).
