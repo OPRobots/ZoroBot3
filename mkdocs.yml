@@ -43,9 +43,11 @@ markdown_extensions:
 
 extra_javascript:
   - assets/js/readthedocs.js
+  - assets/js/mermaid-zoom.js
 
 extra_css:
   - assets/css/custom.css
+  - assets/css/mermaid-zoom.css
 
 exclude_docs: |
   README.md

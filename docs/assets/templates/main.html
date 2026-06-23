@@ -14,6 +14,30 @@
 <meta name="theme-color" content="#ffffff">
 {% endblock %}
 
+{% block extrahead %}
+{{ super() }}
+<script>
+(function() {
+  /* Intercept Element.prototype.attachShadow to capture closed shadow roots
+     for Mermaid diagram elements. This MUST run before Material's bundle. */
+  if (window.__mermaidZoomPatched) return;
+  window.__mermaidZoomPatched = true;
+
+  var originalAttachShadow = Element.prototype.attachShadow;
+  var shadowMap = new WeakMap();
+  window.__mermaidShadowMap = shadowMap;
+
+  Element.prototype.attachShadow = function (options) {
+    var shadow = originalAttachShadow.call(this, options);
+    if (this.classList && this.classList.contains("mermaid")) {
+      shadowMap.set(this, shadow);
+    }
+    return shadow;
+  };
+})();
+</script>
+{% endblock %}
+
 {% block header %}
 {{ super() }}
 <!-- OPRobots subtle link -->

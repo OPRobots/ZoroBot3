@@ -8,14 +8,14 @@
 
 /* Accent color — used for links and interactive elements */
 [data-md-color-scheme=default] {
-  --md-accent-fg-color: #1b176b!important;
-  --md-footer-bg-color: #fff!important;
-  --md-footer-bg-color--dark: #fafafa!important;
-  --md-footer-fg-color: #222121b5!important;
-  --md-footer-fg-color--lighter:#222121b5!important;
+  --md-accent-fg-color: #1b176b !important;
+  --md-footer-bg-color: #fff !important;
+  --md-footer-bg-color--dark: #fafafa !important;
+  --md-footer-fg-color: #222121b5 !important;
+  --md-footer-fg-color--lighter: #222121b5 !important;
 }
 
-.md-header__inner{
+.md-header__inner {
   height: 70px;
 }
 
@@ -62,10 +62,10 @@
    ========================================================================== */
 
 [data-md-color-scheme="slate"] {
-  --md-accent-fg-color: #7b73b4!important;
-  --md-footer-bg-color: #0a0d24!important;
-  --md-footer-bg-color--dark: #06091a!important;
-  --md-footer-fg-color: #999999!important;
+  --md-accent-fg-color: #7b73b4 !important;
+  --md-footer-bg-color: #0a0d24 !important;
+  --md-footer-bg-color--dark: #06091a !important;
+  --md-footer-fg-color: #999999 !important;
 }
 
 [data-md-color-scheme="slate"] .md-typeset h1,
@@ -79,4 +79,8 @@
 
 [data-md-color-scheme="slate"] .md-nav__link--active {
   color: #9b94d0;
+}
+
+.mermaid {
+  text-align: center;
 }

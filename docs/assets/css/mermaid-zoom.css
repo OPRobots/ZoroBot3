@@ -1,0 +1,200 @@
+/* ==========================================================================
+   Mermaid diagram zoom button and lightbox overlay
+   ========================================================================== */
+
+/* --- Wrapper container --- */
+.mermaid-zoom-container {
+  position: relative;
+  display: block;
+  max-width: 100%;
+}
+
+/* --- Zoom overlay (full-diagram hover) --- */
+.mermaid-zoom-btn {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  cursor: zoom-in;
+  opacity: 0;
+  transition: opacity 0.25s ease, background 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+}
+
+.mermaid-zoom-container:hover .mermaid-zoom-btn {
+  opacity: 1;
+  background: rgba(128, 128, 128, 0.06);
+}
+
+/* Magnifying glass icon circle via ::after */
+.mermaid-zoom-btn::after {
+  content: "\1F50D"; /* Unicode magnifying glass */
+  font-size: 20px;
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  text-align: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.mermaid-zoom-container:hover .mermaid-zoom-btn::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* --- Lightbox overlay --- */
+.mermaid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.mermaid-overlay--active {
+  opacity: 1;
+}
+
+/* SVG container in overlay */
+.mermaid-overlay-content {
+  position: relative;
+  width: 92vw;
+  max-width: 92vw;
+  height: 90vh;
+  max-height: 90vh;
+  overflow: hidden;
+  background: var(--md-default-bg-color, #fff);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+/* Scale SVG to fill overlay while maintaining aspect ratio */
+.mermaid-overlay-content svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  transform-origin: 0 0;
+}
+
+/* Close button */
+.mermaid-overlay-close {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1001;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--md-default-bg-color, #fff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  font-size: 28px;
+  line-height: 44px;
+  text-align: center;
+  color: var(--md-default-fg-color, #000);
+  transition: background 0.15s ease;
+}
+
+.mermaid-overlay-close:hover {
+  background: #eee;
+}
+
+/* Prevent body scroll when overlay is open */
+body.mermaid-overlay-open {
+  overflow: hidden;
+}
+
+/* --- Dark mode --- */
+[data-md-color-scheme="slate"] .mermaid-zoom-container:hover .mermaid-zoom-btn {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-md-color-scheme="slate"] .mermaid-zoom-btn::after {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+[data-md-color-scheme="slate"] .mermaid-overlay {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+[data-md-color-scheme="slate"] .mermaid-overlay-content {
+  background: var(--md-default-bg-color, #1e1e1e);
+}
+
+[data-md-color-scheme="slate"] .mermaid-overlay-close {
+  background: var(--md-default-bg-color, #2e2e2e);
+  color: var(--md-default-fg-color, #eee);
+}
+
+[data-md-color-scheme="slate"] .mermaid-overlay-close:hover {
+  background: #444;
+}
+
+/* --- Mobile adjustments --- */
+@media (max-width: 600px) {
+  .mermaid-overlay-content {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    padding: 12px;
+  }
+
+  .mermaid-zoom-btn::after {
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    font-size: 24px;
+  }
+}
+
+/* --- Touch devices: always show overlay subtly (no hover available) --- */
+@media (hover: none) and (pointer: coarse) {
+  .mermaid-zoom-btn {
+    opacity: 1;
+    background: rgba(128, 128, 128, 0.04);
+  }
+
+  .mermaid-zoom-btn::after {
+    opacity: 0.6;
+    transform: scale(0.7);
+  }
+
+  .mermaid-zoom-container:hover .mermaid-zoom-btn {
+    opacity: 1;
+    background: rgba(128, 128, 128, 0.04);
+  }
+
+  .mermaid-zoom-container:hover .mermaid-zoom-btn::after {
+    opacity: 0.6;
+    transform: scale(0.7);
+  }
+}
