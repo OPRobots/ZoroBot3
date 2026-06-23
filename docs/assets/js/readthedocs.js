@@ -29,5 +29,11 @@ document.addEventListener(
   </ul>
 </div>`;
 
+          // Remove any previously injected version selector to prevent
+          // duplication under MkDocs' navigation.instant (RTD re-fires
+          // readthedocs-addons-data-ready on each client-side navigation)
+          var existing = document.querySelector(".md-header__topic .md-version");
+          if (existing) existing.remove();
+
           document.querySelector(".md-header__topic").insertAdjacentHTML("beforeend", versioning);
  });
