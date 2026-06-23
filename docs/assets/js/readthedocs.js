@@ -35,5 +35,5 @@ document.addEventListener(
           var existing = document.querySelector(".md-header__topic .md-version");
           if (existing) existing.remove();
 
-          document.querySelector(".md-header__topic").insertAdjacentHTML("beforeend", versioning);
+          // document.querySelector(".md-header__topic").insertAdjacentHTML("beforeend", versioning);
  });
