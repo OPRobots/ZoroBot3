@@ -16,6 +16,15 @@
 
 {% block extrahead %}
 {{ super() }}
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ config.site_name }}">
+<meta property="og:description" content="{{ config.site_description }}">
+<meta property="og:image" content="{{ config.site_url }}assets/imgs/zorobot3-social-preview.jpg">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="1280">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:alt" content="ZoroBot3 — Robot micromouse OPRobots">
+<meta name="twitter:card" content="summary_large_image">
 <script>
 (function() {
   /* Intercept Element.prototype.attachShadow to capture closed shadow roots
