@@ -136,13 +136,15 @@ wall_detected = distance < SENSOR_SIDE_DETECTION   // 115 mm
 
 Contador con histéresis asimétrica para evitar oscilaciones:
 
-```
-                       CONFIRM_COUNT = 4
-                       ↓
-wall_present:  [no] ←──┬─[confirmando]────→ [sí]
-                 ↑     │                     ↓
-                 └─────┴──[perdiendo]────────┘
-                       RELEASE_COUNT = 6
+```mermaid
+stateDiagram-v2
+    [*] --> no_pared
+    no_pared --> confirmando : pared detectada
+    confirmando --> no_pared : pierde señal
+    confirmando --> hay_pared : 4 detecciones consecutivas
+    hay_pared --> perdiendo : pierde señal
+    perdiendo --> hay_pared : re-detecta pared
+    perdiendo --> no_pared : 6 no-detecciones consecutivas
 ```
 
 - **4 detecciones consecutivas** para confirmar una pared.
