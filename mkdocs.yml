@@ -66,9 +66,11 @@ nav:
   - Menú: 07-menu-system.md
   - Debug: 08-debug-system.md
   - Calibración: 09-calibration.md
-  - EEPROM: 10-eeprom.md
-  - Encoders y Giroscopio: 11-encoders-gyro.md
-  - Batería y LEDs: 12-battery-leds.md
-  - Simulador: 13-simulator.md
-  - Cinemática: 14-kinematics.md
-  - Problemas Conocidos: 15-known-issues.md
+  - "Scripts: Calibración Sensores": 10-scripts-sensors.md
+  - EEPROM: 11-eeprom.md
+  - Encoders y Giroscopio: 12-encoders-gyro.md
+  - Batería y LEDs: 13-battery-leds.md
+  - Simulador: 14-simulator.md
+  - Cinemática: 15-kinematics.md
+  - "Scripts: Perfiles de Giro": 16-scripts-turn-profiles.md
+  - Problemas Conocidos: 17-known-issues.md

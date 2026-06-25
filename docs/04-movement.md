@@ -93,7 +93,7 @@ Movimiento recto bloqueante de bajo nivel:
 4. Si `stop`: esperar a que velocidad ideal llegue a 0.
 
 - **Stop distance**: calculada con `calc_straight_to_speed_distance(ideal_speed, 0)` usando `break_accel`.
-- ⚠️ Usa velocidad ideal en lugar de velocidad real (ver [MV-05](15-known-issues.md#mv-05)).
+- ⚠️ Usa velocidad ideal en lugar de velocidad real (ver [MV-05](17-known-issues.md#mv-05)).
 
 ### `move_straight_until_front_distance(distance, speed, stop)` ([`move.c:1387-1415`](../source_code/src/move.c#L1387-L1415))
 
@@ -146,7 +146,7 @@ angular_speed = sign × max × sin(factor × π/2);
 
 Giro en el sitio (velocidad lineal = 0) con perfil sinusoidal **temporal**.
 
-⚠️ La dirección está fijada a **izquierda** (−1) para MOVE_BACK, MOVE_BACK_WALL y MOVE_BACK_STOP. Ver [MV-02](15-known-issues.md#mv-02).
+⚠️ La dirección está fijada a **izquierda** (−1) para MOVE_BACK, MOVE_BACK_WALL y MOVE_BACK_STOP. Ver [MV-02](17-known-issues.md#mv-02).
 
 ### `move_inplace_angle(angle, rads)` ([`move.c:1850-1872`](../source_code/src/move.c#L1850-L1872))
 
@@ -200,7 +200,7 @@ while (distance + end_offset < calc_straight_to_speed_distance(ideal_speed, turn
 }
 ```
 
-La degradación es **solo hacia abajo**. Si sobra distancia, no se intenta un giro más rápido (ver [MV-09](15-known-issues.md#mv-09)).
+La degradación es **solo hacia abajo**. Si sobra distancia, no se intenta un giro más rápido (ver [MV-09](17-known-issues.md#mv-09)).
 
 ---
 
@@ -212,7 +212,7 @@ La degradación es **solo hacia abajo**. Si sobra distancia, no se intenta un gi
 2. Si una pared lateral que existía desaparece: activa flag `current_cell_wall_lost`.
 3. Reajusta la distancia restante a `WALL_LOSS_TO_SENSING_POINT_DISTANCE` (116 mm).
 
-⚠️ Solo detecta pérdida de paredes laterales, no frontales (ver [MV-17](15-known-issues.md#mv-17)).
+⚠️ Solo detecta pérdida de paredes laterales, no frontales (ver [MV-17](17-known-issues.md#mv-17)).
 
 ---
 
@@ -275,7 +275,7 @@ enter_next_cell()
 
 ## Problemas Conocidos
 
-Los problemas del sistema de movimiento están documentados en el [registro de issues](15-known-issues.md) con IDs MV-01 a MV-19. Los más relevantes:
+Los problemas del sistema de movimiento están documentados en el [registro de issues](17-known-issues.md) con IDs MV-01 a MV-19. Los más relevantes:
 
 - **MV-01**: PID sin anti-windup (6 integradores) — 🔴 Crítico
 - **MV-02**: `move_inplace_turn()` siempre gira a la izquierda — 🔴 Crítico
@@ -318,4 +318,4 @@ flowchart TD
 
 ---
 
-*Documento generado el 2026-06-12. Ver también [Cinemática](14-kinematics.md), [Control PID](06-control-system.md), [Encoders y Giroscopio](11-encoders-gyro.md).*
+*Documento generado el 2026-06-12. Ver también [Cinemática](15-kinematics.md), [Control PID](06-control-system.md), [Encoders y Giroscopio](12-encoders-gyro.md).*

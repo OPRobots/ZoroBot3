@@ -56,7 +56,7 @@ flowchart TD
     C --> K["[7] control_loop()<br>Control PID motores"]
 ```
 
-> **Nota**: La frecuencia efectiva de 1 kHz por tarea depende de que SysTick sea exactamente 16 kHz. Si el prescaler no coincide, todas las frecuencias derivadas serán incorrectas. Ver [issue MV-18](15-known-issues.md#mv-18).
+> **Nota**: La frecuencia efectiva de 1 kHz por tarea depende de que SysTick sea exactamente 16 kHz. Si el prescaler no coincide, todas las frecuencias derivadas serán incorrectas. Ver [issue MV-18](17-known-issues.md#mv-18).
 
 ---
 
@@ -176,7 +176,7 @@ Controla el modo de detección de paredes:
 Cuando se compila para el simulador:
 - Las lecturas de sensores se reemplazan por `API_wallFront()`, `API_wallLeft()`, `API_wallRight()`
 - No hay hardware real (ADC, SPI, GPIO)
-- Ver [Simulador](13-simulator.md)
+- Ver [Simulador](14-simulator.md)
 
 ### `CONFIG_RUN_RACE` / `CONFIG_RUN_DEBUG` ([`config.h:71-72`](../source_code/include/config.h#L71-L72))
 

@@ -162,7 +162,7 @@ calc_straight_to_speed_distance(current_speed, target_speed)
 // Usa break_accel para calcular distancia necesaria
 ```
 
-⚠️ Usa `ideal_linear_speed` en lugar de `measured_linear_speed`. Ver [MV-05](15-known-issues.md#mv-05).
+⚠️ Usa `ideal_linear_speed` en lugar de `measured_linear_speed`. Ver [MV-05](17-known-issues.md#mv-05).
 
 ---
 
@@ -177,7 +177,7 @@ while (distance + end_offset < required_braking_distance) {
 }
 ```
 
-La velocidad de giro se **degrada** (reduce) si no hay suficiente distancia para frenar. Pero **nunca se optimiza hacia arriba** si sobra espacio. Ver [MV-09](15-known-issues.md#mv-09).
+La velocidad de giro se **degrada** (reduce) si no hay suficiente distancia para frenar. Pero **nunca se optimiza hacia arriba** si sobra espacio. Ver [MV-09](17-known-issues.md#mv-09).
 
 
 ---

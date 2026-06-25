@@ -78,7 +78,7 @@ Esta calibración se ejecuta automáticamente al iniciar:
 
 ## Persistencia en EEPROM
 
-Los datos de calibración se almacenan en el sector flash 11 con checksum para integridad. Ver [EEPROM](10-eeprom.md).
+Los datos de calibración se almacenan en el sector flash 11 con checksum para integridad. Ver [EEPROM](11-eeprom.md).
 
 Al arrancar, `eeprom_load()` carga:
 - `sensors_distance_offset[4]` — offsets de distancia
@@ -103,4 +103,4 @@ También disponible: `calibrate_manual_distances()` — Al pulsar DEBUG, imprime
 
 ---
 
-*Documento generado el 2026-06-12. Ver también [Sensores](03-sensors.md), [EEPROM](10-eeprom.md), [Encoders y Giroscopio](11-encoders-gyro.md).*
+*Documento generado el 2026-06-12. Ver también [Sensores](03-sensors.md), [EEPROM](11-eeprom.md), [Encoders y Giroscopio](12-encoders-gyro.md).*

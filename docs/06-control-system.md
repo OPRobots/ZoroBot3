@@ -127,7 +127,7 @@ voltage_right = linear_voltage − angular_voltage
 
 ### ⚠️ Anti-Windup
 
-Los 6 integradores acumulan error sin clamping. Si los motores están saturados pero no alcanzan la velocidad deseada, el error se acumula. Al liberarse la condición, el overshoot puede desestabilizar el robot. Ver [MV-01](15-known-issues.md#mv-01).
+Los 6 integradores acumulan error sin clamping. Si los motores están saturados pero no alcanzan la velocidad deseada, el error se acumula. Al liberarse la condición, el overshoot puede desestabilizar el robot. Ver [MV-01](17-known-issues.md#mv-01).
 
 ---
 
@@ -228,4 +228,4 @@ flowchart TD
 
 ---
 
-*Documento generado el 2026-06-12. Ver también [Movimiento](04-movement.md), [Sensores](03-sensors.md), [Cinemática](14-kinematics.md). Issues: [MV-01, MV-10](15-known-issues.md).*
+*Documento generado el 2026-06-12. Ver también [Movimiento](04-movement.md), [Sensores](03-sensors.md), [Cinemática](15-kinematics.md). Issues: [MV-01, MV-10](17-known-issues.md).*

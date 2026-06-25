@@ -142,7 +142,7 @@ floodfill[next] > next_distance
 floodfill[next] >= next_distance
 ```
 
-En TIME, permitir `≥` mitiga parcialmente el problema de estado insuficiente (ver [FF-01](15-known-issues.md#ff-01)).
+En TIME, permitir `≥` mitiga parcialmente el problema de estado insuficiente (ver [FF-01](17-known-issues.md#ff-01)).
 
 ---
 
@@ -266,4 +266,4 @@ flowchart TD
 
 ---
 
-*Documento generado el 2026-06-12. Los problemas conocidos están en [FF-01 a FF-13](15-known-issues.md). Ver también [Cinemática](14-kinematics.md), [Movimiento](04-movement.md).*
+*Documento generado el 2026-06-12. Los problemas conocidos están en [FF-01 a FF-13](17-known-issues.md). Ver también [Cinemática](15-kinematics.md), [Movimiento](04-movement.md).*

@@ -294,4 +294,4 @@ Tabla `ln_lookup[1024]` en [`utils.c:11`](../source_code/src/utils.c#L11):
 
 ---
 
-*Documento generado el 2026-06-12. Corrige fixes SS-01, SS-03, SS-07, SS-15 del [registro de issues](15-known-issues.md). Ver también [Calibración](09-calibration.md), [Control PID](06-control-system.md).*
+*Documento generado el 2026-06-12. Corrige fixes SS-01, SS-03, SS-07, SS-15 del [registro de issues](17-known-issues.md). Ver también [Calibración](09-calibration.md), [Control PID](06-control-system.md).*

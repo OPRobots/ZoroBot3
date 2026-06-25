@@ -212,4 +212,4 @@ flowchart TB
 
 ---
 
-*Documento generado el 2026-06-12. Referencia cruzada con [Sensores](03-sensors.md), [Encoders y Giroscopio](11-encoders-gyro.md).*
+*Documento generado el 2026-06-12. Referencia cruzada con [Sensores](03-sensors.md), [Encoders y Giroscopio](12-encoders-gyro.md).*

@@ -22,7 +22,7 @@ Robot micromouse de alto rendimiento — 3ª versión del equipo OPRobots.
   - `utils/` — simulador standalone (C) + visualizador (Python)
 - `pcb_files/` — diseño electrónico KiCad + gerbers + BOM
 - `3d_model/` — piezas mecánicas STL
-- `docs/` — documentación técnica MkDocs Material (15 documentos)
+- `docs/` — documentación técnica MkDocs Material (17 documentos)
 - `scripts/` — calibración y análisis (Jupyter notebooks)
 - `images/` — fotos, banderas, sprites del simulador
 

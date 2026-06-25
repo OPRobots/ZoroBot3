@@ -49,22 +49,22 @@ Cada sección enlaza a un documento detallado independiente.
 - **[Calibraciones](09-calibration.md)** — Calibración frontal, frontal media, lateral, calibración de giroscopio, persistencia en EEPROM.
 
 ### 10. EEPROM
-- **[Gestión de EEPROM](10-eeprom.md)** — Diseño de almacenamiento, checksum (complemento a 2), carga/guardado de calibraciones, maze persistente, ocupación.
+- **[Gestión de EEPROM](11-eeprom.md)** — Diseño de almacenamiento, checksum (complemento a 2), carga/guardado de calibraciones, maze persistente, ocupación.
 
 ### 11. Encoders y Giroscopio
-- **[Encoders y Giroscopio](11-encoders-gyro.md)** — AS5145B-HSST (12-bit), lectura por timer en cuadratura, max_likelihood_counter_diff, LSM6DSR (SPI, 1000-4000dps), filtro paso-bajo, integración angular.
+- **[Encoders y Giroscopio](12-encoders-gyro.md)** — AS5145B-HSST (12-bit), lectura por timer en cuadratura, max_likelihood_counter_diff, LSM6DSR (SPI, 1000-4000dps), filtro paso-bajo, integración angular.
 
 ### 12. Batería y LEDs
-- **[Batería y LEDs](12-battery-leds.md)** — Monitorización de voltaje, divisor de tensión, LEDs de estado, LED RGB, control de ventilador.
+- **[Batería y LEDs](13-battery-leds.md)** — Monitorización de voltaje, divisor de tensión, LEDs de estado, LED RGB, control de ventilador.
 
 ### 13. Simulador
-- **[Simulador MMSIM](13-simulator.md)** — Integración con Micromouse Simulator, API de paredes virtuales, estimación de tiempo.
+- **[Simulador MMSIM](14-simulator.md)** — Integración con Micromouse Simulator, API de paredes virtuales, estimación de tiempo.
 
 ### 14. Cinemática y Estrategias de Velocidad
-- **[Cinemática](14-kinematics.md)** — Estrategias de velocidad (EXPLORE a HAKI), perfiles de aceleración, parámetros de giro, degradación de velocidad.
+- **[Cinemática](15-kinematics.md)** — Estrategias de velocidad (EXPLORE a HAKI), perfiles de aceleración, parámetros de giro, degradación de velocidad.
 
 ### 15. Problemas Conocidos
-- **[Registro de Issues](15-known-issues.md)** — 47 issues documentados (10 críticos, 19 moderados, 18 leves) con IDs, descripciones, impacto y soluciones.
+- **[Registro de Issues](17-known-issues.md)** — 47 issues documentados (10 críticos, 19 moderados, 18 leves) con IDs, descripciones, impacto y soluciones.
 
 ---
 
@@ -190,7 +190,7 @@ flowchart TD
 
 - Los documentos legacy (`SENSORS.md`, `MOVEMENT.md`, `FLOODFILL.md`, `BUGS.md`) en la raíz del proyecto se mantienen como referencia histórica. Esta carpeta `docs/` contiene la versión actualizada y verificada.
 - Las referencias a código fuente usan rutas relativas desde la raíz del proyecto (ej: [`source_code/src/sensors.c`](../source_code/src/sensors.c)).
-- Los IDs de issues (FF-XX, SS-XX, MV-XX) se corresponden con el [registro de problemas conocidos](15-known-issues.md).
+- Los IDs de issues (FF-XX, SS-XX, MV-XX) se corresponden con el [registro de problemas conocidos](17-known-issues.md).
 
 ---
 

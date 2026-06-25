@@ -85,7 +85,7 @@ USART3 a 115200 baud:
 
 ## LEDs de Información
 
-10 LEDs de información + 1 LED de estado + 1 LED RGB. Ver [Batería y LEDs](12-battery-leds.md) para detalles completos.
+10 LEDs de información + 1 LED de estado + 1 LED RGB. Ver [Batería y LEDs](13-battery-leds.md) para detalles completos.
 
 Funciones de visualización para debug:
 - `update_side_sensors_leds()` — Muestra error de sensores laterales en barra de 8 LEDs.
@@ -132,4 +132,4 @@ Esta zona es inalcanzable en operación normal (está después de un `while(1)` 
 
 ---
 
-*Documento generado el 2026-06-12. Ver también [Menú](07-menu-system.md), [Batería y LEDs](12-battery-leds.md), [Arquitectura Software](02-software-architecture.md).*
+*Documento generado el 2026-06-12. Ver también [Menú](07-menu-system.md), [Batería y LEDs](13-battery-leds.md), [Arquitectura Software](02-software-architecture.md).*

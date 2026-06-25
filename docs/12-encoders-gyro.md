@@ -98,7 +98,7 @@ angular_speed = (left_speed − right_speed) / WHEELS_SEPARATION;  // rad/s
 
 Donde `WHEELS_SEPARATION = 62 mm`. Se usa solo para detección de saturación angular.
 
-⚠️ `left_speed` y `right_speed` tienen filtros EMA independientes, lo que introduce desfase entre canales. Ver [MV-06](15-known-issues.md#mv-06).
+⚠️ `left_speed` y `right_speed` tienen filtros EMA independientes, lo que introduce desfase entre canales. Ver [MV-06](17-known-issues.md#mv-06).
 
 ---
 
