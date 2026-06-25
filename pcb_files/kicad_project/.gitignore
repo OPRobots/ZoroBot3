@@ -2,3 +2,4 @@
 production
 _autosave*
 *.lck
+.history

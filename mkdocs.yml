@@ -1,7 +1,7 @@
 site_name: ZoroBot3
 site_description: Documentación técnica del robot micromouse ZoroBot3 — STM32F4, encoders magnéticos, 4 sensores IR, ventilador de succión
 site_author: robotaleh
-site_url: !ENV READTHEDOCS_CANONICAL_URL
+site_url: https://docs.oprobots.org/robots/ZoroBot3
 repo_name: OPRobots/ZoroBot3
 
 theme:
@@ -42,7 +42,6 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 
 extra_javascript:
-  - assets/js/readthedocs.js
   - assets/js/mermaid-zoom.js
 
 extra_css:
