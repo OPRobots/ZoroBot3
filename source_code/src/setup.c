@@ -337,7 +337,7 @@ static void setup_quadrature_encoders(void) {
  * Reference: https://github.com/Bulebots/meiga
  */
 static void setup_spi(uint8_t speed_div) {
-  spi_reset(SPI3);
+  rcc_periph_reset_pulse(RST_SPI3);
 
   spi_init_master(SPI3, speed_div, SPI_CR1_CPOL_CLK_TO_0_WHEN_IDLE,
                   SPI_CR1_CPHA_CLK_TRANSITION_1, SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
