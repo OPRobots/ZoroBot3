@@ -101,21 +101,21 @@ void set_sensors_robot_calibration(uint16_t version) {
       sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].c = -8.160;
       break;
     case ZOROBOT3_C:
-      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].a = 2.717;
-      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].b = 0.321;
-      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].c = 34.784;
+      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].a = 3.106;
+      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].b = 0.357;
+      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].c = 15.057;
 
-      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].a = 2.992;
-      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].b = 0.355;
-      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].c = 37.060;
+      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].a = 3.018;
+      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].b = 0.347;
+      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].c = -13.546;
 
-      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].a = 1.900;
-      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].b = 0.247;
-      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].c = -0.844;
+      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].a = 2.598;
+      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].b = 0.323;
+      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].c = 48.663;
 
-      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].a = 2.300;
-      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].b = 0.295;
-      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].c = 35.468;
+      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].a = 2.738;
+      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].b = 0.338;
+      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].c = 68.011;
       break;
   }
 }
