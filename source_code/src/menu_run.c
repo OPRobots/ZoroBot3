@@ -110,25 +110,31 @@ static void handle_menu_run_values(void) {
   }
 
   if (modeRun == MODE_MAZE_TYPE) {
-    if (valueRun[modeRun] == 1) {
-      set_RGB_color(0, 50, 0);
-    } else {
-      set_RGB_color(0, 0, 0);
+    switch (valueRun[modeRun]) {
+      case MAZE_COMPETITION:
+        set_RGB_color(0, 50, 0);
+        break;
+      case MAZE_HOME:
+        set_RGB_color(0, 0, 0);
+        break;
     }
     set_info_led(INFO_LED_C, blinkState);
   } else {
-    set_info_led(INFO_LED_C, valueRun[MODE_MAZE_TYPE] == 1);
+    set_info_led(INFO_LED_C, valueRun[MODE_MAZE_TYPE] == MAZE_COMPETITION);
   }
 
   if (modeRun == MODE_SOLVE_STRATEGY) {
-    if (valueRun[modeRun] == 1) {
-      set_RGB_color(0, 50, 0);
-    } else {
-      set_RGB_color(0, 0, 0);
+    switch (valueRun[modeRun]) {
+      case SOLVE_DIAGONALS:
+        set_RGB_color(0, 50, 0);
+        break;
+      case SOLVE_STANDARD:
+        set_RGB_color(0, 0, 0);
+        break;
     }
     set_info_led(INFO_LED_D, blinkState);
   } else {
-    set_info_led(INFO_LED_D, valueRun[MODE_SOLVE_STRATEGY] == 1);
+    set_info_led(INFO_LED_D, valueRun[MODE_SOLVE_STRATEGY] == SOLVE_DIAGONALS);
   }
 
   if (modeRun == MODE_EXPLORE_ALGORITHM) {
@@ -144,7 +150,7 @@ static void handle_menu_run_values(void) {
         break;
       case EXPLORE_DRAGRACE:
         set_RGB_color(50, 50, 50);
-      break;
+        break;
       default:
         set_RGB_color(0, 0, 0);
         break;
