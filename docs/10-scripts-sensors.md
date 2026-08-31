@@ -160,4 +160,4 @@ pip install numpy pandas matplotlib scipy
 
 ---
 
-*Documento generado el 2026-06-25. Ver también [Sensores](03-sensors.md), [Calibración](09-calibration.md), [EEPROM](11-eeprom.md).*
+*Documento generado el 2026-08-25. Ver también [Sensores](03-sensors.md), [Calibración](09-calibration.md), [EEPROM](11-eeprom.md), [Problemas Conocidos](17-known-issues.md#sp-01).*

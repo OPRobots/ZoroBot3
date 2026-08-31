@@ -2,7 +2,7 @@
 
 > Robot Micromouse de alto rendimiento con STM32F4, encoders magnéticos de alta resolución, ventilador de succión y 4 sensores infrarrojos.
 >
-> **Versión del documento**: 2026-06-12
+> **Versión del documento**: 2026-08-25
 > **Branch**: `develop`
 
 ---
@@ -48,23 +48,29 @@ Cada sección enlaza a un documento detallado independiente.
 ### 9. Calibración
 - **[Calibraciones](09-calibration.md)** — Calibración frontal, frontal media, lateral, calibración de giroscopio, persistencia en EEPROM.
 
-### 10. EEPROM
+### 10. Scripts: Calibración de Sensores IR
+- **[Scripts de Calibración de Sensores](10-scripts-sensors.md)** — Herramienta offline (Jupyter) para calibrar los sensores IR: generación de perfiles de linealización, magics y structs C para el firmware.
+
+### 11. EEPROM
 - **[Gestión de EEPROM](11-eeprom.md)** — Diseño de almacenamiento, checksum (complemento a 2), carga/guardado de calibraciones, maze persistente, ocupación.
 
-### 11. Encoders y Giroscopio
+### 12. Encoders y Giroscopio
 - **[Encoders y Giroscopio](12-encoders-gyro.md)** — AS5145B-HSST (12-bit), lectura por timer en cuadratura, max_likelihood_counter_diff, LSM6DSR (SPI, 1000-4000dps), filtro paso-bajo, integración angular.
 
-### 12. Batería y LEDs
+### 13. Batería y LEDs
 - **[Batería y LEDs](13-battery-leds.md)** — Monitorización de voltaje, divisor de tensión, LEDs de estado, LED RGB, control de ventilador.
 
-### 13. Simulador
+### 14. Simulador
 - **[Simulador MMSIM](14-simulator.md)** — Integración con Micromouse Simulator, API de paredes virtuales, estimación de tiempo.
 
-### 14. Cinemática y Estrategias de Velocidad
+### 15. Cinemática y Estrategias de Velocidad
 - **[Cinemática](15-kinematics.md)** — Estrategias de velocidad (EXPLORE a HAKI), perfiles de aceleración, parámetros de giro, degradación de velocidad.
 
-### 15. Problemas Conocidos
-- **[Registro de Issues](17-known-issues.md)** — 47 issues documentados (10 críticos, 19 moderados, 18 leves) con IDs, descripciones, impacto y soluciones.
+### 16. Scripts: Perfiles de Giro
+- **[Scripts de Perfiles de Giro](16-scripts-turn-profiles.md)** — Sistema offline (Jupyter) de generación de perfiles de giro con aceleración angular sinusoidal, parámetros de entrada/salida por tipo de giro.
+
+### 17. Problemas Conocidos
+- **[Registro de Issues](17-known-issues.md)** — 64 issues documentados (10 críticos, 24 moderados, 30 leves) con IDs, descripciones, impacto y soluciones.
 
 ---
 
@@ -128,11 +134,8 @@ ZoroBot3/
 │   └── src/                 # Implementaciones (.c)
 │       └── (archivos correspondientes a los headers)
 ├── pcb_files/               # Diseño PCB (KiCad)
+├── scripts/                 # Scripts de calibración y análisis (Jupyter)
 ├── images/                  # Imágenes del robot
-├── BUGS.md                  # Registro de issues conocido
-├── SENSORS.md               # Doc de sensores (legacy)
-├── MOVEMENT.md              # Doc de movimiento (legacy)
-├── FLOODFILL.md             # Doc de floodfill (legacy)
 └── README.md                # README principal del proyecto
 ```
 
@@ -188,10 +191,9 @@ flowchart TD
 
 ## 📝 Notas sobre este Documento
 
-- Los documentos legacy (`SENSORS.md`, `MOVEMENT.md`, `FLOODFILL.md`, `BUGS.md`) en la raíz del proyecto se mantienen como referencia histórica. Esta carpeta `docs/` contiene la versión actualizada y verificada.
 - Las referencias a código fuente usan rutas relativas desde la raíz del proyecto (ej: [`source_code/src/sensors.c`](../source_code/src/sensors.c)).
-- Los IDs de issues (FF-XX, SS-XX, MV-XX) se corresponden con el [registro de problemas conocidos](17-known-issues.md).
+- Los IDs de issues (FF-XX, SS-XX, MV-XX, HW-XX, SW-XX, SP-XX) se corresponden con el [registro de problemas conocidos](17-known-issues.md).
 
 ---
 
-*Documento generado el 2026-06-12 para la versión `develop` del proyecto ZoroBot3.*
+*Documento generado el 2026-08-25 para la versión `develop` del proyecto ZoroBot3.*

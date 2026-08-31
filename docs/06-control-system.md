@@ -71,7 +71,7 @@ Controla la velocidad angular. `measured_angular_speed = −lsm6dsr_get_gyro_z_r
 side_error = get_side_sensors_error()
 ```
 
-Corrige el centrado entre paredes laterales. Ver [Sensores - Error Lateral](03-sensors.md#error-lateral-get_side_sensors_error).
+Corrige el centrado entre paredes laterales. Ver [Sensores - Error Lateral](03-sensors.md#error-lateral-get_side_sensors_error-centrado-entre-paredes).
 
 ### 4. PID Ángulo Frontal (`KPI_FRONT_ANGLE_SENSORS`)
 

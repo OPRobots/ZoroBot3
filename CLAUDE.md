@@ -51,5 +51,5 @@ Robot micromouse de alto rendimiento — 3ª versión del equipo OPRobots.
 ## Notas
 - El simulador MMSIM está integrado en el firmware vía compilación condicional
 - Los scripts de calibración (`scripts/sensors-profiles/`, `scripts/turn-profiles/`) son Jupyter notebooks
-- La documentación de known issues (`15-known-issues.md`) tiene 47 issues documentados
+- La documentación de known issues (`17-known-issues.md`) tiene 64 issues documentados
 - El robot usa un sistema de succión (ventilador centrífugo) para mejorar el agarre en curvas rápidas

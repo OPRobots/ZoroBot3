@@ -16,7 +16,7 @@
 El STM32F405RGT6 proporciona:
 - **Timers**: TIM3 y TIM4 para lectura de encoders en modo contador. TIM2 y TIM5 generan PWM para motores (20 kHz).
 - **ADC**: ADC2 para lectura de 4 sensores IR + 4 canales auxiliares (batería, corriente motores, botón menú).
-- **SPI**: SPI3 para comunicación con el LSM6DSR.
+- **SPI**: SPI3 compartido entre el giroscopio LSM6DSR (CS PA15), el MPU-6500 de placa (U1, CS PA15) y la SRAM externa 23AA04M (CS PB12).
 - **USART**: USART3 para printf por puerto serie (115200 baud).
 - **DMA**: Usado para lecturas ADC.
 - **GPIO**: Control de emisores IR, LEDs, habilitación de motores, chip select SPI.
@@ -84,6 +84,22 @@ El full-scale se cambia dinámicamente según la estrategia de velocidad (1000 d
 
 ---
 
+## SRAM Externa
+
+| Característica | Detalle |
+|---------------|---------|
+| **Modelo** | 23AA04M-I/ST (Microchip, TSSOP-8) |
+| **Capacidad** | 4 Mbit (512 KiB) |
+| **Interfaz** | SPI3 (bus compartido con el giroscopio) |
+| **CS** | PB12 (net `NSS_SRAM`, pull-up 10 kΩ) |
+| **Componentes auxiliares** | RRAM1 (10 kΩ pull-up) y CSRAM1 (100 nF decoupling) |
+
+> ⚠️ La SRAM está añadida en el esquemático pero aún no está colocada en la PCB ni
+> tiene driver en el firmware (ver [HW-01](17-known-issues.md#hw-01) y
+> [HW-05](17-known-issues.md#hw-05)).
+
+---
+
 ## Motores y Tracción
 
 | Componente | Detalle |
@@ -94,12 +110,12 @@ El full-scale se cambia dinámicamente según la estrategia de velocidad (1000 d
 | **Rodamientos ruedas** | 4× MR63ZZ |
 | **Rodamientos encoders** | 2× MR52ZZ |
 | **Imán encoders** | 2× Radial 6×2.5mm |
-| **Ventilador** | Succión controlada por MOSFET AO3400 |
+| **Ventilador** | Succión controlada por MOSFET NMOS (Q1) con PWM |
 
 ### PWM y control
 - Resolución PWM: 1024 niveles (10 bits)
 - Frecuencia PWM motores: 20 kHz
-- MOSFETs AO3400 (A09T) para conmutar emisores IR y ventilador
+- MOSFET AON7423 (Q2, canal P) en la entrada de batería; emisores IR conmutados por GPIO y ventilador por Q1 (NMOS)
 
 ---
 
@@ -133,7 +149,7 @@ Existen 3 versiones del robot identificadas por el STM32 UID (Unique ID):
 | ZOROBOT3_B | 2 | Segunda revisión |
 | ZOROBOT3_C | 3 | Tercera revisión |
 
-Cada versión tiene diferentes parámetros de calibración ABC para los sensores (ver [Sensores](03-sensors.md#parámetros-abc-por-versión-del-robot)).
+Cada versión tiene diferentes parámetros de calibración ABC para los sensores (ver [Sensores](03-sensors.md#parametros-abc-por-version-del-robot)).
 
 La detección se realiza en `handle_robot_version()` leyendo `UID_WORD0` del registro `0x1FFF7A10`.
 
@@ -149,14 +165,15 @@ La detección se realiza en `handle_robot_version()` leyendo `UID_WORD0` del reg
 | CH12 | PC2 | Sensor Side Left |
 | CH11 | PC1 | Sensor Side Right |
 | CH4 | PA4 | Batería (AUX_BATTERY_ID) |
-| CH14 | PC4 | Corriente motor izquierdo |
-| CH15 | PC5 | Corriente motor derecho |
+| CH14 | PC4 | Corriente motor izquierdo (sin amplificador front-end — ver [HW-02](17-known-issues.md#hw-02)) |
+| CH15 | PC5 | Corriente motor derecho (sin amplificador front-end — ver [HW-02](17-known-issues.md#hw-02)) |
 | CH8 | PB0 | Botón de menú (AUX_MENU_BTN_ID) |
 
-### SPI3 (Giroscopio)
+### SPI3 (Giroscopio + SRAM)
 | GPIO | Función |
 |------|---------|
-| PA15 | CS (Chip Select) |
+| PA15 | CS giroscopio (LSM6DSR vía conector DATA_MPU1; MPU-6500 U1 comparte bus y CS) |
+| PB12 | CS SRAM (NSS_SRAM, pull-up 10 kΩ) |
 | PC10 | SCK |
 | PC11 | MISO |
 | PC12 | MOSI |
@@ -196,7 +213,7 @@ flowchart TB
         subgraph row1[" "]
             direction LR
             P1["TIM3/4<br>Encoders (L,R)"]
-            P2["SPI3<br>LSM6DSR (Gyro)"]
+            P2["SPI3<br>LSM6DSR (Gyro)<br>+ SRAM 23AA04M"]
             P3["ADC2<br>4×IR + 4×Aux"]
         end
         subgraph row2[" "]
@@ -212,4 +229,4 @@ flowchart TB
 
 ---
 
-*Documento generado el 2026-06-12. Referencia cruzada con [Sensores](03-sensors.md), [Encoders y Giroscopio](12-encoders-gyro.md).*
+*Documento generado el 2026-08-25. Referencia cruzada con [Sensores](03-sensors.md), [Encoders y Giroscopio](12-encoders-gyro.md), [Problemas Conocidos](17-known-issues.md).*

@@ -22,6 +22,7 @@ micromouse_sinusoidal_turn_profiles_aux.py
 ├── Maze               — dimensiones de celda (0.18m) y poste (0.012m)
 ├── RobotPhysics       — masa (0.070 kg), inercia, ancho (0.0702m), ω_max (40 rad/s)
 ├── Line               — recta definida por punto de referencia (x,y) y ángulo
+├── lines_intersection — intersección de dos rectas
 ├── TurnProfile        — perfil básico con DataFrame de trayectoria
 ├── SlalomTurnProfile  — perfil con líneas de entrada/salida + visualización
 ├── turn_profile()     — genera perfil de ω sinusoidal (3 fases)
@@ -125,10 +126,10 @@ struct turn_params {
 
 | Script | Propósito |
 |--------|-----------|
-| `verify_profiles.py` | Verifica simetría de MOVE_180, correspondencia TO_135↔FROM_45_180, y TO_45↔FROM_45 |
-| `deep_analysis.py` | Trazado paso a paso del proceso de generación de perfiles |
-| `analyze_all_pairs.py` | Análisis de los 49 pares de giros posibles, gaps físicos, y distancias |
-| `test_new_exit.py` | Evalúa el cambio de geometría de MOVE_180 (exit antiguo vs nuevo) |
+| `aux/verify_profiles.py` | Verifica simetría de MOVE_180, correspondencia TO_135↔FROM_45_180, y TO_45↔FROM_45 |
+| `aux/deep_analysis.py` | Trazado paso a paso del proceso de generación de perfiles |
+| `aux/analyze_all_pairs.py` | Análisis de los 49 pares de giros posibles, gaps físicos, y distancias |
+| `aux/test_new_exit.py` | Evalúa el cambio de geometría de MOVE_180 (exit antiguo vs nuevo) |
 
 ---
 
@@ -150,7 +151,8 @@ flowchart TD
 ## Problemas Conocidos
 
 Ver [`17-known-issues.md`](17-known-issues.md) para los issues del subsistema de
-movimiento (`MV-XX`). Issues específicos de los scripts:
+movimiento (`MV-XX`) y de los scripts (`SP-XX`). Notas históricas específicas de
+los scripts:
 
 | ID | Descripción | Estado |
 |----|-------------|--------|
@@ -161,4 +163,4 @@ movimiento (`MV-XX`). Issues específicos de los scripts:
 
 ---
 
-*Documento generado el 2026-06-25. Ver también [Movimiento](04-movement.md), [Cinemática](15-kinematics.md), [Control PID](06-control-system.md).*
+*Documento generado el 2026-08-25. Ver también [Movimiento](04-movement.md), [Cinemática](15-kinematics.md), [Control PID](06-control-system.md).*

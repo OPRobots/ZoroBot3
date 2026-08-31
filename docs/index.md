@@ -66,11 +66,13 @@
 - **[Menú](07-menu-system.md)** — Navegación, selección de algoritmo, configuración de velocidad
 - **[Debug](08-debug-system.md)** — LEDs, RGB, USART, funciones de debug
 - **[Calibración](09-calibration.md)** — Calibración frontal/lateral, giroscopio, persistencia en EEPROM
+- **[Scripts: Calibración Sensores](10-scripts-sensors.md)** — Herramienta Jupyter de perfiles de linealización IR y magics
 - **[EEPROM](11-eeprom.md)** — Almacenamiento, checksum, maze persistente
 - **[Encoders y Giroscopio](12-encoders-gyro.md)** — AS5145B-HSST, LSM6DSR, integración angular
 - **[Batería y LEDs](13-battery-leds.md)** — Monitorización de voltaje, divisor de tensión, LEDs de estado
 - **[Simulador MMSIM](14-simulator.md)** — API de paredes virtuales, estimación de tiempo
 - **[Cinemática](15-kinematics.md)** — Estrategias de velocidad, perfiles de aceleración, parámetros de giro
+- **[Scripts: Perfiles de Giro](16-scripts-turn-profiles.md)** — Generación offline de perfiles de giro sinusoidales
 - **[Problemas Conocidos](17-known-issues.md)** — Issues documentados con IDs, impacto y soluciones
 
 ---
