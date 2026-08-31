@@ -982,12 +982,10 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Simulation_SPICE:NMOS"
-			(pin_numbers
-				(hide yes)
-			)
+		(symbol "Transistor_FET:AO3400A"
 			(pin_names
 				(offset 0)
+				(hide yes)
 			)
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -995,7 +993,7 @@
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
 			(property "Reference" "Q"
-				(at 5.08 1.27 0)
+				(at 5.08 1.905 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -1005,8 +1003,8 @@
 					(justify left)
 				)
 			)
-			(property "Value" "NMOS"
-				(at 5.08 -1.27 0)
+			(property "Value" "AO3400A"
+				(at 5.08 0 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
@@ -1016,8 +1014,21 @@
 					(justify left)
 				)
 			)
-			(property "Footprint" ""
-				(at 5.08 2.54 0)
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+				(at 5.08 -1.905 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(justify left)
+				)
+			)
+			(property "Datasheet" "http://www.aosmd.com/pdfs/datasheet/AO3400A.pdf"
+				(at 5.08 -3.81 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -1025,20 +1036,10 @@
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left)
 				)
 			)
-			(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
-				(at 0 -12.7 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "N-MOSFET transistor, drain/source/gate"
+			(property "Description" "30V Vds, 5.7A Id, N-Channel MOSFET, SOT-23"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1049,40 +1050,7 @@
 					)
 				)
 			)
-			(property "Sim.Device" "NMOS"
-				(at 0 -17.145 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Sim.Type" "VDMOS"
-				(at 0 -19.05 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Sim.Pins" "1=D 2=G 3=S"
-				(at 0 -15.24 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "transistor NMOS N-MOS N-MOSFET simulation"
+			(property "ki_keywords" "N-Channel MOSFET"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1093,7 +1061,18 @@
 					)
 				)
 			)
-			(symbol "NMOS_0_1"
+			(property "ki_fp_filters" "SOT?23*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "AO3400A_0_1"
 				(polyline
 					(pts
 						(xy 0.254 1.905) (xy 0.254 -1.905)
@@ -1237,7 +1216,7 @@
 				)
 				(polyline
 					(pts
-						(xy 2.794 0.508) (xy 2.921 0.381) (xy 3.683 0.381) (xy 3.81 0.254)
+						(xy 2.921 0.381) (xy 3.683 0.381)
 					)
 					(stroke
 						(width 0)
@@ -1260,11 +1239,11 @@
 					)
 				)
 			)
-			(symbol "NMOS_1_1"
-				(pin passive line
-					(at 2.54 5.08 270)
+			(symbol "AO3400A_1_1"
+				(pin input line
+					(at -5.08 0 0)
 					(length 2.54)
-					(name "D"
+					(name "G"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1279,10 +1258,10 @@
 						)
 					)
 				)
-				(pin input line
-					(at -5.08 0 0)
+				(pin passive line
+					(at 2.54 -5.08 90)
 					(length 2.54)
-					(name "G"
+					(name "S"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1298,9 +1277,9 @@
 					)
 				)
 				(pin passive line
-					(at 2.54 -5.08 90)
+					(at 2.54 5.08 270)
 					(length 2.54)
-					(name "S"
+					(name "D"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1738,27 +1717,6 @@
 			)
 		)
 		(uuid "e034c82f-d406-4524-859c-a45496e27907")
-	)
-	(text_box "WARNING!!!\nLos mosfets tienen la huella mal.\nRevisar en la proxima version."
-		(exclude_from_sim no)
-		(at 130.81 149.86 0)
-		(size 35.56 8.89)
-		(margins 0.9525 0.9525 0.9525 0.9525)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(fill
-			(type none)
-		)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-		)
-		(uuid "307bcf8e-d0ed-4a62-8629-41c300ebe7c7")
 	)
 	(junction
 		(at 209.55 76.2)
@@ -3794,6 +3752,93 @@
 		)
 	)
 	(symbol
+		(lib_id "Transistor_FET:AO3400A")
+		(at 195.58 66.04 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "0ac118cf-1aa1-4c80-9465-a2188eda9cd4")
+		(property "Reference" "MOSFET-N2"
+			(at 198.628 70.1039 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "AO3400A"
+			(at 198.628 71.6279 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 200.66 67.945 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(justify left)
+			)
+		)
+		(property "Datasheet" "http://www.aosmd.com/pdfs/datasheet/AO3400A.pdf"
+			(at 200.66 69.85 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Description" "30V Vds, 5.7A Id, N-Channel MOSFET, SOT-23"
+			(at 195.58 66.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0789446b-1539-46fb-92e0-3451ee991219")
+		)
+		(pin "2"
+			(uuid "741910df-4176-425c-88ee-048b72a997d0")
+		)
+		(pin "3"
+			(uuid "e35928ee-4d43-4709-b704-90ef0bd525db")
+		)
+		(instances
+			(project "ZoroBot3"
+				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
+					(reference "MOSFET-N2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:LED")
 		(at 227.33 119.38 90)
 		(unit 1)
@@ -4121,8 +4166,8 @@
 		)
 	)
 	(symbol
-		(lib_id "Simulation_SPICE:NMOS")
-		(at 195.58 66.04 0)
+		(lib_id "Transistor_FET:AO3400A")
+		(at 80.01 66.04 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4130,31 +4175,56 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "1a920370-3407-46eb-bbc5-ca692b690b78")
-		(property "Reference" "MOSFET-N2"
-			(at 200.66 64.77 0)
+		(uuid "1b1964a9-b387-4b9a-9e42-7258155df2f3")
+		(property "Reference" "MOSFET-N1"
+			(at 83.058 70.1039 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 0.75 0.75)
+					(size 1 1)
 				)
 				(justify left)
 			)
 		)
-		(property "Value" "AO3400 (A09T)"
-			(at 200.66 66.548 0)
+		(property "Value" "AO3400A"
+			(at 83.058 71.6279 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 0.75 0.75)
+					(size 1 1)
 				)
 				(justify left)
 			)
 		)
 		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 200.66 63.5 0)
+			(at 85.09 67.945 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(justify left)
+			)
+		)
+		(property "Datasheet" "http://www.aosmd.com/pdfs/datasheet/AO3400A.pdf"
+			(at 85.09 69.85 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Description" "30V Vds, 5.7A Id, N-Channel MOSFET, SOT-23"
+			(at 80.01 66.04 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4163,82 +4233,27 @@
 					(size 1.27 1.27)
 				)
 			)
-		)
-		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
-			(at 195.58 78.74 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "N-MOSFET transistor, drain/source/gate"
-			(at 195.58 66.04 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Device" "NMOS"
-			(at 195.58 83.185 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Type" "VDMOS"
-			(at 195.58 85.09 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Pins" "1=D 2=G 3=S"
-			(at 195.58 81.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "2d928771-d2df-424d-9cb4-940660ff308a")
-		)
-		(pin "3"
-			(uuid "628b0da2-89ba-4c70-aae8-2de75796838c")
 		)
 		(pin "1"
-			(uuid "18987f44-d258-4973-9875-f0dc2c3d77f3")
+			(uuid "3d23b97c-9035-412a-9dfe-efa743224b6b")
+		)
+		(pin "2"
+			(uuid "d033ab66-34ab-4f7e-ae44-7bd914867c8f")
+		)
+		(pin "3"
+			(uuid "2772fa9e-f254-4083-8f4a-085867484f91")
 		)
 		(instances
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "MOSFET-N2")
+					(reference "MOSFET-N1")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "Simulation_SPICE:NMOS")
+		(lib_id "Transistor_FET:AO3400A")
 		(at 224.79 130.81 0)
 		(unit 1)
 		(body_style 1)
@@ -4247,31 +4262,44 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "20805281-b355-4845-ad43-727d667b49dd")
+		(uuid "2286e864-0ce6-4feb-9269-249a54701ada")
 		(property "Reference" "MOSFET-N3"
-			(at 229.87 129.54 0)
+			(at 227.838 134.8739 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 0.75 0.75)
+					(size 1 1)
 				)
 				(justify left)
 			)
 		)
-		(property "Value" "AO3400 (A09T)"
-			(at 229.87 131.318 0)
+		(property "Value" "AO3400A"
+			(at 227.838 136.3979 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 0.75 0.75)
+					(size 1 1)
 				)
 				(justify left)
 			)
 		)
 		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 229.87 128.27 0)
+			(at 229.87 132.715 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(justify left)
+			)
+		)
+		(property "Datasheet" "http://www.aosmd.com/pdfs/datasheet/AO3400A.pdf"
+			(at 229.87 134.62 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4279,20 +4307,10 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
-		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
-			(at 224.79 143.51 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "N-MOSFET transistor, drain/source/gate"
+		(property "Description" "30V Vds, 5.7A Id, N-Channel MOSFET, SOT-23"
 			(at 224.79 130.81 0)
 			(hide yes)
 			(show_name no)
@@ -4303,47 +4321,14 @@
 				)
 			)
 		)
-		(property "Sim.Device" "NMOS"
-			(at 224.79 147.955 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Type" "VDMOS"
-			(at 224.79 149.86 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Pins" "1=D 2=G 3=S"
-			(at 224.79 146.05 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
+		(pin "1"
+			(uuid "020e47a0-0858-48f3-bc6c-85e0c5cbca1b")
 		)
 		(pin "2"
-			(uuid "ccb93ed6-4ed5-457a-a059-b78a45bdce0d")
+			(uuid "6a8ff04b-0746-4343-8a9a-b3aded137b41")
 		)
 		(pin "3"
-			(uuid "22d676b8-ce0d-474e-9878-6d8ee18e93a7")
-		)
-		(pin "1"
-			(uuid "3c578c8b-2fd1-44aa-adcb-59ba594e9842")
+			(uuid "6a505502-1820-440f-a958-cae99a9c5e09")
 		)
 		(instances
 			(project "ZoroBot3"
@@ -5084,123 +5069,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Simulation_SPICE:NMOS")
-		(at 54.61 130.81 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "6b5f53e0-cf19-4a37-805b-98c20aca2760")
-		(property "Reference" "MOSFET-N4"
-			(at 59.69 129.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.75 0.75)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "AO3400 (A09T)"
-			(at 59.69 131.318 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.75 0.75)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 59.69 128.27 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
-			(at 54.61 143.51 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "N-MOSFET transistor, drain/source/gate"
-			(at 54.61 130.81 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Device" "NMOS"
-			(at 54.61 147.955 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Type" "VDMOS"
-			(at 54.61 149.86 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Pins" "1=D 2=G 3=S"
-			(at 54.61 146.05 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "60a9b061-f495-4f9a-9991-e6a35258c0af")
-		)
-		(pin "3"
-			(uuid "0a7feb06-0dd2-4d2f-8dee-452640b329ae")
-		)
-		(pin "1"
-			(uuid "d974d4ab-5a6e-4876-8d66-db9f1dd3b817")
-		)
-		(instances
-			(project "ZoroBot3"
-				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "MOSFET-N4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
 		(at 102.87 71.12 0)
 		(unit 1)
@@ -5274,123 +5142,6 @@
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
 					(reference "RS3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Simulation_SPICE:NMOS")
-		(at 80.01 66.04 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "70a58d53-7321-4f6e-b76f-74f7d602011e")
-		(property "Reference" "MOSFET-N1"
-			(at 85.09 64.77 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.75 0.75)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "AO3400 (A09T)"
-			(at 85.09 66.548 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.75 0.75)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 85.09 63.5 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
-			(at 80.01 78.74 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "N-MOSFET transistor, drain/source/gate"
-			(at 80.01 66.04 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Device" "NMOS"
-			(at 80.01 83.185 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Type" "VDMOS"
-			(at 80.01 85.09 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Pins" "1=D 2=G 3=S"
-			(at 80.01 81.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "6224d186-716a-42ed-aa5f-0984d8136fef")
-		)
-		(pin "3"
-			(uuid "94b0fdd2-47a7-476e-ab8b-53fc2f394965")
-		)
-		(pin "1"
-			(uuid "fe5c6347-1c1c-45f8-a21d-eed03cf65ee8")
-		)
-		(instances
-			(project "ZoroBot3"
-				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
-					(reference "MOSFET-N1")
 					(unit 1)
 				)
 			)
@@ -6443,6 +6194,93 @@
 			(project "ZoroBot3"
 				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
 					(reference "RS6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Transistor_FET:AO3400A")
+		(at 54.61 130.81 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "d2ce14dd-57cb-4eb3-9d86-77076cd2452c")
+		(property "Reference" "MOSFET-N4"
+			(at 57.658 134.8739 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "AO3400A"
+			(at 57.658 136.3979 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 59.69 132.715 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(justify left)
+			)
+		)
+		(property "Datasheet" "http://www.aosmd.com/pdfs/datasheet/AO3400A.pdf"
+			(at 59.69 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Description" "30V Vds, 5.7A Id, N-Channel MOSFET, SOT-23"
+			(at 54.61 130.81 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "e73bc452-f182-4965-aee9-18df62e76ad7")
+		)
+		(pin "2"
+			(uuid "905d0569-bdfd-459e-b56a-982926d0fe43")
+		)
+		(pin "3"
+			(uuid "b12402ff-3e8c-45fa-8ad0-165e9f216b33")
+		)
+		(instances
+			(project "ZoroBot3"
+				(path "/38e8b839-c362-4120-bbf7-582efa82e48d/fa956960-b4bb-4d1a-9d4a-3aa8012b4e3b"
+					(reference "MOSFET-N4")
 					(unit 1)
 				)
 			)

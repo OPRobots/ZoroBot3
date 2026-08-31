@@ -743,7 +743,7 @@
         "uuid": "38e8b839-c362-4120-bbf7-582efa82e48d"
       }
     ],
-    "used_designators": "D14,C53-54,R32-37,SRAM1,RRAM1,CSRAM1,#PWR91-100",
+    "used_designators": "RRAM2,#PWR101-106,CSRAM2,DATA_MPU3,C39-40,SRAM2,JP4,LSM6DSR2,POWER_MPU3,J1",
     "variants": []
   },
   "sheets": [
