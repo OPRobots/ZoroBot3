@@ -11,15 +11,23 @@ void handwall_use_right_hand(void) {
 }
 
 void handwall_start(void) {
-  configure_kinematics(menu_run_get_speed());
+  configure_explore_kinematics(false);
+  configure_kinematics(SPEED_EXPLORE);
+
+#ifndef MMSIM_ENABLED
   clear_info_leds();
   set_RGB_color(0, 0, 0);
+  delay(125);
+  side_sensors_calibration(true);
+  delay(125);
   if (is_battery_2s()) {
     set_target_fan_speed(get_kinematics().fan_speed_2s, 400);
   } else {
     set_target_fan_speed(get_kinematics().fan_speed_3s, 400);
   }
-  delay(500);
+  delay(800);
+#endif
+
   move(MOVE_START);
 }
 
