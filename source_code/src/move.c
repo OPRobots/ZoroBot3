@@ -113,32 +113,32 @@ static struct kpi_params kpi_run[] = {
 static struct inplace_params turns_inplace[] = {
     [MOVE_LEFT_INPLACE] = {
         .radians = PI / 2,
-        .angular_accel = 350,
-        .max_angular_speed = 10,
+        .angular_accel = 250,
+        .max_angular_speed = 5,
         .sign = -1,
     },
     [MOVE_RIGHT_INPLACE] = {
         .radians = PI / 2,
-        .angular_accel = 350,
-        .max_angular_speed = 10,
+        .angular_accel = 250,
+        .max_angular_speed = 5,
         .sign = 1,
     },
     [MOVE_BACK] = {
         .radians = PI,
-        .angular_accel = 350,
-        .max_angular_speed = 10,
+        .angular_accel = 250,
+        .max_angular_speed = 5,
         .sign = -1,
     },
     [MOVE_BACK_WALL] = {
         .radians = PI,
-        .angular_accel = 350,
-        .max_angular_speed = 10,
+        .angular_accel = 250,
+        .max_angular_speed = 5,
         .sign = -1,
     },
     [MOVE_BACK_STOP] = {
         .radians = PI,
-        .angular_accel = 350,
-        .max_angular_speed = 10,
+        .angular_accel = 250,
+        .max_angular_speed = 5,
         .sign = -1,
     },
 };
@@ -983,52 +983,6 @@ static bool is_motor_saturated(void) {
 }
 #endif
 
-static void move_home(void) {
-#ifdef MMSIM_ENABLED
-  API_moveForward();
-  API_turnRight();
-  API_turnRight();
-#else
-
-  set_front_sensors_angle_correction(true);
-  set_front_sensors_diagonal_correction(false);
-  set_side_sensors_correction(false);
-
-  struct walls initial_walls = get_walls();
-
-  // force_linear_speed(0);
-  // delay(500);
-  // move_straight(MIDDLE_MAZE_DISTANCE + current_cell_start_mm, 300, false, true);
-  move_straight_until_front_distance(get_front_wall_middle_target_distance_mm(), 300, true);
-  // move_straight(MIDDLE_MAZE_DISTANCE, 300, false, true);
-
-  keep_front_distance(get_front_wall_middle_target_distance(), 300, 150);
-
-  disable_sensors_correction();
-  if (initial_walls.left) {
-    move_inplace_turn(MOVE_LEFT_INPLACE);
-    keep_front_distance(get_front_wall_middle_target_distance(), 300, 150);
-    move_inplace_turn(MOVE_LEFT_INPLACE);
-  } else if (initial_walls.right) {
-    move_inplace_turn(MOVE_RIGHT_INPLACE);
-    keep_front_distance(get_front_wall_middle_target_distance(), 300, 150);
-    move_inplace_turn(MOVE_RIGHT_INPLACE);
-  } else {
-    move_inplace_turn(MOVE_BACK);
-  }
-  reset_control_errors();
-
-  set_check_motors_saturated_enabled(false);
-  // move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
-  move_back_until_wall();
-  set_check_motors_saturated_enabled(true);
-  set_starting_position();
-
-  set_front_sensors_angle_correction(false);
-  set_side_sensors_correction(true);
-#endif
-}
-
 static void move_end(void) {
 #ifdef MMSIM_ENABLED
   API_moveForward();
@@ -1201,23 +1155,21 @@ static void move_back(enum movement movement) {
 
   struct walls initial_walls = get_walls();
   if (initial_walls.front) {
-    set_front_sensors_angle_correction(true); // TODO: revisar
     set_side_sensors_correction(false);
-    move_straight(MIDDLE_MAZE_DISTANCE, 300, false, true);
-    // keep_front_distance(get_front_wall_middle_target_distance(), 300, 150); // TODO: revisar y mejorar
+    keep_front_distance(get_front_wall_middle_target_distance_mm(), 300, 150);
 
     disable_sensors_correction();
-    // if (initial_walls.left) {
-    //   move_inplace_turn(MOVE_LEFT_INPLACE);
-    //   keep_front_distance(get_front_wall_middle_target_distance(), 300, 150); // TODO: revisar y mejorar
-    //   move_inplace_turn(MOVE_LEFT_INPLACE);
-    // } else if (initial_walls.right) {
-    //   move_inplace_turn(MOVE_RIGHT_INPLACE);
-    //   keep_front_distance(get_front_wall_middle_target_distance(), 300, 150); // TODO: revisar y mejorar
-    //   move_inplace_turn(MOVE_RIGHT_INPLACE);
-    // } else {
-    move_inplace_turn(movement);
-    // }
+    if (initial_walls.left) {
+      move_inplace_turn(MOVE_LEFT_INPLACE);
+      keep_front_distance(get_front_wall_middle_target_distance_mm(), 300, 150);
+      move_inplace_turn(MOVE_LEFT_INPLACE);
+    } else if (initial_walls.right) {
+      move_inplace_turn(MOVE_RIGHT_INPLACE);
+      keep_front_distance(get_front_wall_middle_target_distance_mm(), 300, 150);
+      move_inplace_turn(MOVE_RIGHT_INPLACE);
+    } else {
+      move_inplace_turn(movement);
+    }
     reset_control_errors();
 
   } else {
@@ -1235,10 +1187,17 @@ static void move_back(enum movement movement) {
       break;
     case MOVE_BACK_STOP:
     case MOVE_BACK:
-      set_check_motors_saturated_enabled(false);
-      move_straight(MIDDLE_MAZE_DISTANCE - ROBOT_BACK_LENGTH, -100, false, true);
-      set_check_motors_saturated_enabled(true);
-      set_starting_position();
+      if (initial_walls.front) {
+        set_check_motors_saturated_enabled(false);
+        move_back_until_wall(); // TODO: revisar y mejorar
+        set_check_motors_saturated_enabled(true);
+        set_starting_position();
+      } else {
+        set_check_motors_saturated_enabled(false);
+        move_straight(MIDDLE_MAZE_DISTANCE - ROBOT_BACK_LENGTH, -100, false, true);
+        set_check_motors_saturated_enabled(true);
+        set_starting_position();
+      }
       break;
     default:
       break;
@@ -1403,35 +1362,50 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
 void keep_front_distance(uint16_t distance, int32_t speed, uint16_t timeout) {
 #ifndef MMSIM_ENABLED
   set_ideal_angular_speed(0.0);
+  set_angular_error_correction(false);
   set_front_sensors_angle_correction(true);
 
-  uint8_t front_margin = 0;
-
-  if (use_raw_sensors()) {
-    front_margin = 20;
-    if (get_front_wall_distance() < distance) {
-      while (is_race_started() && !is_motor_saturated() && get_front_wall_distance() < distance && front_wall_detection()) {
-        set_target_linear_speed(speed);
-      }
-    } else if (get_front_wall_distance() > distance) {
-      while (is_race_started() && !is_motor_saturated() && get_front_wall_distance() > distance && front_wall_detection()) {
+  if (abs(get_front_wall_distance_mm() - distance) > 5) {
+    if (get_front_wall_distance_mm() < distance) {
+      while (is_race_started() && !is_motor_saturated() && get_front_wall_distance_mm() < distance && front_wall_detection()) {
         set_target_linear_speed(-speed);
       }
-    }
-  } else {
-    front_margin = 2;
-    if (get_front_wall_distance() < distance) {
-      while (is_race_started() && !is_motor_saturated() && get_front_wall_distance() < distance && front_wall_detection()) {
-        set_target_linear_speed(-speed);
-      }
-    } else if (get_front_wall_distance() > distance) {
-      while (is_race_started() && !is_motor_saturated() && get_front_wall_distance() > distance && front_wall_detection()) {
+    } else if (get_front_wall_distance_mm() > distance) {
+      while (is_race_started() && !is_motor_saturated() && get_front_wall_distance_mm() > distance && front_wall_detection()) {
         set_target_linear_speed(speed);
       }
     }
   }
-  force_linear_speed(0);
+
   set_front_sensors_angle_correction(false);
+  set_angular_error_correction(true);
+  force_linear_speed(0);
+  delay(125);
+
+  if (abs(get_front_sensors_angle_error()) > 5 || abs(get_front_wall_distance_mm() > 2)) {
+    set_angular_error_correction(false);
+    set_front_sensors_angle_correction(true);
+
+    set_ideal_front_distance(distance);
+    set_front_sensors_distance_correction(true);
+
+    uint32_t start_ms = get_clock_ticks();
+    uint16_t count_ok = 0;
+    while (count_ok < 100 && get_clock_ticks() - start_ms <= timeout) {
+      if (abs(get_front_sensors_angle_error()) <= 2 && abs(get_front_wall_distance_mm() <= 2)) {
+        count_ok++;
+      } else {
+        count_ok = 0;
+      }
+      delay(1);
+    }
+  }
+
+  set_angular_error_correction(true);
+  set_front_sensors_distance_correction(false);
+  set_front_sensors_angle_correction(false);
+
+  delay(125);
 
 #endif
 }
@@ -1806,6 +1780,7 @@ void move_inplace_turn(enum movement movement) {
     set_ideal_angular_speed(angular_speed);
   }
   set_ideal_angular_speed(0);
+  delay(125);
 
 #endif
 }
@@ -1846,7 +1821,7 @@ void move(enum movement movement) {
 #endif
   switch (movement) {
     case MOVE_HOME:
-      move_home();
+      move_back(MOVE_BACK_STOP);
       break;
     case MOVE_START:
       set_starting_position();

@@ -236,6 +236,11 @@ void set_side_sensors_correction(bool enabled) {
 }
 
 void set_front_sensors_angle_correction(bool enabled) {
+  if (!enabled) {
+    front_sensors_angle_error = 0;
+    sum_front_sensors_angle_error = 0;
+    last_front_sensors_angle_error = 0;
+  }
   front_sensors_angle_correction_enabled = enabled;
 }
 
@@ -244,10 +249,14 @@ bool is_front_sensors_angle_correction_enabled(void) {
 }
 
 void set_front_sensors_distance_correction(bool enabled) {
-  front_sensors_distance_correction_enabled = enabled;
   if (!enabled) {
     ideal_front_distance = 0;
+
+    front_sensors_distance_error = 0;
+    sum_front_sensors_distance_error = 0;
+    last_front_sensors_distance_error = 0;
   }
+  front_sensors_distance_correction_enabled = enabled;
 }
 
 void set_front_sensors_diagonal_correction(bool enabled) {
@@ -419,22 +428,17 @@ void control_loop(void) {
     last_front_sensors_angle_error = front_sensors_angle_error;
     front_sensors_angle_error = get_front_sensors_angle_error();
     sum_front_sensors_angle_error += front_sensors_angle_error;
-  } else {
-    front_sensors_angle_error = 0;
-    sum_front_sensors_angle_error = 0;
-    last_front_sensors_angle_error = 0;
   }
 
   if (front_sensors_distance_correction_enabled && ideal_front_distance > 0) {
     last_front_sensors_distance_error = front_sensors_distance_error;
-    front_sensors_distance_error = get_front_wall_distance() - ideal_front_distance;
+    front_sensors_distance_error = get_front_wall_distance_mm() - ideal_front_distance;
     sum_front_sensors_distance_error += front_sensors_distance_error;
-  }
-
-  if (!front_sensors_distance_correction_enabled) {
-    front_sensors_distance_error = 0;
-    sum_front_sensors_distance_error = 0;
-    last_front_sensors_distance_error = 0;
+    if (sum_front_sensors_distance_error > 10) {
+      sum_front_sensors_distance_error = 10;
+    } else if (sum_front_sensors_distance_error < -10) {
+      sum_front_sensors_distance_error = -10;
+    }
   }
 
   if (front_sensors_diagonal_correction_enabled) {
@@ -500,9 +504,9 @@ void control_loop(void) {
         "mpu_voltage",
         "side_sensors_voltage",
         "front_sensors_voltage",
-        "front_diagonal_sensors_voltage",
-        "pwm_left",
-        "pwm_right"};
+        "get_front_sensors_angle_error",
+        "linear_voltage",
+        "angular_voltage"};
     macroarray_store(
         2,
         0b0011111111,
@@ -515,9 +519,9 @@ void control_loop(void) {
         (int16_t)(mpu_voltage * 100),
         (int16_t)(side_sensors_voltage * 100),
         (int16_t)(front_sensors_voltage * 100),
-        (int16_t)(front_diagonal_sensors_voltage * 100),
-        (int16_t)(pwm_left * 100),
-        (int16_t)(pwm_right * 100));
+        (int16_t)(get_front_sensors_angle_error() * 100),
+        (int16_t)(linear_voltage * 100),
+        (int16_t)(angular_voltage * 100));
   }
 }
 #endif
