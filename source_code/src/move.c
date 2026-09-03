@@ -48,7 +48,7 @@ static struct kpi_params kpi_explore[] = {
     },
     [KPI_FRONT_ANGLE_SENSORS] = {
         .kp = 0.02,
-        .ki = 0.00,
+        .ki = 0.0002,
         .kd = 0.12,
     },
     [KPI_FRONT_DISTANCE_SENSORS] = {
@@ -86,7 +86,7 @@ static struct kpi_params kpi_run[] = {
     },
     [KPI_FRONT_ANGLE_SENSORS] = {
         .kp = 0.02,
-        .ki = 0.00,
+        .ki = 0.0002,
         .kd = 0.12,
     },
     [KPI_FRONT_DISTANCE_SENSORS] = {
@@ -1002,16 +1002,16 @@ static void move_home(void) {
   move_straight_until_front_distance(get_front_wall_middle_target_distance_mm(), 300, true);
   // move_straight(MIDDLE_MAZE_DISTANCE, 300, false, true);
 
-  keep_front_distance(get_front_wall_middle_target_distance(), 150);
+  keep_front_distance(get_front_wall_middle_target_distance(), 300, 150);
 
   disable_sensors_correction();
   if (initial_walls.left) {
     move_inplace_turn(MOVE_LEFT_INPLACE);
-    keep_front_distance(get_front_wall_middle_target_distance(), 150);
+    keep_front_distance(get_front_wall_middle_target_distance(), 300, 150);
     move_inplace_turn(MOVE_LEFT_INPLACE);
   } else if (initial_walls.right) {
     move_inplace_turn(MOVE_RIGHT_INPLACE);
-    keep_front_distance(get_front_wall_middle_target_distance(), 150);
+    keep_front_distance(get_front_wall_middle_target_distance(), 300, 150);
     move_inplace_turn(MOVE_RIGHT_INPLACE);
   } else {
     move_inplace_turn(MOVE_BACK);
@@ -1195,64 +1195,50 @@ static void move_back(enum movement movement) {
   }
 #else
 
-  struct walls initial_walls = get_walls();
-  if (initial_walls.front) {
-    // Para decelerar de velocidad de mapeo
-    move_straight(10, 300, false, false);
-    current_cell_start_mm += 10;
-    set_side_sensors_correction(false);
-    set_front_sensors_angle_correction(true);
-  }
-
   set_front_sensors_angle_correction(false);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_correction(true);
 
+  struct walls initial_walls = get_walls();
   if (initial_walls.front) {
-    set_front_sensors_angle_correction(true);
+    set_front_sensors_angle_correction(true); // TODO: revisar
     set_side_sensors_correction(false);
     move_straight(MIDDLE_MAZE_DISTANCE, 300, false, true);
-    keep_front_distance(get_front_wall_middle_target_distance(), 150);
+    // keep_front_distance(get_front_wall_middle_target_distance(), 300, 150); // TODO: revisar y mejorar
 
-    if (initial_walls.left) {
-      move_inplace_turn(MOVE_LEFT_INPLACE);
-      keep_front_distance(get_front_wall_middle_target_distance(), 150);
-      move_inplace_turn(MOVE_LEFT_INPLACE);
-    } else if (initial_walls.right) {
-      move_inplace_turn(MOVE_RIGHT_INPLACE);
-      keep_front_distance(get_front_wall_middle_target_distance(), 150);
-      move_inplace_turn(MOVE_RIGHT_INPLACE);
-    } else {
-      disable_sensors_correction();
-      move_inplace_turn(movement);
-    }
+    disable_sensors_correction();
+    // if (initial_walls.left) {
+    //   move_inplace_turn(MOVE_LEFT_INPLACE);
+    //   keep_front_distance(get_front_wall_middle_target_distance(), 300, 150); // TODO: revisar y mejorar
+    //   move_inplace_turn(MOVE_LEFT_INPLACE);
+    // } else if (initial_walls.right) {
+    //   move_inplace_turn(MOVE_RIGHT_INPLACE);
+    //   keep_front_distance(get_front_wall_middle_target_distance(), 300, 150); // TODO: revisar y mejorar
+    //   move_inplace_turn(MOVE_RIGHT_INPLACE);
+    // } else {
+    move_inplace_turn(movement);
+    // }
     reset_control_errors();
 
   } else {
-    move_straight(MIDDLE_MAZE_DISTANCE * 1.75f - current_cell_start_mm, 300, false, true);
+    move_straight(MIDDLE_MAZE_DISTANCE - current_cell_start_mm, 300, false, true);
     disable_sensors_correction();
     move_inplace_turn(movement);
   }
 
   switch (movement) {
     case MOVE_BACK_WALL:
-      // current_cell_start_mm = MIDDLE_MAZE_DISTANCE;
       set_check_motors_saturated_enabled(false);
-      // move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH + 10, -100, false, true);
-      move_back_until_wall();
+      move_back_until_wall(); // TODO: revisar y mejorar
       set_check_motors_saturated_enabled(true);
       set_starting_position();
       break;
     case MOVE_BACK_STOP:
+    case MOVE_BACK:
       set_check_motors_saturated_enabled(false);
-      move_straight((CELL_DIMENSION - WALL_WIDTH) / 2 - ROBOT_BACK_LENGTH, -100, false, true);
+      move_straight(MIDDLE_MAZE_DISTANCE - ROBOT_BACK_LENGTH, -100, false, true);
       set_check_motors_saturated_enabled(true);
       set_starting_position();
-      break;
-    case MOVE_BACK:
-      move_straight((MIDDLE_MAZE_DISTANCE)-ROBOT_BACK_LENGTH, -100, false, true);
-      current_cell_start_mm = (MIDDLE_MAZE_DISTANCE - ROBOT_BACK_LENGTH) / 2;
-      // current_cell_start_mm = MIDDLE_MAZE_DISTANCE;
       break;
     default:
       break;
@@ -1262,7 +1248,7 @@ static void move_back(enum movement movement) {
   if (movement != MOVE_BACK_STOP) {
     set_front_sensors_angle_correction(false);
     set_front_sensors_diagonal_correction(false);
-    set_side_sensors_correction(true);
+    set_side_sensors_correction(false);
     move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
     enter_next_cell();
   }
@@ -1414,55 +1400,38 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
 #endif
 }
 
-void keep_front_distance(uint16_t distance, uint16_t timeout) {
+void keep_front_distance(uint16_t distance, int32_t speed, uint16_t timeout) {
 #ifndef MMSIM_ENABLED
   set_ideal_angular_speed(0.0);
-  set_linear_error_correction(false);
-  set_angular_error_correction(false);
   set_front_sensors_angle_correction(true);
-  uint16_t count = 0;
 
-  if (use_raw_sensors() /*  && distance == MIDDLE_MAZE_DISTANCE */) {
-    set_front_sensors_raw_distance_correction(true);
-    set_ideal_front_distance(distance);
-    while (front_wall_detection() && (abs(get_front_wall_distance() - distance) > 20 || count < timeout)) {
-      if (abs(get_front_wall_distance() - distance) <= 20) {
-        count++;
-        // } else {
-        // count = 0;
+  uint8_t front_margin = 0;
+
+  if (use_raw_sensors()) {
+    front_margin = 20;
+    if (get_front_wall_distance() < distance) {
+      while (is_race_started() && !is_motor_saturated() && get_front_wall_distance() < distance && front_wall_detection()) {
+        set_target_linear_speed(speed);
       }
-      delay(1);
+    } else if (get_front_wall_distance() > distance) {
+      while (is_race_started() && !is_motor_saturated() && get_front_wall_distance() > distance && front_wall_detection()) {
+        set_target_linear_speed(-speed);
+      }
     }
-
   } else {
-    set_front_sensors_distance_correction(true);
-    set_ideal_front_distance(distance);
-    while (front_wall_detection() && (abs(get_front_wall_distance() - distance) > 2 || count < timeout)) {
-      if (abs(get_front_wall_distance() - distance) <= 2) {
-        count++;
-        // } else {
-        // count = 0;
+    front_margin = 2;
+    if (get_front_wall_distance() < distance) {
+      while (is_race_started() && !is_motor_saturated() && get_front_wall_distance() < distance && front_wall_detection()) {
+        set_target_linear_speed(-speed);
       }
-      delay(1);
+    } else if (get_front_wall_distance() > distance) {
+      while (is_race_started() && !is_motor_saturated() && get_front_wall_distance() > distance && front_wall_detection()) {
+        set_target_linear_speed(speed);
+      }
     }
   }
-  set_linear_error_correction(true);
-
-  if (is_front_sensors_angle_correction_enabled() && abs(get_front_sensors_angle_error()) >= 5) {
-    uint32_t timeout2 = get_clock_ticks() + 250;
-    uint16_t count2 = 0;
-    while (count2 < 125 && get_clock_ticks() < timeout2) {
-      if (abs(get_front_sensors_angle_error()) <= 2) {
-        count2++;
-      }
-      delay(1);
-    }
-  }
-
-  set_angular_error_correction(true);
+  force_linear_speed(0);
   set_front_sensors_angle_correction(false);
-  set_front_sensors_distance_correction(false);
-  set_front_sensors_raw_distance_correction(false);
 
 #endif
 }
@@ -1473,14 +1442,14 @@ void move_back_until_wall(void) {
   set_target_linear_speed(-100);
   uint8_t count = 0;
   uint32_t start_ms = get_clock_ticks();
-  while (count < MAX_MOTOR_SATURATION_COUNT / 2 && is_race_started() && (get_clock_ticks() - start_ms) < 1000) {
+  while (count < MAX_MOTOR_SATURATION_COUNT / 2 && is_race_started() && (get_clock_ticks() - start_ms) < 2000) {
     if (abs(get_encoder_avg_speed()) >= 80) {
       count++;
     }
     delay(1);
   }
   start_ms = get_clock_ticks();
-  while (abs(get_encoder_avg_speed()) > 20 && is_race_started() && (get_clock_ticks() - start_ms) < 1000) {
+  while (abs(get_encoder_avg_speed()) > 20 && is_race_started() && (get_clock_ticks() - start_ms) < 2000) {
     warning_status_led(50);
   }
   delay(MAX_MOTOR_SATURATION_COUNT / 2);

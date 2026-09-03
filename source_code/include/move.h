@@ -121,7 +121,7 @@ int32_t get_current_cell_travelled_distance(void);
 
 void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool stop);
 void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool stop);
-void keep_front_distance(uint16_t distance, uint16_t timeout);
+void keep_front_distance(uint16_t distance, int32_t speed, uint16_t timeout);
 void move_back_until_wall(void);
 void move_arc_turn(struct turn_params turn);
 void move_inplace_turn(enum movement movement);
