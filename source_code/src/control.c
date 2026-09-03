@@ -179,7 +179,7 @@ int8_t check_start_run(void) {
     sensor_front_right_start_ms = 0;
   }
 
-  bool left_ready  = sensor_front_left_start_ms  > 0 && get_clock_ticks() - sensor_front_left_start_ms  >= SENSOR_START_MIN_MS;
+  bool left_ready = sensor_front_left_start_ms > 0 && get_clock_ticks() - sensor_front_left_start_ms >= SENSOR_START_MIN_MS;
   bool right_ready = sensor_front_right_start_ms > 0 && get_clock_ticks() - sensor_front_right_start_ms >= SENSOR_START_MIN_MS;
   if (left_ready || right_ready) {
     uint8_t sensor = left_ready ? SENSOR_FRONT_LEFT_WALL_ID : SENSOR_FRONT_RIGHT_WALL_ID;
@@ -227,6 +227,11 @@ void set_angular_error_correction(bool enabled) {
 }
 
 void set_side_sensors_correction(bool enabled) {
+  if (!side_sensors_correction_enabled && enabled) {
+    side_sensors_error = 0;
+    sum_side_sensors_error = 0;
+    last_side_sensors_error = 0;
+  }
   side_sensors_correction_enabled = enabled;
 }
 
@@ -245,14 +250,12 @@ void set_front_sensors_distance_correction(bool enabled) {
   }
 }
 
-void set_front_sensors_raw_distance_correction(bool enabled) {
-  front_sensors_raw_distance_correction_enabled = enabled;
-  if (!enabled) {
-    ideal_front_distance = 0;
-  }
-}
-
 void set_front_sensors_diagonal_correction(bool enabled) {
+  if (!front_sensors_diagonal_correction_enabled && enabled) {
+    front_sensors_diagonal_error = 0;
+    sum_front_sensors_diagonal_error = 0;
+    last_front_sensors_diagonal_error = 0;
+  }
   front_sensors_diagonal_correction_enabled = enabled;
 }
 
@@ -385,6 +388,10 @@ void control_loop(void) {
 
   float linear_voltage = 0;
   float angular_voltage = 0;
+  float mpu_voltage = 0;
+  float side_sensors_voltage = 0;
+  float front_sensors_voltage = 0;
+  float front_diagonal_sensors_voltage = 0;
 
   if (linear_error_correction_enabled) {
     last_linear_error = linear_error;
@@ -400,22 +407,16 @@ void control_loop(void) {
     last_angular_error = angular_error;
     angular_error = ideal_angular_speed - get_measured_angular_speed();
     sum_angular_error += angular_error;
-  } else {
-    angular_error = 0;
-    sum_angular_error = 0;
-    last_angular_error = 0;
   }
 
   if (side_sensors_correction_enabled) {
+    last_side_sensors_error = side_sensors_error;
     side_sensors_error = get_side_sensors_error();
     sum_side_sensors_error += side_sensors_error;
-  } else {
-    side_sensors_error = 0;
-    sum_side_sensors_error = 0;
-    last_side_sensors_error = 0;
   }
 
   if (front_sensors_angle_correction_enabled) {
+    last_front_sensors_angle_error = front_sensors_angle_error;
     front_sensors_angle_error = get_front_sensors_angle_error();
     sum_front_sensors_angle_error += front_sensors_angle_error;
   } else {
@@ -424,7 +425,8 @@ void control_loop(void) {
     last_front_sensors_angle_error = 0;
   }
 
-  if (front_sensors_distance_correction_enabled && ideal_front_distance > 0 && get_front_wall_distance() < CELL_DIMENSION) {
+  if (front_sensors_distance_correction_enabled && ideal_front_distance > 0) {
+    last_front_sensors_distance_error = front_sensors_distance_error;
     front_sensors_distance_error = get_front_wall_distance() - ideal_front_distance;
     sum_front_sensors_distance_error += front_sensors_distance_error;
   }
@@ -436,12 +438,9 @@ void control_loop(void) {
   }
 
   if (front_sensors_diagonal_correction_enabled) {
+    last_front_sensors_diagonal_error = front_sensors_diagonal_error;
     front_sensors_diagonal_error = get_front_sensors_diagonal_error();
     sum_front_sensors_diagonal_error += front_sensors_diagonal_error;
-  } else {
-    front_sensors_diagonal_error = 0;
-    sum_front_sensors_diagonal_error = 0;
-    last_front_sensors_diagonal_error = 0;
   }
 
   linear_voltage =
@@ -459,27 +458,31 @@ void control_loop(void) {
                       get_kinematics().kpi[KPI_FRONT_DISTANCE_SENSORS].kd * (front_sensors_distance_error - last_front_sensors_distance_error);
   }
 
-  angular_voltage =
+  mpu_voltage =
       get_kinematics().kpi[KPI_ANGULAR].kp * angular_error +
       get_kinematics().kpi[KPI_ANGULAR].ki * sum_angular_error +
-      get_kinematics().kpi[KPI_ANGULAR].kd * (angular_error - last_angular_error) +
+      get_kinematics().kpi[KPI_ANGULAR].kd * (angular_error - last_angular_error);
 
+  side_sensors_voltage =
       get_kinematics().kpi[KPI_SIDE_SENSORS].kp * side_sensors_error +
       get_kinematics().kpi[KPI_SIDE_SENSORS].ki * sum_side_sensors_error +
-      get_kinematics().kpi[KPI_SIDE_SENSORS].kd * (side_sensors_error - last_side_sensors_error) +
+      get_kinematics().kpi[KPI_SIDE_SENSORS].kd * (side_sensors_error - last_side_sensors_error);
 
+  front_sensors_voltage =
       get_kinematics().kpi[KPI_FRONT_ANGLE_SENSORS].kp * front_sensors_angle_error +
       get_kinematics().kpi[KPI_FRONT_ANGLE_SENSORS].ki * sum_front_sensors_angle_error +
-      get_kinematics().kpi[KPI_FRONT_ANGLE_SENSORS].kd * (front_sensors_angle_error - last_front_sensors_angle_error) +
+      get_kinematics().kpi[KPI_FRONT_ANGLE_SENSORS].kd * (front_sensors_angle_error - last_front_sensors_angle_error);
 
+  front_diagonal_sensors_voltage =
       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].kp * front_sensors_diagonal_error +
       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].ki * sum_front_sensors_diagonal_error +
       get_kinematics().kpi[KPI_FRONT_DIAGONAL_SENSORS].kd * (front_sensors_diagonal_error - last_front_sensors_diagonal_error);
 
-  last_side_sensors_error = side_sensors_error;
-  last_front_sensors_angle_error = front_sensors_angle_error;
-  last_front_sensors_distance_error = front_sensors_distance_error;
-  last_front_sensors_diagonal_error = front_sensors_diagonal_error;
+  angular_voltage =
+      mpu_voltage +
+      side_sensors_voltage +
+      front_sensors_voltage +
+      front_diagonal_sensors_voltage;
 
   voltage_left = linear_voltage + angular_voltage;
   voltage_right = linear_voltage - angular_voltage;
@@ -487,124 +490,34 @@ void control_loop(void) {
   pwm_right = voltage_to_motor_pwm(voltage_right);
   set_motors_pwm(pwm_left, pwm_right);
 
-  if (is_race_mode()) {
+  if (is_race_started()) {
+
     static char *labels[] = {
-        "target_linear_speed",
         "ideal_linear_speed",
         "measured_linear_speed",
-        // "measured_left_speed",
-        // "measured_right_speed",
         "ideal_angular_speed",
         "measured_angular_speed",
-        "raw_angular_speed",
+        "mpu_voltage",
+        "side_sensors_voltage",
+        "front_sensors_voltage",
+        "front_diagonal_sensors_voltage",
         "pwm_left",
-        "pwm_right",
-        // "encoder_avg_millimeters",
-        // "side_sensors_error",
-        // "angular_voltage",
-        "battery_voltage"};
-    macroarray_store(
-        1,
-        0b000111001,
-        labels,
-        9,
-        (int16_t)target_linear_speed,
-        (int16_t)ideal_linear_speed,
-        (int16_t)(get_measured_linear_speed()),
-        // (int16_t)(get_encoder_left_speed()),
-        // (int16_t)(get_encoder_right_speed()),
-        (int16_t)(ideal_angular_speed * 100),
-        (int16_t)(get_measured_angular_speed() * 100),
-        (int16_t)(lsm6dsr_get_gyro_z_raw() * 100),
-        (int16_t)pwm_left,
-        (int16_t)pwm_right,
-        // (int16_t)get_encoder_avg_millimeters(),
-        // (int16_t)(side_sensors_error * 100),
-        // (int16_t)(angular_voltage * 100),
-        (int16_t)(get_battery_voltage() * 100));
-  }
-
-  if (/* ideal_linear_speed != 0 || */ ideal_angular_speed != 0) {
-    // static char *labels[] = {
-    //     "target_linear_speed",
-    //     "ideal_linear_speed",
-    //     "measured_linear_speed",
-    //     // "measured_left_speed",
-    //     // "measured_right_speed",
-    //     "ideal_angular_speed",
-    //     "measured_angular_speed",
-    //     "raw_angular_speed",
-    //     "pwm_left",
-    //     "pwm_right",
-    //     // "encoder_avg_millimeters",
-    //     // "side_sensors_error",
-    //     // "angular_voltage",
-    //     "battery_voltage"};
-    // macroarray_store(
-    //     1,
-    //     0b000111001,
-    //     labels,
-    //     9,
-    //     (int16_t)target_linear_speed,
-    //     (int16_t)ideal_linear_speed,
-    //     (int16_t)(get_measured_linear_speed()),
-    //     // (int16_t)(get_encoder_left_speed()),
-    //     // (int16_t)(get_encoder_right_speed()),
-    //     (int16_t)(ideal_angular_speed * 100),
-    //     (int16_t)(get_measured_angular_speed() * 100),
-    //     (int16_t)(lsm6dsr_get_gyro_z_raw() * 100),
-    //     (int16_t)pwm_left,
-    //     (int16_t)pwm_right,
-    //     // (int16_t)get_encoder_avg_millimeters(),
-    //     // (int16_t)(side_sensors_error * 100),
-    //     // (int16_t)(angular_voltage * 100),
-    //     (int16_t)(get_battery_voltage() * 100));
-
-    static char *labels[] = {
-        "target_linear_speed",
-        "ideal_linear_speed",
-        "measured_linear_speed",
-        "ideal_angular_speed",
-        "measured_angular_speed",
-        "front_left_distance",
-        "front_right_distance",
-        "diagonal_error",
-        "encoder_avg_millimeters",
-        "wall_lost_toggle_state",
-        "cell_change_toggle_state"};
+        "pwm_right"};
     macroarray_store(
         2,
-        0b00011000000,
+        0b0011111111,
         labels,
-        11,
-        (int16_t)target_linear_speed,
+        10,
         (int16_t)ideal_linear_speed,
         (int16_t)(get_measured_linear_speed()),
         (int16_t)(ideal_angular_speed * 100.0),
         (int16_t)(get_measured_angular_speed() * 100),
-        (int16_t)get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID),
-        (int16_t)get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID),
-        (int16_t)front_sensors_diagonal_error,
-        (int16_t)get_encoder_avg_millimeters(),
-        (int16_t)get_wall_lost_toggle_state() ? 1 : 0,
-        (int16_t)get_cell_change_toggle_state() ? 1 : 0
-        );
-
-    // static char *labels[] = {
-    //     "sl",
-    //     "fl",
-    //     "fr",
-    //     "sr",
-    // };
-    // macroarray_store(
-    //     0,
-    //     0b0,
-    //     labels,
-    //     4,
-    //     (int16_t)get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID),
-    //     (int16_t)get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID),
-    //     (int16_t)get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID),
-    //     (int16_t)get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID));
+        (int16_t)(mpu_voltage * 100),
+        (int16_t)(side_sensors_voltage * 100),
+        (int16_t)(front_sensors_voltage * 100),
+        (int16_t)(front_diagonal_sensors_voltage * 100),
+        (int16_t)(pwm_left * 100),
+        (int16_t)(pwm_right * 100));
   }
 }
 #endif
