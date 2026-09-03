@@ -33,7 +33,6 @@ static volatile float last_angular_error;
 static volatile bool side_sensors_correction_enabled = false;
 static volatile bool front_sensors_angle_correction_enabled = false;
 static volatile bool front_sensors_distance_correction_enabled = false;
-static volatile bool front_sensors_raw_distance_correction_enabled = false;
 static volatile bool front_sensors_diagonal_correction_enabled = false;
 
 static volatile float side_sensors_error;
@@ -430,12 +429,7 @@ void control_loop(void) {
     sum_front_sensors_distance_error += front_sensors_distance_error;
   }
 
-  if (front_sensors_raw_distance_correction_enabled && ideal_front_distance > 0) {
-    front_sensors_distance_error = ideal_front_distance - get_front_wall_distance();
-    sum_front_sensors_distance_error += front_sensors_distance_error;
-  }
-
-  if (!front_sensors_distance_correction_enabled && !front_sensors_raw_distance_correction_enabled) {
+  if (!front_sensors_distance_correction_enabled) {
     front_sensors_distance_error = 0;
     sum_front_sensors_distance_error = 0;
     last_front_sensors_distance_error = 0;

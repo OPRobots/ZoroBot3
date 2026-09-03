@@ -42,6 +42,7 @@ static void debug_sensors_distances(void) {
     printf("side_error: %4.2f ", get_side_sensors_error());
     printf("diagonal_error: %4d ", get_front_sensors_diagonal_error());
     printf("front_angle_error: %4d ", get_front_sensors_angle_error());
+    printf("front_distance_error: %4d ", get_front_wall_distance() - get_front_wall_middle_target_distance());
     printf("\n");
     last_print_debug = get_clock_ticks();
   }
@@ -165,18 +166,12 @@ static void debug_keep_front_distance_demo(void) {
         set_linear_error_correction(false);
         set_angular_error_correction(false);
         set_front_sensors_angle_correction(true);
-        if (use_raw_sensors()) {
-          set_front_sensors_raw_distance_correction(true);
-          set_ideal_front_distance(get_front_wall_middle_target_distance());
-        } else {
-          set_front_sensors_distance_correction(true);
-          set_ideal_front_distance(get_front_wall_middle_target_distance());
-        }
+        set_front_sensors_distance_correction(true);
+        set_ideal_front_distance(get_front_wall_middle_target_distance());
       } else {
         set_RGB_color(50, 0, 0);
         set_front_sensors_angle_correction(false);
         set_front_sensors_distance_correction(false);
-        set_front_sensors_raw_distance_correction(false);
         set_linear_error_correction(true);
         set_angular_error_correction(true);
       }
