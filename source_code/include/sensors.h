@@ -44,6 +44,10 @@
 #define SENSOR_SIDE_LEFT_WALL_ID 2
 #define SENSOR_SIDE_RIGHT_WALL_ID 3
 
+#define NUM_WALL_LOST_DISTANCES 2
+#define LEFT_WALL_LOST 0
+#define RIGHT_WALL_LOST 1
+
 struct walls {
   bool front;
   bool left;
@@ -85,6 +89,7 @@ bool use_raw_sensors(void);
 void front_sensors_calibration(void);
 void front_sensors_middle_calibration(void);
 void side_sensors_calibration(bool keep_sensors_on);
+void side_sensors_wall_lost_calibration(void);
 void all_sensors_take_values(uint8_t sensor);
 void sensors_load_eeprom(void);
 
@@ -103,6 +108,7 @@ uint16_t get_sensor_linearized(uint8_t pos);
 uint16_t get_sensor_distance(uint8_t pos);
 uint16_t get_front_wall_middle_target_distance(void);
 uint16_t get_front_wall_middle_target_distance_mm(void);
+uint16_t get_wall_lost_distance(uint8_t wall);
 uint16_t get_front_wall_distance(void);
 uint16_t get_front_wall_distance_mm(void);
 int16_t get_front_wall_angle(void);

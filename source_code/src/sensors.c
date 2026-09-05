@@ -34,6 +34,8 @@ struct sensors_distance_calibration sensors_distance_calibrations[] = {{}, {}, {
 static int16_t sensors_raw_wall_detection_threshold[NUM_SENSORES] = {0, 0, 0, 0};
 static int16_t sensors_middle_target_distance[NUM_SENSORES] = {0, 0, 0, 0};
 
+int16_t sensors_wall_lost_distance[NUM_WALL_LOST_DISTANCES] = {0, 0};
+
 #define WALL_DETECT_CONFIRM_COUNT 4
 #define WALL_DETECT_RELEASE_COUNT 6
 
@@ -427,6 +429,69 @@ void side_sensors_calibration(bool keep_sensors_on) {
 #endif
 }
 
+void side_sensors_wall_lost_calibration(void) {
+#ifndef MMSIM_ENABLED
+  set_sensors_enabled(true);
+
+  clear_info_leds();
+  set_info_leds();
+
+  delay(500);
+
+  uint32_t wall_lost_feedback_ms = get_clock_ticks();
+  bool calibration_done = false;
+
+  bool is_wall[NUM_WALL_LOST_DISTANCES] = {true, true};
+  int32_t wall_lost_mm[NUM_WALL_LOST_DISTANCES] = {0, 0};
+
+  while (!front_wall_detection() || !calibration_done) {
+    if (is_wall[LEFT_WALL_LOST] && !left_wall_detection()) {
+      wall_lost_mm[LEFT_WALL_LOST] = get_encoder_avg_millimeters();
+      is_wall[LEFT_WALL_LOST] = false;
+    }
+
+    if (is_wall[RIGHT_WALL_LOST] && !right_wall_detection()) {
+      wall_lost_mm[RIGHT_WALL_LOST] = get_encoder_avg_millimeters();
+      is_wall[RIGHT_WALL_LOST] = false;
+    }
+
+    if (get_clock_ticks() - wall_lost_feedback_ms > 150) {
+      if (is_wall[LEFT_WALL_LOST]) {
+        set_info_led(INFO_LED_4, true);
+        set_info_led(INFO_LED_5, true);
+      } else {
+        toggle_info_led(INFO_LED_4);
+        toggle_info_led(INFO_LED_5);
+      }
+
+      if (is_wall[RIGHT_WALL_LOST]) {
+        set_info_led(INFO_LED_A, true);
+        set_info_led(INFO_LED_B, true);
+      } else {
+        toggle_info_led(INFO_LED_A);
+        toggle_info_led(INFO_LED_B);
+      }
+
+      wall_lost_feedback_ms = get_clock_ticks();
+    }
+
+    calibration_done = !is_wall[LEFT_WALL_LOST] && !is_wall[RIGHT_WALL_LOST];
+  }
+  set_info_leds();
+
+  sensors_wall_lost_distance[LEFT_WALL_LOST] = get_encoder_avg_millimeters() - wall_lost_mm[LEFT_WALL_LOST];
+  sensors_wall_lost_distance[RIGHT_WALL_LOST] = get_encoder_avg_millimeters() - wall_lost_mm[RIGHT_WALL_LOST];
+
+  printf("LEFT_WALL_LOST: %d\n", sensors_wall_lost_distance[LEFT_WALL_LOST]);
+  printf("RIGHT_WALL_LOST: %d\n", sensors_wall_lost_distance[RIGHT_WALL_LOST]);
+
+  set_sensors_enabled(false);
+  delay(500);
+  clear_info_leds();
+  eeprom_set_data(DATA_INDEX_SENSORS_WALL_LOST, sensors_wall_lost_distance, NUM_WALL_LOST_DISTANCES);
+#endif
+}
+
 #ifndef MMSIM_ENABLED
 void all_sensors_take_values(uint8_t sensor) {
   sensors_taking_values = true;
@@ -464,6 +529,16 @@ void sensors_load_eeprom(void) {
     sensors_middle_target_distance[i - DATA_INDEX_SENSORS_MIDDLE_TARGET_DISTANCE] = data[i];
     printf("Sensor %d raw middle position: %d\n", i - DATA_INDEX_SENSORS_MIDDLE_TARGET_DISTANCE, sensors_middle_target_distance[i - DATA_INDEX_SENSORS_MIDDLE_TARGET_DISTANCE]);
   }
+  for (uint16_t i = DATA_INDEX_SENSORS_WALL_LOST; i < (DATA_INDEX_SENSORS_WALL_LOST + NUM_WALL_LOST_DISTANCES); i++) {
+    sensors_wall_lost_distance[i - DATA_INDEX_SENSORS_WALL_LOST] = data[i];
+    printf("Sensor %d wall lost distance: %d\n", i - DATA_INDEX_SENSORS_WALL_LOST, sensors_wall_lost_distance[i - DATA_INDEX_SENSORS_WALL_LOST]);
+  }
+#ifdef RIGHT_WALL_LOSS_TO_SENSING_POINT_DISTANCE
+  sensors_wall_lost_distance[RIGHT_WALL_LOST] = RIGHT_WALL_LOSS_TO_SENSING_POINT_DISTANCE;
+#endif
+#ifdef LEFT_WALL_LOSS_TO_SENSING_POINT_DISTANCE
+  sensors_wall_lost_distance[LEFT_WALL_LOST] = LEFT_WALL_LOSS_TO_SENSING_POINT_DISTANCE;
+#endif
 #endif
 }
 
@@ -659,6 +734,10 @@ uint16_t get_front_wall_middle_target_distance(void) {
 
 uint16_t get_front_wall_middle_target_distance_mm(void) {
   return (sensors_middle_target_distance[SENSOR_FRONT_LEFT_WALL_ID] + sensors_middle_target_distance[SENSOR_FRONT_RIGHT_WALL_ID]) / 2;
+}
+
+uint16_t get_wall_lost_distance(uint8_t wall) {
+  return sensors_wall_lost_distance[wall];
 }
 
 uint16_t get_front_wall_distance(void) {

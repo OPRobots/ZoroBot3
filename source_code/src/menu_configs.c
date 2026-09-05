@@ -45,6 +45,9 @@ static void handle_menu_config_value(void) {
         case CALIBRATE_FRONT_SENSORS_MIDDLE:
           set_leds_front_sensors_middle(120);
           break;
+        case CALIBRATE_SIDE_SENSORS_WALL_LOST:
+          set_leds_side_sensors_wall_lost(120);
+          break;
         case CALIBRATE_STORE_EEPROM:
           set_leds_blink(250);
           break;

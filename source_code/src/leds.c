@@ -20,6 +20,10 @@ static uint32_t lastTickSideSensors = 0;
 static uint32_t currentStepSideSensors = 1;
 static uint8_t currentIndexSideSensors = 0;
 
+static uint32_t lastTickSideSensorsWallLost = 0;
+static uint32_t currentStepSideSensorsWallLost = 1;
+static uint8_t currentIndexSideSensorsWallLost = 0;
+
 static uint32_t lastTickFrontSensors = 0;
 static uint32_t currentStepFrontSensors = 1;
 static uint8_t currentIndexFrontSensors = 0;
@@ -233,6 +237,39 @@ void set_leds_front_sensors_middle(int ms) {
   }
 }
 
+void set_leds_side_sensors_wall_lost(int ms) {
+  if (get_clock_ticks() > lastTickSideSensorsWallLost + ms) {
+    gpio_set(GPIOC, GPIO4 | GPIO5);
+    gpio_set(GPIOB, GPIO0 | GPIO1 | GPIO2);
+    gpio_set(GPIOC, GPIO15 | GPIO14 | GPIO13);
+    gpio_set(GPIOB, GPIO9 | GPIO8);
+
+    switch (currentIndexSideSensorsWallLost) {
+      case 0:
+        gpio_set(GPIOB, GPIO2);
+        gpio_set(GPIOC, GPIO15);
+        gpio_set(GPIOB, GPIO1);
+        gpio_set(GPIOC, GPIO14);
+        break;
+      case 1:
+        gpio_clear(GPIOB, GPIO2);
+        gpio_clear(GPIOC, GPIO15);
+        gpio_clear(GPIOB, GPIO1);
+        gpio_clear(GPIOC, GPIO14);
+        break;
+    }
+
+    if (currentIndexSideSensorsWallLost >= 1) {
+      currentStepSideSensorsWallLost = -1;
+    } else if (currentIndexSideSensorsWallLost <= 0) {
+      currentStepSideSensorsWallLost = 1;
+    }
+
+    currentIndexSideSensorsWallLost += currentStepSideSensorsWallLost;
+    lastTickSideSensorsWallLost = get_clock_ticks();
+  }
+}
+
 void set_leds_blink(int ms) {
   if (get_clock_ticks() > lastTicksLedsBlink + ms) {
     gpio_toggle(GPIOC, GPIO4 | GPIO5);
@@ -306,77 +343,112 @@ void all_leds_clear(void) {
   gpio_clear(GPIOB, GPIO9 | GPIO8);
 }
 
-void set_info_led(uint8_t index, bool state) {
+void set_info_led(enum info_led index, bool state) {
   switch (index) {
-    case 0:
+    case INFO_LED_1:
       if (state) {
         gpio_set(GPIOC, GPIO4);
       } else {
         gpio_clear(GPIOC, GPIO4);
       }
       break;
-    case 1:
+    case INFO_LED_2:
       if (state) {
         gpio_set(GPIOC, GPIO5);
       } else {
         gpio_clear(GPIOC, GPIO5);
       }
       break;
-    case 2:
+    case INFO_LED_3:
       if (state) {
         gpio_set(GPIOB, GPIO0);
       } else {
         gpio_clear(GPIOB, GPIO0);
       }
       break;
-    case 3:
+    case INFO_LED_4:
       if (state) {
         gpio_set(GPIOB, GPIO1);
       } else {
         gpio_clear(GPIOB, GPIO1);
       }
       break;
-    case 4:
+    case INFO_LED_5:
       if (state) {
         gpio_set(GPIOB, GPIO2);
       } else {
         gpio_clear(GPIOB, GPIO2);
       }
       break;
-    case 5:
+    case INFO_LED_A:
       if (state) {
         gpio_set(GPIOC, GPIO15);
       } else {
         gpio_clear(GPIOC, GPIO15);
       }
       break;
-    case 6:
+    case INFO_LED_B:
       if (state) {
         gpio_set(GPIOC, GPIO14);
       } else {
         gpio_clear(GPIOC, GPIO14);
       }
       break;
-    case 7:
+    case INFO_LED_C:
       if (state) {
         gpio_set(GPIOC, GPIO13);
       } else {
         gpio_clear(GPIOC, GPIO13);
       }
       break;
-    case 8:
+    case INFO_LED_D:
       if (state) {
         gpio_set(GPIOB, GPIO9);
       } else {
         gpio_clear(GPIOB, GPIO9);
       }
       break;
-    case 9:
+    case INFO_LED_E:
       if (state) {
         gpio_set(GPIOB, GPIO8);
       } else {
         gpio_clear(GPIOB, GPIO8);
       }
+      break;
+  }
+}
+
+void toggle_info_led(enum info_led index) {
+  switch (index) {
+    case INFO_LED_1:
+      gpio_toggle(GPIOC, GPIO4);
+      break;
+    case INFO_LED_2:
+      gpio_toggle(GPIOC, GPIO5);
+      break;
+    case INFO_LED_3:
+      gpio_toggle(GPIOB, GPIO0);
+      break;
+    case INFO_LED_4:
+      gpio_toggle(GPIOB, GPIO1);
+      break;
+    case INFO_LED_5:
+      gpio_toggle(GPIOB, GPIO2);
+      break;
+    case INFO_LED_A:
+      gpio_toggle(GPIOC, GPIO15);
+      break;
+    case INFO_LED_B:
+      gpio_toggle(GPIOC, GPIO14);
+      break;
+    case INFO_LED_C:
+      gpio_toggle(GPIOC, GPIO13);
+      break;
+    case INFO_LED_D:
+      gpio_toggle(GPIOB, GPIO9);
+      break;
+    case INFO_LED_E:
+      gpio_toggle(GPIOB, GPIO8);
       break;
   }
 }

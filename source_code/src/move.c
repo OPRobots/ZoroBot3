@@ -931,7 +931,7 @@ static float calc_straight_to_speed_distance(int32_t from_speed, int32_t to_spee
 
 #ifndef MMSIM_ENABLED
 static void enter_next_cell(void) {
-  current_cell_start_mm = -SENSING_POINT_DISTANCE;
+  current_cell_start_mm = 0;
   current_cell_absolute_start_mm = get_encoder_avg_millimeters();
   current_cell_wall_lost = false;
   toggle_status_led();
@@ -1028,7 +1028,7 @@ static void move_front(void) {
   } else {
     set_side_sensors_correction(false);
   }
-  move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
+  move_straight(CELL_DIMENSION - current_cell_start_mm, kinematics.linear_speed, true, false);
   enter_next_cell();
 #endif
 }
@@ -1208,7 +1208,7 @@ static void move_back(enum movement movement) {
     set_front_sensors_angle_correction(false);
     set_front_sensors_diagonal_correction(false);
     set_side_sensors_correction(false);
-    move_straight(CELL_DIMENSION - SENSING_POINT_DISTANCE - current_cell_start_mm, kinematics.linear_speed, true, false);
+    move_straight(CELL_DIMENSION - current_cell_start_mm, kinematics.linear_speed, true, false);
     enter_next_cell();
   }
 #endif
@@ -1299,7 +1299,10 @@ void move_straight(int32_t distance, int32_t speed, bool check_wall_loss, bool s
         // }
         set_RGB_color_while(0, 255, 0, 33);
         current_distance = get_encoder_avg_micrometers();
-        distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
+        distance = get_wall_lost_distance(RIGHT_WALL_LOST);
+        if (initial_walls.left != left_wall_detection()) {
+          distance = get_wall_lost_distance(LEFT_WALL_LOST);
+        }
       }
 
       if (stop) {
@@ -1380,7 +1383,7 @@ void keep_front_distance(uint16_t distance, int32_t speed, uint16_t timeout) {
   set_front_sensors_angle_correction(false);
   set_angular_error_correction(true);
   force_linear_speed(0);
-  delay(125);
+  delay(50);
 
   if (abs(get_front_sensors_angle_error()) > 5 || abs(get_front_wall_distance_mm() > 2)) {
     set_angular_error_correction(false);
@@ -1405,7 +1408,7 @@ void keep_front_distance(uint16_t distance, int32_t speed, uint16_t timeout) {
   set_front_sensors_distance_correction(false);
   set_front_sensors_angle_correction(false);
 
-  delay(125);
+  delay(50);
 
 #endif
 }
@@ -1423,11 +1426,12 @@ void move_back_until_wall(void) {
     delay(1);
   }
   start_ms = get_clock_ticks();
-  while (abs(get_encoder_avg_speed()) > 20 && is_race_started() && (get_clock_ticks() - start_ms) < 2000) {
+  while (abs(get_encoder_avg_speed()) > 10 && is_race_started() && (get_clock_ticks() - start_ms) < 2000) {
     warning_status_led(50);
   }
   delay(MAX_MOTOR_SATURATION_COUNT / 2);
   force_linear_speed(0);
+  delay(100);
   set_status_led(false);
 #endif
 }
@@ -1525,13 +1529,21 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
     // Comprobar pérdida de pared durante la celda actual
     if (!(has_begin && current_cell == 1) && cell_travelled >= 15 && check_wall_loss_correction(cell_walls)) {
       current_distance = get_encoder_avg_micrometers();
-      distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + CELL_DIMENSION * (cells - current_cell) + end_offset;
+      distance = get_wall_lost_distance(RIGHT_WALL_LOST) + CELL_DIMENSION * (cells - current_cell) + end_offset;
+
+      if (cell_walls.left != left_wall_detection()) {
+        distance = get_wall_lost_distance(LEFT_WALL_LOST);
+      }
       if (current_cell == cells) {
         current_cell_distance_left = distance;
         last_cell_wall_lost = true;
         set_RGB_color_while(0, 255, 0, 33);
       } else {
-        current_cell_distance_left = WALL_LOSS_TO_SENSING_POINT_DISTANCE;
+        current_cell_distance_left = get_wall_lost_distance(RIGHT_WALL_LOST);
+
+        if (cell_walls.left != left_wall_detection()) {
+          current_cell_distance_left = get_wall_lost_distance(LEFT_WALL_LOST);
+        }
         set_RGB_color_while(0, 255, 0, 33);
       }
     }
@@ -1564,7 +1576,10 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
           current_cell_wall_lost = true;
           if (has_turn_wall) {
             current_distance = get_encoder_avg_micrometers();
-            distance = WALL_LOSS_TO_SENSING_POINT_DISTANCE + end_offset;
+            distance = get_wall_lost_distance(RIGHT_WALL_LOST) + end_offset;
+            if (next_turn_sign == -1) {
+              distance = get_wall_lost_distance(LEFT_WALL_LOST) + end_offset;
+            }
             current_cell_distance_left = distance;
           }
         }
@@ -1780,7 +1795,7 @@ void move_inplace_turn(enum movement movement) {
     set_ideal_angular_speed(angular_speed);
   }
   set_ideal_angular_speed(0);
-  delay(125);
+  delay(50);
 
 #endif
 }
