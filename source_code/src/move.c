@@ -1385,7 +1385,7 @@ void keep_front_distance(uint16_t distance, int32_t speed, uint16_t timeout) {
   force_linear_speed(0);
   delay(50);
 
-  if (abs(get_front_sensors_angle_error()) > 5 || abs(get_front_wall_distance_mm() > 2)) {
+  if (abs(get_front_sensors_angle_error()) > 5 || abs(get_front_wall_distance_mm() - distance) > 2) {
     set_angular_error_correction(false);
     set_front_sensors_angle_correction(true);
 
