@@ -1665,7 +1665,7 @@ void run_side(enum movement movement, struct turn_params turn, struct turn_param
     case MOVE_RIGHT_TO_135:
     case MOVE_LEFT_45_TO_45:
     case MOVE_RIGHT_45_TO_45:
-      set_front_sensors_diagonal_correction(true);
+      set_front_sensors_diagonal_correction(false);
       break;
     default:
       set_front_sensors_diagonal_correction(false);
