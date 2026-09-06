@@ -1426,7 +1426,7 @@ void move_back_until_wall(void) {
     delay(1);
   }
   start_ms = get_clock_ticks();
-  while (abs(get_encoder_avg_speed()) > 10 && is_race_started() && (get_clock_ticks() - start_ms) < 2000) {
+  while (abs(get_encoder_avg_speed()) > 20 && is_race_started() && (get_clock_ticks() - start_ms) < 2000) {
     warning_status_led(50);
   }
   delay(MAX_MOTOR_SATURATION_COUNT / 2);
