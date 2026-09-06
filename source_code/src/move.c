@@ -1532,7 +1532,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
       distance = get_wall_lost_distance(RIGHT_WALL_LOST) + CELL_DIMENSION * (cells - current_cell) + end_offset;
 
       if (cell_walls.left != left_wall_detection()) {
-        distance = get_wall_lost_distance(LEFT_WALL_LOST);
+        distance = get_wall_lost_distance(LEFT_WALL_LOST) + CELL_DIMENSION * (cells - current_cell) + end_offset;
       }
       if (current_cell == cells) {
         current_cell_distance_left = distance;
