@@ -1760,10 +1760,12 @@ static void loop_explore(void) {
 
         } else {
           if (interesting_cell == 0) {
-            if (get_current_stored_walls().front) {
-              move(MOVE_HOME);
-            } else {
-              move(MOVE_END);
+            if (!current_cell_is_goal()) {
+              if (get_current_stored_walls().front) {
+                move(MOVE_HOME);
+              } else {
+                move(MOVE_END);
+              }
             }
             floodfill_explore_finish(true);
 #ifdef MMSIM_ENABLED
