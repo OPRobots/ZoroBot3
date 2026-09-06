@@ -1365,8 +1365,8 @@ void move_straight_until_front_distance(uint32_t distance, int32_t speed, bool s
 void keep_front_distance(uint16_t distance, int32_t speed, uint16_t timeout) {
 #ifndef MMSIM_ENABLED
   set_ideal_angular_speed(0.0);
-  set_angular_error_correction(false);
-  set_front_sensors_angle_correction(true);
+  set_angular_error_correction(true);
+  set_front_sensors_angle_correction(false);
 
   if (abs(get_front_wall_distance_mm() - distance) > 5) {
     if (get_front_wall_distance_mm() < distance) {
