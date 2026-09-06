@@ -1468,7 +1468,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
   while (is_race_started() && !is_motor_saturated() && (get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER || !last_cell_wall_lost)) {
 
     // Desactiva corrección de sensores si detecta pared frontal para evitar oscilaciones
-    if (front_wall_detection()) {
+    if (front_wall_detection() || current_cell == cells) {
       set_side_sensors_correction(false);
     } else {
       set_side_sensors_correction(true);

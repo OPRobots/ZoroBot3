@@ -1084,6 +1084,10 @@ static bool floodfill_run(void) {
   uint8_t _current_position = current_position;
 
   uint16_t count_same_direction = 0;
+  uint8_t initial_empty = 0;
+  bool found_first_wall = false;
+  uint8_t total_walled_cells = 0;
+  uint8_t transition_position = 0;
 
   enum compass_direction next_direction = TARGET;
   do {
@@ -1107,6 +1111,43 @@ static bool floodfill_run(void) {
 
     if (next_direction == current_direction && is_visited(_current_position + get_direction_value(next_direction))) {
       count_same_direction++;
+
+      uint8_t left_bit = 0;
+      uint8_t right_bit = 0;
+      switch (current_direction) {
+        case EAST:
+          left_bit = NORTH_BIT;
+          right_bit = SOUTH_BIT;
+          break;
+        case SOUTH:
+          left_bit = EAST_BIT;
+          right_bit = WEST_BIT;
+          break;
+        case WEST:
+          left_bit = SOUTH_BIT;
+          right_bit = NORTH_BIT;
+          break;
+        case NORTH:
+          left_bit = WEST_BIT;
+          right_bit = EAST_BIT;
+          break;
+        default:
+          break;
+      }
+      bool has_wall = wall_exists(_current_position, left_bit) || wall_exists(_current_position, right_bit);
+
+      if (!found_first_wall) {
+        if (!has_wall) {
+          initial_empty++;
+        } else {
+          found_first_wall = true;
+          total_walled_cells++;
+          transition_position = _current_position;
+        }
+      } else if (has_wall) {
+        total_walled_cells++;
+      }
+
       _current_position += get_direction_value(next_direction);
     } else {
       break;
@@ -1134,11 +1175,18 @@ static bool floodfill_run(void) {
   }
 
   if (count_same_direction > 0) {
-    set_front_sensors_angle_correction(false);
-    set_front_sensors_diagonal_correction(false);
-    set_front_sensors_distance_correction(false);
-    set_side_sensors_correction(true);
-    run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, get_kinematics_explore_linear_speed_run(), get_kinematics().linear_speed, next_turn_sign);
+    if (initial_empty > 1 && total_walled_cells >= 2) {
+      run_straight(CELL_DIMENSION * initial_empty, 0, 0, initial_empty, false, get_kinematics().linear_speed, get_kinematics().linear_speed, 0);
+      current_position = transition_position;
+      run_straight(CELL_DIMENSION * (count_same_direction - initial_empty), 0, 0, count_same_direction - initial_empty, false, get_kinematics_explore_linear_speed_run(), get_kinematics().linear_speed, next_turn_sign);
+    } else {
+      uint16_t speed = get_kinematics().linear_speed;
+      if (total_walled_cells >= 2) {
+        speed = get_kinematics_explore_linear_speed_run();
+      }
+      run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, speed, get_kinematics().linear_speed, next_turn_sign);
+    }
+
     current_position = _current_position;
     return true;
   }
