@@ -1134,6 +1134,10 @@ static bool floodfill_run(void) {
   }
 
   if (count_same_direction > 0) {
+    set_front_sensors_angle_correction(false);
+    set_front_sensors_diagonal_correction(false);
+    set_front_sensors_distance_correction(false);
+    set_side_sensors_correction(true);
     run_straight(CELL_DIMENSION * count_same_direction, 0, 0, count_same_direction, false, get_kinematics_explore_linear_speed_run(), get_kinematics().linear_speed, next_turn_sign);
     current_position = _current_position;
     return true;
