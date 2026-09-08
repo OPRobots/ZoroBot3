@@ -1444,7 +1444,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
   return;
 #endif
 #ifndef MMSIM_ENABLED
-  set_front_sensors_angle_correction(false);
+  set_front_sensors_angle_correction(true);
   set_front_sensors_diagonal_correction(false);
   set_side_sensors_correction(true);
 
@@ -1470,6 +1470,7 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
     // Desactiva corrección de sensores si detecta pared frontal para evitar oscilaciones
     if (front_wall_detection() || current_cell == cells) {
       set_side_sensors_correction(false);
+      set_front_sensors_angle_correction(false);
     } else {
       set_side_sensors_correction(true);
     }
