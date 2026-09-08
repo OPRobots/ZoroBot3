@@ -279,6 +279,7 @@ void reset_control_errors(void) {
   last_side_sensors_error = 0;
   last_front_sensors_angle_error = 0;
   sum_front_sensors_angle_error = 0;
+  last_front_sensors_diagonal_error = 0;
   sum_front_sensors_diagonal_error = 0;
   linear_error = 0;
   angular_error = 0;
