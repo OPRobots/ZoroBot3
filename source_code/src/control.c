@@ -497,32 +497,53 @@ void control_loop(void) {
 
   if (is_race_started()) {
 
-    static char *labels[] = {
-        "ideal_linear_speed",
-        "measured_linear_speed",
-        "ideal_angular_speed",
-        "measured_angular_speed",
-        "mpu_voltage",
-        "side_sensors_voltage",
-        "front_sensors_voltage",
-        "get_front_sensors_angle_error",
-        "linear_voltage",
-        "angular_voltage"};
-    macroarray_store(
-        2,
-        0b0011111111,
-        labels,
-        10,
-        (int16_t)ideal_linear_speed,
-        (int16_t)(get_measured_linear_speed()),
-        (int16_t)(ideal_angular_speed * 100.0),
-        (int16_t)(get_measured_angular_speed() * 100),
-        (int16_t)(mpu_voltage * 100),
-        (int16_t)(side_sensors_voltage * 100),
-        (int16_t)(front_sensors_voltage * 100),
-        (int16_t)(get_front_sensors_angle_error() * 100),
-        (int16_t)(linear_voltage * 100),
-        (int16_t)(angular_voltage * 100));
+    if (ideal_linear_speed != 0) {
+      static char *labels[] = {
+          "ideal_linear_speed",
+          "measured_linear_speed",
+          "ideal_angular_speed",
+          "measured_angular_speed",
+          "mpu_voltage",
+          "side_sensors_voltage",
+          "front_sensors_voltage",
+          "get_front_sensors_angle_error",
+          "linear_voltage",
+          "angular_voltage"};
+      macroarray_store(
+          2,
+          0b0011111111,
+          labels,
+          10,
+          (int16_t)ideal_linear_speed,
+          (int16_t)(get_measured_linear_speed()),
+          (int16_t)(ideal_angular_speed * 100.0),
+          (int16_t)(get_measured_angular_speed() * 100),
+          (int16_t)(mpu_voltage * 100),
+          (int16_t)(side_sensors_voltage * 100),
+          (int16_t)(front_sensors_voltage * 100),
+          (int16_t)(get_front_sensors_angle_error() * 100),
+          (int16_t)(linear_voltage * 100),
+          (int16_t)(angular_voltage * 100));
+    }
+    //   static char *labels[] = {
+    //       "SENSOR_FRONT_LEFT_WALL",
+    //       "SENSOR_FRONT_RIGHT_WALL",
+    //       "SENSOR_SIDE_LEFT_WALL",
+    //       "SENSOR_SIDE_RIGHT_WALL",
+    //       "MM",
+    //       "CELDA"};
+    //   macroarray_store(
+    //       0,
+    //       0b0,
+    //       labels,
+    //       6,
+    //       (int16_t)get_sensor_distance(SENSOR_FRONT_LEFT_WALL_ID),
+    //       (int16_t)get_sensor_distance(SENSOR_FRONT_RIGHT_WALL_ID),
+    //       (int16_t)get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID),
+    //       (int16_t)get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID),
+    //       (int16_t)get_encoder_avg_millimeters(),
+    //       (int16_t)get_encoder_avg_millimeters() % CELL_DIMENSION);
+    // }
   }
 }
 #endif
