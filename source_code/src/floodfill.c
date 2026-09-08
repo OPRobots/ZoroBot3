@@ -1080,6 +1080,15 @@ static uint8_t find_unknown_interesting_cell(void) {
   // return find_standard_unknown_interesting_cell();
 }
 
+static uint16_t find_random_cell(void) {
+  srand(get_clock_ticks());
+  uint16_t random_cell;
+  do {
+    random_cell = rand() % maze_get_cells();
+  } while (random_cell == current_position);
+  return random_cell;
+}
+
 static bool floodfill_run(void) {
   uint8_t _current_position = current_position;
 
@@ -1780,6 +1789,9 @@ static void loop_explore(void) {
             }
           }
         }
+        break;
+      case EXPLORE_INFINITE:
+        set_target(find_random_cell());
         break;
     }
   }

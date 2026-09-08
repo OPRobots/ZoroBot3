@@ -10,7 +10,7 @@
 uint8_t modeRun = MODE_SPEED;
 
 #define MODE_SPEED_VALUES 6
-#define MODE_EXPLORE_TYPE_VALUES 3
+#define MODE_EXPLORE_TYPE_VALUES 4
 #define MODE_FLOODFILL_TYPE_VALUES 3
 #define MODE_RACE_VALUES 2
 #define MODE_MAZE_TYPE_VALUES 2
@@ -85,6 +85,9 @@ static void handle_menu_run_values(void) {
         break;
       case EXPLORE_COMPLETE:
         set_RGB_color(50, 0, 50);
+        break;
+      case EXPLORE_INFINITE:
+        set_RGB_rainbow();
         break;
     }
     set_info_led(INFO_LED_A, blinkState);

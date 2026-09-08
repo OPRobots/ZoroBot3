@@ -26,6 +26,7 @@ enum explore_type {
   EXPLORE_SIMPLE = 0,
   EXPLORE_HOME = 1,
   EXPLORE_COMPLETE = 2,
+  EXPLORE_INFINITE = 3,
 };
 
 enum floodfill_type {
