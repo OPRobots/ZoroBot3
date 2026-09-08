@@ -1028,7 +1028,7 @@ static void move_front(void) {
   } else {
     set_side_sensors_correction(false);
   }
-  move_straight(CELL_DIMENSION - current_cell_start_mm, kinematics.linear_speed, true, false);
+  move_straight(CELL_DIMENSION - current_cell_start_mm, kinematics.linear_speed, (initial_walls.left || initial_walls.right), false);
   enter_next_cell();
 #endif
 }
