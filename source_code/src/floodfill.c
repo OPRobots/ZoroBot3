@@ -1081,7 +1081,9 @@ static uint8_t find_unknown_interesting_cell(void) {
 }
 
 static uint16_t find_random_cell(void) {
+  #ifndef MMSIM_ENABLED
   srand(get_clock_ticks());
+  #endif
   uint16_t random_cell;
   do {
     random_cell = rand() % maze_get_cells();

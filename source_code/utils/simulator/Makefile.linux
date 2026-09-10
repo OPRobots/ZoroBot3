@@ -2,7 +2,7 @@
 # Uso: make -f Makefile.linux
 
 CC = gcc
-CFLAGS = -DMMSIM_ENABLED -I../../include -I../../lib/mmsim_api -Wall -Wextra -O2
+CFLAGS = -DMMSIM_ENABLED -I../../include -I../../lib/mmsim_api -Wall -Wextra -O2 -w
 LDFLAGS = -lm
 
 # Archivos del simulador standalone
