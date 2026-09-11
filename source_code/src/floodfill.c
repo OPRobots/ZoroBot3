@@ -356,6 +356,10 @@ static void reset_floodfill_and_queue(void) {
 }
 
 static void queue_push(uint8_t position, enum compass_direction direction, enum compass_direction step, uint8_t count) {
+  if (cells_queue.head >= CELLS_QUEUE_CAPACITY) {
+    return;
+  }
+
   struct queue_cell queue = {
       .cell = position,
       .direction = direction,
@@ -376,6 +380,10 @@ static void queue_push(uint8_t position, enum compass_direction direction, enum 
 }
 
 static struct queue_cell queue_pop(void) {
+  struct queue_cell empty = {0};
+  if (cells_queue.tail >= cells_queue.head) {
+    return empty;
+  }
   return cells_queue.queue[cells_queue.tail++];
 }
 

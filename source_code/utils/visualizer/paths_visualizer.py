@@ -1,5 +1,6 @@
 import subprocess
 import ast
+import json
 import os
 import re
 from PIL import Image, ImageDraw
@@ -963,12 +964,27 @@ def extract_array_from_map(map_path):
     return array
 
 def call_simulator(sim_path, map_path, floodfill_type=0, explore_type=0):
+    if not os.path.isfile(sim_path):
+        raise RuntimeError(f"No se encuentra el simulador: '{sim_path}'")
+
+    if not os.access(sim_path, os.X_OK):
+        raise RuntimeError(f"El simulador no es ejecutable: '{sim_path}'")
+
     result = subprocess.run([
         sim_path, 
         f'-floodfill-type={floodfill_type}',
         f'-explore-type={explore_type}',
         map_path
     ], capture_output=True, text=True, encoding="utf-8")
+
+    if result.returncode != 0:
+        stderr = result.stderr.strip()
+        raise RuntimeError(
+            f"El simulador falló (código {result.returncode}) con "
+            f"floodfill-type={floodfill_type}, explore-type={explore_type}.\n"
+            f"{stderr if stderr else '(sin salida de error)'}"
+        )
+
     return result.stdout
 
 def parse_times_map(sim_output, columns=16):
@@ -1204,6 +1220,112 @@ def draw_maze_from_array(cell_array,
     img_grande.save(output_path)
     print(f"Laberinto reconstruido guardado en: {output_path}")
 
+# ============================================
+# MANIFIESTO CLI (--describe)
+# ============================================
+
+PATH_OPTIONS = {"--map", "--sim", "--output"}
+
+# Choices documentados (informativos; no modifican la validación de argparse)
+FLOODFILL_CHOICES = [
+    {"value": 0, "label": "BASIC", "description": "Distancia Manhattan (1.0 por celda ortogonal)."},
+    {"value": 1, "label": "DIAGONAL", "description": "Coste 1.0 ortogonal / 0.7 diagonal."},
+    {"value": 2, "label": "TIME", "description": "Coste en tiempo real según cinemática y penalizaciones de giro."},
+]
+
+EXPLORE_CHOICES = [
+    {"value": 0, "label": "SIMPLE", "description": "Ir directo a la meta explorando en el camino."},
+    {"value": 1, "label": "HOME", "description": "Explorar y volver al inicio."},
+    {"value": 2, "label": "COMPLETE", "description": "Explorar todas las celdas no visitadas antes de volver."},
+    {"value": 3, "label": "INFINITE", "description": "Exploración continua (puede no terminar)."},
+]
+
+INFO_ONLY_CHOICES = {
+    "--floodfill": FLOODFILL_CHOICES,
+    "--explore": EXPLORE_CHOICES,
+}
+
+CHOICE_DESCRIPTIONS = {
+    "sprites": "Dibuja cada movimiento con su sprite real del robot.",
+    "lines": "Une los centros de las celdas del camino con líneas.",
+    "parts": "Una ruta con cada segmento en su color según el tipo de curva.",
+    "single": "Una ruta completa en un único color.",
+    "danger": "Colorea cada movimiento según su peligrosidad (gradiente).",
+}
+
+
+def _argparse_type_name(action):
+    if action.type is int:
+        return "integer"
+    if action.type is float:
+        return "number"
+    return "string"
+
+
+def build_cli_manifest(parser, program="paths_visualizer.py"):
+    """Construye un manifiesto JSON de las opciones del parser de argparse."""
+    import argparse
+
+    options = []
+    positionals = []
+
+    for action in parser._actions:
+        if isinstance(action, argparse._HelpAction) or action.dest == "describe":
+            continue
+
+        if not action.option_strings:
+            positionals.append({
+                "name": action.dest,
+                "type": _argparse_type_name(action),
+                "required": action.default is None,
+                "description": (action.help or "").strip(),
+            })
+            continue
+
+        name = next((s for s in action.option_strings if s.startswith("--")),
+                    action.option_strings[0])
+        aliases = [s for s in action.option_strings if s != name]
+
+        if name in INFO_ONLY_CHOICES:
+            choices = INFO_ONLY_CHOICES[name]
+            opt_type = "enum"
+        elif name in PATH_OPTIONS:
+            choices = None
+            opt_type = "path"
+        elif action.choices:
+            choices = [
+                {"value": c, "label": str(c), "description": CHOICE_DESCRIPTIONS.get(str(c), "")}
+                for c in action.choices
+            ]
+            opt_type = "enum"
+        else:
+            choices = None
+            opt_type = _argparse_type_name(action)
+
+        value_name = action.metavar or name.lstrip("-").upper().replace("-", "_")
+
+        options.append({
+            "name": name,
+            "aliases": aliases,
+            "type": opt_type,
+            "default": action.default,
+            "required": bool(getattr(action, "required", False)),
+            "repeatable": action.nargs in ("+", "*"),
+            "value_name": value_name,
+            "choices": choices,
+            "description": (action.help or "").strip(),
+        })
+
+    return {
+        "schema_version": 1,
+        "program": program,
+        "description": parser.description or "",
+        "arg_style": "space",
+        "positionals": positionals,
+        "options": options,
+    }
+
+
 def main(map_path="Portuguese Micromouse Contest 2025.map",
          sim_path="./maze_sim",
          output_path="maze_paths.bmp",
@@ -1246,6 +1368,7 @@ def main(map_path="Portuguese Micromouse Contest 2025.map",
     # Preparar estructuras según el modo de color
     paths_with_colors = []
     actions_with_colors = []
+    routes_rendered = 0
     
     for idx, (ff_type, exp_type) in enumerate(zip(floodfill_types, explore_types)):
         print(f"\nEjecutando simulador con floodfill-type={ff_type}, explore-type={exp_type}...")
@@ -1273,7 +1396,9 @@ def main(map_path="Portuguese Micromouse Contest 2025.map",
         if not path_cells:
             print("  [ADVERTENCIA] No se encontró el camino óptimo")
             continue
-        
+
+        routes_rendered += 1
+
         # Asociar acciones con celdas del path
         action_positions = simulate_actions_to_positions(action_list, path_cells, start_direction=start_dir)
         
@@ -1327,7 +1452,13 @@ def main(map_path="Portuguese Micromouse Contest 2025.map",
                 actions_with_colors.append(([(action_name, cell_positions, direction)], color_rgb))
         
         # El modo 'grouped' se elimina; se gestiona automáticamente según floodfill_types
-    
+
+    if routes_rendered == 0:
+        raise RuntimeError(
+            "El simulador no devolvió ningún camino válido. "
+            "Revisa el tipo de floodfill/explore o la salida del simulador."
+        )
+
     # Dibujar según el modo de render
     if render_mode == "sprites":
         print(f"\n[INFO] Dibujando con sprites ({color_mode} color mode)")
@@ -1352,7 +1483,8 @@ if __name__ == "__main__":
         pass
     else:
         # Modo CLI: parsear argumentos
-        parser = argparse.ArgumentParser(description="Micromouse maze visualizer")
+        parser = argparse.ArgumentParser(
+            description="Visualizador de caminos del simulador ZoroBot3 (Micromouse).")
         
         # Archivos
         parser.add_argument("--map", type=str, default="Portuguese Micromouse Contest 2025.map", 
@@ -1373,16 +1505,29 @@ if __name__ == "__main__":
                            help="Modo de renderizado: 'sprites' (bloques) o 'lines' (unir centros)")
         parser.add_argument("--color", type=str, choices=["parts", "single", "danger"], default="parts",
                    help="Modo de color: 'parts' (cada segmento su color), 'single' (una ruta un color), 'danger' (por peligrosidad, gradiente azul-rosa). Si hay más de un floodfill, se colorea automáticamente cada ruta distinta.")
-        
+
+        # Descubrimiento de opciones para herramientas externas
+        parser.add_argument("--describe", action="store_true",
+                   help="Imprime el manifiesto JSON de opciones y sale (uso para herramientas externas).")
+
         args = parser.parse_args()
-        
-        main(map_path=args.map,
-             sim_path=args.sim,
-             output_path=args.output,
-             floodfill_types=args.floodfill,
-             explore_types=args.explore,
-             render_mode=args.render,
-             color_mode=args.color)
+
+        if args.describe:
+            manifest = build_cli_manifest(parser, program="paths_visualizer.py")
+            print(json.dumps(manifest, indent=2, ensure_ascii=False))
+            sys.exit(0)
+
+        try:
+            main(map_path=args.map,
+                 sim_path=args.sim,
+                 output_path=args.output,
+                 floodfill_types=args.floodfill,
+                 explore_types=args.explore,
+                 render_mode=args.render,
+                 color_mode=args.color)
+        except RuntimeError as error:
+            print(f"\n[ERROR] {error}", file=sys.stderr)
+            sys.exit(1)
 
 
 '''

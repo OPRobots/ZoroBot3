@@ -23,7 +23,7 @@ main(
     map_path="Portuguese Micromouse Contest 2025.map",
     sim_path="../maze_sim",
     output_path="maze_paths.bmp",
-    floodfill_types=[0, 1, 2, 3],   # Tipos de floodfill
+    floodfill_types=[0, 1, 2],      # Tipos de floodfill
     explore_types=[0, 1, 2],        # Tipo de exploración
     render_mode="sprites",          # "sprites" o "lines"
     color_mode="parts"              # "parts", "single" o "danger"
@@ -43,7 +43,7 @@ display(img_grande)
 Ejecuta el script con argumentos:
 
 ```
-python paths_visualizer.py --map "../simulator/mazes/maze.map" --sim "../simulator/maze_sim" --output "maze_paths.bmp" --floodfill 3 --explore 2 --render sprites --color parts
+python paths_visualizer.py --map "../simulator/mazes/maze.map" --sim "../simulator/maze_sim" --output "maze_paths.bmp" --floodfill 2 --explore 2 --render sprites --color parts
 ```
 
 - `--map`: Ruta al archivo de mapa
@@ -53,6 +53,18 @@ python paths_visualizer.py --map "../simulator/mazes/maze.map" --sim "../simulat
 - `--explore`: Tipo de exploración (0 1 2)
 - `--render`: Modo de renderizado (`sprites` o `lines`)
 - `--color`: Modo de color (`parts`, `single`, `danger`). Si hay más de un floodfill, se colorea automáticamente cada ruta distinta.
+
+## Descubrimiento de opciones (`--describe`)
+
+`paths_visualizer.py` puede autodescribir sus opciones en JSON para que otras
+herramientas las lean de forma sistemática:
+
+```bash
+python paths_visualizer.py --describe
+```
+
+El manifiesto sigue el esquema común `utils/cli_manifest.schema.json` y puede
+consumirse con el helper `utils/cli_manifest.py`.
 
 ## Ejemplo de Variaciones de Comando
 

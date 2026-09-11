@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oprobots.org/schemas/zorobot3-cli-manifest.json",
+  "title": "ZoroBot3 CLI manifest",
+  "description": "Esquema comun del manifiesto JSON emitido por los programas con --describe.",
+  "type": "object",
+  "required": ["schema_version", "program", "description", "arg_style", "positionals", "options"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "program": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "arg_style": {
+      "description": "equals => '--opt=valor'; space => '--opt valor'",
+      "enum": ["equals", "space"]
+    },
+    "positionals": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/positional" }
+    },
+    "options": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/option" }
+    }
+  },
+  "$defs": {
+    "valueType": {
+      "enum": ["string", "integer", "number", "boolean", "path", "enum"]
+    },
+    "positional": {
+      "type": "object",
+      "required": ["name", "type", "required", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "$ref": "#/$defs/valueType" },
+        "required": { "type": "boolean" },
+        "description": { "type": "string" }
+      }
+    },
+    "option": {
+      "type": "object",
+      "required": ["name", "aliases", "type", "default", "required", "repeatable", "value_name", "choices", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "pattern": "^-{1,2}[A-Za-z0-9][A-Za-z0-9-]*$" },
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "type": { "$ref": "#/$defs/valueType" },
+        "default": {},
+        "required": { "type": "boolean" },
+        "repeatable": { "type": "boolean" },
+        "value_name": { "type": "string" },
+        "choices": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "array", "items": { "$ref": "#/$defs/choice" } }
+          ]
+        },
+        "description": { "type": "string" }
+      }
+    },
+    "choice": {
+      "type": "object",
+      "required": ["value", "label", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "value": {},
+        "label": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

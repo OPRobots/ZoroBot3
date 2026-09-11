@@ -8,3 +8,5 @@ desktop.ini
 *.skb
 site/
 .claude/
+__pycache__/
+*.pyc

@@ -25,6 +25,8 @@
 
 #define MAX_TARGETS 10
 
+#define CELLS_QUEUE_CAPACITY (MAZE_CELLS * 8)
+
 enum compass_direction {
   TARGET = 0,
   EAST = 1,
@@ -60,7 +62,7 @@ struct queue_cell {
 };
 
 struct cells_queue {
-  struct queue_cell queue[MAZE_CELLS];
+  struct queue_cell queue[CELLS_QUEUE_CAPACITY];
   uint16_t head;
   uint16_t tail;
 };

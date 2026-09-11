@@ -64,14 +64,32 @@ maze_sim -floodfill-type=0 -explore-type=0 mazes/maze.map
 
 ## Argumentos
 
-- `-floodfill-type=0` : FLOODFILL_BASIC
-- `-floodfill-type=1` : FLOODFILL_DIAGONAL
-- `-floodfill-type=2` : FLOODFILL_TIME
-- `-floodfill-type=3` : FLOODFILL_TIMEv2 (default)
+- `-floodfill-type=0` / `--floodfill-type=0` : BASIC
+- `-floodfill-type=1` / `--floodfill-type=1` : DIAGONAL
+- `-floodfill-type=2` / `--floodfill-type=2` : TIME (default)
 
-- `-explore-type=0` : EXPLORE_SIMPLE
-- `-explore-type=1` : EXPLORE_HOME
-- `-explore-type=2` : EXPLORE_COMPLETE (default)
+- `-explore-type=0` / `--explore-type=0` : EXPLORE_SIMPLE
+- `-explore-type=1` / `--explore-type=1` : EXPLORE_HOME
+- `-explore-type=2` / `--explore-type=2` : EXPLORE_COMPLETE (default)
+- `-explore-type=3` / `--explore-type=3` : EXPLORE_INFINITE (puede no terminar)
+
+## Descubrimiento de opciones (`--describe`)
+
+`maze_sim` puede autodescribir sus opciones en JSON para que otras herramientas
+las lean de forma sistemática:
+
+```bash
+maze_sim --describe
+```
+
+El manifiesto sigue el esquema común `utils/cli_manifest.schema.json` y puede
+consumirse con el helper `utils/cli_manifest.py`.
+
+## Recompilación
+
+```bash
+make -f Makefile.linux
+```
 
 ## Stats de Exploración
 

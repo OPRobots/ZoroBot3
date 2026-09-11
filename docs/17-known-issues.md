@@ -39,13 +39,13 @@
 </table>
 
 <a id="ff-02"></a>
-#### FF-02 — Desbordamiento de la cola de prioridad
+#### FF-02 — Desbordamiento de la cola de prioridad ✅ CORREGIDO
 
 <table>
-<tr><td><strong>Archivos</strong></td><td><a href="../source_code/include/floodfill.h#L63"><code>floodfill.h:63</code></a></td></tr>
-<tr><td><strong>Descripción</strong></td><td>Cola con capacidad fija de <code>MAZE_CELLS</code>. Cada celda puede encolarse hasta 4 veces. 16×16 = 256 slots, peor caso ~1024 pushes.</td></tr>
-<tr><td><strong>Impacto</strong></td><td><strong>Alto</strong> — corrupción de memoria.</td></tr>
-<tr><td><strong>Solución</strong></td><td>Redimensionar a <code>MAZE_CELLS × 4</code> o cola circular con bounds checking.</td></tr>
+<tr><td><strong>Archivos</strong></td><td><a href="../source_code/include/floodfill.h#L64-L68"><code>floodfill.h:64-68</code></a>, <a href="../source_code/src/floodfill.c#L358-L387"><code>floodfill.c:358-387</code></a></td></tr>
+<tr><td><strong>Descripción</strong></td><td>La cola tenía capacidad fija de <code>MAZE_CELLS</code> (256 slots) con <code>head</code>/<code>tail</code> acumulativos. Con la relajación <code>&gt;=</code> de los modos no-BASIC, un mismo <code>update_floodfill()</code> puede encolar bastante más de 256 veces (medido: TIME hasta ~624; DIAGONAL hasta ~14 000 en exploración de laberinto vacío). El push #257 escribía sobre <code>head</code>/<code>tail</code> (offset 4096) → SIGSEGV o floodfill incompleto.</td></tr>
+<tr><td><strong>Impacto</strong></td><td><strong>Alto</strong> — corrupción de memoria y caída del simulador. En robot normalmente no se disparaba porque el laberinto cargado de EEPROM reduce los reencolados, pero era UB latente.</td></tr>
+<tr><td><strong>Solución</strong></td><td>Capacidad ampliada a <code>MAZE_CELLS × 8</code> (2048 slots, 32 KB) mediante <code>CELLS_QUEUE_CAPACITY</code> y guardas de capacidad en <code>queue_push()</code>/<code>queue_pop()</code>. Se conserva la condición <code>&gt;=</code> (necesaria para estados con distinta orientación en diagonales encadenadas). TIME queda con ~3× de margen; DIAGONAL puede saturar la cola en exploración de laberinto vacío, pero la guarda evita la corrupción y el floodfill sigue siendo completo.</td></tr>
 </table>
 
 <a id="ff-03"></a>
