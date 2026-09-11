@@ -1598,86 +1598,16 @@ void run_straight(float distance, float start_offset, float end_offset, uint16_t
 
 void run_side(enum movement movement, struct turn_params turn, struct turn_params next_turn) {
 #ifndef MMSIM_ENABLED
-  set_front_sensors_angle_correction(false);
-  set_front_sensors_diagonal_correction(false);
-
-  float end_distance_offset = 0.0f;
-  float start_distance_offset = 0.0f;
-  // bool enable_end_distance_offset = true;
-  // bool enable_start_distance_offset = true;
-
-  switch (movement) {
-    case MOVE_LEFT_TO_45:
-    case MOVE_RIGHT_TO_45:
-    case MOVE_LEFT_TO_135:
-    case MOVE_RIGHT_TO_135:
-    case MOVE_LEFT_45_TO_45:
-    case MOVE_RIGHT_45_TO_45:
-    case MOVE_LEFT_FROM_45:
-    case MOVE_RIGHT_FROM_45:
-    case MOVE_LEFT_FROM_45_180:
-    case MOVE_RIGHT_FROM_45_180:
-      // enable_start_distance_offset = false;
-      // enable_end_distance_offset = false;
-      set_side_sensors_correction(false);
-      break;
-    default:
-      set_side_sensors_correction(false);
-      break;
-  }
-
-  // struct walls walls = get_walls();
-  // if (enable_end_distance_offset) {
-  //   if (turn.sign > 0) {
-  //     if (walls.left) {
-  //       end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_LEFT_WALL_ID);
-  //     }
-  //   } else {
-  //     if (walls.right) {
-  //       end_distance_offset = MIDDLE_MAZE_DISTANCE - get_sensor_distance(SENSOR_SIDE_RIGHT_WALL_ID);
-  //     }
-  //   }
-  // }
-
-  // if (enable_start_distance_offset) {
-  //   if (walls.front) {
-  //     start_distance_offset = get_front_wall_distance_mm() - (CELL_DIMENSION - (WALL_WIDTH / 2));
-  //   }
-  // }
+  disable_sensors_correction();
 
   if (turn.start > 0) {
-    if (abs(start_distance_offset) > turn.start / 2) {
-      start_distance_offset = start_distance_offset > 0 ? turn.start / 2 : -turn.start / 2;
-    }
-    move_straight(turn.start - current_cell_start_mm + start_distance_offset, turn.linear_speed, false, false);
+    move_straight(turn.start - current_cell_start_mm, turn.linear_speed, false, false);
   }
 
-  disable_sensors_correction();
-  // reset_control_errors(); //! Esto se había puesto por un problema en la acumulación de error según aumenta el número de giros realizados
   move_arc_turn(turn);
 
-  set_front_sensors_angle_correction(false);
-  set_side_sensors_correction(false);
-
-  switch (movement) {
-    case MOVE_LEFT_TO_45:
-    case MOVE_RIGHT_TO_45:
-    case MOVE_LEFT_TO_135:
-    case MOVE_RIGHT_TO_135:
-    case MOVE_LEFT_45_TO_45:
-    case MOVE_RIGHT_45_TO_45:
-      set_front_sensors_diagonal_correction(false);
-      break;
-    default:
-      set_front_sensors_diagonal_correction(false);
-      break;
-  }
-
   if (turn.end > 0) {
-    if (abs(end_distance_offset) > turn.end / 2) {
-      end_distance_offset = end_distance_offset > 0 ? turn.end / 2 : -turn.end / 2;
-    }
-    move_straight(turn.end + end_distance_offset, next_turn.linear_speed, false, false);
+    move_straight(turn.end, next_turn.linear_speed, false, false);
   }
   enter_next_cell();
 #endif
@@ -1686,11 +1616,7 @@ void run_side(enum movement movement, struct turn_params turn, struct turn_param
 void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t speed, int32_t final_speed) {
 #ifndef MMSIM_ENABLED
   set_front_sensors_angle_correction(false);
-  if (cells > 1) {
-    set_front_sensors_diagonal_correction(true);
-  } else {
-    set_front_sensors_diagonal_correction(false);
-  }
+  set_front_sensors_diagonal_correction(true);
   set_side_sensors_correction(false);
 
   uint16_t current_cell = 1;
@@ -1703,7 +1629,8 @@ void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t spee
   distance += end_offset;
   while (is_race_started() && !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
     remaining_distance = distance * MICROMETERS_PER_MILLIMETER - (get_encoder_avg_micrometers() - current_distance);
-    if (remaining_distance < CELL_DIAGONAL * MICROMETERS_PER_MILLIMETER) {
+
+    if (current_cell == cells && (get_encoder_avg_micrometers() - current_distance) >= ((CELL_DIAGONAL * 1 / 3) * MICROMETERS_PER_MILLIMETER)) {
       set_front_sensors_diagonal_correction(false);
     }
 
