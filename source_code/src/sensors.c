@@ -86,21 +86,21 @@ void set_sensors_robot_calibration(uint16_t version) {
       sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].c = 31.534;
       break;
     case ZOROBOT3_B:
-      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].a = 2.932;
-      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].b = 0.341;
-      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].c = 14.763;
+      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].a = 3.282;
+      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].b = 0.377;
+      sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].c = 2.570;
 
-      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].a = 2.796;
-      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].b = 0.332;
-      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].c = 22.458;
+      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].a = 3.090;
+      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].b = 0.357;
+      sensors_distance_calibrations[SENSOR_FRONT_RIGHT_WALL_ID].c = -9.450;
 
-      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].a = 2.175;
-      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].b = 0.273;
-      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].c = 28.662;
+      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].a = 2.536;
+      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].b = 0.314;
+      sensors_distance_calibrations[SENSOR_SIDE_LEFT_WALL_ID].c = 111.403;
 
-      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].a = 2.384;
-      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].b = 0.305;
-      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].c = -8.160;
+      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].a = 2.846;
+      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].b = 0.345;
+      sensors_distance_calibrations[SENSOR_SIDE_RIGHT_WALL_ID].c = 28.827;
       break;
     case ZOROBOT3_C:
       sensors_distance_calibrations[SENSOR_FRONT_LEFT_WALL_ID].a = 3.106;
