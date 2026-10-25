@@ -6,6 +6,7 @@
 #include <encoders.h>
 #include <floodfill.h>
 #include <handwall.h>
+#include <hardcode.h>
 #include <leds.h>
 #include <lsm6dsr.h>
 #include <macroarray.h>
@@ -68,6 +69,9 @@ int main(void) {
   while (1) {
     if (!is_race_started()) {
       menu_handler();
+      if (!menu_run_can_start()) {
+        hardcode_reset();
+      }
       if (!get_sensors_enabled() && menu_run_can_start()) {
         set_sensors_enabled(menu_run_can_start());
         delay(200);
@@ -79,7 +83,7 @@ int main(void) {
         if (menu_run_get_explore_algorithm() != EXPLORE_DRAGRACE) {
           sensor_started = check_start_run();
         }
-        if (is_race_started()) {
+        if (is_race_started() || (!is_race_started() && menu_run_get_explore_algorithm() == EXPLORE_HARDCODE && sensor_started != -1)) {
           switch (menu_run_get_explore_algorithm()) {
             case EXPLORE_HANDWALL:
               switch (sensor_started) {
@@ -102,34 +106,27 @@ int main(void) {
                   floodfill_start_explore();
                   break;
               }
-
-              // configure_explore_kinematics(false);
-              // configure_kinematics(SPEED_EXPLORE);
-
-              // clear_info_leds();
-              // set_RGB_color(0, 0, 0);
-              // delay(125);
-              // side_sensors_calibration(true);
-              // delay(125);
-              // if (is_battery_2s()) {
-              //   set_target_fan_speed(get_kinematics().fan_speed_2s, 400);
-              // } else {
-              //   set_target_fan_speed(get_kinematics().fan_speed_3s, 400);
-              // }
-              // delay(800);
-
-              // move(MOVE_START);
-              // move(MOVE_BACK_STOP);
-
-              // delay(1000);
-              // set_race_started(false);
-
               break;
             case EXPLORE_TIME_TRIAL:
               timetrial_start();
               break;
             case EXPLORE_DRAGRACE:
               dragrace_start();
+              break;
+            case EXPLORE_HARDCODE:
+              if (!hardcode_is_hand_selected()) {
+                switch (sensor_started) {
+                  case SENSOR_FRONT_LEFT_WALL_ID:
+                    hardcode_use_left_hand();
+                    break;
+                  case SENSOR_FRONT_RIGHT_WALL_ID:
+                    hardcode_use_right_hand();
+                    break;
+                }
+              }
+              if (is_race_started()) {
+                hardcode_start();
+              }
               break;
             default:
               set_race_started(false);
@@ -147,6 +144,9 @@ int main(void) {
           break;
         case EXPLORE_TIME_TRIAL:
           timetrial_loop();
+          break;
+        case EXPLORE_HARDCODE:
+          hardcode_loop();
           break;
         default:
           set_race_started(false);

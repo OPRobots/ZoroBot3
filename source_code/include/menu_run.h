@@ -50,6 +50,7 @@ enum explore_algorithm {
   EXPLORE_TIME_TRIAL = 1,
   EXPLORE_FLOODFILL = 2,
   EXPLORE_DRAGRACE = 3,
+  EXPLORE_HARDCODE = 4,
 };
 
 bool menu_run_handler(void);

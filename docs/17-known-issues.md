@@ -587,9 +587,9 @@
 
 <table>
 <tr><td><strong>Archivos</strong></td><td><code>scripts/turn-profiles/turn-profiles.ipynb</code> (celdas 7, 9, 11, 13, 15, 17)</td></tr>
-<tr><td><strong>Descripción</strong></td><td>42 figuras PNG de 1600×1600 embebidas en el notebook (3.06 MB total) y 36 títulos con la secuencia "Âº" (mojibake del carácter °): p. ej. <code>plot_trajectory(title = "90Âº NORMAL")</code>. El notebook pesa 3.1 MB, renderiza lento y los títulos guardados están corruptos.</td></tr>
+<tr><td><strong>Descripción</strong></td><td>42 figuras PNG de 1600×1600 embebidas en el notebook (3.06 MB total) y 36 títulos con la secuencia "º" (mojibake del carácter °): p. ej. <code>plot_trajectory(title = "90º NORMAL")</code>. El notebook pesa 3.1 MB, renderiza lento y los títulos guardados están corruptos.</td></tr>
 <tr><td><strong>Impacto</strong></td><td>Bajo — repo inflado y salida degradada.</td></tr>
-<tr><td><strong>Solución</strong></td><td>Reducir a <code>dpi=80-100</code> o guardar figuras en <code>images/</code> y referenciarlas; reemplazar <code>Âº</code> por <code>°</code>.</td></tr>
+<tr><td><strong>Solución</strong></td><td>Reducir a <code>dpi=80-100</code> o guardar figuras en <code>images/</code> y referenciarlas; reemplazar <code>º</code> por <code>°</code>.</td></tr>
 </table>
 
 <a id="sp-09"></a>

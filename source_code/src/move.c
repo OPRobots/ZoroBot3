@@ -28,6 +28,8 @@ static char *movement_string[] = {
     "MOVE_RIGHT_INPLACE",
     "MOVE_BACK_WALL",
     "MOVE_BACK_STOP",
+    "MOVE_LEFT_180_RC",
+    "MOVE_RIGHT_180_RC",
 };
 
 static struct kpi_params kpi_explore[] = {
@@ -183,6 +185,24 @@ static struct turn_params turns_normal[] = {
         .arc = 131.4061,
         .sign = 1,
     },
+    [MOVE_LEFT_90_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1350,
+        .max_angular_speed = 13.5000,
+        .transition = 63.3488,
+        .arc = 76.4370,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_90_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1350,
+        .max_angular_speed = 13.5000,
+        .transition = 63.3488,
+        .arc = 76.4370,
+        .sign = 1,
+    },
     [MOVE_LEFT_180] = {
         .start = -44.9865,
         .end = -44.9865,
@@ -199,6 +219,24 @@ static struct turn_params turns_normal[] = {
         .max_angular_speed = 15.0000,
         .transition = 63.3488,
         .arc = 202.0950,
+        .sign = 1,
+    },
+    [MOVE_LEFT_180_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1350,
+        .max_angular_speed = 8.4375,
+        .transition = 63.3488,
+        .arc = 422.0100,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_180_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1350,
+        .max_angular_speed = 8.4375,
+        .transition = 63.3488,
+        .arc = 422.0100,
         .sign = 1,
     },
     [MOVE_LEFT_TO_45] = {
@@ -312,6 +350,24 @@ static struct turn_params turns_medium[] = {
         .arc = 131.4146,
         .sign = 1,
     },
+    [MOVE_LEFT_90_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1575,
+        .max_angular_speed = 15.7500,
+        .transition = 63.3465,
+        .arc = 76.4347,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_90_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1575,
+        .max_angular_speed = 15.7500,
+        .transition = 63.3465,
+        .arc = 76.4347,
+        .sign = 1,
+    },
     [MOVE_LEFT_180] = {
         .start = -44.9842,
         .end = -44.9842,
@@ -328,6 +384,24 @@ static struct turn_params turns_medium[] = {
         .max_angular_speed = 17.5000,
         .transition = 63.3465,
         .arc = 202.1040,
+        .sign = 1,
+    },
+    [MOVE_LEFT_180_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1575,
+        .max_angular_speed = 9.8438,
+        .transition = 63.3544,
+        .arc = 422.0055,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_180_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1575,
+        .max_angular_speed = 9.8438,
+        .transition = 63.3544,
+        .arc = 422.0055,
         .sign = 1,
     },
     [MOVE_LEFT_TO_45] = {
@@ -441,6 +515,24 @@ static struct turn_params turns_fast[] = {
         .arc = 131.4018,
         .sign = 1,
     },
+    [MOVE_LEFT_90_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1800,
+        .max_angular_speed = 18.0000,
+        .transition = 63.3420,
+        .arc = 76.4460,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_90_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1800,
+        .max_angular_speed = 18.0000,
+        .transition = 63.3420,
+        .arc = 76.4460,
+        .sign = 1,
+    },
     [MOVE_LEFT_180] = {
         .start = -44.9820,
         .end = -44.9820,
@@ -457,6 +549,24 @@ static struct turn_params turns_fast[] = {
         .max_angular_speed = 20.0000,
         .transition = 63.3510,
         .arc = 202.1040,
+        .sign = 1,
+    },
+    [MOVE_LEFT_180_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1800,
+        .max_angular_speed = 11.2500,
+        .transition = 63.3510,
+        .arc = 422.0100,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_180_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 1800,
+        .max_angular_speed = 11.2500,
+        .transition = 63.3510,
+        .arc = 422.0100,
         .sign = 1,
     },
     [MOVE_LEFT_TO_45] = {
@@ -570,6 +680,24 @@ static struct turn_params turns_super[] = {
         .arc = 131.4222,
         .sign = 1,
     },
+    [MOVE_LEFT_90_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2025,
+        .max_angular_speed = 20.2500,
+        .transition = 63.3521,
+        .arc = 76.4438,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_90_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2025,
+        .max_angular_speed = 20.2500,
+        .transition = 63.3521,
+        .arc = 76.4438,
+        .sign = 1,
+    },
     [MOVE_LEFT_180] = {
         .start = -44.9797,
         .end = -44.9797,
@@ -586,6 +714,24 @@ static struct turn_params turns_super[] = {
         .max_angular_speed = 22.5000,
         .transition = 63.3521,
         .arc = 202.0950,
+        .sign = 1,
+    },
+    [MOVE_LEFT_180_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2025,
+        .max_angular_speed = 12.6562,
+        .transition = 63.3521,
+        .arc = 422.0100,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_180_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2025,
+        .max_angular_speed = 12.6562,
+        .transition = 63.3521,
+        .arc = 422.0100,
         .sign = 1,
     },
     [MOVE_LEFT_TO_45] = {
@@ -699,6 +845,24 @@ static struct turn_params turns_haki[] = {
         .arc = 131.4032,
         .sign = 1,
     },
+    [MOVE_LEFT_90_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2250,
+        .max_angular_speed = 22.5000,
+        .transition = 63.3600,
+        .arc = 76.4325,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_90_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2250,
+        .max_angular_speed = 22.5000,
+        .transition = 63.3600,
+        .arc = 76.4325,
+        .sign = 1,
+    },
     [MOVE_LEFT_180] = {
         .start = -44.9775,
         .end = -44.9775,
@@ -715,6 +879,24 @@ static struct turn_params turns_haki[] = {
         .max_angular_speed = 25.0000,
         .transition = 63.3600,
         .arc = 202.0950,
+        .sign = 1,
+    },
+    [MOVE_LEFT_180_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2250,
+        .max_angular_speed = 14.0625,
+        .transition = 63.3600,
+        .arc = 422.0100,
+        .sign = -1,
+    },
+    [MOVE_RIGHT_180_RC] = {
+        .start = 0,
+        .end = 0,
+        .linear_speed = 2250,
+        .max_angular_speed = 14.0625,
+        .transition = 63.3600,
+        .arc = 422.0100,
         .sign = 1,
     },
     [MOVE_LEFT_TO_45] = {
@@ -1650,6 +1832,101 @@ void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t spee
   }
   if (current_cell < cells && remaining_distance < 10) {
     enter_next_cell();
+  }
+#endif
+}
+
+/**
+ * @brief Ejecuta un tramo recto y, opcionalmente, el giro final del hardcode
+ *
+ * @param distance Distancia del tramo en milímetros
+ * @param turn Giro a ejecutar al final del tramo
+ */
+void run_hardcode_sector(uint16_t distance, enum movement turn) {
+#ifndef MMSIM_ENABLED
+  enum speed_strategy speed_strategy = menu_run_get_speed();
+  struct turn_params turn_params = get_kinematics().turns[turn];
+  int16_t linear_speed = turn_params.linear_speed;
+
+  if (turn != MOVE_NONE) {
+    // while (turn_params.max_angular_speed <= 0 && speed_strategy < SPEED_HAKI) {
+    //   speed_strategy++;
+    //   turn_params = kinematics_settings[speed_strategy].turns[turn];
+    //   linear_speed = turn_params.linear_speed;
+    // }
+
+    while (turn_params.max_angular_speed > 0 && distance < calc_straight_to_speed_distance(get_ideal_linear_speed(), turn_params.linear_speed)) {
+      enum speed_strategy lower_strategy = speed_strategy > SPEED_NORMAL ? speed_strategy - 1 : SPEED_NORMAL;
+      struct turn_params lower_params = kinematics_settings[lower_strategy].turns[turn];
+
+      if (lower_params.max_angular_speed <= 0) {
+        break;
+      }
+
+      speed_strategy = lower_strategy;
+      turn_params = lower_params;
+      linear_speed = turn_params.linear_speed;
+      if (speed_strategy == SPEED_NORMAL) {
+        break;
+      }
+    }
+  } else {
+    linear_speed = get_kinematics().turns[MOVE_LEFT_90_RC].linear_speed;
+  }
+
+  if (distance > 0) {
+    run_straight_hardcoded(distance, linear_speed, turn != MOVE_NONE ? turn_params.linear_speed : 0, false, false);
+  }
+  if (turn != MOVE_NONE) {
+    move_arc_turn(turn_params);
+  }
+#endif
+}
+
+/**
+ * @brief Avance recto por encoder sin correcciones de sensores
+ *
+ * @param distance Distancia en milímetros
+ * @param speed Velocidad objetivo del tramo
+ * @param final_speed Velocidad objetivo al final del tramo
+ * @param check_wall_loss Reservado para compatibilidad
+ * @param stop Detener al final del tramo
+ */
+void run_straight_hardcoded(int32_t distance, int32_t speed, int32_t final_speed, bool check_wall_loss, bool stop) {
+#ifndef MMSIM_ENABLED
+  (void)check_wall_loss;
+
+  set_front_sensors_angle_correction(false);
+  set_front_sensors_distance_correction(false);
+  set_front_sensors_diagonal_correction(false);
+  set_side_sensors_correction(false);
+
+  int32_t current_distance = get_encoder_avg_micrometers();
+  float slow_distance = 0;
+  float stop_distance = 0;
+
+  set_ideal_angular_speed(0.0);
+  set_target_linear_speed(speed);
+  if (speed >= 0) {
+    while (is_race_started() && !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + (distance - stop_distance - slow_distance) * MICROMETERS_PER_MILLIMETER) {
+      if (stop) {
+        stop_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), 0);
+      }
+      if (final_speed != speed && !stop) {
+        slow_distance = calc_straight_to_speed_distance(get_ideal_linear_speed(), final_speed);
+      }
+    }
+
+    if (stop) {
+      set_target_linear_speed(0);
+      set_ideal_angular_speed(0.0);
+      while (is_race_started() && !is_motor_saturated() && get_ideal_linear_speed() != 0) {
+      }
+    } else {
+      set_target_linear_speed(final_speed);
+      while (is_race_started() && !is_motor_saturated() && get_encoder_avg_micrometers() <= current_distance + distance * MICROMETERS_PER_MILLIMETER) {
+      }
+    }
   }
 #endif
 }

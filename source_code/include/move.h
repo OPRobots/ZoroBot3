@@ -66,6 +66,10 @@ enum movement {
   MOVE_RIGHT_INPLACE,
   MOVE_BACK_WALL,
   MOVE_BACK_STOP,
+  MOVE_LEFT_90_RC,
+  MOVE_RIGHT_90_RC,
+  MOVE_LEFT_180_RC,
+  MOVE_RIGHT_180_RC,
 };
 
 struct inplace_params {
@@ -130,6 +134,9 @@ void move_inplace_angle(float angle, float rads);
 void run_straight(float distance, float start_offset, float end_offset, uint16_t cells, bool has_begin, int32_t speed, int32_t final_speed, int8_t next_turn_sign);
 void run_side(enum movement movement, struct turn_params turn, struct turn_params next_turn);
 void run_diagonal(float distance, float end_offset, uint16_t cells, int32_t speed, int32_t final_speed);
+
+void run_hardcode_sector(uint16_t distance, enum movement turn);
+void run_straight_hardcoded(int32_t distance, int32_t speed, int32_t final_speed, bool check_wall_loss, bool stop);
 
 void move(enum movement movement);
 void move_run_sequence(enum movement *sequence_movements);

@@ -1,5 +1,7 @@
 #include "control.h"
 
+#include "menu_run.h"
+
 static volatile bool race_started = false;
 static volatile bool race_auto_run = false;
 static volatile uint32_t race_finish_ms = 0;
@@ -185,6 +187,11 @@ int8_t check_start_run(void) {
     uint8_t sensor = left_ready ? SENSOR_FRONT_LEFT_WALL_ID : SENSOR_FRONT_RIGHT_WALL_ID;
     sensor_front_left_start_ms = 0;
     sensor_front_right_start_ms = 0;
+
+    if (menu_run_get_explore_algorithm() == EXPLORE_HARDCODE) {
+      return sensor;
+    }
+
     set_RGB_color(0, 50, 0);
 
     set_race_auto_run(false);

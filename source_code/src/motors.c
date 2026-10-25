@@ -7,7 +7,7 @@ static uint16_t left_motor_saturation_count = 0;
 static uint16_t right_motor_saturation_count = 0;
 static uint16_t angular_speed_saturation_count = 0;
 
-static bool check_motors_saturated_enabled = true;
+static volatile bool check_motors_saturated_enabled = true;
 
 static void check_motors_saturated(void) {
   if (check_motors_saturated_enabled) {
