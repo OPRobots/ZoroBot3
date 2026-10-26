@@ -607,6 +607,7 @@ void update_sensors_magics(void) {
     }
 
     bool detected = false;
+    //! ÑAPA APOTEÓSICA para forzar a detección de paredes por distancia en mm
     if (use_raw_sensors() && false) {
       detected = get_sensor_raw_filter(sensor) > (uint16_t)sensors_raw_wall_detection_threshold[sensor];
     } else {
