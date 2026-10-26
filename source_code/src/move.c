@@ -166,6 +166,27 @@ static struct turn_params turns_explore[] = {
     },
 };
 
+static struct turn_params turns_explore_650[] = {
+    [MOVE_LEFT] = {
+        .start = 10.1633,
+        .end = 10.1581,
+        .linear_speed = 650,
+        .max_angular_speed = 11.8182,
+        .transition = 63.3458,
+        .arc = 5.7460,
+        .sign = -1,
+    },
+    [MOVE_RIGHT] = {
+        .start = 10.1633,
+        .end = 10.1581,
+        .linear_speed = 650,
+        .max_angular_speed = 11.8182,
+        .transition = 63.3458,
+        .arc = 5.7460,
+        .sign = 1,
+    },
+};
+
 static struct turn_params turns_normal[] = {
     [MOVE_LEFT_90] = {
         .start = -68.8257,
@@ -991,7 +1012,7 @@ static struct turn_params turns_haki[] = {
     },
 };
 
-#define SPEED_EXPLORE_LINEAR_SPEED 800
+#define SPEED_EXPLORE_LINEAR_SPEED 650
 #define SPEED_EXPLORE_LINEAR_SPEED_RUN 3500
 
 static struct kinematics kinematics_settings[] = {
@@ -1005,7 +1026,7 @@ static struct kinematics kinematics_settings[] = {
         },
         .fan_speed_2s = 35,
         .fan_speed_3s = 20,
-        .turns = turns_explore,
+        .turns = turns_explore_650,
         .kpi = kpi_explore,
         .mpu = {
             .full_scale_dps = MPU_FULL_SCALE_1000DPS,

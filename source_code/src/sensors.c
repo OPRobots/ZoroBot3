@@ -607,7 +607,7 @@ void update_sensors_magics(void) {
     }
 
     bool detected = false;
-    if (use_raw_sensors()) {
+    if (use_raw_sensors() && false) {
       detected = get_sensor_raw_filter(sensor) > (uint16_t)sensors_raw_wall_detection_threshold[sensor];
     } else {
       switch (sensor) {
