@@ -84,8 +84,8 @@ static void rc5_manage_command(uint16_t message) {
           if (!is_race_started()) {
             set_race_started(true);
           }
-        } else {
-          set_debug_btn(true);
+        } else if(is_sensors_taking_values()){
+          sensors_take_value();
         }
       } else if (command == rc5_stored_data[DATA_STOP]) {
         set_race_started(false);

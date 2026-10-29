@@ -19,7 +19,8 @@ enum ROBOT_VERSION {
   ZOROBOT3_UNKNOWN = 0,
   ZOROBOT3_A = 1,
   ZOROBOT3_B = 2,
-  ZOROBOT3_C = 3
+  ZOROBOT3_C = 3,
+  ZOROBOT3_D = 4
 };
 
 /** Laberinto */

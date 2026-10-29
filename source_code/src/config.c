@@ -17,6 +17,8 @@ void handle_robot_version(void) {
     robot_version = ZOROBOT3_B;
   } else if (UID_WORD0 == 0x0039001C && UID_WORD1 == 0x3235510F && UID_WORD2 == 0x32313338) {
     robot_version = ZOROBOT3_C;
+  }else if (UID_WORD0 == 0x0044003E && UID_WORD1 == 0x304E5006 && UID_WORD2 == 0x2030384B) {
+    robot_version = ZOROBOT3_D;
   } else if (UID_WORD0 != 0 && UID_WORD1 != 0 && UID_WORD2 != 0) {
     robot_version = ZOROBOT3_A;
   }

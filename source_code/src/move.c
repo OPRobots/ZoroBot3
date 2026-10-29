@@ -34,77 +34,77 @@ static char *movement_string[] = {
 
 static struct kpi_params kpi_explore[] = {
     [KPI_LINEAR] = {
-        .kp = 0.008,
-        .ki = 0.0005,
+        .kp = 0.009,
+        .ki = 0.0003,
         .kd = 0.00,
     },
     [KPI_ANGULAR] = {
-        .kp = 0.5,
-        .ki = 0.015,
+        .kp = 0.3,
+        .ki = 0.007,
         .kd = 0.0,
     },
     [KPI_SIDE_SENSORS] = {
-        .kp = 0.03,
-        .ki = 0.002,
+        .kp = 0.0,
+        .ki = 0.0,
         .kd = 0.0,
     },
     [KPI_FRONT_ANGLE_SENSORS] = {
-        .kp = 0.02,
+        .kp = 0.002,
         .ki = 0.0002,
-        .kd = 0.12,
+        .kd = 0.06,
     },
     [KPI_FRONT_DISTANCE_SENSORS] = {
-        .kp = 0.05,
+        .kp = 0.03,
         .ki = 0.0002,
-        .kd = 0.25,
+        .kd = 0.15,
     },
     [KPI_FRONT_RAW_DISTANCE_SENSORS] = {
         .kp = 0.0018,
-        .ki = 0.000015,
-        .kd = 0.015,
+        .ki = 0.00002,
+        .kd = 0.01,
     },
     [KPI_FRONT_DIAGONAL_SENSORS] = {
-        .kd = 0.040,
-        .kp = 0.001,
-        .ki = 0.040,
+        .kd = 0.02,
+        .kp = 0.0005,
+        .ki = 0.020,
     },
 };
 
 static struct kpi_params kpi_run[] = {
     [KPI_LINEAR] = {
-        .kp = 0.008,
-        .ki = 0.0005,
+        .kp = 0.012,
+        .ki = 0.0003,
         .kd = 0.00,
     },
     [KPI_ANGULAR] = {
-        .kp = 0.5,
-        .ki = 0.015,
+        .kp = 0.35,
+        .ki = 0.009,
         .kd = 0.0,
     },
     [KPI_SIDE_SENSORS] = {
-        .kp = 0.03,
-        .ki = 0.002,
+        .kp = 0.015,
+        .ki = 0.001,
         .kd = 0.0,
     },
     [KPI_FRONT_ANGLE_SENSORS] = {
-        .kp = 0.02,
-        .ki = 0.0002,
-        .kd = 0.12,
+        .kp = 0.01,
+        .ki = 0.0001,
+        .kd = 0.06,
     },
     [KPI_FRONT_DISTANCE_SENSORS] = {
-        .kp = 0.05,
-        .ki = 0.0002,
-        .kd = 0.25,
+        .kp = 0.025,
+        .ki = 0.0001,
+        .kd = 0.15,
     },
     [KPI_FRONT_RAW_DISTANCE_SENSORS] = {
-        .kp = 0.0018,
-        .ki = 0.000015,
-        .kd = 0.015,
+        .kp = 0.0009,
+        .ki = 0.00001,
+        .kd = 0.01,
     },
     [KPI_FRONT_DIAGONAL_SENSORS] = {
-        .kp = 0.04,
+        .kp = 0.02,
         .ki = 0.001,
-        .kd = 0.040,
+        .kd = 0.02,
     },
 };
 

@@ -478,6 +478,11 @@ void show_robot_version(uint16_t version) {
       set_info_led(INFO_LED_C, true);
       delay(1000);
       break;
+    case ZOROBOT3_D:
+      printf("ZoroBot3 D inited...\n");
+      set_info_led(INFO_LED_D, true);
+      delay(1000);
+      break;
     default:
       printf("Robot version: Unknown\n");
       uint32_t ms = get_clock_ticks();

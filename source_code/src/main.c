@@ -63,10 +63,20 @@ int main(void) {
   eeprom_load();
   handle_robot_version();
   show_battery_level();
+ 
+  
+  // #define SENSOR_FRONT_LEFT_WALL_ID 0
+  // #define SENSOR_FRONT_RIGHT_WALL_ID 1
+  // #define SENSOR_SIDE_LEFT_WALL_ID 2
+  // #define SENSOR_SIDE_RIGHT_WALL_ID 3
+  //all_sensors_take_values(2);
 
-  printf("BA: %4d CI: %4d CD: %4d BO: %4d\n", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
+  // printf("BA: %4d CI: %4d CD: %4d BO: %4d\n", get_aux_raw(AUX_BATTERY_ID), get_aux_raw(AUX_CURRENT_LEFT_ID), get_aux_raw(AUX_CURRENT_RIGHT_ID), get_aux_raw(AUX_MENU_BTN_ID));
   // floodfill_maze_print();
   while (1) {
+    // printf("V: %.2f w: %.2f\n", get_battery_voltage(), lsm6dsr_get_gyro_z_radps());
+    // delay(100);
+
     if (!is_race_started()) {
       menu_handler();
       if (!menu_run_can_start()) {
@@ -106,6 +116,25 @@ int main(void) {
                   floodfill_start_explore();
                   break;
               }
+
+              // configure_explore_kinematics(false);
+              // configure_kinematics(menu_run_get_speed());
+
+              // delay(125);
+              // if (is_battery_2s()) {
+              //   set_target_fan_speed(get_kinematics().fan_speed_2s, 400);
+              // } else {
+              //   set_target_fan_speed(get_kinematics().fan_speed_3s, 400);
+              // }
+              // delay(800);
+
+              // move_straight(CELL_DIMENSION * 1, get_kinematics().turns[MOVE_RIGHT_90].linear_speed, false, false);
+              // move_arc_turn(get_kinematics().turns[MOVE_RIGHT_90]);
+              // move_straight(CELL_DIMENSION * 1, get_kinematics().turns[MOVE_RIGHT_90].linear_speed, false, false);
+              // move_arc_turn(get_kinematics().turns[MOVE_RIGHT_90]);
+              // move_straight(CELL_DIMENSION * 1, get_kinematics().turns[MOVE_RIGHT_90].linear_speed, false, true);
+
+              // set_race_started(false);
               break;
             case EXPLORE_TIME_TRIAL:
               timetrial_start();
